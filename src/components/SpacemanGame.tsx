@@ -280,11 +280,14 @@ export function SpacemanGame() {
               {multiplier.toFixed(2)}x
             </div>
 
-            {phase === "crashed" && (
-              <div className="mt-2 font-display text-lg font-black uppercase tracking-widest text-rose-400">
-                Crash
-              </div>
-            )}
+            {/* Reserved-height slot so the "Crash" label never pushes layout */}
+            <div className="h-6 mt-2 flex items-center justify-center">
+              {phase === "crashed" && (
+                <div className="font-display text-lg font-black uppercase tracking-widest text-rose-400 leading-none">
+                  Crash
+                </div>
+              )}
+            </div>
 
             {/* Astronaut: reserves layout space, sprite floats in an isolated layer */}
             <div className="relative mt-4 h-56 w-full sm:h-72">
@@ -353,9 +356,9 @@ export function SpacemanGame() {
           </div>
         </section>
 
-        {/* Round status (floating, single line) */}
-        <div className="mt-4 px-1">
-          <div className="flex items-center justify-between gap-3 text-xs sm:text-sm whitespace-nowrap">
+        {/* Round status (fixed height to prevent layout shifts) */}
+        <div className="mt-4 px-1 h-[42px]">
+          <div className="flex h-5 items-center justify-between gap-3 text-xs sm:text-sm whitespace-nowrap">
             <div className="flex items-center gap-2 font-semibold min-w-0">
               <span
                 className={`h-2 w-2 shrink-0 rounded-full ${phase === "running" ? "bg-emerald-400" : "bg-rose-500"}`}
@@ -364,7 +367,7 @@ export function SpacemanGame() {
                 {phase === "betting" ? "Preparando ronda" : phase === "running" ? "En vuelo" : "Crash"}
               </span>
             </div>
-            <span className="neon-red font-display text-base font-bold shrink-0">
+            <span className="neon-red font-display text-base font-bold shrink-0 tabular-nums w-12 text-right">
               {phase === "betting" ? `${countdown.toFixed(1)}s` : ""}
             </span>
           </div>
