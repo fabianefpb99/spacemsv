@@ -8,7 +8,7 @@ type HistoryItem = { id: number; value: number };
 
 const MIN_BET = 500;
 const BET_STEP = 500;
-const QUICK_ADDS = [1000, 5000];
+const QUICK_ADDS = [1000, 2000, 5000, 10000];
 const BETTING_MS = 4000;
 const CRASH_HOLD_MS = 2200;
 
@@ -353,27 +353,22 @@ export function SpacemanGame() {
           </div>
         </section>
 
-        {/* Round status */}
-        <div className="mt-4 glass-panel rounded-xl p-3">
-          <div className="flex items-center justify-between text-xs sm:text-sm">
-            <div className="flex items-center gap-2 font-semibold">
+        {/* Round status (floating, single line) */}
+        <div className="mt-4 px-1">
+          <div className="flex items-center justify-between gap-3 text-xs sm:text-sm whitespace-nowrap">
+            <div className="flex items-center gap-2 font-semibold min-w-0">
               <span
-                className={`h-2 w-2 rounded-full ${phase === "running" ? "bg-emerald-400" : "bg-rose-500"}`}
+                className={`h-2 w-2 shrink-0 rounded-full ${phase === "running" ? "bg-emerald-400" : "bg-rose-500"}`}
               />
-              <span className="uppercase tracking-wider text-purple-100/80">
-                {phase === "running" ? "Ronda actual" : "Ronda actual"}
+              <span className="truncate uppercase tracking-wider text-purple-100/80 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+                {phase === "betting" ? "Preparando ronda" : phase === "running" ? "En vuelo" : "Crash"}
               </span>
             </div>
-            <div className="flex items-center gap-2 uppercase tracking-wider text-purple-100/80">
-              <span className="text-xs">
-                {phase === "betting" ? "Preparando siguiente ronda" : phase === "running" ? "En vuelo" : "Crash"}
-              </span>
-              <span className="neon-red font-display text-base font-bold">
-                {phase === "betting" ? `${countdown.toFixed(1)}s` : ""}
-              </span>
-            </div>
+            <span className="neon-red font-display text-base font-bold shrink-0">
+              {phase === "betting" ? `${countdown.toFixed(1)}s` : ""}
+            </span>
           </div>
-          <div className="mt-2 h-3 w-full overflow-hidden rounded-full bg-purple-950/60">
+          <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-purple-950/40 backdrop-blur-sm">
             <div
               className="h-full rounded-full transition-[width]"
               style={{
