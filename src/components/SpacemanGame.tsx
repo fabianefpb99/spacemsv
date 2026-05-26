@@ -13,6 +13,17 @@ const QUICK_ADDS = [1000, 2000, 5000, 10000];
 const BETTING_MS = 5000;
 const CRASH_HOLD_MS = 2200;
 
+const IDLE_MESSAGES = [
+  "Esta vez iré más lejos",
+  "¿Tendrás el valor de esperar?",
+  "Hoy desayuné combustible premium",
+  "Si exploto, fue con estilo",
+  "Houston, tenemos ganancias",
+  "Hoy no pienso aterrizar",
+  "Esta salida se siente diferente",
+  "El miedo hace retirar temprano",
+];
+
 function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
 }
@@ -116,6 +127,17 @@ export function SpacemanGame() {
   const [cashedOutAt, setCashedOutAt] = useState<number | null>(null);
   const [lastWin, setLastWin] = useState<number | null>(null);
   const [online, setOnline] = useState(150);
+  const [messageIdx, setMessageIdx] = useState(() => Math.floor(Math.random() * IDLE_MESSAGES.length));
+
+  // Rotate idle messages during betting phase
+  useEffect(() => {
+    if (phase !== "betting") return;
+    setMessageIdx(Math.floor(Math.random() * IDLE_MESSAGES.length));
+    const id = setInterval(() => {
+      setMessageIdx((i) => (i + 1) % IDLE_MESSAGES.length);
+    }, 2200);
+    return () => clearInterval(id);
+  }, [phase]);
 
   const startRef = useRef<number>(0);
   const rafRef = useRef<number | null>(null);
