@@ -338,7 +338,7 @@ export function SpacemanGame() {
                   {phase === "running" && (
                     <>
                       <div
-                        className="flame absolute"
+                        className="absolute"
                         style={{
                           left: "55%",
                           bottom: -34,
@@ -349,11 +349,12 @@ export function SpacemanGame() {
                         }}
                       >
                         <div
-                          className="h-full w-full rounded-full"
+                          className="flame h-full w-full rounded-full"
                           style={{
                             background:
                               "radial-gradient(ellipse at 50% 20%, #fff6c8 0%, #ffd24a 20%, #ff7a1a 50%, #ff2a2a 75%, transparent 85%)",
                             filter: "blur(2px)",
+                            transformOrigin: "top center",
                           }}
                         />
                       </div>
