@@ -215,6 +215,8 @@ export function SpacemanGame() {
   const [online, setOnline] = useState(150);
   const [messageIdx, setMessageIdx] = useState(0);
   const [muted, setMuted] = useState(false);
+  const [flightTier, setFlightTier] = useState<0 | 1 | 2 | 3 | 4>(0);
+  const [flightMessage, setFlightMessage] = useState<string | null>(null);
 
   // Start ambient music on first user interaction (browsers require a gesture)
   useEffect(() => {
@@ -254,6 +256,22 @@ export function SpacemanGame() {
     }, 2500);
     return () => clearTimeout(id);
   }, [phase]);
+
+  // Flight messages: pick a new one each time the multiplier crosses a tier
+  useEffect(() => {
+    if (phase !== "running") {
+      if (flightTier !== 0 || flightMessage !== null) {
+        setFlightTier(0);
+        setFlightMessage(null);
+      }
+      return;
+    }
+    const tier = getFlightTier(multiplier);
+    if (tier !== flightTier) {
+      setFlightTier(tier);
+      setFlightMessage(tier === 0 ? null : pickFlightMessage(tier));
+    }
+  }, [multiplier, phase, flightTier, flightMessage]);
 
   const startRef = useRef<number>(0);
   const rafRef = useRef<number | null>(null);
