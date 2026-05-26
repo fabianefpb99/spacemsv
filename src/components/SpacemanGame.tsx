@@ -390,15 +390,27 @@ export function SpacemanGame() {
                       />
                     </>
                   )}
-                  <img
-                    src={phase === "running" ? astronautFlyingPng : astronautSvg}
-                    alt="Astronauta"
-                    className={`relative w-full ${
-                      phase === "running"
-                        ? "drop-shadow-[0_0_24px_rgba(255,80,80,0.55)]"
-                        : "drop-shadow-[0_0_12px_rgba(120,120,255,0.25)]"
-                    }`}
-                  />
+                  <div className="relative w-full">
+                    <img
+                      src={astronautSvg}
+                      alt="Astronauta"
+                      className={`block w-full ${
+                        phase === "running"
+                          ? "opacity-0"
+                          : "drop-shadow-[0_0_12px_rgba(120,120,255,0.25)]"
+                      }`}
+                    />
+                    <img
+                      src={astronautFlyingPng}
+                      alt=""
+                      aria-hidden="true"
+                      className={`absolute inset-0 w-full ${
+                        phase === "running"
+                          ? "opacity-100 drop-shadow-[0_0_24px_rgba(255,80,80,0.55)]"
+                          : "opacity-0"
+                      }`}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
