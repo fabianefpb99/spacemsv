@@ -358,6 +358,15 @@ export function SpacemanGame() {
           transition: "opacity 250ms ease-out",
         }}
       />
+      {/* Red dark overlay after 15x */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: "radial-gradient(ellipse at 50% 65%, rgba(80,10,10,0.4) 0%, rgba(40,5,5,0.75) 45%, rgba(10,0,0,0.95) 90%)",
+          opacity: multiplier < 15 ? 0 : Math.min((multiplier - 15) / 5, 0.85),
+          transition: "opacity 400ms ease-out",
+        }}
+      />
       <Stars multiplier={multiplier} />
 
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-4 pt-4 sm:max-w-lg sm:px-4">
