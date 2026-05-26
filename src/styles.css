@@ -160,7 +160,7 @@
 }
 @keyframes flying {
   0%   { transform: translate(-50%, 0)    rotate(-10deg); }
-  100% { transform: translate(-30%, -4px) rotate(-10deg); }
+  100% { transform: translate(-20%, -4px) rotate(-10deg); }
 }
 @keyframes wobble {
   0%,100% { transform: translate(0, 0)   rotate(0deg); }
@@ -178,8 +178,8 @@
   100% { transform: translateY(160px); opacity: 0; }
 }
 @keyframes crash-launch {
-  0%   { transform: translate(-30%, -4px)   rotate(-10deg); opacity: 1; }
-  15%  { transform: translate(-28%, -2px)   rotate(-6deg);  opacity: 1; }
+  0%   { transform: translate(-20%, -4px)   rotate(-10deg); opacity: 1; }
+  15%  { transform: translate(-18%, -2px)   rotate(-6deg);  opacity: 1; }
   100% { transform: translate(60vw, -110vh) rotate(45deg);  opacity: 0; }
 }
 @keyframes flash-burst {
