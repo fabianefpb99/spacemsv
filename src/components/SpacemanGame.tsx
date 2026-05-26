@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Menu, Settings, Clock, ArrowRight, Minus, Plus } from "lucide-react";
 import bgImage from "@/assets/space-bg.png";
-import astronautIdlePng from "@/assets/astronaut-idle.png";
-import astronautFlyingSrc from "@/assets/astronaut-flying.svg";
+import astronautIdlePng from "@/assets/astronaut-idle.svg";
+import astronautFlyingSrc from "@/assets/astronaut-flying.png";
 
 type Phase = "betting" | "running" | "crashed";
 type HistoryItem = { id: number; value: number };
