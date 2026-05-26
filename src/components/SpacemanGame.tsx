@@ -305,7 +305,7 @@ export function SpacemanGame() {
 
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-4 pt-4 sm:max-w-lg sm:px-4">
         {/* Header */}
-        <header className="flex items-center justify-between bg-[#060210]/90 backdrop-blur-sm border-b border-purple-500/20 pb-3 px-3 -mx-3">
+        <header className="flex items-center justify-between bg-[#060210]/90 backdrop-blur-sm border-b border-purple-500/20 pt-3 pb-3 px-3 -mx-3 -mt-4">
           <button className="rounded-md p-2 text-white hover:bg-white/10">
             <Menu className="h-7 w-7" strokeWidth={3} />
           </button>
