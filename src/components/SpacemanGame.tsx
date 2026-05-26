@@ -3,6 +3,7 @@ import { Menu, Settings, Clock, ArrowRight, Minus, Plus, Volume2, VolumeX } from
 import bgImage from "@/assets/space-bg-full.png";
 import astronautIdlePng from "@/assets/astronaut-idle.svg";
 import astronautFlyingSrc from "@/assets/astronaut-flying.png";
+import meteorSrc from "@/assets/meteor.png";
 import { startAmbient, startFlight, stopFlight, setMuted as setAudioMuted, playCrashSound, playCashoutSound } from "@/lib/gameAudio";
 
 type Phase = "betting" | "running" | "crashed";
