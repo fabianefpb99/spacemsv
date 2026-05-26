@@ -30,6 +30,44 @@ const IDLE_MESSAGES = [
   "Hoy pagamos grande",
 ];
 
+const FLIGHT_MESSAGES_1_2X = [
+  "¡Boff!",
+  "¿Ya se bajaron? El viaje apenas comienza.",
+  "¡Abran paso!",
+  "Próxima parada: ¡El infinito!",
+  "Cruzo el cosmos sin frenos.",
+];
+const FLIGHT_MESSAGES_2_2X = [
+  "Dejé la Tierra atrás hace rato.",
+  "¡Boff! ¡Qué vista!",
+  "Esquivando satélites como si nada.",
+];
+const FLIGHT_MESSAGES_3_1X = [
+  "Aquí es donde los miedosos empiezan a sudar.",
+];
+const FLIGHT_MESSAGES_6X = [
+  "¡Esto va a estallar, pero en la cara de los que se bajaron!",
+  "Los cobardes cobran en 2x, ¡los reales seguimos aquí!",
+  "Te dije que no te bajaras.",
+];
+
+function getFlightTier(multiplier: number): 0 | 1 | 2 | 3 | 4 {
+  if (multiplier >= 6) return 4;
+  if (multiplier >= 3.1) return 3;
+  if (multiplier >= 2.2) return 2;
+  if (multiplier >= 1.2) return 1;
+  return 0;
+}
+
+function pickFlightMessage(tier: 1 | 2 | 3 | 4): string {
+  const pool =
+    tier === 4 ? FLIGHT_MESSAGES_6X
+    : tier === 3 ? FLIGHT_MESSAGES_3_1X
+    : tier === 2 ? FLIGHT_MESSAGES_2_2X
+    : FLIGHT_MESSAGES_1_2X;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
 function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
 }
