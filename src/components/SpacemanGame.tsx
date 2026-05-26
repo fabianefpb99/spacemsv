@@ -13,6 +13,17 @@ const QUICK_ADDS = [1000, 2000, 5000, 10000];
 const BETTING_MS = 5000;
 const CRASH_HOLD_MS = 2200;
 
+const IDLE_MESSAGES = [
+  "Esta vez iré más lejos",
+  "¿Tendrás el valor de esperar?",
+  "Hoy desayuné combustible premium",
+  "Si exploto, fue con estilo",
+  "Houston, tenemos ganancias",
+  "Hoy no pienso aterrizar",
+  "Esta salida se siente diferente",
+  "El miedo hace retirar temprano",
+];
+
 function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
 }
@@ -116,6 +127,17 @@ export function SpacemanGame() {
   const [cashedOutAt, setCashedOutAt] = useState<number | null>(null);
   const [lastWin, setLastWin] = useState<number | null>(null);
   const [online, setOnline] = useState(150);
+  const [messageIdx, setMessageIdx] = useState(() => Math.floor(Math.random() * IDLE_MESSAGES.length));
+
+  // Rotate idle messages during betting phase
+  useEffect(() => {
+    if (phase !== "betting") return;
+    setMessageIdx(Math.floor(Math.random() * IDLE_MESSAGES.length));
+    const id = setInterval(() => {
+      setMessageIdx((i) => (i + 1) % IDLE_MESSAGES.length);
+    }, 2200);
+    return () => clearInterval(id);
+  }, [phase]);
 
   const startRef = useRef<number>(0);
   const rafRef = useRef<number | null>(null);
@@ -300,6 +322,20 @@ export function SpacemanGame() {
 
             {/* Astronaut: reserves layout space, sprite floats in an isolated layer */}
             <div className="relative mt-4 h-56 w-full sm:h-72">
+              {/* Rotating idle message to the right of astronaut */}
+              <div
+                className={`pointer-events-none absolute top-1/2 -translate-y-1/2 left-[62%] right-1 sm:left-[60%] flex items-center transition-opacity duration-300 ${
+                  phase === "betting" ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                <p
+                  key={messageIdx}
+                  className="font-display text-sm sm:text-base font-bold italic leading-tight text-white/95 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] animate-[msg-in_.45s_ease-out]"
+                  style={{ textShadow: "0 0 12px rgba(180,140,255,0.55)" }}
+                >
+                  ¡{IDLE_MESSAGES[messageIdx]}!
+                </p>
+              </div>
               {/* Flash burst on crash */}
               {phase === "crashed" && (
                 <div
