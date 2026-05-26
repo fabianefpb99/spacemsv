@@ -436,7 +436,7 @@ export function SpacemanGame() {
             </div>
 
             {/* Astronaut: reserves layout space, sprite floats in an isolated layer */}
-            <div className="relative mt-2 h-48 w-full sm:h-60">
+            <div className="relative mt-2 h-44 w-full sm:h-56">
               {/* Rotating idle message to the right of astronaut */}
               <div
                 className={`pointer-events-none absolute top-1/2 -translate-y-1/2 left-[55%] right-3 sm:left-[52%] sm:right-6 flex items-center justify-start transition-opacity duration-300 ${
@@ -592,7 +592,7 @@ export function SpacemanGame() {
         </section>
 
         {/* Round status (fixed height to prevent layout shifts) */}
-        <div className="mt-2 px-1 h-[36px]">
+        <div className="mt-1.5 px-1 h-[34px]">
           <div className="flex h-5 items-center justify-between gap-3 text-xs sm:text-sm whitespace-nowrap">
             <div className="flex items-center gap-2 font-semibold min-w-0">
               <span
@@ -621,7 +621,7 @@ export function SpacemanGame() {
         </div>
 
         {/* Bet panel */}
-        <div className="mt-2 glass-panel rounded-xl p-2.5 sm:p-3">
+        <div className="mt-1.5 glass-panel rounded-xl p-2 sm:p-2.5">
           <div className="text-center text-[11px] uppercase tracking-[0.2em] text-purple-200/70">
             Apuesta (COP)
           </div>
@@ -652,11 +652,11 @@ export function SpacemanGame() {
               <Plus className="h-5 w-5" strokeWidth={3} />
             </button>
           </div>
-          <div className="mt-1.5 flex items-center justify-center gap-2">
+          <div className="mt-1 flex items-center justify-center gap-1.5">
             {QUICK_ADDS.map((amt) => (
-              <button
+            <button
                 key={amt}
-                className="btn-bet rounded-md px-3 py-1.5 text-xs font-bold"
+                className="btn-bet rounded-md px-2.5 py-1 text-[11px] font-bold"
                 onClick={() => addToBet(amt)}
                 disabled={!!activeBet}
               >
