@@ -22,6 +22,11 @@ const IDLE_MESSAGES = [
   "Hoy no pienso aterrizar",
   "Esta salida se siente diferente",
   "El miedo hace retirar temprano",
+  "Voy a romper mi récord",
+  "No pestañees esta ronda",
+  "No puedo prometer un aterrizaje seguro",
+  "¡Esta es la buena!",
+  "Hoy pagamos grande",
 ];
 
 function formatCOP(n: number) {
