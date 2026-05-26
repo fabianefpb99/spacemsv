@@ -445,22 +445,17 @@ export function SpacemanGame() {
           </button>
         </div>
 
-        {/* History */}
-        <div className="mt-3 glass-panel rounded-xl p-3">
-          <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-wider text-purple-200/80">
-            <Clock className="h-3.5 w-3.5" />
-            Últimos Resultados
-          </div>
-          <div className="flex gap-2 overflow-x-auto hide-scrollbar">
-            {history.map((h) => (
-              <div
-                key={h.id}
-                className={`shrink-0 rounded-md border px-3 py-1.5 font-display text-sm font-bold ${colorFor(h.value)}`}
-              >
-                {h.value.toFixed(2)}x
-              </div>
-            ))}
-          </div>
+        {/* History (compact) */}
+        <div className="mt-2 flex items-center gap-1.5 overflow-x-auto hide-scrollbar px-1">
+          <Clock className="h-3 w-3 shrink-0 text-purple-200/70" />
+          {history.map((h) => (
+            <div
+              key={h.id}
+              className={`shrink-0 rounded border px-1.5 py-0.5 font-display text-[10px] font-bold leading-none ${colorFor(h.value)}`}
+            >
+              {h.value.toFixed(2)}x
+            </div>
+          ))}
         </div>
       </div>
 
