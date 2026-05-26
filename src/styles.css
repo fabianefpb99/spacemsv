@@ -178,8 +178,8 @@
   100% { transform: translateY(160px); opacity: 0; }
 }
 @keyframes crash-launch {
-  0%   { transform: translate(-50%, 0)      rotate(-10deg); opacity: 1; }
-  15%  { transform: translate(-50%, 6px)    rotate(-6deg);  opacity: 1; }
+  0%   { transform: translate(-30%, -38%)   rotate(-10deg); opacity: 1; }
+  15%  { transform: translate(-28%, -36%)   rotate(-6deg);  opacity: 1; }
   100% { transform: translate(60vw, -110vh) rotate(45deg);  opacity: 0; }
 }
 @keyframes flash-burst {
