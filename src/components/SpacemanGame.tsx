@@ -236,6 +236,7 @@ export function SpacemanGame() {
     setPhase("crashed");
     setMultiplier(crashPointRef.current);
     setHistory((h) => [{ id: Date.now(), value: crashPointRef.current }, ...h].slice(0, 12));
+    playCrashSound();
     phaseTimer.current = setTimeout(() => {
       startBetting();
     }, CRASH_HOLD_MS);
