@@ -374,7 +374,7 @@ export function SpacemanGame() {
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-4 pt-4 sm:max-w-lg sm:px-4">
         {/* Header */}
         <header
-          className="flex items-center justify-between bg-[#060210]/90 backdrop-blur-sm border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
+          className="flex items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.75rem)" }}
         >
           <button className="rounded-md p-2 text-white hover:bg-white/10">
@@ -609,7 +609,7 @@ export function SpacemanGame() {
               {phase === "betting" ? `${countdown.toFixed(1)}s` : ""}
             </span>
           </div>
-          <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-purple-950/40 backdrop-blur-sm">
+          <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-purple-950/60">
             <div
               className="h-full rounded-full transition-[width]"
               style={{
