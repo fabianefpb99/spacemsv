@@ -219,7 +219,7 @@ export function SpacemanGame() {
   const [muted, setMuted] = useState(false);
   const [flightTier, setFlightTier] = useState<0 | 1 | 2 | 3 | 4>(0);
   const [flightMessage, setFlightMessage] = useState<string | null>(null);
-  const [meteors, setMeteors] = useState<{ id: number; threshold: number }[]>([]);
+  const [meteors, setMeteors] = useState<{ id: number; threshold: number; topPct: number }[]>([]);
   const meteorFiredRef = useRef<Set<number>>(new Set());
 
   // Background music (mp3) — starts on first user interaction (browsers require a gesture)
@@ -285,18 +285,22 @@ export function SpacemanGame() {
     }
   }, [multiplier, phase, flightTier, flightMessage]);
 
-  // Meteor passes at 3x, 5x and 10x — one shot each per round
+  // Meteor passes at 1.2x, 2x, 3x y luego cada 3x (6, 9, 12, ...) — uno por umbral por ronda
   useEffect(() => {
     if (phase !== "running") {
       if (meteorFiredRef.current.size > 0) meteorFiredRef.current = new Set();
       if (meteors.length > 0) setMeteors([]);
       return;
     }
-    for (const threshold of [3, 5, 10]) {
+    const thresholds: number[] = [1.2, 2, 3];
+    for (let t = 6; t <= Math.floor(multiplier) + 3; t += 3) thresholds.push(t);
+    for (const threshold of thresholds) {
       if (multiplier >= threshold && !meteorFiredRef.current.has(threshold)) {
         meteorFiredRef.current.add(threshold);
-        const id = Date.now() + threshold;
-        setMeteors((m) => [...m, { id, threshold }]);
+        const id = Date.now() + threshold * 1000;
+        // Variar posición vertical: entre 12% y 65% del alto de la escena
+        const topPct = 12 + Math.random() * 53;
+        setMeteors((m) => [...m, { id, threshold, topPct }]);
         setTimeout(() => {
           setMeteors((m) => m.filter((x) => x.id !== id));
         }, 2200);
@@ -508,13 +512,14 @@ export function SpacemanGame() {
       />
       <Stars multiplier={multiplier} phase={phase} />
 
-      {/* Meteoritos que cruzan la pantalla en 3x, 5x y 10x */}
+      {/* Meteoritos que cruzan la pantalla en 1.2x, 2x, 3x y luego cada 3x */}
       {meteors.map((m) => (
         <div
           key={m.id}
           aria-hidden
-          className="pointer-events-none absolute left-1/2 top-1/3 h-12 w-12 sm:h-16 sm:w-16"
+          className="pointer-events-none absolute left-1/2 h-12 w-12 sm:h-16 sm:w-16"
           style={{
+            top: `${m.topPct}%`,
             animation: "meteor-cross 2.2s linear forwards",
             zIndex: 0,
           }}
