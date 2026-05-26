@@ -239,6 +239,12 @@ export function playCrashSound() {
   osc.connect(oscGain).connect(masterGain);
   noiseSrc.connect(noiseFilter).connect(noiseGain).connect(masterGain);
 
+  osc.start(now);
+  osc.stop(now + 0.45);
+  noiseSrc.start(now);
+  noiseSrc.stop(now + 0.42);
+}
+
 // ---- Cash-out chime (soft gain sensation) ----
 
 export function playCashoutSound() {
@@ -251,7 +257,7 @@ export function playCashoutSound() {
   const freqs = [880, 1100];
   const delays = [0, 0.08];
   const durations = [0.55, 0.45];
-  const gains = [0.055, 0.045];
+  const noteGains = [0.055, 0.045];
 
   freqs.forEach((freq, i) => {
     const osc = c.createOscillator();
@@ -263,11 +269,12 @@ export function playCashoutSound() {
     vib.frequency.value = 5.5;
     const vibGain = c.createGain();
     vibGain.gain.value = 2.5;
-    vib.connect(vibGain).connect(osc.frequency);
+    vib.connect(vibGain);
+    vibGain.connect(osc.frequency);
 
     const g = c.createGain();
     g.gain.setValueAtTime(0, now + delays[i]);
-    g.gain.linearRampToValueAtTime(gains[i], now + delays[i] + 0.015);
+    g.gain.linearRampToValueAtTime(noteGains[i], now + delays[i] + 0.015);
     g.gain.exponentialRampToValueAtTime(0.0001, now + delays[i] + durations[i]);
 
     // Tiny high-shelf sparkle
@@ -302,10 +309,4 @@ export function playCashoutSound() {
   noiseSrc.connect(noiseFilter).connect(noiseGain).connect(masterGain);
   noiseSrc.start(now);
   noiseSrc.stop(now + 0.35);
-}
-
-  osc.start(now);
-  osc.stop(now + 0.45);
-  noiseSrc.start(now);
-  noiseSrc.stop(now + 0.42);
 }
