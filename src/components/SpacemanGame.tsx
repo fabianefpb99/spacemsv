@@ -43,15 +43,15 @@ function colorFor(mult: number) {
 // Crash distribution: heavily weighted toward early crashes
 function generateCrashPoint(): number {
   const r = Math.random();
-  // ~15% instant crashes at 1.00 - 1.03
-  if (r < 0.15) return +(1 + Math.random() * 0.03).toFixed(2);
+  // ~17% instant crashes at 1.00 - 1.03
+  if (r < 0.17) return +(1 + Math.random() * 0.03).toFixed(2);
   // ~62% low crashes 1.03 - 2.50
-  if (r < 0.77) return +(1.03 + Math.random() * 1.47).toFixed(2);
+  if (r < 0.79) return +(1.03 + Math.random() * 1.47).toFixed(2);
   // ~15% mid 2.50 - 7.50
-  if (r < 0.92) return +(2.5 + Math.random() * 5).toFixed(2);
-  // ~5% high 7.5 - 27
-  if (r < 0.97) return +(7.5 + Math.random() * 20).toFixed(2);
-  // ~3% jackpot 27 - 107
+  if (r < 0.94) return +(2.5 + Math.random() * 5).toFixed(2);
+  // ~4% high 7.5 - 27
+  if (r < 0.98) return +(7.5 + Math.random() * 20).toFixed(2);
+  // ~2% jackpot 27 - 107
   return +(27 + Math.random() * 80).toFixed(2);
 }
 
