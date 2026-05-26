@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Menu, Settings, Clock, ArrowRight, Minus, Plus } from "lucide-react";
 import bgImage from "@/assets/space-bg.png";
-import astronautSvg from "@/assets/astronaut-rocket.svg";
+import astronautIdlePng from "@/assets/astronaut-idle.png";
 import astronautFlyingPng from "@/assets/astronaut-flying.png";
 
 type Phase = "betting" | "running" | "crashed";
@@ -392,7 +392,7 @@ export function SpacemanGame() {
                   )}
                   <div className="relative w-full">
                     <img
-                      src={astronautSvg}
+                      src={astronautIdlePng}
                       alt="Astronauta"
                       className={`block w-full ${
                         phase === "running"
