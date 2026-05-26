@@ -359,6 +359,25 @@ export function SpacemanGame() {
     setMultiplier(crashPointRef.current);
     setHistory((h) => [{ id: Date.now(), value: crashPointRef.current }, ...h].slice(0, 12));
     playCrashSound();
+    // Duck background music during crash
+    const bg = bgAudioRef.current;
+    if (bg && !muted) {
+      const startVol = bg.volume;
+      bg.volume = 0.04;
+      window.setTimeout(() => {
+        if (!bgAudioRef.current) return;
+        const target = 0.18;
+        const steps = 20;
+        let i = 0;
+        const from = bgAudioRef.current.volume;
+        const iv = window.setInterval(() => {
+          i++;
+          if (!bgAudioRef.current) { window.clearInterval(iv); return; }
+          bgAudioRef.current.volume = from + (target - from) * (i / steps);
+          if (i >= steps) window.clearInterval(iv);
+        }, 60);
+      }, 1200);
+    }
     phaseTimer.current = setTimeout(() => {
       startBetting();
     }, CRASH_HOLD_MS);
