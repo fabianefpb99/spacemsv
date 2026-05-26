@@ -286,10 +286,10 @@ export function SpacemanGame() {
               </div>
             )}
 
-            {/* Astronaut */}
-            <div className="relative mt-4 h-56 w-full overflow-hidden sm:h-72">
+            {/* Astronaut: reserves layout space, sprite floats in an isolated layer */}
+            <div className="relative mt-4 h-56 w-full sm:h-72">
               <div
-                className="absolute left-1/2"
+                className="pointer-events-none absolute left-1/2 will-change-transform"
                 style={{
                   bottom: 0,
                   width: 200,
