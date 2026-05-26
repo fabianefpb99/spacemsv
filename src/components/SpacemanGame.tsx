@@ -324,7 +324,7 @@ export function SpacemanGame() {
             <div className="relative mt-4 h-56 w-full sm:h-72">
               {/* Rotating idle message to the right of astronaut */}
               <div
-                className={`pointer-events-none absolute top-1/2 -translate-y-1/2 left-[62%] right-1 sm:left-[60%] flex items-center justify-start transition-opacity duration-300 ${
+                className={`pointer-events-none absolute top-1/2 -translate-y-1/2 left-[55%] right-3 sm:left-[52%] sm:right-6 flex items-center justify-start transition-opacity duration-300 ${
                   phase === "betting" ? "opacity-100" : "opacity-0"
                 }`}
               >
