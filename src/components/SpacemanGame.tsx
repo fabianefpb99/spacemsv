@@ -418,7 +418,7 @@ export function SpacemanGame() {
           {/* Multiplier */}
           <div className="relative mt-4 flex flex-col items-center justify-center">
             <div
-              className={`font-display select-none text-6xl font-black sm:text-7xl md:text-8xl ${
+              className={`font-display select-none text-5xl font-black sm:text-6xl md:text-7xl ${
                 phase === "crashed" ? "neon-red animate-[crash-shake_.4s_ease-in-out]" : "neon-red"
               }`}
               style={{ transition: "transform .2s" }}
@@ -681,7 +681,7 @@ export function SpacemanGame() {
         </div>
 
         {/* History (compact) */}
-        <div className="mt-2 flex items-center gap-1.5 overflow-x-auto hide-scrollbar px-1">
+        <div className="mt-1.5 flex items-center gap-1.5 overflow-x-auto hide-scrollbar px-1">
           <Clock className="h-3 w-3 shrink-0 text-purple-200/70" />
           {history.map((h) => (
             <div
