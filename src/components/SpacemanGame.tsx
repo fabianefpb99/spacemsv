@@ -30,6 +30,44 @@ const IDLE_MESSAGES = [
   "Hoy pagamos grande",
 ];
 
+const FLIGHT_MESSAGES_1_2X = [
+  "¡Boff!",
+  "¿Ya se bajaron? El viaje apenas comienza.",
+  "¡Abran paso!",
+  "Próxima parada: ¡El infinito!",
+  "Cruzo el cosmos sin frenos.",
+];
+const FLIGHT_MESSAGES_2_2X = [
+  "Dejé la Tierra atrás hace rato.",
+  "¡Boff! ¡Qué vista!",
+  "Esquivando satélites como si nada.",
+];
+const FLIGHT_MESSAGES_3_1X = [
+  "Aquí es donde los miedosos empiezan a sudar.",
+];
+const FLIGHT_MESSAGES_6X = [
+  "¡Esto va a estallar, pero en la cara de los que se bajaron!",
+  "Los cobardes cobran en 2x, ¡los reales seguimos aquí!",
+  "Te dije que no te bajaras.",
+];
+
+function getFlightTier(multiplier: number): 0 | 1 | 2 | 3 | 4 {
+  if (multiplier >= 6) return 4;
+  if (multiplier >= 3.1) return 3;
+  if (multiplier >= 2.2) return 2;
+  if (multiplier >= 1.2) return 1;
+  return 0;
+}
+
+function pickFlightMessage(tier: 1 | 2 | 3 | 4): string {
+  const pool =
+    tier === 4 ? FLIGHT_MESSAGES_6X
+    : tier === 3 ? FLIGHT_MESSAGES_3_1X
+    : tier === 2 ? FLIGHT_MESSAGES_2_2X
+    : FLIGHT_MESSAGES_1_2X;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
 function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
 }
@@ -177,6 +215,8 @@ export function SpacemanGame() {
   const [online, setOnline] = useState(150);
   const [messageIdx, setMessageIdx] = useState(0);
   const [muted, setMuted] = useState(false);
+  const [flightTier, setFlightTier] = useState<0 | 1 | 2 | 3 | 4>(0);
+  const [flightMessage, setFlightMessage] = useState<string | null>(null);
 
   // Start ambient music on first user interaction (browsers require a gesture)
   useEffect(() => {
@@ -216,6 +256,22 @@ export function SpacemanGame() {
     }, 2500);
     return () => clearTimeout(id);
   }, [phase]);
+
+  // Flight messages: pick a new one each time the multiplier crosses a tier
+  useEffect(() => {
+    if (phase !== "running") {
+      if (flightTier !== 0 || flightMessage !== null) {
+        setFlightTier(0);
+        setFlightMessage(null);
+      }
+      return;
+    }
+    const tier = getFlightTier(multiplier);
+    if (tier !== flightTier) {
+      setFlightTier(tier);
+      setFlightMessage(tier === 0 ? null : pickFlightMessage(tier));
+    }
+  }, [multiplier, phase, flightTier, flightMessage]);
 
   const startRef = useRef<number>(0);
   const rafRef = useRef<number | null>(null);
@@ -489,6 +545,27 @@ export function SpacemanGame() {
                     {IDLE_MESSAGES[messageIdx]}
                   </p>
                 </div>
+              </div>
+              {/* Flight messages: appear during running phase, lower-right so they don't cover the rocket */}
+              <div
+                className={`pointer-events-none absolute bottom-2 sm:bottom-4 left-[55%] right-3 sm:left-[52%] sm:right-6 flex items-end justify-start transition-opacity duration-300 ${
+                  phase === "running" && flightMessage ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                {flightMessage && (
+                  <div key={`${flightTier}-${flightMessage}`} className="relative animate-[msg-in_.45s_ease-out]">
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute -inset-2 rounded-xl bg-fuchsia-500/20 blur-xl animate-[msg-pulse_2.2s_ease-in-out_infinite]"
+                    />
+                    <p
+                      className="relative font-display text-sm sm:text-base font-bold italic leading-tight text-white/95 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] animate-[msg-beat_2.2s_ease-in-out_infinite]"
+                      style={{ textShadow: "0 0 12px rgba(180,140,255,0.55)" }}
+                    >
+                      {flightMessage}
+                    </p>
+                  </div>
+                )}
               </div>
               {/* Flash burst on crash */}
               {phase === "crashed" && (
