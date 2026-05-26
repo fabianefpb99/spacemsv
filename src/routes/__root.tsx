@@ -72,14 +72,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Spaceman MSV" },
+      { name: "description", content: "Spaceman" },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Spaceman MSV" },
+      { property: "og:description", content: "Spaceman" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Spaceman MSV" },
+      { name: "twitter:description", content: "Spaceman" },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/03c33d11-af26-40ee-8bbe-62aecab06053/id-preview-c0e8cdcd--3e7b1e46-62a0-4b73-a211-f1299a4e2ab6.lovable.app-1779776980288.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/03c33d11-af26-40ee-8bbe-62aecab06053/id-preview-c0e8cdcd--3e7b1e46-62a0-4b73-a211-f1299a4e2ab6.lovable.app-1779776980288.png" },
     ],
     links: [
       {
