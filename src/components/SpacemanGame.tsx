@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { Menu, Settings, Clock, ArrowRight, Minus, Plus } from "lucide-react";
 import bgImage from "@/assets/space-bg.png";
 import astronautIdlePng from "@/assets/astronaut-idle.png";
-import astronautFlyingPng from "@/assets/astronaut-flying.png";
+import astronautFlyingSrc from "@/assets/astronaut-flying.svg";
 
 type Phase = "betting" | "running" | "crashed";
 type HistoryItem = { id: number; value: number };
@@ -401,7 +401,7 @@ export function SpacemanGame() {
                       }`}
                     />
                     <img
-                      src={astronautFlyingPng}
+                      src={astronautFlyingSrc}
                       alt=""
                       aria-hidden="true"
                       className={`absolute inset-0 w-full ${
