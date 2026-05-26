@@ -548,7 +548,7 @@ export function SpacemanGame() {
               </div>
               {/* Flight messages: appear during running phase, lower-right so they don't cover the rocket */}
               <div
-                className={`pointer-events-none absolute z-20 bottom-2 sm:bottom-4 left-[70%] right-1 sm:left-[68%] sm:right-2 flex items-end justify-start transition-opacity duration-300 ${
+                className={`pointer-events-none absolute z-20 bottom-2 sm:bottom-4 left-[65%] right-1 sm:left-[64%] sm:right-2 flex items-end justify-start transition-opacity duration-300 ${
                   phase === "running" && flightMessage ? "opacity-100" : "opacity-0"
                 }`}
               >
