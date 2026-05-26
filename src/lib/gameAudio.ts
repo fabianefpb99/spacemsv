@@ -147,19 +147,20 @@ export function startFlight() {
   flightSource.loop = true;
 
   flightFilter = c.createBiquadFilter();
-  flightFilter.type = "bandpass";
-  flightFilter.frequency.value = 600;
-  flightFilter.Q.value = 0.7;
+  flightFilter.type = "lowpass";
+  flightFilter.frequency.value = 420;
+  flightFilter.Q.value = 0.4;
 
   flightGain = c.createGain();
   flightGain.gain.value = 0;
-  flightGain.gain.linearRampToValueAtTime(0.18, c.currentTime + 0.6);
+  // Very soft "woooop" — slow fade-in
+  flightGain.gain.linearRampToValueAtTime(0.045, c.currentTime + 1.2);
 
   // LFO to gently sweep the filter -> "breathing" whoosh
   flightLfo = c.createOscillator();
-  flightLfo.frequency.value = 0.35;
+  flightLfo.frequency.value = 0.18;
   flightLfoGain = c.createGain();
-  flightLfoGain.gain.value = 380;
+  flightLfoGain.gain.value = 180;
   flightLfo.connect(flightLfoGain).connect(flightFilter.frequency);
 
   flightSource.connect(flightFilter).connect(flightGain).connect(masterGain!);
