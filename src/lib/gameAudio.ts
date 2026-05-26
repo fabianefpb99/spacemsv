@@ -249,7 +249,9 @@ export function playCrashSound() {
 
 export function playCashoutSound() {
   const c = getCtx();
-  if (!c || muted || !masterGain) return;
+  if (!c || muted) return;
+  const mg = masterGain;
+  if (!mg) return;
 
   const now = c.currentTime;
 
@@ -283,7 +285,7 @@ export function playCashoutSound() {
     shelf.frequency.value = 3000;
     shelf.gain.value = 6;
 
-    osc.connect(shelf).connect(g).connect(masterGain);
+    osc.connect(shelf).connect(g).connect(mg);
 
     osc.start(now + delays[i]);
     osc.stop(now + delays[i] + durations[i] + 0.05);
@@ -306,7 +308,7 @@ export function playCashoutSound() {
   noiseGain.gain.linearRampToValueAtTime(0.015, now + 0.02);
   noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
 
-  noiseSrc.connect(noiseFilter).connect(noiseGain).connect(masterGain);
+  noiseSrc.connect(noiseFilter).connect(noiseGain).connect(mg);
   noiseSrc.start(now);
   noiseSrc.stop(now + 0.35);
 }
