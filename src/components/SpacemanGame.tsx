@@ -338,13 +338,14 @@ export function SpacemanGame() {
         style={{
           backgroundColor:
             multiplier < 1.5
-              ? "rgba(80, 220, 140, 0.55)"   // verdoso
+              ? "rgba(30, 200, 120, 0.45)"   // verdoso
               : multiplier < 3
-                ? "rgba(70, 130, 240, 0.6)"  // azulado
+                ? "rgba(40, 110, 240, 0.5)"  // azulado
                 : multiplier < 6
-                  ? "rgba(230, 60, 60, 0.65)" // rojizo
-                  : "rgba(20, 0, 25, 0.9)",   // muy oscuro
-          mixBlendMode: "multiply",
+                  ? "rgba(230, 40, 40, 0.55)" // rojizo
+                  : "rgba(0, 0, 0, 0.85)",    // muy oscuro
+          // sin mix-blend-mode: overlay normal para que el tinte se vea
+          // también sobre las zonas negras del fondo.
           transition: "background-color 600ms ease-out",
         }}
       />
