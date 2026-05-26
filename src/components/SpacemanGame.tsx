@@ -345,7 +345,14 @@ export function SpacemanGame() {
 
   return (
     <div
+      ref={sceneRef}
       className="relative min-h-screen w-full overflow-hidden text-white"
+      style={{
+        ["--bg-shift" as string]: getBackgroundShift(multiplier),
+        ["--star-shift" as string]: getStarShift(multiplier),
+        ["--space-dark-opacity" as string]: getDarkOverlayOpacity(multiplier),
+        ["--space-red-opacity" as string]: getRedOverlayOpacity(multiplier),
+      }}
     >
       {/* Fondo único — inicia mostrando el planeta inferior. Al subir el
           multiplicador el fondo se desliza hacia abajo hasta máx. 40% de
@@ -358,9 +365,10 @@ export function SpacemanGame() {
           style={{
             width: "150vw",
             aspectRatio: "544 / 1920",
-            transform: `translate(-50%, ${Math.min(Math.max((multiplier - 1) / 9, 0), 1) * 40}%)`,
-            transition: phase === "running" ? "transform 220ms linear" : "transform 700ms ease-out",
+            transform: "translate3d(-50%, var(--bg-shift, 0%), 0)",
+            transition: phase === "running" ? "none" : "transform 700ms ease-out",
             willChange: "transform",
+            backfaceVisibility: "hidden",
           }}
         >
           <img
@@ -379,19 +387,8 @@ export function SpacemanGame() {
         style={{
           background:
             "radial-gradient(ellipse at 50% 65%, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.7) 45%, rgba(0,0,0,1) 90%)",
-          opacity:
-            multiplier <= 1
-              ? 0
-              : multiplier <= 2
-                ? ((multiplier - 1) / 1) * 0.35
-                : multiplier <= 4
-                  ? 0.35 + ((multiplier - 2) / 2) * 0.3
-                  : multiplier <= 6
-                    ? 0.65 + ((multiplier - 4) / 2) * 0.2
-                    : multiplier <= 10
-                      ? 0.85 + ((multiplier - 6) / 4) * 0.13
-                      : 0.98,
-          transition: "opacity 250ms ease-out",
+          opacity: "var(--space-dark-opacity, 0)",
+          transition: phase === "running" ? "none" : "opacity 250ms ease-out",
         }}
       />
       {/* Red dark overlay after 15x */}
@@ -399,11 +396,11 @@ export function SpacemanGame() {
         className="pointer-events-none absolute inset-0"
         style={{
           background: "radial-gradient(ellipse at 50% 65%, rgba(80,10,10,0.4) 0%, rgba(40,5,5,0.75) 45%, rgba(10,0,0,0.95) 90%)",
-          opacity: multiplier < 15 ? 0 : Math.min((multiplier - 15) / 5, 0.85),
-          transition: "opacity 400ms ease-out",
+          opacity: "var(--space-red-opacity, 0)",
+          transition: phase === "running" ? "none" : "opacity 400ms ease-out",
         }}
       />
-      <Stars multiplier={multiplier} />
+      <Stars multiplier={multiplier} phase={phase} />
 
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-4 pt-4 sm:max-w-lg sm:px-4">
         {/* Header */}
