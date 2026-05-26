@@ -160,10 +160,13 @@
 }
 @keyframes flying {
   0%   { transform: translate(-50%, 0)    rotate(-10deg); }
-  25%  { transform: translate(-49%, -2px) rotate(-11deg); }
-  50%  { transform: translate(-51%, 1px)  rotate(-9deg);  }
-  75%  { transform: translate(-50%, -1px) rotate(-10deg); }
-  100% { transform: translate(-50%, 0)    rotate(-10deg); }
+  100% { transform: translate(-30%, -38%) rotate(-10deg); }
+}
+@keyframes wobble {
+  0%,100% { transform: translate(0, 0)   rotate(0deg); }
+  25%     { transform: translate(1px, -3px) rotate(-1deg); }
+  50%     { transform: translate(-1px, 2px) rotate(1deg); }
+  75%     { transform: translate(2px, -2px) rotate(-0.5deg); }
 }
 @keyframes flame {
   0%, 100% { transform: scaleY(1)   scaleX(1);    opacity: 0.95; }
@@ -259,7 +262,8 @@
 }
 
 .astro-idle   { animation: idle-float 3.4s ease-in-out infinite; }
-.astro-flying { animation: flying 0.35s ease-in-out infinite, pulse-glow 2s ease-in-out infinite; }
+.astro-flying { animation: flying 0.9s cubic-bezier(.22,.61,.36,1) forwards, pulse-glow 2s ease-in-out infinite; }
+.astro-wobble { animation: wobble 0.45s ease-in-out infinite; }
 .astro-crash  { animation: crash-launch 1.2s cubic-bezier(.3,.0,.7,1) forwards; }
 
 .flame {
