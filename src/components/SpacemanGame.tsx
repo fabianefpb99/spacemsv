@@ -480,6 +480,21 @@ export function SpacemanGame() {
       />
       <Stars multiplier={multiplier} phase={phase} />
 
+      {/* Meteoritos que cruzan la pantalla en 3x, 5x y 10x */}
+      {meteors.map((m) => (
+        <img
+          key={m.id}
+          src={meteorSrc}
+          alt=""
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-1/3 z-10 h-16 w-16 sm:h-20 sm:w-20"
+          style={{
+            animation: "meteor-cross 2s linear forwards",
+            filter: "drop-shadow(0 0 12px rgba(255,140,40,0.7))",
+          }}
+        />
+      ))}
+
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-4 pt-4 sm:max-w-lg sm:px-4">
         {/* Header */}
         <header
