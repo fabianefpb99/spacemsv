@@ -376,7 +376,7 @@ export function SpacemanGame() {
           bgAudioRef.current.volume = from + (target - from) * (i / steps);
           if (i >= steps) window.clearInterval(iv);
         }, 60);
-      }, 1200);
+      }, 1800);
     }
     phaseTimer.current = setTimeout(() => {
       startBetting();
