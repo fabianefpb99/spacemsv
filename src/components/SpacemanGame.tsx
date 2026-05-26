@@ -195,11 +195,12 @@ export function SpacemanGame() {
       setActiveBet(bet);
       setBalance((b) => b - bet);
     } else if (phase === "running" && activeBet != null && cashedOutAt == null) {
-      // cash out
-      const win = activeBet * multiplier;
+      // cash out: devolver apuesta + ganancia neta = apuesta * multiplicador
+      const payout = activeBet * multiplier;
+      const profit = activeBet * (multiplier - 1);
       setCashedOutAt(multiplier);
-      setLastWin(win);
-      setBalance((b) => b + win);
+      setLastWin(profit);
+      setBalance((b) => b + payout);
     }
   };
 
@@ -212,7 +213,8 @@ export function SpacemanGame() {
   // ---- Render ----
   const buttonState = (() => {
     if (phase === "running" && activeBet != null && cashedOutAt == null) {
-      return { label: `RETIRAR  ${(activeBet * multiplier).toFixed(0)}`, cls: "btn-primary-red", disabled: false };
+      const profit = activeBet * (multiplier - 1);
+      return { label: `RETIRAR  +${formatCOP(profit)}`, cls: "btn-primary-red", disabled: false };
     }
     if (phase === "betting") {
       return { label: activeBet ? "APUESTA REGISTRADA" : "APOSTAR", cls: "btn-primary-green", disabled: !!activeBet || bet < MIN_BET || bet > balance };
