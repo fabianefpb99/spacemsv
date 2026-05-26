@@ -319,7 +319,7 @@ export function SpacemanGame() {
             {/* Reserved-height slot so the "Crash" label never pushes layout */}
             <div className="h-6 mt-2 flex items-center justify-center">
               {phase === "crashed" && (
-                <div className="font-display text-lg font-black uppercase tracking-widest text-rose-400 leading-none">
+                <div className="font-display text-lg font-black uppercase tracking-widest text-rose-400 leading-none animate-[crash-pop_.35s_ease-out]">
                   Crash
                 </div>
               )}
