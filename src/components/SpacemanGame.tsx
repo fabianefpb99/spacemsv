@@ -276,6 +276,25 @@ export function SpacemanGame() {
     }
   }, [multiplier, phase, flightTier, flightMessage]);
 
+  // Meteor passes at 3x, 5x and 10x — one shot each per round
+  useEffect(() => {
+    if (phase !== "running") {
+      if (meteorFiredRef.current.size > 0) meteorFiredRef.current = new Set();
+      if (meteors.length > 0) setMeteors([]);
+      return;
+    }
+    for (const threshold of [3, 5, 10]) {
+      if (multiplier >= threshold && !meteorFiredRef.current.has(threshold)) {
+        meteorFiredRef.current.add(threshold);
+        const id = Date.now() + threshold;
+        setMeteors((m) => [...m, { id, threshold }]);
+        setTimeout(() => {
+          setMeteors((m) => m.filter((x) => x.id !== id));
+        }, 2200);
+      }
+    }
+  }, [multiplier, phase, meteors.length]);
+
   const startRef = useRef<number>(0);
   const rafRef = useRef<number | null>(null);
   const phaseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
