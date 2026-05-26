@@ -292,15 +292,31 @@ export function SpacemanGame() {
   return (
     <div
       className="relative min-h-screen w-full overflow-hidden text-white"
-      style={{
-        backgroundImage: `url(${bgImage})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundAttachment: "fixed",
-      }}
     >
-      {/* dark overlay for legibility */}
+      {/* Parallax space background — scrolls down (camera ascends) as multiplier grows */}
+      <div
+        className="pointer-events-none fixed inset-0 -z-10"
+        style={{
+          backgroundImage: `url(${bgImage})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center bottom",
+          transform: `translateY(${Math.min((multiplier - 1) * 22, 600)}px) scale(${1 + Math.min((multiplier - 1) * 0.01, 0.25)})`,
+          transition: phase === "running" ? "transform 120ms linear" : "transform 600ms ease-out",
+          willChange: "transform",
+        }}
+      />
+      {/* Base legibility gradient */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#1a0833]/40 via-[#160730]/30 to-[#0d0420]/80" />
+      {/* Deep-space darkening — intensifies with multiplier for immersive ascent */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse at 50% 60%, rgba(0,0,0,0) 0%, rgba(2,0,10,0.5) 60%, rgba(0,0,0,0.95) 100%)",
+          opacity: Math.min((multiplier - 1) / 12, 0.85),
+          transition: "opacity 300ms ease-out",
+        }}
+      />
       <Stars />
 
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-4 pt-4 sm:max-w-lg sm:px-4">
