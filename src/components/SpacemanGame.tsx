@@ -318,7 +318,7 @@ export function SpacemanGame() {
           backgroundImage: `url(${bgImage})`,
           backgroundSize: "cover",
           backgroundPosition: "center bottom",
-          transform: `translateY(${Math.min(Math.max((multiplier - 1) / 0.5, 0), 1) * 70}px) scale(${1 + Math.min((multiplier - 1) * 0.008, 0.18)})`,
+          transform: `scale(${1 + Math.min((multiplier - 1) * 0.008, 0.18)})`,
           transformOrigin: "center bottom",
           transition: phase === "running" ? "transform 200ms linear" : "transform 600ms ease-out",
           willChange: "transform",
