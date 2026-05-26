@@ -681,7 +681,7 @@ export function SpacemanGame() {
         </div>
 
         {/* History (compact) */}
-        <div className="mt-1.5 flex items-center gap-1.5 overflow-x-auto hide-scrollbar px-1">
+        <div className="mt-1 flex items-center gap-1.5 overflow-x-auto hide-scrollbar px-1">
           <Clock className="h-3 w-3 shrink-0 text-purple-200/70" />
           {history.map((h) => (
             <div
