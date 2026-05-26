@@ -371,7 +371,7 @@ export function SpacemanGame() {
       />
       <Stars multiplier={multiplier} />
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-md flex-col px-3 pb-3 pt-3 sm:max-w-lg sm:px-4">
+      <div className="relative mx-auto flex min-h-screen w-full max-w-md flex-col px-3 pb-2 pt-2 sm:max-w-lg sm:px-4">
         {/* Header */}
         <header className="flex items-center justify-between bg-[#060210]/90 backdrop-blur-sm border-b border-purple-500/20 pt-2 pb-2 px-3 -mx-3 -mt-3">
           <button className="rounded-md p-2 text-white hover:bg-white/10">
