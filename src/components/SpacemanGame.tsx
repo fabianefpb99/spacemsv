@@ -9,7 +9,7 @@ type HistoryItem = { id: number; value: number };
 const MIN_BET = 500;
 const BET_STEP = 500;
 const QUICK_ADDS = [1000, 2000, 5000, 10000];
-const BETTING_MS = 4000;
+const BETTING_MS = 5000;
 const CRASH_HOLD_MS = 2200;
 
 function formatCOP(n: number) {
@@ -25,10 +25,16 @@ function colorFor(mult: number) {
 // Crash distribution: many low, some mid, rare high
 function generateCrashPoint(): number {
   const r = Math.random();
-  if (r < 0.45) return +(1 + Math.random() * 1.5).toFixed(2); // 1.00 - 2.50
-  if (r < 0.8) return +(2.5 + Math.random() * 5).toFixed(2); // 2.50 - 7.50
-  if (r < 0.97) return +(7.5 + Math.random() * 20).toFixed(2); // 7.5 - 27
-  return +(27 + Math.random() * 80).toFixed(2); // 27 - 107
+  // ~8% instant crashes at 1.00 - 1.03
+  if (r < 0.08) return +(1 + Math.random() * 0.03).toFixed(2);
+  // ~57% low crashes 1.03 - 2.50 (more probable early bust)
+  if (r < 0.65) return +(1.03 + Math.random() * 1.47).toFixed(2);
+  // ~22% mid 2.50 - 7.50
+  if (r < 0.87) return +(2.5 + Math.random() * 5).toFixed(2);
+  // ~11% high 7.5 - 27
+  if (r < 0.98) return +(7.5 + Math.random() * 20).toFixed(2);
+  // ~2% jackpot 27 - 107
+  return +(27 + Math.random() * 80).toFixed(2);
 }
 
 function Stars() {
