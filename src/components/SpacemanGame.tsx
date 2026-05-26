@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Menu, Settings, Clock, ArrowRight, Minus, Plus, Volume2, VolumeX } from "lucide-react";
 import bgImage from "@/assets/space-bg.png";
+import bgImageTop from "@/assets/space-bg-top.png";
 import astronautIdlePng from "@/assets/astronaut-idle.svg";
 import astronautFlyingSrc from "@/assets/astronaut-flying.png";
 import { startAmbient, startFlight, stopFlight, setMuted as setAudioMuted, playCrashSound, playCashoutSound } from "@/lib/gameAudio";
