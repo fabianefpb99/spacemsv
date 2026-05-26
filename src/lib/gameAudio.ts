@@ -201,7 +201,7 @@ export function isMuted() {
   return muted;
 }
 
-// ---- Crash thud (soft descending boom) ----
+// ---- Crash sound (cinematic emotional explosion) ----
 
 export function playCrashSound() {
   const c = getCtx();
@@ -209,40 +209,94 @@ export function playCrashSound() {
 
   const now = c.currentTime;
 
-  // Main thud: sine sweep down + slight overdrive via triangle
-  const osc = c.createOscillator();
-  osc.type = "triangle";
-  osc.frequency.setValueAtTime(180, now);
-  osc.frequency.exponentialRampToValueAtTime(45, now + 0.38);
+  // Layer 1 — Deep sub-bass impact (sine, fast punch then slow decay)
+  const subOsc = c.createOscillator();
+  subOsc.type = "sine";
+  subOsc.frequency.setValueAtTime(55, now);
+  subOsc.frequency.exponentialRampToValueAtTime(18, now + 0.55);
+  const subGain = c.createGain();
+  subGain.gain.setValueAtTime(0, now);
+  subGain.gain.linearRampToValueAtTime(0.35, now + 0.015);
+  subGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.9);
+  subOsc.connect(subGain).connect(masterGain);
+  subOsc.start(now);
+  subOsc.stop(now + 0.95);
 
-  const oscGain = c.createGain();
-  oscGain.gain.setValueAtTime(0, now);
-  oscGain.gain.linearRampToValueAtTime(0.18, now + 0.03);
-  oscGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.42);
+  // Layer 2 — Descending emotional drone (triangle + filter sweep)
+  const droneOsc = c.createOscillator();
+  droneOsc.type = "triangle";
+  droneOsc.frequency.setValueAtTime(220, now);
+  droneOsc.frequency.exponentialRampToValueAtTime(35, now + 0.65);
+  const droneFilter = c.createBiquadFilter();
+  droneFilter.type = "lowpass";
+  droneFilter.frequency.setValueAtTime(2500, now);
+  droneFilter.frequency.exponentialRampToValueAtTime(120, now + 0.7);
+  droneFilter.Q.value = 1.2;
+  const droneGain = c.createGain();
+  droneGain.gain.setValueAtTime(0, now);
+  droneGain.gain.linearRampToValueAtTime(0.16, now + 0.04);
+  droneGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.75);
+  droneOsc.connect(droneFilter).connect(droneGain).connect(masterGain);
+  droneOsc.start(now);
+  droneOsc.stop(now + 0.8);
 
-  // Soft filtered noise for texture
+  // Layer 3 — Soft noise texture (crumbling debris)
   const noiseBuf = makeNoiseBuffer(c);
   const noiseSrc = c.createBufferSource();
   noiseSrc.buffer = noiseBuf;
-
   const noiseFilter = c.createBiquadFilter();
   noiseFilter.type = "lowpass";
-  noiseFilter.frequency.setValueAtTime(600, now);
-  noiseFilter.frequency.exponentialRampToValueAtTime(80, now + 0.35);
-  noiseFilter.Q.value = 0.5;
-
+  noiseFilter.frequency.setValueAtTime(900, now);
+  noiseFilter.frequency.exponentialRampToValueAtTime(60, now + 0.5);
+  noiseFilter.Q.value = 0.6;
   const noiseGain = c.createGain();
   noiseGain.gain.setValueAtTime(0, now);
-  noiseGain.gain.linearRampToValueAtTime(0.06, now + 0.02);
-  noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.40);
-
-  osc.connect(oscGain).connect(masterGain);
+  noiseGain.gain.linearRampToValueAtTime(0.07, now + 0.025);
+  noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.55);
   noiseSrc.connect(noiseFilter).connect(noiseGain).connect(masterGain);
-
-  osc.start(now);
-  osc.stop(now + 0.45);
   noiseSrc.start(now);
-  noiseSrc.stop(now + 0.42);
+  noiseSrc.stop(now + 0.6);
+
+  // Layer 4 — Emotional shimmer / high metallic tail
+  const shimmerOsc = c.createOscillator();
+  shimmerOsc.type = "sine";
+  shimmerOsc.frequency.setValueAtTime(1200, now);
+  shimmerOsc.frequency.exponentialRampToValueAtTime(300, now + 0.45);
+  const shimmerFilter = c.createBiquadFilter();
+  shimmerFilter.type = "bandpass";
+  shimmerFilter.frequency.setValueAtTime(2000, now);
+  shimmerFilter.frequency.exponentialRampToValueAtTime(400, now + 0.5);
+  shimmerFilter.Q.value = 2.0;
+  const shimmerGain = c.createGain();
+  shimmerGain.gain.setValueAtTime(0, now + 0.06);
+  shimmerGain.gain.linearRampToValueAtTime(0.04, now + 0.1);
+  shimmerGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+  shimmerOsc.connect(shimmerFilter).connect(shimmerGain).connect(masterGain);
+  shimmerOsc.start(now + 0.06);
+  shimmerOsc.stop(now + 0.55);
+
+  // Layer 5 — Tiny reverb-like echo delay (simple feedback delay)
+  const delay = c.createDelay(0.4);
+  delay.delayTime.value = 0.18;
+  const delayGain = c.createGain();
+  delayGain.gain.value = 0.18;
+  const delayFeedback = c.createGain();
+  delayFeedback.gain.value = 0.25;
+  const echoOsc = c.createOscillator();
+  echoOsc.type = "sine";
+  echoOsc.frequency.setValueAtTime(90, now + 0.15);
+  echoOsc.frequency.exponentialRampToValueAtTime(28, now + 0.6);
+  const echoGain = c.createGain();
+  echoGain.gain.setValueAtTime(0, now + 0.15);
+  echoGain.gain.linearRampToValueAtTime(0.08, now + 0.18);
+  echoGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.65);
+
+  echoOsc.connect(echoGain).connect(delay).connect(masterGain);
+  echoGain.connect(delayGain).connect(delay).connect(masterGain);
+  delay.connect(delayFeedback).connect(delay);
+
+  echoOsc.start(now + 0.15);
+  echoOsc.stop(now + 0.7);
 }
 
 // ---- Cash-out chime (soft gain sensation) ----
