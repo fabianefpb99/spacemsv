@@ -394,20 +394,20 @@ export function SpacemanGame() {
                     <img
                       src={astronautIdlePng}
                       alt="Astronauta"
-                      className={`block w-full ${
+                      className={`block w-full transition-all duration-500 ease-out ${
                         phase === "running"
-                          ? "opacity-0"
-                          : "drop-shadow-[0_0_12px_rgba(120,120,255,0.25)]"
+                          ? "opacity-0 scale-90 blur-md -translate-y-2"
+                          : "opacity-100 scale-100 blur-0 translate-y-0 drop-shadow-[0_0_12px_rgba(120,120,255,0.25)]"
                       }`}
                     />
                     <img
                       src={astronautFlyingSrc}
                       alt=""
                       aria-hidden="true"
-                      className={`absolute inset-0 w-full ${
+                      className={`absolute inset-0 w-full transition-all duration-500 ease-out ${
                         phase === "running"
-                          ? "opacity-100 drop-shadow-[0_0_24px_rgba(255,80,80,0.55)]"
-                          : "opacity-0"
+                          ? "opacity-100 scale-100 blur-0 translate-y-0 drop-shadow-[0_0_24px_rgba(255,80,80,0.55)]"
+                          : "opacity-0 scale-110 blur-md translate-y-3"
                       }`}
                     />
                   </div>
