@@ -338,33 +338,47 @@ export function SpacemanGame() {
                   {phase === "running" && (
                     <>
                       <div
-                        className="absolute"
+                        className="pointer-events-none absolute"
                         style={{
-                          left: "55%",
-                          bottom: -34,
-                          width: 55,
-                          height: 100,
-                          transform: "translateX(-50%) rotate(8deg)",
+                          left: "34%",
+                          bottom: "10%",
+                          width: 54,
+                          height: 112,
+                          transform: "translate(-50%, 0) rotate(52deg)",
                           transformOrigin: "top center",
                         }}
                       >
                         <div
-                          className="flame h-full w-full rounded-full"
+                          className="flame absolute inset-0 rounded-full"
                           style={{
                             background:
-                              "radial-gradient(ellipse at 50% 20%, #fff6c8 0%, #ffd24a 20%, #ff7a1a 50%, #ff2a2a 75%, transparent 85%)",
-                            filter: "blur(2px)",
+                              "radial-gradient(ellipse at 50% 14%, rgba(255,249,210,0.98) 0%, rgba(255,216,98,0.95) 20%, rgba(255,130,32,0.88) 52%, rgba(255,56,32,0.55) 76%, transparent 88%)",
+                            filter: "blur(1.8px)",
                             transformOrigin: "top center",
                           }}
                         />
+                        <div
+                          className="absolute inset-x-[22%] top-0 h-[82%] rounded-full"
+                          style={{
+                            background:
+                              "linear-gradient(180deg, rgba(255,235,160,0.95) 0%, rgba(255,140,60,0.5) 55%, transparent 100%)",
+                            filter: "blur(8px)",
+                            opacity: 0.9,
+                          }}
+                        />
                       </div>
-                      {/* glow halo */}
                       <div
-                        className="pointer-events-none absolute inset-0"
+                        className="pointer-events-none absolute"
                         style={{
+                          left: "31%",
+                          bottom: "17%",
+                          width: 78,
+                          height: 78,
+                          transform: "translate(-50%, 0)",
                           background:
-                            "radial-gradient(circle at 55% 80%, rgba(255,80,80,0.45) 0%, transparent 55%)",
-                          filter: "blur(10px)",
+                            "radial-gradient(circle, rgba(255,216,98,0.45) 0%, rgba(255,92,36,0.28) 38%, transparent 72%)",
+                          filter: "blur(12px)",
+                          mixBlendMode: "screen",
                         }}
                       />
                     </>
