@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Menu, Settings, Rocket, Trophy, Gift, MessageCircle, Clock, ArrowRight } from "lucide-react";
+import { Menu, Settings, Clock, ArrowRight } from "lucide-react";
 import bgImage from "@/assets/space-bg.png";
 import astronautSvg from "@/assets/astronaut.svg";
 
@@ -31,21 +31,30 @@ function generateCrashPoint(): number {
 }
 
 function Stars() {
-  // a few twinkling stars + shooting stars
-  const stars = Array.from({ length: 40 }).map((_, i) => ({
-    id: i,
-    top: Math.random() * 80,
-    left: Math.random() * 100,
-    size: Math.random() * 2 + 1,
-    delay: Math.random() * 3,
-    dur: 2 + Math.random() * 3,
-  }));
-  const shooters = Array.from({ length: 3 }).map((_, i) => ({
-    id: i,
-    top: Math.random() * 40,
-    left: 50 + Math.random() * 50,
-    delay: i * 3 + Math.random() * 4,
-  }));
+  const [data, setData] = useState<{
+    stars: { id: number; top: number; left: number; size: number; delay: number; dur: number }[];
+    shooters: { id: number; top: number; left: number; delay: number }[];
+  } | null>(null);
+  useEffect(() => {
+    setData({
+      stars: Array.from({ length: 40 }).map((_, i) => ({
+        id: i,
+        top: Math.random() * 80,
+        left: Math.random() * 100,
+        size: Math.random() * 2 + 1,
+        delay: Math.random() * 3,
+        dur: 2 + Math.random() * 3,
+      })),
+      shooters: Array.from({ length: 3 }).map((_, i) => ({
+        id: i,
+        top: Math.random() * 40,
+        left: 50 + Math.random() * 50,
+        delay: i * 3 + Math.random() * 4,
+      })),
+    });
+  }, []);
+  if (!data) return <div className="pointer-events-none absolute inset-0 overflow-hidden" />;
+  const { stars, shooters } = data;
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {stars.map((s) => (
@@ -222,7 +231,7 @@ export function SpacemanGame() {
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#1a0833]/40 via-[#160730]/30 to-[#0d0420]/80" />
       <Stars />
 
-      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-4 pb-24 pt-4 sm:max-w-lg">
+      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-4 pt-4 sm:max-w-lg sm:px-4">
         {/* Header */}
         <header className="flex items-center justify-between border-b border-purple-500/20 pb-3">
           <button className="rounded-md p-2 text-rose-400 hover:bg-white/5">
@@ -376,60 +385,64 @@ export function SpacemanGame() {
         </div>
 
         {/* Bet panel */}
-        <div className="mt-3 glass-panel rounded-xl p-4">
-          <div className="text-center text-xs uppercase tracking-[0.2em] text-purple-200/70">
+        <div className="mt-3 glass-panel rounded-xl p-3 sm:p-4">
+          <div className="text-center text-[11px] uppercase tracking-[0.2em] text-purple-200/70">
             Apuesta (COP)
           </div>
-          <div className="mt-2 grid grid-cols-5 items-center gap-2">
-            <button
-              className="btn-bet rounded-lg py-2 text-sm font-semibold"
-              onClick={() => addToBet(QUICK_ADDS[0])}
-              disabled={!!activeBet}
-            >
-              +500
-            </button>
-            <button
-              className="btn-bet rounded-lg py-2 text-sm font-semibold"
-              onClick={() => addToBet(QUICK_ADDS[1])}
-              disabled={!!activeBet}
-            >
-              +1000
-            </button>
+          <div className="mt-2 flex items-center gap-2">
+            <div className="flex flex-col gap-1.5">
+              <button
+                className="btn-bet rounded-lg px-2 py-1.5 text-xs font-semibold"
+                onClick={() => addToBet(QUICK_ADDS[0])}
+                disabled={!!activeBet}
+              >
+                +500
+              </button>
+              <button
+                className="btn-bet rounded-lg px-2 py-1.5 text-xs font-semibold"
+                onClick={() => addToBet(QUICK_ADDS[1])}
+                disabled={!!activeBet}
+              >
+                +1000
+              </button>
+            </div>
             <input
               type="number"
               value={bet}
               min={MIN_BET}
               onChange={(e) => setBet(Math.max(0, parseInt(e.target.value || "0", 10)))}
               disabled={!!activeBet}
-              className="rounded-lg border border-purple-500/30 bg-black/40 px-2 py-2 text-center font-display text-xl font-bold text-white outline-none focus:border-purple-400/60 disabled:opacity-70"
+              className="min-w-0 flex-1 rounded-lg border border-purple-500/30 bg-black/40 px-2 py-3 text-center font-display text-2xl font-bold text-white outline-none focus:border-purple-400/60 disabled:opacity-70"
             />
-            <button
-              className="btn-bet rounded-lg py-2 text-sm font-semibold"
-              onClick={() => addToBet(QUICK_ADDS[2])}
-              disabled={!!activeBet}
-            >
-              +2500
-            </button>
-            <button
-              className="btn-bet rounded-lg py-2 text-sm font-semibold"
-              onClick={() => addToBet(QUICK_ADDS[3])}
-              disabled={!!activeBet}
-            >
-              +5000
-            </button>
+            <div className="flex flex-col gap-1.5">
+              <button
+                className="btn-bet rounded-lg px-2 py-1.5 text-xs font-semibold"
+                onClick={() => addToBet(QUICK_ADDS[2])}
+                disabled={!!activeBet}
+              >
+                +2500
+              </button>
+              <button
+                className="btn-bet rounded-lg px-2 py-1.5 text-xs font-semibold"
+                onClick={() => addToBet(QUICK_ADDS[3])}
+                disabled={!!activeBet}
+              >
+                +5000
+              </button>
+            </div>
           </div>
-          <div className="mt-2 text-center text-xs uppercase tracking-wider text-purple-200/60">
+          <div className="mt-2 text-center text-[11px] uppercase tracking-wider text-purple-200/60">
             Mínimo: {MIN_BET} COP
           </div>
 
           <button
             onClick={handleBetClick}
             disabled={buttonState.disabled}
-            className={`mt-3 flex w-full items-center justify-center gap-3 rounded-xl py-4 font-display text-xl font-black uppercase ${buttonState.cls} disabled:cursor-not-allowed`}
+            className={`mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-2.5 font-display text-base font-black uppercase sm:py-3 sm:text-lg ${buttonState.cls} disabled:cursor-not-allowed`}
           >
             <span>{buttonState.label}</span>
-            <span className="grid h-7 w-7 place-items-center rounded-full border-2 border-white/80">
-              <ArrowRight className="h-4 w-4" />
+            <span className="grid h-5 w-5 place-items-center rounded-full border-2 border-white/80">
+              <ArrowRight className="h-3 w-3" />
             </span>
           </button>
         </div>
@@ -453,35 +466,6 @@ export function SpacemanGame() {
         </div>
       </div>
 
-      {/* Bottom Nav */}
-      <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-purple-500/20 bg-[#0a0418]/85 backdrop-blur-lg">
-        <div className="mx-auto grid max-w-md grid-cols-4 sm:max-w-lg">
-          {[
-            { icon: Rocket, label: "Jugar", active: true },
-            { icon: Trophy, label: "Top" },
-            { icon: Gift, label: "Bonos" },
-            { icon: MessageCircle, label: "Chat" },
-          ].map((it) => (
-            <button
-              key={it.label}
-              className={`flex flex-col items-center gap-1 py-3 text-xs font-semibold uppercase tracking-wider ${
-                it.active ? "text-rose-400" : "text-purple-200/60"
-              }`}
-              style={
-                it.active
-                  ? {
-                      background:
-                        "linear-gradient(180deg, rgba(255,60,60,0.18), transparent)",
-                    }
-                  : undefined
-              }
-            >
-              <it.icon className={`h-5 w-5 ${it.active ? "drop-shadow-[0_0_8px_rgba(255,80,80,0.8)]" : ""}`} />
-              {it.label.toUpperCase()}
-            </button>
-          ))}
-        </div>
-      </nav>
     </div>
   );
 }
