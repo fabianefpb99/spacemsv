@@ -322,6 +322,20 @@ export function SpacemanGame() {
 
             {/* Astronaut: reserves layout space, sprite floats in an isolated layer */}
             <div className="relative mt-4 h-56 w-full sm:h-72">
+              {/* Rotating idle message to the right of astronaut */}
+              <div
+                className={`pointer-events-none absolute top-1/2 -translate-y-1/2 left-[62%] right-1 sm:left-[60%] flex items-center transition-opacity duration-300 ${
+                  phase === "betting" ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                <p
+                  key={messageIdx}
+                  className="font-display text-sm sm:text-base font-bold italic leading-tight text-white/95 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] animate-[msg-in_.45s_ease-out]"
+                  style={{ textShadow: "0 0 12px rgba(180,140,255,0.55)" }}
+                >
+                  ¡{IDLE_MESSAGES[messageIdx]}!
+                </p>
+              </div>
               {/* Flash burst on crash */}
               {phase === "crashed" && (
                 <div
