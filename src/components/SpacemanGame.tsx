@@ -340,11 +340,11 @@ export function SpacemanGame() {
                       <div
                         className="pointer-events-none absolute"
                         style={{
-                          left: "34%",
-                          bottom: "10%",
-                          width: 54,
-                          height: 112,
-                          transform: "translate(-50%, 0) rotate(52deg)",
+                          left: "28%",
+                          top: "69%",
+                          width: 50,
+                          height: 104,
+                          transform: "translate(-50%, 0) rotate(54deg)",
                           transformOrigin: "top center",
                         }}
                       >
@@ -370,11 +370,11 @@ export function SpacemanGame() {
                       <div
                         className="pointer-events-none absolute"
                         style={{
-                          left: "31%",
-                          bottom: "17%",
-                          width: 78,
-                          height: 78,
-                          transform: "translate(-50%, 0)",
+                          left: "25%",
+                          top: "73%",
+                          width: 72,
+                          height: 72,
+                          transform: "translate(-50%, -50%)",
                           background:
                             "radial-gradient(circle, rgba(255,216,98,0.45) 0%, rgba(255,92,36,0.28) 38%, transparent 72%)",
                           filter: "blur(12px)",
