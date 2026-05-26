@@ -3,7 +3,7 @@ import { Menu, Settings, Clock, ArrowRight, Minus, Plus, Volume2, VolumeX } from
 import bgImage from "@/assets/space-bg.png";
 import astronautIdlePng from "@/assets/astronaut-idle.svg";
 import astronautFlyingSrc from "@/assets/astronaut-flying.png";
-import { startAmbient, startFlight, stopFlight, setMuted as setAudioMuted, playCrashSound } from "@/lib/gameAudio";
+import { startAmbient, startFlight, stopFlight, setMuted as setAudioMuted, playCrashSound, playCashoutSound } from "@/lib/gameAudio";
 
 type Phase = "betting" | "running" | "crashed";
 type HistoryItem = { id: number; value: number };
@@ -264,6 +264,7 @@ export function SpacemanGame() {
       // cash out: devolver apuesta + ganancia neta = apuesta * multiplicador
       const payout = activeBet * multiplier;
       const profit = activeBet * (multiplier - 1);
+      playCashoutSound();
       setCashedOutAt(multiplier);
       setLastWin(profit);
       setBalance((b) => b + payout);

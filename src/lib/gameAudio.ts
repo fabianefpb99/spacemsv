@@ -244,3 +244,71 @@ export function playCrashSound() {
   noiseSrc.start(now);
   noiseSrc.stop(now + 0.42);
 }
+
+// ---- Cash-out chime (soft gain sensation) ----
+
+export function playCashoutSound() {
+  const c = getCtx();
+  if (!c || muted) return;
+  const mg = masterGain;
+  if (!mg) return;
+
+  const now = c.currentTime;
+
+  // Pleasant two-tone chime: A5 -> C#6 (major third up)
+  const freqs = [880, 1100];
+  const delays = [0, 0.08];
+  const durations = [0.55, 0.45];
+  const noteGains = [0.055, 0.045];
+
+  freqs.forEach((freq, i) => {
+    const osc = c.createOscillator();
+    osc.type = "sine";
+    osc.frequency.value = freq;
+
+    // Subtle vibrato for shimmer
+    const vib = c.createOscillator();
+    vib.frequency.value = 5.5;
+    const vibGain = c.createGain();
+    vibGain.gain.value = 2.5;
+    vib.connect(vibGain);
+    vibGain.connect(osc.frequency);
+
+    const g = c.createGain();
+    g.gain.setValueAtTime(0, now + delays[i]);
+    g.gain.linearRampToValueAtTime(noteGains[i], now + delays[i] + 0.015);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + delays[i] + durations[i]);
+
+    // Tiny high-shelf sparkle
+    const shelf = c.createBiquadFilter();
+    shelf.type = "highshelf";
+    shelf.frequency.value = 3000;
+    shelf.gain.value = 6;
+
+    osc.connect(shelf).connect(g).connect(mg);
+
+    osc.start(now + delays[i]);
+    osc.stop(now + delays[i] + durations[i] + 0.05);
+    vib.start(now + delays[i]);
+    vib.stop(now + delays[i] + durations[i]);
+  });
+
+  // Very soft filtered noise "sparkle" tail
+  const noiseBuf = makeNoiseBuffer(c);
+  const noiseSrc = c.createBufferSource();
+  noiseSrc.buffer = noiseBuf;
+
+  const noiseFilter = c.createBiquadFilter();
+  noiseFilter.type = "bandpass";
+  noiseFilter.frequency.value = 5000;
+  noiseFilter.Q.value = 1.2;
+
+  const noiseGain = c.createGain();
+  noiseGain.gain.setValueAtTime(0, now);
+  noiseGain.gain.linearRampToValueAtTime(0.015, now + 0.02);
+  noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+
+  noiseSrc.connect(noiseFilter).connect(noiseGain).connect(mg);
+  noiseSrc.start(now);
+  noiseSrc.stop(now + 0.35);
+}
