@@ -216,10 +216,14 @@
   100% { transform: scale(1); opacity: 1; }
 }
 @keyframes meteor-cross {
-  0% { transform: translate3d(60vw, -30vh, 0) rotate(0deg); opacity: 0; }
+  0% { transform: translate3d(60vw, -30vh, 0); opacity: 0; }
   10% { opacity: 1; }
   90% { opacity: 1; }
-  100% { transform: translate3d(-70vw, 70vh, 0) rotate(0deg); opacity: 0; }
+  100% { transform: translate3d(-70vw, 70vh, 0); opacity: 0; }
+}
+@keyframes meteor-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 
