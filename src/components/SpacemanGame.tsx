@@ -264,6 +264,7 @@ export function SpacemanGame() {
       // cash out: devolver apuesta + ganancia neta = apuesta * multiplicador
       const payout = activeBet * multiplier;
       const profit = activeBet * (multiplier - 1);
+      playCashoutSound();
       setCashedOutAt(multiplier);
       setLastWin(profit);
       setBalance((b) => b + payout);
