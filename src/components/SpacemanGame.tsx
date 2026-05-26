@@ -311,31 +311,41 @@ export function SpacemanGame() {
     <div
       className="relative min-h-screen w-full overflow-hidden text-white"
     >
-      {/* Parallax space background — scrolls down (camera ascends) as multiplier grows */}
+      {/* Fondo fijo — sólo escala suave; el ascenso lo simulan las estrellas */}
       <div
         className="pointer-events-none fixed inset-0 -z-10"
         style={{
           backgroundImage: `url(${bgImage})`,
           backgroundSize: "cover",
           backgroundPosition: "center bottom",
-          transform: `translateY(${Math.min((multiplier - 1) * 22, 600)}px) scale(${1 + Math.min((multiplier - 1) * 0.01, 0.25)})`,
-          transition: phase === "running" ? "transform 120ms linear" : "transform 600ms ease-out",
+          transform: `scale(${1 + Math.min((multiplier - 1) * 0.008, 0.18)})`,
+          transformOrigin: "center bottom",
+          transition: phase === "running" ? "transform 200ms linear" : "transform 600ms ease-out",
           willChange: "transform",
         }}
       />
       {/* Base legibility gradient */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#1a0833]/40 via-[#160730]/30 to-[#0d0420]/80" />
-      {/* Deep-space darkening — intensifies with multiplier for immersive ascent */}
+      {/* Deep-space darkening — escalones en 1x, 4x, 6x, 10x */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse at 50% 60%, rgba(0,0,0,0) 0%, rgba(2,0,10,0.5) 60%, rgba(0,0,0,0.95) 100%)",
-          opacity: Math.min((multiplier - 1) / 12, 0.85),
-          transition: "opacity 300ms ease-out",
+            "radial-gradient(ellipse at 50% 65%, rgba(0,0,0,0) 0%, rgba(2,0,12,0.55) 55%, rgba(0,0,0,1) 100%)",
+          opacity:
+            multiplier <= 1
+              ? 0
+              : multiplier <= 4
+                ? ((multiplier - 1) / 3) * 0.35
+                : multiplier <= 6
+                  ? 0.35 + ((multiplier - 4) / 2) * 0.3
+                  : multiplier <= 10
+                    ? 0.65 + ((multiplier - 6) / 4) * 0.3
+                    : 0.95,
+          transition: "opacity 400ms ease-out",
         }}
       />
-      <Stars />
+      <Stars multiplier={multiplier} />
 
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-4 pt-4 sm:max-w-lg sm:px-4">
         {/* Header */}
