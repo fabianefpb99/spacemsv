@@ -218,6 +218,8 @@ export function SpacemanGame() {
   const [muted, setMuted] = useState(false);
   const [flightTier, setFlightTier] = useState<0 | 1 | 2 | 3 | 4>(0);
   const [flightMessage, setFlightMessage] = useState<string | null>(null);
+  const [meteors, setMeteors] = useState<{ id: number; threshold: number }[]>([]);
+  const meteorFiredRef = useRef<Set<number>>(new Set());
 
   // Start ambient music on first user interaction (browsers require a gesture)
   useEffect(() => {
