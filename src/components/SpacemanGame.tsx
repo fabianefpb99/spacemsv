@@ -55,16 +55,16 @@ function generateCrashPoint(): number {
   return +(27 + Math.random() * 80).toFixed(2);
 }
 
-function Stars() {
+function Stars({ multiplier = 1 }: { multiplier?: number }) {
   const [data, setData] = useState<{
     stars: { id: number; top: number; left: number; size: number; delay: number; dur: number }[];
     shooters: { id: number; top: number; left: number; delay: number }[];
   } | null>(null);
   useEffect(() => {
     setData({
-      stars: Array.from({ length: 40 }).map((_, i) => ({
+      stars: Array.from({ length: 70 }).map((_, i) => ({
         id: i,
-        top: Math.random() * 80,
+        top: Math.random() * 100,
         left: Math.random() * 100,
         size: Math.random() * 2 + 1,
         delay: Math.random() * 3,
@@ -80,22 +80,40 @@ function Stars() {
   }, []);
   if (!data) return <div className="pointer-events-none absolute inset-0 overflow-hidden" />;
   const { stars, shooters } = data;
+  // Brightness / glow ramp with multiplier (estrellas más brillantes al subir)
+  const bright = Math.min(Math.max((multiplier - 1) / 9, 0), 1); // 0 at 1x → 1 at 10x+
+  const starOpacity = 0.75 + bright * 0.25;
+  const glow = 6 + bright * 14; // px
+  // Movimiento descendente de estrellas (simula ascenso). Cap a 10x.
+  const shift = Math.min(Math.max((multiplier - 1) * 7, 0), 90); // % de un layer 200vh
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {stars.map((s) => (
-        <div
-          key={s.id}
-          className="absolute rounded-full bg-white"
-          style={{
-            top: `${s.top}%`,
-            left: `${s.left}%`,
-            width: s.size,
-            height: s.size,
-            animation: `twinkle ${s.dur}s ease-in-out ${s.delay}s infinite`,
-            boxShadow: "0 0 6px rgba(255,255,255,0.9)",
-          }}
-        />
-      ))}
+      <div
+        className="absolute left-0 right-0"
+        style={{
+          top: "-100%",
+          height: "200%",
+          transform: `translateY(${shift}%)`,
+          transition: "transform 160ms linear",
+          willChange: "transform",
+        }}
+      >
+        {stars.map((s) => (
+          <div
+            key={s.id}
+            className="absolute rounded-full bg-white"
+            style={{
+              top: `${s.top}%`,
+              left: `${s.left}%`,
+              width: s.size + bright * 1.2,
+              height: s.size + bright * 1.2,
+              opacity: starOpacity,
+              animation: `twinkle ${s.dur}s ease-in-out ${s.delay}s infinite`,
+              boxShadow: `0 0 ${glow}px rgba(255,255,255,${0.85 + bright * 0.15})`,
+            }}
+          />
+        ))}
+      </div>
       {shooters.map((s) => (
         <div
           key={`sh-${s.id}`}
@@ -293,31 +311,41 @@ export function SpacemanGame() {
     <div
       className="relative min-h-screen w-full overflow-hidden text-white"
     >
-      {/* Parallax space background — scrolls down (camera ascends) as multiplier grows */}
+      {/* Fondo fijo — sólo escala suave; el ascenso lo simulan las estrellas */}
       <div
         className="pointer-events-none fixed inset-0 -z-10"
         style={{
           backgroundImage: `url(${bgImage})`,
           backgroundSize: "cover",
           backgroundPosition: "center bottom",
-          transform: `translateY(${Math.min((multiplier - 1) * 22, 600)}px) scale(${1 + Math.min((multiplier - 1) * 0.01, 0.25)})`,
-          transition: phase === "running" ? "transform 120ms linear" : "transform 600ms ease-out",
+          transform: `scale(${1 + Math.min((multiplier - 1) * 0.008, 0.18)})`,
+          transformOrigin: "center bottom",
+          transition: phase === "running" ? "transform 200ms linear" : "transform 600ms ease-out",
           willChange: "transform",
         }}
       />
       {/* Base legibility gradient */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#1a0833]/40 via-[#160730]/30 to-[#0d0420]/80" />
-      {/* Deep-space darkening — intensifies with multiplier for immersive ascent */}
+      {/* Deep-space darkening — escalones en 1x, 4x, 6x, 10x */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse at 50% 60%, rgba(0,0,0,0) 0%, rgba(2,0,10,0.5) 60%, rgba(0,0,0,0.95) 100%)",
-          opacity: Math.min((multiplier - 1) / 12, 0.85),
-          transition: "opacity 300ms ease-out",
+            "radial-gradient(ellipse at 50% 65%, rgba(0,0,0,0) 0%, rgba(2,0,12,0.55) 55%, rgba(0,0,0,1) 100%)",
+          opacity:
+            multiplier <= 1
+              ? 0
+              : multiplier <= 4
+                ? ((multiplier - 1) / 3) * 0.35
+                : multiplier <= 6
+                  ? 0.35 + ((multiplier - 4) / 2) * 0.3
+                  : multiplier <= 10
+                    ? 0.65 + ((multiplier - 6) / 4) * 0.3
+                    : 0.95,
+          transition: "opacity 400ms ease-out",
         }}
       />
-      <Stars />
+      <Stars multiplier={multiplier} />
 
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-4 pt-4 sm:max-w-lg sm:px-4">
         {/* Header */}
