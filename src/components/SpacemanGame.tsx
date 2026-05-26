@@ -55,16 +55,16 @@ function generateCrashPoint(): number {
   return +(27 + Math.random() * 80).toFixed(2);
 }
 
-function Stars() {
+function Stars({ multiplier = 1 }: { multiplier?: number }) {
   const [data, setData] = useState<{
     stars: { id: number; top: number; left: number; size: number; delay: number; dur: number }[];
     shooters: { id: number; top: number; left: number; delay: number }[];
   } | null>(null);
   useEffect(() => {
     setData({
-      stars: Array.from({ length: 40 }).map((_, i) => ({
+      stars: Array.from({ length: 70 }).map((_, i) => ({
         id: i,
-        top: Math.random() * 80,
+        top: Math.random() * 100,
         left: Math.random() * 100,
         size: Math.random() * 2 + 1,
         delay: Math.random() * 3,
@@ -80,22 +80,40 @@ function Stars() {
   }, []);
   if (!data) return <div className="pointer-events-none absolute inset-0 overflow-hidden" />;
   const { stars, shooters } = data;
+  // Brightness / glow ramp with multiplier (estrellas más brillantes al subir)
+  const bright = Math.min(Math.max((multiplier - 1) / 9, 0), 1); // 0 at 1x → 1 at 10x+
+  const starOpacity = 0.75 + bright * 0.25;
+  const glow = 6 + bright * 14; // px
+  // Movimiento descendente de estrellas (simula ascenso). Cap a 10x.
+  const shift = Math.min(Math.max((multiplier - 1) * 7, 0), 90); // % de un layer 200vh
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {stars.map((s) => (
-        <div
-          key={s.id}
-          className="absolute rounded-full bg-white"
-          style={{
-            top: `${s.top}%`,
-            left: `${s.left}%`,
-            width: s.size,
-            height: s.size,
-            animation: `twinkle ${s.dur}s ease-in-out ${s.delay}s infinite`,
-            boxShadow: "0 0 6px rgba(255,255,255,0.9)",
-          }}
-        />
-      ))}
+      <div
+        className="absolute left-0 right-0"
+        style={{
+          top: "-100%",
+          height: "200%",
+          transform: `translateY(${shift}%)`,
+          transition: "transform 160ms linear",
+          willChange: "transform",
+        }}
+      >
+        {stars.map((s) => (
+          <div
+            key={s.id}
+            className="absolute rounded-full bg-white"
+            style={{
+              top: `${s.top}%`,
+              left: `${s.left}%`,
+              width: s.size + bright * 1.2,
+              height: s.size + bright * 1.2,
+              opacity: starOpacity,
+              animation: `twinkle ${s.dur}s ease-in-out ${s.delay}s infinite`,
+              boxShadow: `0 0 ${glow}px rgba(255,255,255,${0.85 + bright * 0.15})`,
+            }}
+          />
+        ))}
+      </div>
       {shooters.map((s) => (
         <div
           key={`sh-${s.id}`}
