@@ -403,7 +403,7 @@ export function SpacemanGame() {
               onChange={(e) => setBet(Math.max(0, parseInt(e.target.value || "0", 10)))}
               disabled={!!activeBet}
               inputMode="numeric"
-              className="min-w-0 flex-1 rounded-lg border border-purple-500/30 bg-black/40 px-2 text-center font-display text-2xl font-bold text-white outline-none focus:border-purple-400/60 disabled:opacity-70 sm:text-3xl"
+              className="no-spinner min-w-0 flex-1 rounded-lg border border-purple-500/30 bg-black/40 px-2 text-center font-display text-2xl font-bold text-white outline-none focus:border-purple-400/60 disabled:opacity-70 sm:text-3xl"
             />
             <button
               className="btn-bet flex h-14 w-14 shrink-0 items-center justify-center rounded-lg text-2xl font-black sm:h-16 sm:w-16"
