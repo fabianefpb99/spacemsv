@@ -260,26 +260,6 @@ export function SpacemanGame() {
     rafRef.current = requestAnimationFrame(tick);
   }, []);
 
-  const startRunning = useCallback(() => {
-    setPhase("running");
-    startRef.current = performance.now();
-    const tick = () => {
-      const t = (performance.now() - startRef.current) / 1000;
-      // Exponential-ish growth, feels like crash games
-      const exactMultiplier = Math.pow(Math.E, 0.09 * t);
-      const shownMultiplier = +exactMultiplier.toFixed(2);
-      updateSceneVisuals(exactMultiplier);
-      setMultiplier(shownMultiplier);
-      // crash check
-      if (exactMultiplier >= crashPointRef.current) {
-        triggerCrash();
-        return;
-      }
-      rafRef.current = requestAnimationFrame(tick);
-    };
-    rafRef.current = requestAnimationFrame(tick);
-  }, [triggerCrash, updateSceneVisuals]);
-
   // keep crash point in ref so the rAF closure sees fresh value
   const crashPointRef = useRef(crashPoint);
   useEffect(() => {
@@ -296,6 +276,25 @@ export function SpacemanGame() {
       startBetting();
     }, CRASH_HOLD_MS);
   }, [startBetting]);
+
+  const startRunning = useCallback(() => {
+    setPhase("running");
+    startRef.current = performance.now();
+    const tick = () => {
+      const t = (performance.now() - startRef.current) / 1000;
+      // Exponential-ish growth, feels like crash games
+      const exactMultiplier = Math.pow(Math.E, 0.09 * t);
+      const shownMultiplier = +exactMultiplier.toFixed(2);
+      updateSceneVisuals(exactMultiplier);
+      setMultiplier(shownMultiplier);
+      if (exactMultiplier >= crashPointRef.current) {
+        triggerCrash();
+        return;
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+  }, [triggerCrash, updateSceneVisuals]);
 
   // bootstrap
   useEffect(() => {
