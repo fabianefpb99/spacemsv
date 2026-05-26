@@ -606,14 +606,14 @@ export function SpacemanGame() {
               {phase === "betting" ? `${countdown.toFixed(1)}s` : ""}
             </span>
           </div>
-          <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-purple-950/40 backdrop-blur-sm">
+          <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-purple-950/30 backdrop-blur-sm">
             <div
               className="h-full rounded-full transition-[width]"
               style={{
                 width: `${progressPct}%`,
                 background:
-                  "repeating-linear-gradient(45deg,#ff4d4d,#ff4d4d 10px,#c91f1f 10px,#c91f1f 20px)",
-                boxShadow: "0 0 16px rgba(255,80,80,0.55)",
+                  "repeating-linear-gradient(45deg,#ff4d4d,#ff4d4d 8px,#c91f1f 8px,#c91f1f 16px)",
+                boxShadow: "0 0 10px rgba(255,80,80,0.35)",
                 transitionDuration: phase === "betting" ? "100ms" : "0ms",
               }}
             />
