@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Menu, Settings, Clock, ArrowRight, Minus, Plus } from "lucide-react";
 import bgImage from "@/assets/space-bg.png";
-import astronautSvg from "@/assets/astronaut.svg";
+import astronautSvg from "@/assets/astronaut-rocket.svg";
 
 type Phase = "betting" | "running" | "crashed";
 type HistoryItem = { id: number; value: number };
@@ -292,47 +292,70 @@ export function SpacemanGame() {
             </div>
 
             {/* Astronaut: reserves layout space, sprite floats in an isolated layer */}
-            <div className="relative mt-4 h-56 w-full sm:h-72">
-              <div
-                className="pointer-events-none absolute left-1/2 will-change-transform"
-                style={{
-                  bottom: 0,
-                  width: 200,
-                  marginLeft: -100,
-                  animation:
-                    phase === "crashed"
-                      ? "fly-away 1.2s ease-in forwards"
-                      : "float-up 3.2s ease-in-out infinite",
-                }}
-              >
-                <div className="relative">
-                  {/* Flame */}
-                  <div
-                    className="flame absolute"
-                    style={{ left: 22, bottom: -8, width: 70, height: 90 }}
-                  >
+            <div className="relative mt-4 h-56 w-full overflow-hidden sm:h-72">
+              {/* Speed lines (only in running) */}
+              {phase === "running" && (
+                <div className="pointer-events-none absolute inset-0">
+                  {[...Array(8)].map((_, i) => (
                     <div
-                      className="h-full w-full rounded-full"
+                      key={i}
+                      className="absolute h-8 w-px bg-gradient-to-b from-transparent via-white/70 to-transparent"
                       style={{
-                        background:
-                          "radial-gradient(ellipse at 50% 20%, #fff6c8 0%, #ffd24a 20%, #ff7a1a 45%, #ff2a2a 70%, transparent 80%)",
-                        filter: "blur(2px)",
+                        left: `${15 + i * 10}%`,
+                        top: 0,
+                        animation: `speed-line ${0.5 + (i % 3) * 0.15}s linear ${i * 0.08}s infinite`,
+                        opacity: 0.6,
                       }}
                     />
-                  </div>
-                  {/* glow halo */}
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      background:
-                        "radial-gradient(circle at 50% 55%, rgba(255,80,80,0.45) 0%, transparent 60%)",
-                      filter: "blur(8px)",
-                    }}
-                  />
+                  ))}
+                </div>
+              )}
+              <div
+                className={`pointer-events-none absolute left-1/2 will-change-transform ${
+                  phase === "crashed"
+                    ? "astro-crash"
+                    : phase === "running"
+                      ? "astro-flying"
+                      : "astro-idle"
+                }`}
+                style={{ bottom: 0, width: 180, marginLeft: -90 }}
+              >
+                <div className="relative">
+                  {/* Flame (only in running) */}
+                  {phase === "running" && (
+                    <>
+                      <div
+                        className="flame absolute left-1/2"
+                        style={{ bottom: -22, width: 60, height: 90 }}
+                      >
+                        <div
+                          className="h-full w-full rounded-full"
+                          style={{
+                            background:
+                              "radial-gradient(ellipse at 50% 20%, #fff6c8 0%, #ffd24a 20%, #ff7a1a 50%, #ff2a2a 75%, transparent 85%)",
+                            filter: "blur(2px)",
+                          }}
+                        />
+                      </div>
+                      {/* glow halo */}
+                      <div
+                        className="pointer-events-none absolute inset-0"
+                        style={{
+                          background:
+                            "radial-gradient(circle at 50% 70%, rgba(255,80,80,0.5) 0%, transparent 60%)",
+                          filter: "blur(10px)",
+                        }}
+                      />
+                    </>
+                  )}
                   <img
                     src={astronautSvg}
                     alt="Astronauta"
-                    className="relative w-full drop-shadow-[0_0_24px_rgba(255,80,80,0.55)]"
+                    className={`relative w-full ${
+                      phase === "running"
+                        ? "drop-shadow-[0_0_24px_rgba(255,80,80,0.55)]"
+                        : "drop-shadow-[0_0_12px_rgba(120,120,255,0.25)]"
+                    }`}
                   />
                 </div>
               </div>
