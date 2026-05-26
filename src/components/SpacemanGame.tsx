@@ -55,7 +55,32 @@ function generateCrashPoint(): number {
   return +(27 + Math.random() * 80).toFixed(2);
 }
 
-function Stars({ multiplier = 1 }: { multiplier?: number }) {
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function getBackgroundShift(multiplier: number) {
+  return `${clamp((multiplier - 1) / 9, 0, 1) * 40}%`;
+}
+
+function getStarShift(multiplier: number) {
+  return `${clamp((multiplier - 1) * 7, 0, 90)}%`;
+}
+
+function getDarkOverlayOpacity(multiplier: number) {
+  if (multiplier <= 1) return 0;
+  if (multiplier <= 2) return ((multiplier - 1) / 1) * 0.35;
+  if (multiplier <= 4) return 0.35 + ((multiplier - 2) / 2) * 0.3;
+  if (multiplier <= 6) return 0.65 + ((multiplier - 4) / 2) * 0.2;
+  if (multiplier <= 10) return 0.85 + ((multiplier - 6) / 4) * 0.13;
+  return 0.98;
+}
+
+function getRedOverlayOpacity(multiplier: number) {
+  return multiplier < 15 ? 0 : Math.min((multiplier - 15) / 5, 0.85);
+}
+
+function Stars({ multiplier = 1, phase }: { multiplier?: number; phase: Phase }) {
   const [data, setData] = useState<{
     stars: { id: number; top: number; left: number; size: number; delay: number; dur: number }[];
     shooters: { id: number; top: number; left: number; delay: number }[];
@@ -81,11 +106,9 @@ function Stars({ multiplier = 1 }: { multiplier?: number }) {
   if (!data) return <div className="pointer-events-none absolute inset-0 overflow-hidden" />;
   const { stars, shooters } = data;
   // Brightness / glow ramp with multiplier (estrellas más brillantes al subir)
-  const bright = Math.min(Math.max((multiplier - 1) / 9, 0), 1); // 0 at 1x → 1 at 10x+
+  const bright = clamp((multiplier - 1) / 9, 0, 1); // 0 at 1x → 1 at 10x+
   const starOpacity = 0.75 + bright * 0.25;
   const glow = 6 + bright * 14; // px
-  // Movimiento descendente de estrellas (simula ascenso). Cap a 10x.
-  const shift = Math.min(Math.max((multiplier - 1) * 7, 0), 90); // % de un layer 200vh
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
       <div
@@ -93,9 +116,10 @@ function Stars({ multiplier = 1 }: { multiplier?: number }) {
         style={{
           top: "-100%",
           height: "200%",
-          transform: `translateY(${shift}%)`,
-          transition: "transform 160ms linear",
+          transform: "translate3d(0, var(--star-shift, 0%), 0)",
+          transition: phase === "running" ? "none" : "transform 600ms ease-out",
           willChange: "transform",
+          backfaceVisibility: "hidden",
         }}
       >
         {stars.map((s) => (
@@ -196,6 +220,21 @@ export function SpacemanGame() {
   const startRef = useRef<number>(0);
   const rafRef = useRef<number | null>(null);
   const phaseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sceneRef = useRef<HTMLDivElement | null>(null);
+
+  const updateSceneVisuals = useCallback((currentMultiplier: number) => {
+    const scene = sceneRef.current;
+    if (!scene) return;
+
+    scene.style.setProperty("--bg-shift", getBackgroundShift(currentMultiplier));
+    scene.style.setProperty("--star-shift", getStarShift(currentMultiplier));
+    scene.style.setProperty("--space-dark-opacity", `${getDarkOverlayOpacity(currentMultiplier)}`);
+    scene.style.setProperty("--space-red-opacity", `${getRedOverlayOpacity(currentMultiplier)}`);
+  }, []);
+
+  useEffect(() => {
+    if (phase !== "running") updateSceneVisuals(multiplier);
+  }, [multiplier, phase, updateSceneVisuals]);
 
   // ---- Game loop ----
   const startBetting = useCallback(() => {
@@ -221,28 +260,6 @@ export function SpacemanGame() {
     rafRef.current = requestAnimationFrame(tick);
   }, []);
 
-  const startRunning = useCallback(() => {
-    setPhase("running");
-    startRef.current = performance.now();
-    const tick = () => {
-      const t = (performance.now() - startRef.current) / 1000;
-      // Exponential-ish growth, feels like crash games
-      const m = +Math.pow(Math.E, 0.09 * t).toFixed(2);
-      setMultiplier((prev) => {
-        const next = m;
-        // crash check using crashPoint via state read in closure -> use ref
-        return next;
-      });
-      // crash check
-      if (m >= crashPointRef.current) {
-        triggerCrash();
-        return;
-      }
-      rafRef.current = requestAnimationFrame(tick);
-    };
-    rafRef.current = requestAnimationFrame(tick);
-  }, []);
-
   // keep crash point in ref so the rAF closure sees fresh value
   const crashPointRef = useRef(crashPoint);
   useEffect(() => {
@@ -259,6 +276,25 @@ export function SpacemanGame() {
       startBetting();
     }, CRASH_HOLD_MS);
   }, [startBetting]);
+
+  const startRunning = useCallback(() => {
+    setPhase("running");
+    startRef.current = performance.now();
+    const tick = () => {
+      const t = (performance.now() - startRef.current) / 1000;
+      // Exponential-ish growth, feels like crash games
+      const exactMultiplier = Math.pow(Math.E, 0.09 * t);
+      const shownMultiplier = +exactMultiplier.toFixed(2);
+      updateSceneVisuals(exactMultiplier);
+      setMultiplier(shownMultiplier);
+      if (exactMultiplier >= crashPointRef.current) {
+        triggerCrash();
+        return;
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+  }, [triggerCrash, updateSceneVisuals]);
 
   // bootstrap
   useEffect(() => {
@@ -309,7 +345,14 @@ export function SpacemanGame() {
 
   return (
     <div
+      ref={sceneRef}
       className="relative min-h-screen w-full overflow-hidden text-white"
+      style={{
+        ["--bg-shift" as string]: getBackgroundShift(multiplier),
+        ["--star-shift" as string]: getStarShift(multiplier),
+        ["--space-dark-opacity" as string]: getDarkOverlayOpacity(multiplier),
+        ["--space-red-opacity" as string]: getRedOverlayOpacity(multiplier),
+      }}
     >
       {/* Fondo único — inicia mostrando el planeta inferior. Al subir el
           multiplicador el fondo se desliza hacia abajo hasta máx. 40% de
@@ -322,9 +365,10 @@ export function SpacemanGame() {
           style={{
             width: "150vw",
             aspectRatio: "544 / 1920",
-            transform: `translate(-50%, ${Math.min(Math.max((multiplier - 1) / 9, 0), 1) * 40}%)`,
-            transition: phase === "running" ? "transform 220ms linear" : "transform 700ms ease-out",
+            transform: "translate3d(-50%, var(--bg-shift, 0%), 0)",
+            transition: phase === "running" ? "none" : "transform 700ms ease-out",
             willChange: "transform",
+            backfaceVisibility: "hidden",
           }}
         >
           <img
@@ -343,19 +387,8 @@ export function SpacemanGame() {
         style={{
           background:
             "radial-gradient(ellipse at 50% 65%, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.7) 45%, rgba(0,0,0,1) 90%)",
-          opacity:
-            multiplier <= 1
-              ? 0
-              : multiplier <= 2
-                ? ((multiplier - 1) / 1) * 0.35
-                : multiplier <= 4
-                  ? 0.35 + ((multiplier - 2) / 2) * 0.3
-                  : multiplier <= 6
-                    ? 0.65 + ((multiplier - 4) / 2) * 0.2
-                    : multiplier <= 10
-                      ? 0.85 + ((multiplier - 6) / 4) * 0.13
-                      : 0.98,
-          transition: "opacity 250ms ease-out",
+          opacity: "var(--space-dark-opacity, 0)",
+          transition: phase === "running" ? "none" : "opacity 250ms ease-out",
         }}
       />
       {/* Red dark overlay after 15x */}
@@ -363,11 +396,11 @@ export function SpacemanGame() {
         className="pointer-events-none absolute inset-0"
         style={{
           background: "radial-gradient(ellipse at 50% 65%, rgba(80,10,10,0.4) 0%, rgba(40,5,5,0.75) 45%, rgba(10,0,0,0.95) 90%)",
-          opacity: multiplier < 15 ? 0 : Math.min((multiplier - 15) / 5, 0.85),
-          transition: "opacity 400ms ease-out",
+          opacity: "var(--space-red-opacity, 0)",
+          transition: phase === "running" ? "none" : "opacity 400ms ease-out",
         }}
       />
-      <Stars multiplier={multiplier} />
+      <Stars multiplier={multiplier} phase={phase} />
 
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-4 pt-4 sm:max-w-lg sm:px-4">
         {/* Header */}
