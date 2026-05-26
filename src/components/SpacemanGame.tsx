@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Menu, Settings, Rocket, Trophy, Gift, MessageCircle, Clock, ArrowRight } from "lucide-react";
+import { Menu, Settings, Clock, ArrowRight } from "lucide-react";
 import bgImage from "@/assets/space-bg.png";
 import astronautSvg from "@/assets/astronaut.svg";
 
@@ -31,21 +31,30 @@ function generateCrashPoint(): number {
 }
 
 function Stars() {
-  // a few twinkling stars + shooting stars
-  const stars = Array.from({ length: 40 }).map((_, i) => ({
-    id: i,
-    top: Math.random() * 80,
-    left: Math.random() * 100,
-    size: Math.random() * 2 + 1,
-    delay: Math.random() * 3,
-    dur: 2 + Math.random() * 3,
-  }));
-  const shooters = Array.from({ length: 3 }).map((_, i) => ({
-    id: i,
-    top: Math.random() * 40,
-    left: 50 + Math.random() * 50,
-    delay: i * 3 + Math.random() * 4,
-  }));
+  const [data, setData] = useState<{
+    stars: { id: number; top: number; left: number; size: number; delay: number; dur: number }[];
+    shooters: { id: number; top: number; left: number; delay: number }[];
+  } | null>(null);
+  useEffect(() => {
+    setData({
+      stars: Array.from({ length: 40 }).map((_, i) => ({
+        id: i,
+        top: Math.random() * 80,
+        left: Math.random() * 100,
+        size: Math.random() * 2 + 1,
+        delay: Math.random() * 3,
+        dur: 2 + Math.random() * 3,
+      })),
+      shooters: Array.from({ length: 3 }).map((_, i) => ({
+        id: i,
+        top: Math.random() * 40,
+        left: 50 + Math.random() * 50,
+        delay: i * 3 + Math.random() * 4,
+      })),
+    });
+  }, []);
+  if (!data) return <div className="pointer-events-none absolute inset-0 overflow-hidden" />;
+  const { stars, shooters } = data;
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {stars.map((s) => (
