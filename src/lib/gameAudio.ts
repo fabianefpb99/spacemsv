@@ -26,7 +26,7 @@ function getCtx(): AudioContext | null {
     if (!AC) return null;
     ctx = new AC();
     masterGain = ctx.createGain();
-    masterGain.gain.value = muted ? 0 : 0.9;
+    masterGain.gain.value = muted ? 0 : 1.4;
     masterGain.connect(ctx.destination);
   }
   if (ctx.state === "suspended") ctx.resume().catch(() => {});
@@ -193,7 +193,7 @@ export function setMuted(m: boolean) {
   if (masterGain && ctx) {
     const t = ctx.currentTime;
     masterGain.gain.cancelScheduledValues(t);
-    masterGain.gain.linearRampToValueAtTime(m ? 0 : 0.9, t + 0.2);
+    masterGain.gain.linearRampToValueAtTime(m ? 0 : 1.4, t + 0.2);
   }
 }
 

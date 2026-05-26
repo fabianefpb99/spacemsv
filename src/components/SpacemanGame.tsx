@@ -227,7 +227,7 @@ export function SpacemanGame() {
   useEffect(() => {
     const audio = new Audio(bgMusicUrl);
     audio.loop = true;
-    audio.volume = 0.5;
+    audio.volume = 0.18;
     bgAudioRef.current = audio;
     const onFirst = () => {
       audio.play().catch(() => {});
