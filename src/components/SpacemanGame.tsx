@@ -436,7 +436,7 @@ export function SpacemanGame() {
             </div>
 
             {/* Astronaut: reserves layout space, sprite floats in an isolated layer */}
-            <div className="relative mt-2 h-44 w-full sm:h-56">
+            <div className="relative mt-2 h-48 w-full sm:h-60">
               {/* Rotating idle message to the right of astronaut */}
               <div
                 className={`pointer-events-none absolute top-1/2 -translate-y-1/2 left-[55%] right-3 sm:left-[52%] sm:right-6 flex items-center justify-start transition-opacity duration-300 ${
