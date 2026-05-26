@@ -44,13 +44,13 @@ function generateCrashPoint(): number {
   const r = Math.random();
   // ~15% instant crashes at 1.00 - 1.03
   if (r < 0.15) return +(1 + Math.random() * 0.03).toFixed(2);
-  // ~65% low crashes 1.03 - 2.50 (more probable early bust)
-  if (r < 0.80) return +(1.03 + Math.random() * 1.47).toFixed(2);
+  // ~62% low crashes 1.03 - 2.50
+  if (r < 0.77) return +(1.03 + Math.random() * 1.47).toFixed(2);
   // ~15% mid 2.50 - 7.50
-  if (r < 0.95) return +(2.5 + Math.random() * 5).toFixed(2);
-  // ~4% high 7.5 - 27
-  if (r < 0.99) return +(7.5 + Math.random() * 20).toFixed(2);
-  // ~1% jackpot 27 - 107
+  if (r < 0.92) return +(2.5 + Math.random() * 5).toFixed(2);
+  // ~5% high 7.5 - 27
+  if (r < 0.97) return +(7.5 + Math.random() * 20).toFixed(2);
+  // ~3% jackpot 27 - 107
   return +(27 + Math.random() * 80).toFixed(2);
 }
 
