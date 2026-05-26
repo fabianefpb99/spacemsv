@@ -55,7 +55,32 @@ function generateCrashPoint(): number {
   return +(27 + Math.random() * 80).toFixed(2);
 }
 
-function Stars({ multiplier = 1 }: { multiplier?: number }) {
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function getBackgroundShift(multiplier: number) {
+  return `${clamp((multiplier - 1) / 9, 0, 1) * 40}%`;
+}
+
+function getStarShift(multiplier: number) {
+  return `${clamp((multiplier - 1) * 7, 0, 90)}%`;
+}
+
+function getDarkOverlayOpacity(multiplier: number) {
+  if (multiplier <= 1) return 0;
+  if (multiplier <= 2) return ((multiplier - 1) / 1) * 0.35;
+  if (multiplier <= 4) return 0.35 + ((multiplier - 2) / 2) * 0.3;
+  if (multiplier <= 6) return 0.65 + ((multiplier - 4) / 2) * 0.2;
+  if (multiplier <= 10) return 0.85 + ((multiplier - 6) / 4) * 0.13;
+  return 0.98;
+}
+
+function getRedOverlayOpacity(multiplier: number) {
+  return multiplier < 15 ? 0 : Math.min((multiplier - 15) / 5, 0.85);
+}
+
+function Stars({ multiplier = 1, phase }: { multiplier?: number; phase: Phase }) {
   const [data, setData] = useState<{
     stars: { id: number; top: number; left: number; size: number; delay: number; dur: number }[];
     shooters: { id: number; top: number; left: number; delay: number }[];
@@ -81,11 +106,9 @@ function Stars({ multiplier = 1 }: { multiplier?: number }) {
   if (!data) return <div className="pointer-events-none absolute inset-0 overflow-hidden" />;
   const { stars, shooters } = data;
   // Brightness / glow ramp with multiplier (estrellas más brillantes al subir)
-  const bright = Math.min(Math.max((multiplier - 1) / 9, 0), 1); // 0 at 1x → 1 at 10x+
+  const bright = clamp((multiplier - 1) / 9, 0, 1); // 0 at 1x → 1 at 10x+
   const starOpacity = 0.75 + bright * 0.25;
   const glow = 6 + bright * 14; // px
-  // Movimiento descendente de estrellas (simula ascenso). Cap a 10x.
-  const shift = Math.min(Math.max((multiplier - 1) * 7, 0), 90); // % de un layer 200vh
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
       <div
@@ -93,9 +116,10 @@ function Stars({ multiplier = 1 }: { multiplier?: number }) {
         style={{
           top: "-100%",
           height: "200%",
-          transform: `translateY(${shift}%)`,
-          transition: "transform 160ms linear",
+          transform: "translate3d(0, var(--star-shift, 0%), 0)",
+          transition: phase === "running" ? "none" : "transform 600ms ease-out",
           willChange: "transform",
+          backfaceVisibility: "hidden",
         }}
       >
         {stars.map((s) => (
@@ -196,6 +220,21 @@ export function SpacemanGame() {
   const startRef = useRef<number>(0);
   const rafRef = useRef<number | null>(null);
   const phaseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sceneRef = useRef<HTMLDivElement | null>(null);
+
+  const updateSceneVisuals = useCallback((currentMultiplier: number) => {
+    const scene = sceneRef.current;
+    if (!scene) return;
+
+    scene.style.setProperty("--bg-shift", getBackgroundShift(currentMultiplier));
+    scene.style.setProperty("--star-shift", getStarShift(currentMultiplier));
+    scene.style.setProperty("--space-dark-opacity", `${getDarkOverlayOpacity(currentMultiplier)}`);
+    scene.style.setProperty("--space-red-opacity", `${getRedOverlayOpacity(currentMultiplier)}`);
+  }, []);
+
+  useEffect(() => {
+    if (phase !== "running") updateSceneVisuals(multiplier);
+  }, [multiplier, phase, updateSceneVisuals]);
 
   // ---- Game loop ----
   const startBetting = useCallback(() => {
@@ -227,21 +266,19 @@ export function SpacemanGame() {
     const tick = () => {
       const t = (performance.now() - startRef.current) / 1000;
       // Exponential-ish growth, feels like crash games
-      const m = +Math.pow(Math.E, 0.09 * t).toFixed(2);
-      setMultiplier((prev) => {
-        const next = m;
-        // crash check using crashPoint via state read in closure -> use ref
-        return next;
-      });
+      const exactMultiplier = Math.pow(Math.E, 0.09 * t);
+      const shownMultiplier = +exactMultiplier.toFixed(2);
+      updateSceneVisuals(exactMultiplier);
+      setMultiplier(shownMultiplier);
       // crash check
-      if (m >= crashPointRef.current) {
+      if (exactMultiplier >= crashPointRef.current) {
         triggerCrash();
         return;
       }
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
-  }, []);
+  }, [triggerCrash, updateSceneVisuals]);
 
   // keep crash point in ref so the rAF closure sees fresh value
   const crashPointRef = useRef(crashPoint);
