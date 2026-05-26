@@ -83,7 +83,9 @@ function colorFor(mult: number) {
 // Crash distribution: heavily weighted toward early crashes
 function generateCrashPoint(): number {
   const r = Math.random();
-  // ~17% instant crashes at 1.00 - 1.03
+  // ~2% super-instant crash at exactly 1.00
+  if (r < 0.02) return 1.0;
+  // ~15% instant crashes at 1.00 - 1.03
   if (r < 0.17) return +(1 + Math.random() * 0.03).toFixed(2);
   // ~62% low crashes 1.03 - 2.50
   if (r < 0.79) return +(1.03 + Math.random() * 1.47).toFixed(2);
