@@ -298,8 +298,8 @@ export function SpacemanGame() {
       if (multiplier >= threshold && !meteorFiredRef.current.has(threshold)) {
         meteorFiredRef.current.add(threshold);
         const id = Date.now() + threshold * 1000;
-        // Variar posición vertical: entre 12% y 65% del alto de la escena
-        const topPct = 12 + Math.random() * 53;
+        // Variar posición vertical: entre 25% y 38% del alto (un poco arriba del 1/3)
+        const topPct = 25 + Math.random() * 13;
         setMeteors((m) => [...m, { id, threshold, topPct }]);
         setTimeout(() => {
           setMeteors((m) => m.filter((x) => x.id !== id));
