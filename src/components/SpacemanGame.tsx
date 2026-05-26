@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Menu, Settings, Clock, ArrowRight, Minus, Plus, Volume2, VolumeX } from "lucide-react";
-import bgImage from "@/assets/space-bg.png";
-import bgImageTop from "@/assets/space-bg-top.png";
+import bgImage from "@/assets/space-bg-full.png";
 import astronautIdlePng from "@/assets/astronaut-idle.svg";
 import astronautFlyingSrc from "@/assets/astronaut-flying.png";
 import { startAmbient, startFlight, stopFlight, setMuted as setAudioMuted, playCrashSound, playCashoutSound } from "@/lib/gameAudio";
@@ -312,38 +311,24 @@ export function SpacemanGame() {
     <div
       className="relative min-h-screen w-full overflow-hidden text-white"
     >
-      {/* Fondo fijo — sólo escala suave; el ascenso lo simulan las estrellas */}
-      {/* Stacked space backgrounds: inverse (planet on top) sits above the original.
-          Both descend together as the multiplier rises, simulating ascent. */}
+      {/* Fondo único — inicia mostrando el planeta inferior; al subir el multiplicador
+          el fondo se desliza hacia abajo (hasta ~40% de su altura) haciendo
+          desaparecer el planeta de abajo y dejando ver el espacio superior. */}
       <div
-        className="pointer-events-none fixed inset-x-0 -z-10"
+        className="pointer-events-none fixed inset-x-0 bottom-0 -z-10 overflow-hidden"
         style={{
-          top: "-100vh",
-          height: "200vh",
-          transform: `translateY(${Math.min(Math.max((multiplier - 1) / 9, 0), 1) * 50}vh)`,
+          width: "100vw",
+          aspectRatio: "544 / 1920",
+          transform: `translateY(${Math.min(Math.max((multiplier - 1) / 9, 0), 1) * 40}%)`,
           transition: phase === "running" ? "transform 220ms linear" : "transform 700ms ease-out",
           willChange: "transform",
         }}
       >
-        {/* Top half: inverse image (planet at top of image) */}
-        <div
-          className="absolute inset-x-0 top-0"
-          style={{
-            height: "100vh",
-            backgroundImage: `url(${bgImageTop})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center top",
-          }}
-        />
-        {/* Bottom half: original image (planet at bottom) — what's visible at 1x */}
-        <div
-          className="absolute inset-x-0 bottom-0"
-          style={{
-            height: "100vh",
-            backgroundImage: `url(${bgImage})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center bottom",
-          }}
+        <img
+          src={bgImage}
+          alt=""
+          className="block h-full w-full object-cover"
+          draggable={false}
         />
       </div>
       {/* Base legibility gradient */}
