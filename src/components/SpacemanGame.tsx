@@ -592,7 +592,7 @@ export function SpacemanGame() {
         </section>
 
         {/* Round status (fixed height to prevent layout shifts) */}
-        <div className="mt-4 px-1 h-[42px]">
+        <div className="mt-2 px-1 h-[30px]">
           <div className="flex h-5 items-center justify-between gap-3 text-xs sm:text-sm whitespace-nowrap">
             <div className="flex items-center gap-2 font-semibold min-w-0">
               <span
@@ -606,7 +606,7 @@ export function SpacemanGame() {
               {phase === "betting" ? `${countdown.toFixed(1)}s` : ""}
             </span>
           </div>
-          <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-purple-950/40 backdrop-blur-sm">
+          <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-purple-950/40 backdrop-blur-sm">
             <div
               className="h-full rounded-full transition-[width]"
               style={{
@@ -671,7 +671,7 @@ export function SpacemanGame() {
           <button
             onClick={handleBetClick}
             disabled={buttonState.disabled}
-            className={`mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-3 font-display text-lg font-black uppercase sm:py-3.5 sm:text-xl ${buttonState.cls} disabled:cursor-not-allowed`}
+            className={`mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-2 font-display text-lg font-black uppercase sm:py-2.5 sm:text-xl ${buttonState.cls} disabled:cursor-not-allowed`}
           >
             <span>{buttonState.label}</span>
             <span className="grid h-5 w-5 place-items-center rounded-full border-2 border-white/80">
