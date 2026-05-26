@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Menu, Settings, Clock, ArrowRight } from "lucide-react";
+import { Menu, Settings, Clock, ArrowRight, Minus, Plus } from "lucide-react";
 import bgImage from "@/assets/space-bg.png";
 import astronautSvg from "@/assets/astronaut.svg";
 
@@ -7,7 +7,8 @@ type Phase = "betting" | "running" | "crashed";
 type HistoryItem = { id: number; value: number };
 
 const MIN_BET = 500;
-const QUICK_ADDS = [500, 1000, 2500, 5000];
+const BET_STEP = 500;
+const QUICK_ADDS = [1000, 5000];
 const BETTING_MS = 4000;
 const CRASH_HOLD_MS = 2200;
 
@@ -391,50 +392,47 @@ export function SpacemanGame() {
           <div className="text-center text-[11px] uppercase tracking-[0.2em] text-purple-200/70">
             Apuesta (COP)
           </div>
-          <div className="mt-2 flex items-center gap-2">
-            <div className="flex flex-col gap-2">
-              <button
-                className="btn-bet rounded-lg px-3 py-2.5 text-sm font-bold"
-                onClick={() => addToBet(QUICK_ADDS[0])}
-                disabled={!!activeBet}
-              >
-                +500
-              </button>
-              <button
-                className="btn-bet rounded-lg px-3 py-2.5 text-sm font-bold"
-                onClick={() => addToBet(QUICK_ADDS[1])}
-                disabled={!!activeBet}
-              >
-                +1000
-              </button>
-            </div>
+          <div className="mt-2 flex items-stretch gap-2">
+            <button
+              className="btn-bet flex h-14 w-14 shrink-0 items-center justify-center rounded-lg text-2xl font-black sm:h-16 sm:w-16"
+              onClick={() => setBet((b) => Math.max(MIN_BET, b - BET_STEP))}
+              disabled={!!activeBet}
+              aria-label="Restar 500"
+            >
+              <Minus className="h-6 w-6" strokeWidth={3} />
+            </button>
             <input
               type="number"
               value={bet}
               min={MIN_BET}
               onChange={(e) => setBet(Math.max(0, parseInt(e.target.value || "0", 10)))}
               disabled={!!activeBet}
-              className="min-w-0 flex-1 rounded-lg border border-purple-500/30 bg-black/40 px-2 py-2.5 text-center font-display text-xl font-bold text-white outline-none focus:border-purple-400/60 disabled:opacity-70 sm:py-3 sm:text-2xl"
+              inputMode="numeric"
+              className="min-w-0 flex-1 rounded-lg border border-purple-500/30 bg-black/40 px-2 text-center font-display text-2xl font-bold text-white outline-none focus:border-purple-400/60 disabled:opacity-70 sm:text-3xl"
             />
-            <div className="flex flex-col gap-2">
+            <button
+              className="btn-bet flex h-14 w-14 shrink-0 items-center justify-center rounded-lg text-2xl font-black sm:h-16 sm:w-16"
+              onClick={() => setBet((b) => Math.min(balance, b + BET_STEP))}
+              disabled={!!activeBet}
+              aria-label="Sumar 500"
+            >
+              <Plus className="h-6 w-6" strokeWidth={3} />
+            </button>
+          </div>
+          <div className="mt-2 flex items-center justify-center gap-2">
+            {QUICK_ADDS.map((amt) => (
               <button
-                className="btn-bet rounded-lg px-3 py-2.5 text-sm font-bold"
-                onClick={() => addToBet(QUICK_ADDS[2])}
+                key={amt}
+                className="btn-bet rounded-md px-3 py-1.5 text-xs font-bold"
+                onClick={() => addToBet(amt)}
                 disabled={!!activeBet}
               >
-                +2500
+                +{amt}
               </button>
-              <button
-                className="btn-bet rounded-lg px-3 py-2.5 text-sm font-bold"
-                onClick={() => addToBet(QUICK_ADDS[3])}
-                disabled={!!activeBet}
-              >
-                +5000
-              </button>
-            </div>
+            ))}
           </div>
           <div className="mt-2 text-center text-[11px] uppercase tracking-wider text-purple-200/60">
-            Mínimo: {MIN_BET} COP
+            Mínimo: {MIN_BET} COP · Paso: {BET_STEP}
           </div>
 
           <button
