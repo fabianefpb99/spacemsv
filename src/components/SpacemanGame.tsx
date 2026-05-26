@@ -4,7 +4,8 @@ import bgImage from "@/assets/space-bg-full.png";
 import astronautIdlePng from "@/assets/astronaut-idle.svg";
 import astronautFlyingSrc from "@/assets/astronaut-flying.png";
 import meteorSrc from "@/assets/asteroid.svg";
-import { startAmbient, startFlight, stopFlight, setMuted as setAudioMuted, playCrashSound, playCashoutSound } from "@/lib/gameAudio";
+import { startFlight, stopFlight, setMuted as setAudioMuted, playCrashSound, playCashoutSound } from "@/lib/gameAudio";
+import bgMusicUrl from "@/assets/bg-music.mp3";
 
 type Phase = "betting" | "running" | "crashed";
 type HistoryItem = { id: number; value: number };
@@ -221,10 +222,15 @@ export function SpacemanGame() {
   const [meteors, setMeteors] = useState<{ id: number; threshold: number }[]>([]);
   const meteorFiredRef = useRef<Set<number>>(new Set());
 
-  // Start ambient music on first user interaction (browsers require a gesture)
+  // Background music (mp3) — starts on first user interaction (browsers require a gesture)
+  const bgAudioRef = useRef<HTMLAudioElement | null>(null);
   useEffect(() => {
+    const audio = new Audio(bgMusicUrl);
+    audio.loop = true;
+    audio.volume = 0.5;
+    bgAudioRef.current = audio;
     const onFirst = () => {
-      startAmbient();
+      audio.play().catch(() => {});
       window.removeEventListener("pointerdown", onFirst);
       window.removeEventListener("keydown", onFirst);
     };
@@ -233,6 +239,8 @@ export function SpacemanGame() {
     return () => {
       window.removeEventListener("pointerdown", onFirst);
       window.removeEventListener("keydown", onFirst);
+      audio.pause();
+      bgAudioRef.current = null;
     };
   }, []);
 
@@ -246,6 +254,7 @@ export function SpacemanGame() {
     setMuted((m) => {
       const next = !m;
       setAudioMuted(next);
+      if (bgAudioRef.current) bgAudioRef.current.muted = next;
       return next;
     });
   };
