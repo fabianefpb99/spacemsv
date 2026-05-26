@@ -153,14 +153,32 @@
   10% { opacity: 1; }
   100% { transform: translate(-400px,300px) rotate(-35deg); opacity: 0; }
 }
-@keyframes float-up {
-  0% { transform: translate(-50%, 0) rotate(-8deg); }
-  50% { transform: translate(-50%, -14px) rotate(-6deg); }
-  100% { transform: translate(-50%, 0) rotate(-8deg); }
+@keyframes idle-float {
+  0%   { transform: translate(-50%, 0)   rotate(-2deg); }
+  50%  { transform: translate(-50%, -8px) rotate(2deg); }
+  100% { transform: translate(-50%, 0)   rotate(-2deg); }
+}
+@keyframes flying {
+  0%   { transform: translate(-50%, 0)    rotate(-10deg); }
+  25%  { transform: translate(-49%, -2px) rotate(-11deg); }
+  50%  { transform: translate(-51%, 1px)  rotate(-9deg);  }
+  75%  { transform: translate(-50%, -1px) rotate(-10deg); }
+  100% { transform: translate(-50%, 0)    rotate(-10deg); }
 }
 @keyframes flame {
-  0%, 100% { transform: scaleY(1) scaleX(1); opacity: 0.95; }
-  50% { transform: scaleY(1.25) scaleX(0.85); opacity: 0.7; }
+  0%, 100% { transform: translateX(-50%) scaleY(1)    scaleX(1);    opacity: 0.95; }
+  50%      { transform: translateX(-50%) scaleY(1.3)  scaleX(0.85); opacity: 0.7;  }
+}
+@keyframes speed-line {
+  0%   { transform: translateY(-40px); opacity: 0; }
+  20%  { opacity: 0.8; }
+  100% { transform: translateY(160px); opacity: 0; }
+}
+@keyframes crash-fall {
+  0%   { transform: translate(-50%, 0)     rotate(-10deg); opacity: 1; }
+  15%  { transform: translate(-48%, -4px)  rotate(-6deg);  opacity: 1; }
+  30%  { transform: translate(-52%, 2px)   rotate(-14deg); opacity: 1; }
+  100% { transform: translate(-50%, 120vh) rotate(40deg);  opacity: 0; }
 }
 @keyframes pulse-glow {
   0%, 100% { filter: drop-shadow(0 0 18px rgba(255,60,60,0.85)) drop-shadow(0 0 40px rgba(255,80,80,0.5)); }
@@ -173,10 +191,7 @@
   60% { transform: translate(-4px, -2px); }
   80% { transform: translate(4px, 2px); }
 }
-@keyframes fly-away {
-  0% { transform: translate(-50%, 0) rotate(-8deg); opacity: 1; }
-  100% { transform: translate(80vw, -80vh) rotate(35deg); opacity: 0; }
-}
+
 
 .font-display {
   font-family: 'Orbitron', 'Inter', system-ui, sans-serif;
@@ -239,12 +254,12 @@
   letter-spacing: 0.12em;
 }
 
-.rocket-wrap {
-  animation: float-up 3.2s ease-in-out infinite, pulse-glow 2.4s ease-in-out infinite;
-}
+.astro-idle   { animation: idle-float 3.4s ease-in-out infinite; }
+.astro-flying { animation: flying 0.35s ease-in-out infinite, pulse-glow 2s ease-in-out infinite; }
+.astro-crash  { animation: crash-fall 1.3s cubic-bezier(.4,.1,.7,1) forwards; }
 
 .flame {
-  animation: flame 0.18s ease-in-out infinite;
+  animation: flame 0.16s ease-in-out infinite;
   transform-origin: top center;
 }
 
