@@ -318,7 +318,7 @@ export function SpacemanGame() {
           backgroundImage: `url(${bgImage})`,
           backgroundSize: "cover",
           backgroundPosition: "center bottom",
-          transform: `scale(${1 + Math.min((multiplier - 1) * 0.008, 0.18)})`,
+          transform: `translateY(${Math.min(Math.max((multiplier - 1) / 0.5, 0), 1) * 70}px) scale(${1 + Math.min((multiplier - 1) * 0.008, 0.18)})`,
           transformOrigin: "center bottom",
           transition: phase === "running" ? "transform 200ms linear" : "transform 600ms ease-out",
           willChange: "transform",
@@ -326,23 +326,25 @@ export function SpacemanGame() {
       />
       {/* Base legibility gradient */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#1a0833]/40 via-[#160730]/30 to-[#0d0420]/80" />
-      {/* Deep-space darkening — escalones en 1x, 4x, 6x, 10x */}
+      {/* Deep-space darkening — negro puro, más agresivo y temprano */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse at 50% 65%, rgba(0,0,0,0) 0%, rgba(2,0,12,0.55) 55%, rgba(0,0,0,1) 100%)",
+            "radial-gradient(ellipse at 50% 65%, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.7) 45%, rgba(0,0,0,1) 90%)",
           opacity:
             multiplier <= 1
               ? 0
-              : multiplier <= 4
-                ? ((multiplier - 1) / 3) * 0.35
-                : multiplier <= 6
-                  ? 0.35 + ((multiplier - 4) / 2) * 0.3
-                  : multiplier <= 10
-                    ? 0.65 + ((multiplier - 6) / 4) * 0.3
-                    : 0.95,
-          transition: "opacity 400ms ease-out",
+              : multiplier <= 2
+                ? ((multiplier - 1) / 1) * 0.35
+                : multiplier <= 4
+                  ? 0.35 + ((multiplier - 2) / 2) * 0.3
+                  : multiplier <= 6
+                    ? 0.65 + ((multiplier - 4) / 2) * 0.2
+                    : multiplier <= 10
+                      ? 0.85 + ((multiplier - 6) / 4) * 0.13
+                      : 0.98,
+          transition: "opacity 250ms ease-out",
         }}
       />
       <Stars multiplier={multiplier} />
