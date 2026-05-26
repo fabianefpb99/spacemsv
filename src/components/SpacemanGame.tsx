@@ -333,7 +333,7 @@ export function SpacemanGame() {
                 }`}
                 style={{ bottom: 0, width: 180, marginLeft: -90 }}
               >
-                <div className="relative">
+                <div className={`relative ${phase === "running" ? "astro-wobble" : ""}`}>
                   {/* Flame (only in running) */}
                   {phase === "running" && (
                     <>
