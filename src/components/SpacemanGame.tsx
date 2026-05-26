@@ -311,45 +311,30 @@ export function SpacemanGame() {
     <div
       className="relative min-h-screen w-full overflow-hidden text-white"
     >
-      {/* Fondo único — inicia mostrando el planeta inferior; al subir el multiplicador
-          el fondo se desliza hacia abajo (hasta ~40% de su altura) haciendo
-          desaparecer el planeta de abajo y dejando ver el espacio superior. */}
-      <div
-        className="pointer-events-none fixed inset-x-0 bottom-0 -z-10 overflow-hidden"
-        style={{
-          width: "100vw",
-          aspectRatio: "544 / 1920",
-          transform: `translateY(${Math.min(Math.max((multiplier - 1) / 9, 0), 1) * 40}%)`,
-          transition: phase === "running" ? "transform 220ms linear" : "transform 700ms ease-out",
-          willChange: "transform",
-        }}
-      >
-        <img
-          src={bgImage}
-          alt=""
-          className="block h-full w-full object-cover"
-          draggable={false}
-        />
+      {/* Fondo único — inicia mostrando el planeta inferior. Al subir el
+          multiplicador el fondo se desliza hacia abajo hasta máx. 40% de
+          su altura, sin llegar a mostrar el planeta superior. Se escala el
+          ancho a 150vw para que la imagen sea más alta que el viewport y
+          el desplazamiento de 40% mantenga el planeta de arriba oculto. */}
+      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+        <div
+          className="absolute bottom-0 left-1/2"
+          style={{
+            width: "150vw",
+            aspectRatio: "544 / 1920",
+            transform: `translate(-50%, ${Math.min(Math.max((multiplier - 1) / 9, 0), 1) * 40}%)`,
+            transition: phase === "running" ? "transform 220ms linear" : "transform 700ms ease-out",
+            willChange: "transform",
+          }}
+        >
+          <img
+            src={bgImage}
+            alt=""
+            className="block h-full w-full object-cover"
+            draggable={false}
+          />
+        </div>
       </div>
-      {/* Tinte de color por multiplicador (verde → azul → rojo → oscuro).
-          Usa mix-blend-mode: multiply para teñir la imagen de fondo. */}
-      <div
-        className="pointer-events-none fixed inset-0 -z-[5]"
-        style={{
-          backgroundColor:
-            multiplier < 1.5
-              ? "rgb(20, 140, 70)"   // verdoso
-              : multiplier < 3
-                ? "rgb(20, 70, 180)"   // azulado
-                : multiplier < 6
-                  ? "rgb(170, 25, 25)"   // rojizo
-                  : "rgb(5, 0, 8)",      // muy oscuro
-          // "screen" funciona como inversa de Multiply: tiñe las zonas
-          // oscuras (negro → color) y mantiene los detalles claros.
-          mixBlendMode: "screen",
-          transition: "background-color 600ms ease-out",
-        }}
-      />
       {/* Base legibility gradient */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#1a0833]/40 via-[#160730]/30 to-[#0d0420]/80" />
       {/* Deep-space darkening — negro puro, más agresivo y temprano */}
