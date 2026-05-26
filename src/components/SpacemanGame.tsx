@@ -287,7 +287,7 @@ export function SpacemanGame() {
             )}
 
             {/* Astronaut */}
-            <div className="relative mt-4 h-56 w-full sm:h-72">
+            <div className="relative mt-4 h-56 w-full overflow-hidden sm:h-72">
               <div
                 className="absolute left-1/2"
                 style={{
