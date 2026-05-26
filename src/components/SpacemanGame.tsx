@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Menu, Settings, Clock, ArrowRight, Minus, Plus } from "lucide-react";
+import { Menu, Settings, Clock, ArrowRight, Minus, Plus, Volume2, VolumeX } from "lucide-react";
 import bgImage from "@/assets/space-bg.png";
 import astronautIdlePng from "@/assets/astronaut-idle.svg";
 import astronautFlyingSrc from "@/assets/astronaut-flying.png";
+import { startAmbient, startFlight, stopFlight, setMuted as setAudioMuted } from "@/lib/gameAudio";
 
 type Phase = "betting" | "running" | "crashed";
 type HistoryItem = { id: number; value: number };
@@ -133,6 +134,36 @@ export function SpacemanGame() {
   const [lastWin, setLastWin] = useState<number | null>(null);
   const [online, setOnline] = useState(150);
   const [messageIdx, setMessageIdx] = useState(0);
+  const [muted, setMuted] = useState(false);
+
+  // Start ambient music on first user interaction (browsers require a gesture)
+  useEffect(() => {
+    const onFirst = () => {
+      startAmbient();
+      window.removeEventListener("pointerdown", onFirst);
+      window.removeEventListener("keydown", onFirst);
+    };
+    window.addEventListener("pointerdown", onFirst);
+    window.addEventListener("keydown", onFirst);
+    return () => {
+      window.removeEventListener("pointerdown", onFirst);
+      window.removeEventListener("keydown", onFirst);
+    };
+  }, []);
+
+  // Flight whoosh while running
+  useEffect(() => {
+    if (phase === "running") startFlight();
+    else stopFlight();
+  }, [phase]);
+
+  const toggleMute = () => {
+    setMuted((m) => {
+      const next = !m;
+      setAudioMuted(next);
+      return next;
+    });
+  };
 
   // Show up to 2 idle messages per betting phase
   useEffect(() => {
@@ -288,6 +319,13 @@ export function SpacemanGame() {
                 {formatCOP(balance)} COP
               </div>
             </div>
+            <button
+              onClick={toggleMute}
+              aria-label={muted ? "Activar sonido" : "Silenciar"}
+              className="rounded-md p-1.5 text-purple-200/80 hover:bg-white/5"
+            >
+              {muted ? <VolumeX className="h-6 w-6" /> : <Volume2 className="h-6 w-6" />}
+            </button>
             <button className="rounded-md p-1.5 text-purple-200/80 hover:bg-white/5">
               <Settings className="h-6 w-6" />
             </button>
