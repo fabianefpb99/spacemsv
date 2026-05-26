@@ -111,7 +111,7 @@ export function LoadingScreen({ children }: { children: React.ReactNode }) {
           <img
             src={astronautRocket}
             alt=""
-            className="w-40 h-40 object-contain animate-[bounce_1.4s_ease-in-out_infinite]"
+            className="w-40 h-40 object-contain animate-pulse"
             draggable={false}
           />
           <p className="mt-4 text-white text-lg font-medium tracking-wide">Loading...</p>
