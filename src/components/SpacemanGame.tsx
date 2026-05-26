@@ -331,6 +331,23 @@ export function SpacemanGame() {
           draggable={false}
         />
       </div>
+      {/* Tinte de color por multiplicador (verde → azul → rojo → oscuro).
+          Usa mix-blend-mode: multiply para teñir la imagen de fondo. */}
+      <div
+        className="pointer-events-none fixed inset-0 -z-[5]"
+        style={{
+          backgroundColor:
+            multiplier < 1.5
+              ? "rgba(80, 220, 140, 0.55)"   // verdoso
+              : multiplier < 3
+                ? "rgba(70, 130, 240, 0.6)"  // azulado
+                : multiplier < 6
+                  ? "rgba(230, 60, 60, 0.65)" // rojizo
+                  : "rgba(20, 0, 25, 0.9)",   // muy oscuro
+          mixBlendMode: "multiply",
+          transition: "background-color 600ms ease-out",
+        }}
+      />
       {/* Base legibility gradient */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#1a0833]/40 via-[#160730]/30 to-[#0d0420]/80" />
       {/* Deep-space darkening — negro puro, más agresivo y temprano */}
