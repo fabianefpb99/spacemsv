@@ -3,7 +3,7 @@ import { Menu, Settings, Clock, ArrowRight, Minus, Plus, Volume2, VolumeX } from
 import bgImage from "@/assets/space-bg-full.png";
 import astronautIdlePng from "@/assets/astronaut-idle.svg";
 import astronautFlyingSrc from "@/assets/astronaut-flying.png";
-import meteorSrc from "@/assets/meteor.png";
+import meteorSrc from "@/assets/asteroid.svg";
 import { startAmbient, startFlight, stopFlight, setMuted as setAudioMuted, playCrashSound, playCashoutSound } from "@/lib/gameAudio";
 
 type Phase = "betting" | "running" | "crashed";
@@ -482,17 +482,25 @@ export function SpacemanGame() {
 
       {/* Meteoritos que cruzan la pantalla en 3x, 5x y 10x */}
       {meteors.map((m) => (
-        <img
+        <div
           key={m.id}
-          src={meteorSrc}
-          alt=""
           aria-hidden
-          className="pointer-events-none absolute left-1/2 top-1/3 z-10 h-16 w-16 sm:h-20 sm:w-20"
+          className="pointer-events-none absolute left-1/2 top-1/3 h-12 w-12 sm:h-16 sm:w-16"
           style={{
-            animation: "meteor-cross 2s linear forwards",
-            filter: "drop-shadow(0 0 12px rgba(255,140,40,0.7))",
+            animation: "meteor-cross 2.2s linear forwards",
+            zIndex: 0,
           }}
-        />
+        >
+          <img
+            src={meteorSrc}
+            alt=""
+            className="h-full w-full"
+            style={{
+              animation: "meteor-spin 1.8s linear infinite",
+              filter: "drop-shadow(0 0 8px rgba(180,200,220,0.45))",
+            }}
+          />
+        </div>
       ))}
 
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-4 pt-4 sm:max-w-lg sm:px-4">
