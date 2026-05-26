@@ -305,44 +305,46 @@ export function SpacemanGame() {
 
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-4 pt-4 sm:max-w-lg sm:px-4">
         {/* Header */}
-        <header className="flex items-center justify-between rounded-xl bg-[#0a0520]/70 backdrop-blur-sm border-b border-purple-500/20 pb-3 px-2 -mx-2">
+        <header className="flex items-center justify-between bg-[#060210]/90 backdrop-blur-sm border-b border-purple-500/20 pb-3 px-3 -mx-3">
           <button className="rounded-md p-2 text-white hover:bg-white/10">
             <Menu className="h-7 w-7" strokeWidth={3} />
           </button>
-          <h1 className="font-display text-lg font-black leading-tight tracking-widest sm:text-xl">
+          <h1 className="font-display text-base font-black leading-tight tracking-widest sm:text-lg">
             SPACE
             <br className="-mt-1" />
             <span className="block -mt-1">MAN MSV</span>
           </h1>
           <div className="flex items-center gap-2">
             <div className="text-right">
-              <div className="text-[10px] uppercase tracking-wider text-purple-200/70">Balance</div>
-              <div className="neon-green font-display text-sm font-bold sm:text-base">
+              <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
+              <div className="neon-green font-display text-xs font-bold sm:text-sm">
                 {formatCOP(balance)} COP
               </div>
             </div>
-            <button
-              onClick={toggleMute}
-              aria-label={muted ? "Activar sonido" : "Silenciar"}
-              className="rounded-md p-1.5 text-purple-200/80 hover:bg-white/5"
-            >
-              {muted ? <VolumeX className="h-6 w-6" /> : <Volume2 className="h-6 w-6" />}
-            </button>
             <button className="rounded-md p-1.5 text-purple-200/80 hover:bg-white/5">
-              <Settings className="h-6 w-6" />
+              <Settings className="h-5 w-5 sm:h-6 sm:w-6" />
             </button>
           </div>
         </header>
 
         {/* Stage */}
         <section className="relative mt-3 flex-1">
-          {/* online */}
-          <div className="flex items-center gap-2 text-sm">
-            <span className="relative inline-flex h-2.5 w-2.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
-            </span>
-            <span className="font-semibold text-emerald-300/90">{online} ONLINE</span>
+          {/* online + mute */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm">
+              <span className="relative inline-flex h-2.5 w-2.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
+              </span>
+              <span className="font-semibold text-emerald-300/90">{online} ONLINE</span>
+            </div>
+            <button
+              onClick={toggleMute}
+              aria-label={muted ? "Activar sonido" : "Silenciar"}
+              className="rounded-md p-1 text-purple-200/80 hover:bg-white/5"
+            >
+              {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+            </button>
           </div>
 
           {/* Multiplier */}
