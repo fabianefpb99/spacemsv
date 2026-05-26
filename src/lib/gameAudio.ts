@@ -200,3 +200,47 @@ export function setMuted(m: boolean) {
 export function isMuted() {
   return muted;
 }
+
+// ---- Crash thud (soft descending boom) ----
+
+export function playCrashSound() {
+  const c = getCtx();
+  if (!c || muted || !masterGain) return;
+
+  const now = c.currentTime;
+
+  // Main thud: sine sweep down + slight overdrive via triangle
+  const osc = c.createOscillator();
+  osc.type = "triangle";
+  osc.frequency.setValueAtTime(180, now);
+  osc.frequency.exponentialRampToValueAtTime(45, now + 0.38);
+
+  const oscGain = c.createGain();
+  oscGain.gain.setValueAtTime(0, now);
+  oscGain.gain.linearRampToValueAtTime(0.18, now + 0.03);
+  oscGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.42);
+
+  // Soft filtered noise for texture
+  const noiseBuf = makeNoiseBuffer(c);
+  const noiseSrc = c.createBufferSource();
+  noiseSrc.buffer = noiseBuf;
+
+  const noiseFilter = c.createBiquadFilter();
+  noiseFilter.type = "lowpass";
+  noiseFilter.frequency.setValueAtTime(600, now);
+  noiseFilter.frequency.exponentialRampToValueAtTime(80, now + 0.35);
+  noiseFilter.Q.value = 0.5;
+
+  const noiseGain = c.createGain();
+  noiseGain.gain.setValueAtTime(0, now);
+  noiseGain.gain.linearRampToValueAtTime(0.06, now + 0.02);
+  noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.40);
+
+  osc.connect(oscGain).connect(masterGain);
+  noiseSrc.connect(noiseFilter).connect(noiseGain).connect(masterGain);
+
+  osc.start(now);
+  osc.stop(now + 0.45);
+  noiseSrc.start(now);
+  noiseSrc.stop(now + 0.42);
+}
