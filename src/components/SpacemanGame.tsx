@@ -90,7 +90,7 @@ function Stars() {
 export function SpacemanGame() {
   const [phase, setPhase] = useState<Phase>("betting");
   const [multiplier, setMultiplier] = useState(1);
-  const [crashPoint, setCrashPoint] = useState<number>(() => generateCrashPoint());
+  const [crashPoint, setCrashPoint] = useState<number>(1.5);
   const [countdown, setCountdown] = useState(BETTING_MS / 1000);
   const [history, setHistory] = useState<HistoryItem[]>([
     { id: 1, value: 1.22 },
@@ -107,7 +107,7 @@ export function SpacemanGame() {
   const [activeBet, setActiveBet] = useState<number | null>(null);
   const [cashedOutAt, setCashedOutAt] = useState<number | null>(null);
   const [lastWin, setLastWin] = useState<number | null>(null);
-  const [online] = useState(() => 80 + Math.floor(Math.random() * 200));
+  const [online, setOnline] = useState(150);
 
   const startRef = useRef<number>(0);
   const rafRef = useRef<number | null>(null);
@@ -177,6 +177,8 @@ export function SpacemanGame() {
 
   // bootstrap
   useEffect(() => {
+    setCrashPoint(generateCrashPoint());
+    setOnline(80 + Math.floor(Math.random() * 200));
     startBetting();
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -390,16 +392,16 @@ export function SpacemanGame() {
             Apuesta (COP)
           </div>
           <div className="mt-2 flex items-center gap-2">
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               <button
-                className="btn-bet rounded-lg px-2 py-1.5 text-xs font-semibold"
+                className="btn-bet rounded-lg px-3 py-2.5 text-sm font-bold"
                 onClick={() => addToBet(QUICK_ADDS[0])}
                 disabled={!!activeBet}
               >
                 +500
               </button>
               <button
-                className="btn-bet rounded-lg px-2 py-1.5 text-xs font-semibold"
+                className="btn-bet rounded-lg px-3 py-2.5 text-sm font-bold"
                 onClick={() => addToBet(QUICK_ADDS[1])}
                 disabled={!!activeBet}
               >
@@ -412,18 +414,18 @@ export function SpacemanGame() {
               min={MIN_BET}
               onChange={(e) => setBet(Math.max(0, parseInt(e.target.value || "0", 10)))}
               disabled={!!activeBet}
-              className="min-w-0 flex-1 rounded-lg border border-purple-500/30 bg-black/40 px-2 py-3 text-center font-display text-2xl font-bold text-white outline-none focus:border-purple-400/60 disabled:opacity-70"
+              className="min-w-0 flex-1 rounded-lg border border-purple-500/30 bg-black/40 px-2 py-2.5 text-center font-display text-xl font-bold text-white outline-none focus:border-purple-400/60 disabled:opacity-70 sm:py-3 sm:text-2xl"
             />
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               <button
-                className="btn-bet rounded-lg px-2 py-1.5 text-xs font-semibold"
+                className="btn-bet rounded-lg px-3 py-2.5 text-sm font-bold"
                 onClick={() => addToBet(QUICK_ADDS[2])}
                 disabled={!!activeBet}
               >
                 +2500
               </button>
               <button
-                className="btn-bet rounded-lg px-2 py-1.5 text-xs font-semibold"
+                className="btn-bet rounded-lg px-3 py-2.5 text-sm font-bold"
                 onClick={() => addToBet(QUICK_ADDS[3])}
                 disabled={!!activeBet}
               >
@@ -438,7 +440,7 @@ export function SpacemanGame() {
           <button
             onClick={handleBetClick}
             disabled={buttonState.disabled}
-            className={`mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-2.5 font-display text-base font-black uppercase sm:py-3 sm:text-lg ${buttonState.cls} disabled:cursor-not-allowed`}
+            className={`mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-3 font-display text-lg font-black uppercase sm:py-3.5 sm:text-xl ${buttonState.cls} disabled:cursor-not-allowed`}
           >
             <span>{buttonState.label}</span>
             <span className="grid h-5 w-5 place-items-center rounded-full border-2 border-white/80">
