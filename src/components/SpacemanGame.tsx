@@ -292,7 +292,20 @@ export function SpacemanGame() {
             </div>
 
             {/* Astronaut: reserves layout space, sprite floats in an isolated layer */}
-            <div className="relative mt-4 h-56 w-full overflow-hidden sm:h-72">
+            <div className="relative mt-4 h-56 w-full sm:h-72">
+              {/* Flash burst on crash */}
+              {phase === "crashed" && (
+                <div
+                  className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 rounded-full"
+                  style={{
+                    background:
+                      "radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,210,80,0.8) 25%, rgba(255,90,40,0.6) 50%, rgba(255,40,40,0.3) 70%, transparent 85%)",
+                    filter: "blur(4px)",
+                    animation: "flash-burst 0.9s ease-out forwards",
+                    mixBlendMode: "screen",
+                  }}
+                />
+              )}
               {/* Speed lines (only in running) */}
               {phase === "running" && (
                 <div className="pointer-events-none absolute inset-0">
@@ -325,8 +338,15 @@ export function SpacemanGame() {
                   {phase === "running" && (
                     <>
                       <div
-                        className="flame absolute left-1/2"
-                        style={{ bottom: -22, width: 60, height: 90 }}
+                        className="flame absolute"
+                        style={{
+                          left: "55%",
+                          bottom: -34,
+                          width: 55,
+                          height: 100,
+                          transform: "translateX(-50%) rotate(8deg)",
+                          transformOrigin: "top center",
+                        }}
                       >
                         <div
                           className="h-full w-full rounded-full"
@@ -342,7 +362,7 @@ export function SpacemanGame() {
                         className="pointer-events-none absolute inset-0"
                         style={{
                           background:
-                            "radial-gradient(circle at 50% 70%, rgba(255,80,80,0.5) 0%, transparent 60%)",
+                            "radial-gradient(circle at 55% 80%, rgba(255,80,80,0.45) 0%, transparent 55%)",
                           filter: "blur(10px)",
                         }}
                       />
