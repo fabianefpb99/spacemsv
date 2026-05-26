@@ -546,6 +546,27 @@ export function SpacemanGame() {
                   </p>
                 </div>
               </div>
+              {/* Flight messages: appear during running phase, lower-right so they don't cover the rocket */}
+              <div
+                className={`pointer-events-none absolute bottom-2 sm:bottom-4 left-[55%] right-3 sm:left-[52%] sm:right-6 flex items-end justify-start transition-opacity duration-300 ${
+                  phase === "running" && flightMessage ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                {flightMessage && (
+                  <div key={`${flightTier}-${flightMessage}`} className="relative animate-[msg-in_.45s_ease-out]">
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute -inset-2 rounded-xl bg-fuchsia-500/20 blur-xl animate-[msg-pulse_2.2s_ease-in-out_infinite]"
+                    />
+                    <p
+                      className="relative font-display text-sm sm:text-base font-bold italic leading-tight text-white/95 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] animate-[msg-beat_2.2s_ease-in-out_infinite]"
+                      style={{ textShadow: "0 0 12px rgba(180,140,255,0.55)" }}
+                    >
+                      {flightMessage}
+                    </p>
+                  </div>
+                )}
+              </div>
               {/* Flash burst on crash */}
               {phase === "crashed" && (
                 <div
