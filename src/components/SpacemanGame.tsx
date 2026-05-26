@@ -3,6 +3,7 @@ import { Menu, Settings, Clock, ArrowRight, Minus, Plus, Volume2, VolumeX } from
 import bgImage from "@/assets/space-bg-full.png";
 import astronautIdlePng from "@/assets/astronaut-idle.svg";
 import astronautFlyingSrc from "@/assets/astronaut-flying.png";
+import meteorSrc from "@/assets/meteor.png";
 import { startAmbient, startFlight, stopFlight, setMuted as setAudioMuted, playCrashSound, playCashoutSound } from "@/lib/gameAudio";
 
 type Phase = "betting" | "running" | "crashed";
@@ -217,6 +218,8 @@ export function SpacemanGame() {
   const [muted, setMuted] = useState(false);
   const [flightTier, setFlightTier] = useState<0 | 1 | 2 | 3 | 4>(0);
   const [flightMessage, setFlightMessage] = useState<string | null>(null);
+  const [meteors, setMeteors] = useState<{ id: number; threshold: number }[]>([]);
+  const meteorFiredRef = useRef<Set<number>>(new Set());
 
   // Start ambient music on first user interaction (browsers require a gesture)
   useEffect(() => {
@@ -272,6 +275,25 @@ export function SpacemanGame() {
       setFlightMessage(tier === 0 ? null : pickFlightMessage(tier));
     }
   }, [multiplier, phase, flightTier, flightMessage]);
+
+  // Meteor passes at 3x, 5x and 10x — one shot each per round
+  useEffect(() => {
+    if (phase !== "running") {
+      if (meteorFiredRef.current.size > 0) meteorFiredRef.current = new Set();
+      if (meteors.length > 0) setMeteors([]);
+      return;
+    }
+    for (const threshold of [3, 5, 10]) {
+      if (multiplier >= threshold && !meteorFiredRef.current.has(threshold)) {
+        meteorFiredRef.current.add(threshold);
+        const id = Date.now() + threshold;
+        setMeteors((m) => [...m, { id, threshold }]);
+        setTimeout(() => {
+          setMeteors((m) => m.filter((x) => x.id !== id));
+        }, 2200);
+      }
+    }
+  }, [multiplier, phase, meteors.length]);
 
   const startRef = useRef<number>(0);
   const rafRef = useRef<number | null>(null);
@@ -457,6 +479,21 @@ export function SpacemanGame() {
         }}
       />
       <Stars multiplier={multiplier} phase={phase} />
+
+      {/* Meteoritos que cruzan la pantalla en 3x, 5x y 10x */}
+      {meteors.map((m) => (
+        <img
+          key={m.id}
+          src={meteorSrc}
+          alt=""
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-1/3 z-10 h-16 w-16 sm:h-20 sm:w-20"
+          style={{
+            animation: "meteor-cross 2s linear forwards",
+            filter: "drop-shadow(0 0 12px rgba(255,140,40,0.7))",
+          }}
+        />
+      ))}
 
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-4 pt-4 sm:max-w-lg sm:px-4">
         {/* Header */}
