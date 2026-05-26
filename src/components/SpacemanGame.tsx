@@ -36,7 +36,7 @@ function formatCOP(n: number) {
 
 function colorFor(mult: number) {
   if (mult < 2) return "text-rose-400 border-rose-500/50 bg-rose-950/40";
-  if (mult < 10) return "text-amber-300 border-amber-500/50 bg-amber-950/40";
+  if (mult < 3) return "text-purple-300 border-purple-500/50 bg-purple-950/40";
   return "text-emerald-300 border-emerald-500/50 bg-emerald-950/40";
 }
 
