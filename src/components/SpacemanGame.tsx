@@ -39,18 +39,18 @@ function colorFor(mult: number) {
   return "text-emerald-300 border-emerald-500/50 bg-emerald-950/40";
 }
 
-// Crash distribution: many low, some mid, rare high
+// Crash distribution: heavily weighted toward early crashes
 function generateCrashPoint(): number {
   const r = Math.random();
-  // ~8% instant crashes at 1.00 - 1.03
-  if (r < 0.08) return +(1 + Math.random() * 0.03).toFixed(2);
-  // ~57% low crashes 1.03 - 2.50 (more probable early bust)
-  if (r < 0.65) return +(1.03 + Math.random() * 1.47).toFixed(2);
-  // ~22% mid 2.50 - 7.50
-  if (r < 0.87) return +(2.5 + Math.random() * 5).toFixed(2);
-  // ~11% high 7.5 - 27
-  if (r < 0.98) return +(7.5 + Math.random() * 20).toFixed(2);
-  // ~2% jackpot 27 - 107
+  // ~15% instant crashes at 1.00 - 1.03
+  if (r < 0.15) return +(1 + Math.random() * 0.03).toFixed(2);
+  // ~65% low crashes 1.03 - 2.50 (more probable early bust)
+  if (r < 0.80) return +(1.03 + Math.random() * 1.47).toFixed(2);
+  // ~15% mid 2.50 - 7.50
+  if (r < 0.95) return +(2.5 + Math.random() * 5).toFixed(2);
+  // ~4% high 7.5 - 27
+  if (r < 0.99) return +(7.5 + Math.random() * 20).toFixed(2);
+  // ~1% jackpot 27 - 107
   return +(27 + Math.random() * 80).toFixed(2);
 }
 
