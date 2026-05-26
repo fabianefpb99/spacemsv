@@ -371,9 +371,9 @@ export function SpacemanGame() {
       />
       <Stars multiplier={multiplier} />
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-md flex-col px-3 pb-2 pt-2 sm:max-w-lg sm:px-4">
+      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-4 pt-4 sm:max-w-lg sm:px-4">
         {/* Header */}
-        <header className="flex items-center justify-between bg-[#060210]/90 backdrop-blur-sm border-b border-purple-500/20 pt-2 pb-2 px-3 -mx-3 -mt-3">
+        <header className="flex items-center justify-between bg-[#060210]/90 backdrop-blur-sm border-b border-purple-500/20 pt-3 pb-3 px-3 -mx-3 -mt-4">
           <button className="rounded-md p-2 text-white hover:bg-white/10">
             <Menu className="h-7 w-7" strokeWidth={3} />
           </button>
@@ -396,7 +396,7 @@ export function SpacemanGame() {
         </header>
 
         {/* Stage */}
-        <section className="relative mt-2 flex-1">
+        <section className="relative mt-3 flex-1">
           {/* online + mute */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm">
@@ -416,9 +416,9 @@ export function SpacemanGame() {
           </div>
 
           {/* Multiplier */}
-          <div className="relative mt-4 flex flex-col items-center justify-center">
+          <div className="relative mt-8 flex flex-col items-center justify-center">
             <div
-              className={`font-display select-none text-5xl font-black sm:text-6xl md:text-7xl ${
+              className={`font-display select-none text-6xl font-black sm:text-7xl md:text-8xl ${
                 phase === "crashed" ? "neon-red animate-[crash-shake_.4s_ease-in-out]" : "neon-red"
               }`}
               style={{ transition: "transform .2s" }}
@@ -436,7 +436,7 @@ export function SpacemanGame() {
             </div>
 
             {/* Astronaut: reserves layout space, sprite floats in an isolated layer */}
-            <div className="relative mt-2 h-48 w-full sm:h-60">
+            <div className="relative mt-4 h-56 w-full sm:h-72">
               {/* Rotating idle message to the right of astronaut */}
               <div
                 className={`pointer-events-none absolute top-1/2 -translate-y-1/2 left-[55%] right-3 sm:left-[52%] sm:right-6 flex items-center justify-start transition-opacity duration-300 ${
@@ -592,7 +592,7 @@ export function SpacemanGame() {
         </section>
 
         {/* Round status (fixed height to prevent layout shifts) */}
-        <div className="mt-1.5 px-1 h-[34px]">
+        <div className="mt-4 px-1 h-[42px]">
           <div className="flex h-5 items-center justify-between gap-3 text-xs sm:text-sm whitespace-nowrap">
             <div className="flex items-center gap-2 font-semibold min-w-0">
               <span
@@ -606,14 +606,14 @@ export function SpacemanGame() {
               {phase === "betting" ? `${countdown.toFixed(1)}s` : ""}
             </span>
           </div>
-          <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-purple-950/30 backdrop-blur-sm">
+          <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-purple-950/40 backdrop-blur-sm">
             <div
               className="h-full rounded-full transition-[width]"
               style={{
                 width: `${progressPct}%`,
                 background:
-                  "repeating-linear-gradient(45deg,#ff4d4d,#ff4d4d 8px,#c91f1f 8px,#c91f1f 16px)",
-                boxShadow: "0 0 10px rgba(255,80,80,0.35)",
+                  "repeating-linear-gradient(45deg,#ff4d4d,#ff4d4d 10px,#c91f1f 10px,#c91f1f 20px)",
+                boxShadow: "0 0 16px rgba(255,80,80,0.55)",
                 transitionDuration: phase === "betting" ? "100ms" : "0ms",
               }}
             />
@@ -621,18 +621,18 @@ export function SpacemanGame() {
         </div>
 
         {/* Bet panel */}
-        <div className="mt-1.5 glass-panel rounded-xl p-2 sm:p-2.5">
+        <div className="mt-3 glass-panel rounded-xl p-3 sm:p-4">
           <div className="text-center text-[11px] uppercase tracking-[0.2em] text-purple-200/70">
             Apuesta (COP)
           </div>
-          <div className="mt-1.5 flex items-stretch gap-2">
+          <div className="mt-2 flex items-stretch gap-2">
             <button
-              className="btn-bet flex h-12 w-12 shrink-0 items-center justify-center rounded-lg text-xl font-black sm:h-14 sm:w-14"
+              className="btn-bet flex h-14 w-14 shrink-0 items-center justify-center rounded-lg text-2xl font-black sm:h-16 sm:w-16"
               onClick={() => setBet((b) => Math.max(MIN_BET, b - BET_STEP))}
               disabled={!!activeBet}
               aria-label="Restar 500"
             >
-              <Minus className="h-5 w-5" strokeWidth={3} />
+              <Minus className="h-6 w-6" strokeWidth={3} />
             </button>
             <input
               type="number"
@@ -641,22 +641,22 @@ export function SpacemanGame() {
               onChange={(e) => setBet(Math.max(0, parseInt(e.target.value || "0", 10)))}
               disabled={!!activeBet}
               inputMode="numeric"
-              className="no-spinner min-w-0 flex-1 rounded-lg border border-purple-500/30 bg-black/40 px-2 text-center font-display text-xl font-bold text-white outline-none focus:border-purple-400/60 disabled:opacity-70 sm:text-2xl"
+              className="no-spinner min-w-0 flex-1 rounded-lg border border-purple-500/30 bg-black/40 px-2 text-center font-display text-2xl font-bold text-white outline-none focus:border-purple-400/60 disabled:opacity-70 sm:text-3xl"
             />
             <button
-              className="btn-bet flex h-12 w-12 shrink-0 items-center justify-center rounded-lg text-xl font-black sm:h-14 sm:w-14"
+              className="btn-bet flex h-14 w-14 shrink-0 items-center justify-center rounded-lg text-2xl font-black sm:h-16 sm:w-16"
               onClick={() => setBet((b) => Math.min(balance, b + BET_STEP))}
               disabled={!!activeBet}
               aria-label="Sumar 500"
             >
-              <Plus className="h-5 w-5" strokeWidth={3} />
+              <Plus className="h-6 w-6" strokeWidth={3} />
             </button>
           </div>
-          <div className="mt-1 flex items-center justify-center gap-1.5">
+          <div className="mt-2 flex items-center justify-center gap-2">
             {QUICK_ADDS.map((amt) => (
-            <button
+              <button
                 key={amt}
-                className="btn-bet rounded-md px-2.5 py-1 text-[11px] font-bold"
+                className="btn-bet rounded-md px-3 py-1.5 text-xs font-bold"
                 onClick={() => addToBet(amt)}
                 disabled={!!activeBet}
               >
@@ -664,24 +664,24 @@ export function SpacemanGame() {
               </button>
             ))}
           </div>
-          <div className="mt-1 text-center text-[10px] uppercase tracking-wider text-purple-200/60">
-            Mín: {MIN_BET} · Paso: {BET_STEP}
+          <div className="mt-2 text-center text-[11px] uppercase tracking-wider text-purple-200/60">
+            Mínimo: {MIN_BET} COP · Paso: {BET_STEP}
           </div>
 
           <button
             onClick={handleBetClick}
             disabled={buttonState.disabled}
-            className={`mt-2 flex w-full items-center justify-center gap-2 rounded-xl py-2 font-display text-base font-black uppercase sm:py-2.5 sm:text-lg ${buttonState.cls} disabled:cursor-not-allowed`}
+            className={`mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-3 font-display text-lg font-black uppercase sm:py-3.5 sm:text-xl ${buttonState.cls} disabled:cursor-not-allowed`}
           >
             <span>{buttonState.label}</span>
-            <span className="grid h-4 w-4 place-items-center rounded-full border-2 border-white/80">
-              <ArrowRight className="h-2.5 w-2.5" />
+            <span className="grid h-5 w-5 place-items-center rounded-full border-2 border-white/80">
+              <ArrowRight className="h-3 w-3" />
             </span>
           </button>
         </div>
 
         {/* History (compact) */}
-        <div className="mt-1 flex items-center gap-1.5 overflow-x-auto hide-scrollbar px-1">
+        <div className="mt-2 flex items-center gap-1.5 overflow-x-auto hide-scrollbar px-1">
           <Clock className="h-3 w-3 shrink-0 text-purple-200/70" />
           {history.map((h) => (
             <div
