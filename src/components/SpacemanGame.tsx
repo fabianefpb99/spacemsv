@@ -343,7 +343,7 @@ export function SpacemanGame() {
     const tick = () => {
       const elapsed = performance.now() - start;
       const remaining = Math.max(0, BETTING_MS - elapsed);
-      setCountdown(+(remaining / 1000).toFixed(1));
+      setCountdown(Math.ceil(remaining / 1000));
       if (remaining > 0) {
         rafRef.current = requestAnimationFrame(tick);
       } else {
@@ -801,8 +801,8 @@ export function SpacemanGame() {
                 {phase === "betting" ? "Preparando ronda" : phase === "running" ? "En vuelo" : "Crash"}
               </span>
             </div>
-            <span className="neon-red font-display text-base font-bold shrink-0 tabular-nums w-12 text-right">
-              {phase === "betting" ? `${countdown.toFixed(1)}s` : ""}
+            <span className="neon-red font-display text-base font-bold shrink-0 tabular-nums w-12 text-right brightness-125">
+              {phase === "betting" ? `${countdown}s` : ""}
             </span>
           </div>
           <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-purple-950/60">
