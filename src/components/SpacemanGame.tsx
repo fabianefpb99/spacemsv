@@ -201,6 +201,7 @@ export function SpacemanGame() {
   const [multiplier, setMultiplier] = useState(1);
   const [crashPoint, setCrashPoint] = useState<number>(1.5);
   const [countdown, setCountdown] = useState(BETTING_MS / 1000);
+  const [bettingProgress, setBettingProgress] = useState(0);
   const [history, setHistory] = useState<HistoryItem[]>([
     { id: 1, value: 1.22 },
     { id: 2, value: 3.11 },
@@ -338,6 +339,7 @@ export function SpacemanGame() {
     setLastWin(null);
     setCrashPoint(generateCrashPoint());
     setCountdown(BETTING_MS / 1000);
+    setBettingProgress(0);
 
     const start = performance.now();
     const tick = () => {
@@ -345,8 +347,11 @@ export function SpacemanGame() {
       const remaining = Math.max(0, BETTING_MS - elapsed);
       if (remaining > 0) {
         setCountdown(remaining / 1000);
+        setBettingProgress((elapsed / BETTING_MS) * 100);
         rafRef.current = requestAnimationFrame(tick);
       } else {
+        setCountdown(0);
+        setBettingProgress(100);
         startRunning();
       }
     };
@@ -451,8 +456,9 @@ export function SpacemanGame() {
     setBet((b) => Math.min(balance, b + amount));
   };
 
-  const progressPct = phase === "betting" ? (1 - countdown / (BETTING_MS / 1000)) * 100 : 100;
-  const countdownLabel = Math.ceil(countdown);
+  const progressPct = phase === "betting" ? bettingProgress : 100;
+  const progressTransitionMs = phase === "betting" && bettingProgress > 1 ? 100 : 0;
+  const countdownLabel = Math.min(BETTING_MS / 1000, Math.max(1, Math.ceil(countdown)));
 
   // ---- Render ----
   const buttonState = (() => {
@@ -814,7 +820,7 @@ export function SpacemanGame() {
                 background:
                   "repeating-linear-gradient(45deg,#ff4d4d,#ff4d4d 10px,#c91f1f 10px,#c91f1f 20px)",
                 boxShadow: "0 0 16px rgba(255,80,80,0.55)",
-                transitionDuration: phase === "betting" ? "100ms" : "0ms",
+                transitionDuration: `${progressTransitionMs}ms`,
               }}
             />
           </div>
