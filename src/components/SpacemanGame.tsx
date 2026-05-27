@@ -130,7 +130,7 @@ function Stars({ multiplier = 1, phase }: { multiplier?: number; phase: Phase })
   } | null>(null);
   useEffect(() => {
     setData({
-      stars: Array.from({ length: 70 }).map((_, i) => ({
+      stars: Array.from({ length: 35 }).map((_, i) => ({
         id: i,
         top: Math.random() * 100,
         left: Math.random() * 100,
@@ -138,7 +138,7 @@ function Stars({ multiplier = 1, phase }: { multiplier?: number; phase: Phase })
         delay: Math.random() * 3,
         dur: 2 + Math.random() * 3,
       })),
-      shooters: Array.from({ length: 3 }).map((_, i) => ({
+      shooters: Array.from({ length: 2 }).map((_, i) => ({
         id: i,
         top: Math.random() * 40,
         left: 50 + Math.random() * 50,
@@ -270,7 +270,7 @@ export function SpacemanGame() {
     setMessageIdx(Math.floor(Math.random() * IDLE_MESSAGES.length));
     const id = setTimeout(() => {
       setMessageIdx((i) => (i + 1 + Math.floor(Math.random() * (IDLE_MESSAGES.length - 1))) % IDLE_MESSAGES.length);
-    }, 2500);
+    }, 4000);
     return () => clearTimeout(id);
   }, [phase]);
 
@@ -421,9 +421,9 @@ export function SpacemanGame() {
       // Exponential-ish growth, feels like crash games
       const exactMultiplier = Math.pow(Math.E, 0.09 * t);
       const shownMultiplier = +exactMultiplier.toFixed(2);
-      // Throttle CSS variable writes to every other frame (~30fps) to reduce GPU/CPU load on mobile
+      // Throttle CSS variable writes to every 3rd frame (~20fps) to reduce GPU/CPU load on mobile
       frameCount++;
-      if (frameCount % 2 === 0) {
+      if (frameCount % 3 === 0) {
         updateSceneVisuals(exactMultiplier);
       }
       // Only trigger React re-render when the displayed value actually changes
@@ -694,14 +694,14 @@ export function SpacemanGame() {
               {/* Speed lines (only in running) */}
               {phase === "running" && (
                 <div className="pointer-events-none absolute inset-0">
-                  {[...Array(8)].map((_, i) => (
+              {[...Array(4)].map((_, i) => (
                     <div
                       key={i}
                       className="absolute h-8 w-px bg-gradient-to-b from-transparent via-white/70 to-transparent"
                       style={{
-                        left: `${15 + i * 10}%`,
+                        left: `${15 + i * 20}%`,
                         top: 0,
-                        animation: `speed-line ${0.5 + (i % 3) * 0.15}s linear ${i * 0.08}s infinite`,
+                        animation: `speed-line ${0.5 + (i % 3) * 0.15}s linear ${i * 0.12}s infinite`,
                         opacity: 0.6,
                       }}
                     />
@@ -835,7 +835,7 @@ export function SpacemanGame() {
                 width: `${bettingBarFill}%`,
                 background:
                   "repeating-linear-gradient(45deg,#ff4d4d,#ff4d4d 10px,#c91f1f 10px,#c91f1f 20px)",
-                boxShadow: "0 0 16px rgba(255,80,80,0.55)",
+                boxShadow: "0 0 10px rgba(255,80,80,0.40)",
                 transitionDuration: `${bettingBarDuration}ms`,
               }}
             />

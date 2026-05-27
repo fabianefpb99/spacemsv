@@ -188,15 +188,15 @@
   100% { transform: translate(-50%, -50%) scale(3);   opacity: 0; }
 }
 @keyframes pulse-glow {
-  0%, 100% { filter: drop-shadow(0 0 18px rgba(255,60,60,0.85)) drop-shadow(0 0 40px rgba(255,80,80,0.5)); }
-  50% { filter: drop-shadow(0 0 28px rgba(255,80,80,1)) drop-shadow(0 0 60px rgba(255,80,80,0.7)); }
+  0%, 100% { filter: drop-shadow(0 0 10px rgba(255,60,60,0.60)) drop-shadow(0 0 24px rgba(255,80,80,0.35)); }
+  50% { filter: drop-shadow(0 0 18px rgba(255,80,80,0.80)) drop-shadow(0 0 38px rgba(255,80,80,0.50)); }
 }
 @keyframes crash-shake {
   0%,100% { transform: translate(0,0); }
-  20% { transform: translate(-6px, 4px); }
-  40% { transform: translate(6px, -4px); }
-  60% { transform: translate(-4px, -2px); }
-  80% { transform: translate(4px, 2px); }
+  20% { transform: translate(-4px, 3px); }
+  40% { transform: translate(4px, -3px); }
+  60% { transform: translate(-3px, -2px); }
+  80% { transform: translate(3px, 2px); }
 }
 @keyframes msg-in {
   0% { opacity: 0; transform: translateX(8px) scale(0.96); }
@@ -204,11 +204,11 @@
 }
 @keyframes msg-beat {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.04); }
+  50% { transform: scale(1.02); }
 }
 @keyframes msg-pulse {
-  0%, 100% { opacity: 0.35; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.08); }
+  0%, 100% { opacity: 0.30; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(1.04); }
 }
 @keyframes crash-pop {
   0% { transform: scale(0.85); opacity: 0; }
@@ -320,7 +320,7 @@
   pointer-events: none;
 }
 .btn-primary-action.btn-primary-red::after {
-  animation: btn-shine 1.6s cubic-bezier(.22,.61,.36,1) infinite;
+  animation: btn-shine 3.2s cubic-bezier(.22,.61,.36,1) infinite;
 }
 
 /* Pop when entering the RETIRAR (cashout) state */
@@ -328,32 +328,32 @@
   animation: btn-pop 360ms cubic-bezier(.34,1.56,.64,1);
 }
 
-/* Pulsing red glow while RETIRAR is available */
+/* Pulsing red glow while RETIRAR is available — subtle & low-GPU */
 .btn-primary-red {
-  animation: btn-pulse-red 1.4s ease-in-out infinite;
+  animation: btn-pulse-red 2.4s ease-in-out infinite;
 }
 
 @keyframes btn-pop {
-  0%   { transform: scale(0.92); filter: brightness(1.25); }
-  55%  { transform: scale(1.04); filter: brightness(1.15); }
+  0%   { transform: scale(0.92); filter: brightness(1.15); }
+  55%  { transform: scale(1.02); filter: brightness(1.08); }
   100% { transform: scale(1);    filter: brightness(1); }
 }
 
 @keyframes btn-pulse-red {
   0%, 100% {
     box-shadow:
-      0 0 22px rgba(255,80,80,0.55),
-      0 8px 24px rgba(0,0,0,0.4),
+      0 0 14px rgba(255,80,80,0.40),
+      0 6px 18px rgba(0,0,0,0.35),
       inset 0 -3px 0 rgba(0,0,0,0.25),
       inset 0 1px 0 rgba(255,255,255,0.35);
   }
   50% {
     box-shadow:
-      0 0 40px rgba(255,110,110,0.95),
-      0 0 70px rgba(255,60,60,0.55),
-      0 8px 28px rgba(0,0,0,0.45),
+      0 0 24px rgba(255,100,100,0.65),
+      0 0 44px rgba(255,60,60,0.30),
+      0 6px 20px rgba(0,0,0,0.40),
       inset 0 -3px 0 rgba(0,0,0,0.25),
-      inset 0 1px 0 rgba(255,255,255,0.45);
+      inset 0 1px 0 rgba(255,255,255,0.40);
   }
 }
 
@@ -366,7 +366,7 @@
 /* Result panels (win / lose) */
 .result-pop-win {
   animation: result-pop 520ms cubic-bezier(.34,1.56,.64,1),
-             win-glow 1.6s ease-in-out 520ms infinite;
+             win-glow 2.4s ease-in-out 520ms infinite;
 }
 .result-pop-lose {
   animation: result-pop 420ms cubic-bezier(.34,1.56,.64,1),
@@ -378,8 +378,8 @@
   100% { opacity: 1; transform: translateY(0)    scale(1); }
 }
 @keyframes win-glow {
-  0%, 100% { box-shadow: 0 0 18px rgba(46,255,161,0.35), 0 8px 24px rgba(0,0,0,0.4); }
-  50%      { box-shadow: 0 0 34px rgba(46,255,161,0.75), 0 0 60px rgba(46,255,161,0.35), 0 8px 24px rgba(0,0,0,0.4); }
+  0%, 100% { box-shadow: 0 0 12px rgba(46,255,161,0.25), 0 6px 18px rgba(0,0,0,0.35); }
+  50%      { box-shadow: 0 0 22px rgba(46,255,161,0.50), 0 0 38px rgba(46,255,161,0.22), 0 6px 18px rgba(0,0,0,0.35); }
 }
 @keyframes lose-shake {
   10%, 90% { transform: translateX(-1px); }
