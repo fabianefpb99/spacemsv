@@ -372,6 +372,8 @@ export function SpacemanGame() {
         rafRef.current = requestAnimationFrame(tick);
       } else {
         setCountdown(0);
+        const nextBar = bettingBarRef.current;
+        if (nextBar) nextBar.style.width = "100%";
         startRunning();
       }
     };
@@ -834,13 +836,11 @@ export function SpacemanGame() {
           <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-purple-950/60">
             <div
               ref={bettingBarRef}
-              className="h-full rounded-full transition-[width]"
+              className="h-full rounded-full transition-[width] ease-linear"
               style={{
-                width: phase === "betting" ? "0%" : "100%",
                 background:
                   "repeating-linear-gradient(45deg,#ff4d4d,#ff4d4d 10px,#c91f1f 10px,#c91f1f 20px)",
                 boxShadow: "0 0 16px rgba(255,80,80,0.55)",
-                transitionDuration: phase === "betting" ? "0ms" : "200ms",
               }}
             />
           </div>
