@@ -392,13 +392,23 @@ export function SpacemanGame() {
   const startRunning = useCallback(() => {
     setPhase("running");
     startRef.current = performance.now();
+    let lastShown = 0;
+    let frameCount = 0;
     const tick = () => {
       const t = (performance.now() - startRef.current) / 1000;
       // Exponential-ish growth, feels like crash games
       const exactMultiplier = Math.pow(Math.E, 0.09 * t);
       const shownMultiplier = +exactMultiplier.toFixed(2);
-      updateSceneVisuals(exactMultiplier);
-      setMultiplier(shownMultiplier);
+      // Throttle CSS variable writes to every other frame (~30fps) to reduce GPU/CPU load on mobile
+      frameCount++;
+      if (frameCount % 2 === 0) {
+        updateSceneVisuals(exactMultiplier);
+      }
+      // Only trigger React re-render when the displayed value actually changes
+      if (shownMultiplier !== lastShown) {
+        lastShown = shownMultiplier;
+        setMultiplier(shownMultiplier);
+      }
       if (exactMultiplier >= crashPointRef.current) {
         triggerCrash();
         return;
