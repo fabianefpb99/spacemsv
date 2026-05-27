@@ -452,7 +452,7 @@ export function SpacemanGame() {
     if (phase === "betting") {
       return { label: activeBet ? "APUESTA REGISTRADA" : "APOSTAR", cls: "btn-primary-green", disabled: !!activeBet || bet < MIN_BET || bet > balance };
     }
-    return { label: "ESPERANDO RONDA", cls: "btn-primary-green opacity-60", disabled: true };
+    return { label: "ESPERANDO RONDA", cls: "btn-primary-green opacity-50 brightness-75", disabled: true };
   })();
 
   return (
@@ -547,10 +547,8 @@ export function SpacemanGame() {
           <button className="rounded-md p-2 text-white hover:bg-white/10">
             <Menu className="h-7 w-7" strokeWidth={3} />
           </button>
-          <h1 className="font-display text-base font-black leading-tight tracking-widest sm:text-lg">
-            SPACE
-            <br className="-mt-1" />
-            <span className="block -mt-1">MAN MSV</span>
+          <h1 className="font-display text-sm font-black leading-tight tracking-widest sm:text-base">
+            BETSPACEMAN
           </h1>
           <div className="flex items-center gap-2">
             <div className="text-right">
