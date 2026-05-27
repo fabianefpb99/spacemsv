@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import SpacemanGame from "@/components/SpacemanGame";
-import LoadingScreen from "@/components/LoadingScreen";
+import { SpacemanGame } from "@/components/SpacemanGame";
+import { LoadingScreen } from "@/components/LoadingScreen";
 
 export const Route = createFileRoute("/spaceman")({
   head: () => ({
