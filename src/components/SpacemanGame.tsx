@@ -829,12 +829,13 @@ export function SpacemanGame() {
           </div>
           <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-purple-950/60">
             <div
-              ref={bettingBarRef}
               className="h-full rounded-full transition-[width] ease-linear"
               style={{
+                width: `${bettingBarFill}%`,
                 background:
                   "repeating-linear-gradient(45deg,#ff4d4d,#ff4d4d 10px,#c91f1f 10px,#c91f1f 20px)",
                 boxShadow: "0 0 16px rgba(255,80,80,0.55)",
+                transitionDuration: `${bettingBarDuration}ms`,
               }}
             />
           </div>
