@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
+import { Link } from "@tanstack/react-router";
 import { Menu, Settings, Clock, ArrowRight, Minus, Plus, Volume2, VolumeX } from "lucide-react";
 import bgImage from "@/assets/space-bg-full.png";
 import astronautIdlePng from "@/assets/astronaut-idle.svg";
@@ -593,9 +594,11 @@ export function SpacemanGame() {
           <button className="rounded-md p-2 text-white hover:bg-white/10">
             <Menu className="h-7 w-7" strokeWidth={3} />
           </button>
-          <h1 className="font-display text-sm font-black leading-tight tracking-widest sm:text-base">
-            BETSPACEMAN
-          </h1>
+          <Link to="/">
+            <h1 className="font-display text-sm font-black leading-tight tracking-widest sm:text-base cursor-pointer">
+              BETSPACEMAN
+            </h1>
+          </Link>
           <div className="flex items-center gap-2">
             <div className="text-right">
               <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
