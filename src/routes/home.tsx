@@ -9,10 +9,22 @@ import gameMines from "@/assets/game-mines.jpg";
 import gameDice from "@/assets/game-dice.jpg";
 
 const LAST_WINS = [
-  { user: "Usuario123", game: "Spaceman", amount: 250000, mult: 1.85 },
-  { user: "Astronauta7", game: "Crash", amount: 120000, mult: 2.34 },
-  { user: "GalaxyWin", game: "Mines", amount: 80000, mult: 3.12 },
-  { user: "MoonPlayer", game: "Dice", amount: 60000, mult: 1.45 },
+  { user: "Usuario123", game: "Spaceman", amount: 252413, mult: 1.85 },
+  { user: "Astronauta7", game: "Crash", amount: 121876, mult: 2.34 },
+  { user: "GalaxyWin", game: "Mines", amount: 82776, mult: 3.12 },
+  { user: "MoonPlayer", game: "Dice", amount: 61329, mult: 1.45 },
+  { user: "NovaKing", game: "Spaceman", amount: 47892, mult: 1.27 },
+  { user: "StarHunter", game: "Crash", amount: 198344, mult: 2.91 },
+  { user: "CometRider", game: "Mines", amount: 35421, mult: 4.08 },
+  { user: "LunarFox", game: "Dice", amount: 78215, mult: 1.62 },
+  { user: "OrbitX", game: "Spaceman", amount: 134567, mult: 2.18 },
+  { user: "PlasmaGirl", game: "Crash", amount: 56892, mult: 1.74 },
+  { user: "VoidWalker", game: "Mines", amount: 312485, mult: 5.43 },
+  { user: "GalaxyKid", game: "Dice", amount: 22719, mult: 1.18 },
+  { user: "RocketJoe", game: "Spaceman", amount: 89124, mult: 1.96 },
+  { user: "NebulaQ", game: "Crash", amount: 145678, mult: 2.67 },
+  { user: "MeteorMax", game: "Mines", amount: 67432, mult: 3.21 },
+  { user: "AlphaStar", game: "Dice", amount: 41587, mult: 1.53 },
 ];
 
 export const Route = createFileRoute("/home")({
