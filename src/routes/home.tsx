@@ -269,6 +269,3 @@ function BottomCenter() {
 function _unused() {
   return null;
 }
-    </div>
-  );
-}
