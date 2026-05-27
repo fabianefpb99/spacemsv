@@ -290,12 +290,7 @@ function BottomCenter() {
   return (
     <Link to="/" className="-mt-7 flex w-16 flex-col items-center gap-1">
       <span className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-2 border-purple-400/60 shadow-lg shadow-purple-900/60">
-        <img
-          src={gameSpaceman}
-          alt=""
-          className="h-full w-full object-cover"
-          style={{ objectPosition: "50% 28%", transform: "scale(1.6)" }}
-        />
+        <img src={gameSpaceman} alt="" className="h-full w-full object-cover" />
       </span>
       <span className="text-[9px] font-bold tracking-wider text-purple-200">SPACEMAN</span>
     </Link>
