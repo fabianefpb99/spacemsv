@@ -452,7 +452,7 @@ export function SpacemanGame() {
     if (phase === "betting") {
       return { label: activeBet ? "APUESTA REGISTRADA" : "APOSTAR", cls: "btn-primary-green", disabled: !!activeBet || bet < MIN_BET || bet > balance };
     }
-    return { label: "ESPERANDO RONDA", cls: "btn-primary-green opacity-60", disabled: true };
+    return { label: "ESPERANDO RONDA", cls: "btn-primary-green opacity-50 brightness-75", disabled: true };
   })();
 
   return (
