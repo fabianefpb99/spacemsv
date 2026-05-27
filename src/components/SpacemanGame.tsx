@@ -471,7 +471,7 @@ export function SpacemanGame() {
   };
 
   const addToBet = (amount: number) => {
-    setBet((b) => Math.min(balance, b + amount));
+    setBet((b) => Math.min(Math.min(balance, MAX_BET), b + amount));
   };
 
   const countdownLabel = Math.min(BETTING_MS / 1000, Math.max(1, Math.ceil(countdown)));
@@ -857,10 +857,13 @@ export function SpacemanGame() {
               <Minus className="h-6 w-6" strokeWidth={3} />
             </button>
             <input
-              type="number"
-              value={bet}
-              min={MIN_BET}
-              onChange={(e) => setBet(Math.max(0, parseInt(e.target.value || "0", 10)))}
+              type="text"
+              value={formatCOP(bet)}
+              onChange={(e) => {
+                const digits = e.target.value.replace(/\D/g, "");
+                const n = parseInt(digits || "0", 10);
+                setBet(Math.min(MAX_BET, Math.max(0, n)));
+              }}
               disabled={!!activeBet}
               inputMode="numeric"
               className="no-spinner min-w-0 flex-1 rounded-lg border border-purple-500/30 bg-black/40 px-2 text-center font-display text-2xl font-bold text-white outline-none focus:border-purple-400/60 disabled:opacity-70 sm:text-3xl"
