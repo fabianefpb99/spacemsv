@@ -585,8 +585,8 @@ export function SpacemanGame() {
           <div className="flex items-center gap-2">
             <div className="text-right">
               <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
-              <div className="neon-green font-display text-xs font-bold sm:text-sm">
-                {formatCOP(balance)} COP
+              <div className="font-display text-xs font-bold sm:text-sm text-white">
+                <span className="neon-green mr-0.5">$</span>{formatCOP(balance)} COP
               </div>
             </div>
             <button className="rounded-md p-1.5 text-purple-200/80 hover:bg-white/5">
