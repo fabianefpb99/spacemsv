@@ -1,8 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Menu, Settings, Trophy, ChevronRight } from "lucide-react";
 import { useState } from "react";
-import heroImg from "@/assets/home-hero.jpg";
-import gameSpaceman from "@/assets/game-spaceman.jpg";
+import astronautRocket from "@/assets/astronaut-rocket.svg";
 import gameCrash from "@/assets/game-crash.jpg";
 import gameMines from "@/assets/game-mines.jpg";
 import gameDice from "@/assets/game-dice.jpg";
@@ -24,7 +23,7 @@ function formatCOP(n: number) {
 }
 
 const GAMES = [
-  { name: "SPACEMAN", img: gameSpaceman, tag: "POPULAR", tagCls: "bg-purple-600/40 text-purple-200 border-purple-500/50", to: "/" },
+  { name: "SPACEMAN", img: astronautRocket, tag: "POPULAR", tagCls: "bg-purple-600/40 text-purple-200 border-purple-500/50", to: "/" },
   { name: "CRASH", img: gameCrash, tag: "NUEVO", tagCls: "bg-emerald-600/30 text-emerald-200 border-emerald-500/50", to: "/home" },
   { name: "MINES", img: gameMines, tag: "POPULAR", tagCls: "bg-purple-600/40 text-purple-200 border-purple-500/50", to: "/home" },
   { name: "DICE", img: gameDice, tag: "CLÁSICO", tagCls: "bg-rose-600/30 text-rose-200 border-rose-500/50", to: "/home" },
@@ -73,16 +72,14 @@ function HomePage() {
         </div>
 
         {/* Hero banner */}
-        <section className="mt-3 overflow-hidden rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-950/60 to-indigo-950/60">
-          <div className="relative">
+        <section className="mt-3 overflow-hidden rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-950/80 via-indigo-950/70 to-[#1a0b3a]">
+          <div className="relative h-44 sm:h-52">
             <img
-              src={heroImg}
-              alt="BetSpaceman hero"
-              className="h-44 w-full object-cover sm:h-52"
-              width={1024}
-              height={576}
+              src={astronautRocket}
+              alt="Astronauta en cohete"
+              className="absolute right-0 top-1/2 h-[110%] -translate-y-1/2 object-contain"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#1a0b3a]/95 via-[#1a0b3a]/60 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#1a0b3a] via-[#1a0b3a]/70 to-transparent" />
             <div className="absolute inset-0 flex flex-col justify-center gap-2 p-4 sm:p-5">
               <p className="font-display text-xs tracking-widest text-purple-100/80">¡BIENVENIDO A</p>
               <h2 className="font-display text-2xl font-black leading-tight tracking-wide text-white drop-shadow sm:text-3xl">
