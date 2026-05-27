@@ -201,7 +201,8 @@ export function SpacemanGame() {
   const [multiplier, setMultiplier] = useState(1);
   const [crashPoint, setCrashPoint] = useState<number>(1.5);
   const [countdown, setCountdown] = useState(BETTING_MS / 1000);
-  const [bettingProgress, setBettingProgress] = useState(0);
+  const [bettingBarFill, setBettingBarFill] = useState(0);
+  const [bettingBarDuration, setBettingBarDuration] = useState(0);
   const [history, setHistory] = useState<HistoryItem[]>([
     { id: 1, value: 1.22 },
     { id: 2, value: 3.11 },
@@ -315,6 +316,7 @@ export function SpacemanGame() {
   const rafRef = useRef<number | null>(null);
   const phaseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sceneRef = useRef<HTMLDivElement | null>(null);
+  const bettingBarRafRef = useRef<number | null>(null);
 
   const updateSceneVisuals = useCallback((currentMultiplier: number) => {
     const scene = sceneRef.current;
@@ -332,6 +334,13 @@ export function SpacemanGame() {
 
   // ---- Game loop ----
   const startBetting = useCallback(() => {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    if (phaseTimer.current) {
+      clearTimeout(phaseTimer.current);
+      phaseTimer.current = null;
+    }
+    if (bettingBarRafRef.current) cancelAnimationFrame(bettingBarRafRef.current);
+
     setPhase("betting");
     setMultiplier(1);
     setCashedOutAt(null);
@@ -339,7 +348,15 @@ export function SpacemanGame() {
     setLastWin(null);
     setCrashPoint(generateCrashPoint());
     setCountdown(BETTING_MS / 1000);
-    setBettingProgress(0);
+    setBettingBarDuration(0);
+    setBettingBarFill(0);
+
+    bettingBarRafRef.current = requestAnimationFrame(() => {
+      bettingBarRafRef.current = requestAnimationFrame(() => {
+        setBettingBarDuration(BETTING_MS);
+        setBettingBarFill(100);
+      });
+    });
 
     const start = performance.now();
     const tick = () => {
@@ -347,12 +364,10 @@ export function SpacemanGame() {
       const remaining = Math.max(0, BETTING_MS - elapsed);
       if (remaining > 0) {
         setCountdown(remaining / 1000);
-        // La barra debe llenarse de forma continua durante los 5s completos
-        setBettingProgress(Math.min(100, (elapsed / BETTING_MS) * 100));
         rafRef.current = requestAnimationFrame(tick);
       } else {
         setCountdown(0);
-        setBettingProgress(100);
+        setBettingBarFill(100);
         startRunning();
       }
     };
@@ -432,6 +447,7 @@ export function SpacemanGame() {
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       if (phaseTimer.current) clearTimeout(phaseTimer.current);
+      if (bettingBarRafRef.current) cancelAnimationFrame(bettingBarRafRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -457,8 +473,6 @@ export function SpacemanGame() {
     setBet((b) => Math.min(balance, b + amount));
   };
 
-  const progressPct = phase === "betting" ? bettingProgress : 100;
-  const progressTransitionMs = phase === "betting" && bettingProgress > 1 ? 100 : 0;
   const countdownLabel = Math.min(BETTING_MS / 1000, Math.max(1, Math.ceil(countdown)));
 
   // ---- Render ----
@@ -815,13 +829,13 @@ export function SpacemanGame() {
           </div>
           <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-purple-950/60">
             <div
-              className="h-full rounded-full transition-[width]"
+              className="h-full rounded-full transition-[width] ease-linear"
               style={{
-                width: `${progressPct}%`,
+                width: `${bettingBarFill}%`,
                 background:
                   "repeating-linear-gradient(45deg,#ff4d4d,#ff4d4d 10px,#c91f1f 10px,#c91f1f 20px)",
                 boxShadow: "0 0 16px rgba(255,80,80,0.55)",
-                transitionDuration: `${progressTransitionMs}ms`,
+                transitionDuration: `${bettingBarDuration}ms`,
               }}
             />
           </div>
