@@ -480,12 +480,12 @@ export function SpacemanGame() {
   const buttonState = (() => {
     if (phase === "running" && activeBet != null && cashedOutAt == null) {
       const profit = activeBet * (multiplier - 1);
-      return { label: `RETIRAR  +${formatCOP(profit)}`, cls: "btn-primary-red", disabled: false };
+      return { label: `RETIRAR  +${formatCOP(profit)}`, cls: "btn-primary-red", disabled: false, key: "cashout" };
     }
     if (phase === "betting") {
-      return { label: activeBet ? "APUESTA REGISTRADA" : "APOSTAR", cls: "btn-primary-green", disabled: !!activeBet || bet < MIN_BET || bet > balance };
+      return { label: activeBet ? "APUESTA REGISTRADA" : "APOSTAR", cls: "btn-primary-green", disabled: !!activeBet || bet < MIN_BET || bet > balance, key: activeBet ? "registered" : "bet" };
     }
-    return { label: "ESPERANDO RONDA", cls: "btn-primary-green opacity-50 brightness-75", disabled: true };
+    return { label: "ESPERANDO RONDA", cls: "btn-primary-green opacity-50 brightness-75", disabled: true, key: "waiting" };
   })();
 
   return (
@@ -794,7 +794,7 @@ export function SpacemanGame() {
             </div>
 
             {cashedOutAt != null && lastWin != null && phase !== "crashed" && (
-              <div className="absolute right-2 top-0 rounded-lg border border-emerald-400/50 bg-emerald-950/60 px-3 py-2 text-right shadow-lg">
+              <div className="result-pop-win absolute right-2 top-0 rounded-lg border border-emerald-400/50 bg-emerald-950/60 px-3 py-2 text-right shadow-lg">
                 <div className="text-[10px] uppercase tracking-wider text-emerald-200">
                   Retirado a {cashedOutAt.toFixed(2)}x
                 </div>
@@ -805,7 +805,7 @@ export function SpacemanGame() {
             )}
 
             {phase === "crashed" && activeBet != null && cashedOutAt == null && (
-              <div className="absolute right-2 top-0 rounded-lg border border-rose-500/60 bg-rose-950/70 px-3 py-2 text-right">
+              <div className="result-pop-lose absolute right-2 top-0 rounded-lg border border-rose-500/60 bg-rose-950/70 px-3 py-2 text-right">
                 <div className="text-[10px] uppercase tracking-wider text-rose-200">Resultado</div>
                 <div className="font-display text-lg font-bold text-rose-300">PERDISTE</div>
               </div>
@@ -894,9 +894,10 @@ export function SpacemanGame() {
           </div>
 
           <button
+            key={buttonState.key}
             onClick={handleBetClick}
             disabled={buttonState.disabled}
-            className={`mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-2 font-display text-lg font-black uppercase sm:py-2.5 sm:text-xl ${buttonState.cls} disabled:cursor-not-allowed`}
+            className={`btn-primary-action btn-pop-in mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-2 font-display text-lg font-black uppercase sm:py-2.5 sm:text-xl ${buttonState.cls} disabled:cursor-not-allowed`}
           >
             <span>{buttonState.label}</span>
             <span className="grid h-5 w-5 place-items-center rounded-full border-2 border-white/80">
