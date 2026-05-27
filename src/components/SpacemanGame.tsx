@@ -83,32 +83,32 @@ function colorFor(mult: number) {
 
 // Crash distribution: heavily weighted toward early crashes
 // Tabla de probabilidades (acordada con el usuario):
-//   Exacto 1.00x        -> 3%
+//   Exacto 1.00x        -> 3.5%
 //   1.00x  - 1.15x      -> 20%
 //   1.15x  - 2.50x      -> 55%
 //   2.50x  - 7.00x      -> 16%
-//   7.00x  - 20.00x     -> 5%
+//   7.00x  - 20.00x     -> 4.5%
 //   20.00x - 50.00x     -> 0.8%
 //   50.00x - 100.00x    -> 0.18%
-//   100.00x+            -> 0.02%
+//   100.00x (jackpot)   -> 0.02%
 function generateCrashPoint(): number {
   const r = Math.random();
-  // 3% fallo instantáneo exacto en 1.00x
-  if (r < 0.03) return 1.0;
+  // 3.5% fallo instantaneo exacto en 1.00x
+  if (r < 0.035) return 1.0;
   // 20% zona 1.00x - 1.15x
-  if (r < 0.23) return +(1.0 + Math.random() * 0.15).toFixed(2);
+  if (r < 0.235) return +(1.0 + Math.random() * 0.15).toFixed(2);
   // 55% zona 1.15x - 2.50x
-  if (r < 0.78) return +(1.15 + Math.random() * 1.35).toFixed(2);
+  if (r < 0.785) return +(1.15 + Math.random() * 1.35).toFixed(2);
   // 16% zona 2.50x - 7.00x
-  if (r < 0.94) return +(2.5 + Math.random() * 4.5).toFixed(2);
-  // 5% zona 7.00x - 20.00x
-  if (r < 0.99) return +(7.0 + Math.random() * 13).toFixed(2);
+  if (r < 0.945) return +(2.5 + Math.random() * 4.5).toFixed(2);
+  // 4.5% zona 7.00x - 20.00x
+  if (r < 0.990) return +(7.0 + Math.random() * 13).toFixed(2);
   // 0.8% zona 20.00x - 50.00x
   if (r < 0.998) return +(20.0 + Math.random() * 30).toFixed(2);
   // 0.18% zona 50.00x - 100.00x
   if (r < 0.9998) return +(50.0 + Math.random() * 50).toFixed(2);
-  // 0.02% jackpot 100.00x - 500.00x
-  return +(100.0 + Math.random() * 400).toFixed(2);
+  // 0.02% jackpot exacto 100.00x
+  return 100.0;
 }
 
 function clamp(value: number, min: number, max: number) {
