@@ -293,6 +293,101 @@
   letter-spacing: 0.12em;
 }
 
+/* Premium primary button base — smooth transitions between states */
+.btn-primary-action {
+  position: relative;
+  overflow: hidden;
+  transition:
+    background 350ms cubic-bezier(.22,.61,.36,1),
+    box-shadow 350ms cubic-bezier(.22,.61,.36,1),
+    transform 200ms cubic-bezier(.22,.61,.36,1),
+    filter 200ms ease-out;
+  will-change: transform, box-shadow;
+}
+.btn-primary-action:active:not(:disabled) { transform: translateY(1px) scale(0.985); }
+.btn-primary-action::after {
+  /* moving shine sweep */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255,255,255,0.28) 50%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+  pointer-events: none;
+}
+.btn-primary-action.btn-primary-red::after {
+  animation: btn-shine 1.6s cubic-bezier(.22,.61,.36,1) infinite;
+}
+
+/* Pop when entering the RETIRAR (cashout) state */
+.btn-pop-in {
+  animation: btn-pop 360ms cubic-bezier(.34,1.56,.64,1);
+}
+
+/* Pulsing red glow while RETIRAR is available */
+.btn-primary-red {
+  animation: btn-pulse-red 1.4s ease-in-out infinite;
+}
+
+@keyframes btn-pop {
+  0%   { transform: scale(0.92); filter: brightness(1.25); }
+  55%  { transform: scale(1.04); filter: brightness(1.15); }
+  100% { transform: scale(1);    filter: brightness(1); }
+}
+
+@keyframes btn-pulse-red {
+  0%, 100% {
+    box-shadow:
+      0 0 22px rgba(255,80,80,0.55),
+      0 8px 24px rgba(0,0,0,0.4),
+      inset 0 -3px 0 rgba(0,0,0,0.25),
+      inset 0 1px 0 rgba(255,255,255,0.35);
+  }
+  50% {
+    box-shadow:
+      0 0 40px rgba(255,110,110,0.95),
+      0 0 70px rgba(255,60,60,0.55),
+      0 8px 28px rgba(0,0,0,0.45),
+      inset 0 -3px 0 rgba(0,0,0,0.25),
+      inset 0 1px 0 rgba(255,255,255,0.45);
+  }
+}
+
+@keyframes btn-shine {
+  0%   { transform: translateX(-120%); }
+  60%  { transform: translateX(120%); }
+  100% { transform: translateX(120%); }
+}
+
+/* Result panels (win / lose) */
+.result-pop-win {
+  animation: result-pop 520ms cubic-bezier(.34,1.56,.64,1),
+             win-glow 1.6s ease-in-out 520ms infinite;
+}
+.result-pop-lose {
+  animation: result-pop 420ms cubic-bezier(.34,1.56,.64,1),
+             lose-shake 420ms cubic-bezier(.36,.07,.19,.97);
+}
+@keyframes result-pop {
+  0%   { opacity: 0; transform: translateY(-6px) scale(0.85); }
+  60%  { opacity: 1; transform: translateY(0)    scale(1.06); }
+  100% { opacity: 1; transform: translateY(0)    scale(1); }
+}
+@keyframes win-glow {
+  0%, 100% { box-shadow: 0 0 18px rgba(46,255,161,0.35), 0 8px 24px rgba(0,0,0,0.4); }
+  50%      { box-shadow: 0 0 34px rgba(46,255,161,0.75), 0 0 60px rgba(46,255,161,0.35), 0 8px 24px rgba(0,0,0,0.4); }
+}
+@keyframes lose-shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-3px); }
+  40%, 60% { transform: translateX(3px); }
+}
+
 .astro-idle   { animation: idle-float 3.4s ease-in-out infinite; }
 .astro-flying { animation: flying 0.9s cubic-bezier(.22,.61,.36,1) forwards, pulse-glow 2s ease-in-out infinite; }
 .astro-wobble { animation: wobble 0.45s ease-in-out infinite; }
