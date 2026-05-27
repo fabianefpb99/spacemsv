@@ -173,7 +173,102 @@ function HomePage() {
             <ChevronRight className="h-4 w-4" />
           </button>
         </section>
+
+        {/* Últimas ganancias */}
+        <section className="mt-5 rounded-xl border border-purple-500/30 bg-[#0c0620]/80 p-3 sm:p-4">
+          <h3 className="font-display text-xs font-bold uppercase tracking-widest text-white">
+            Últimas ganancias
+          </h3>
+          <ul className="mt-3 space-y-2">
+            {LAST_WINS.map((w) => (
+              <li
+                key={w.user}
+                className="flex items-center gap-3 rounded-lg border border-purple-500/20 bg-[#150830]/60 px-2.5 py-2"
+              >
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-purple-600/30 ring-1 ring-purple-400/30">
+                  <User className="h-4 w-4 text-purple-200" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-xs font-semibold text-white">{w.user}</div>
+                  <div className="text-[10px] uppercase tracking-wider text-purple-300/70">{w.game}</div>
+                </div>
+                <div className="text-right">
+                  <div className="font-display text-xs font-bold">
+                    <span className="neon-green mr-0.5">$</span>
+                    <span className="text-white">{formatCOP(w.amount)} COP</span>
+                  </div>
+                  <div className="text-[10px] font-bold text-purple-300">{w.mult.toFixed(2)}x</div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* Invita y gana */}
+        <section className="mt-4 flex items-center gap-3 rounded-xl border border-purple-500/30 bg-gradient-to-r from-[#1a0b3a]/80 to-[#0c0620] p-3 sm:p-4">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-pink-500/15 ring-1 ring-pink-400/30">
+            <Gift className="h-6 w-6 text-pink-400" strokeWidth={2.5} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="font-display text-sm font-bold uppercase tracking-wider text-white">
+              Invita y gana
+            </div>
+            <div className="text-[11px] text-purple-200/70">
+              Obtén 5% de tus referidos
+            </div>
+          </div>
+          <button className="rounded-md bg-purple-600 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-purple-900/50 hover:bg-purple-500">
+            Invitar
+          </button>
+        </section>
+
+        {/* Spacer for bottom nav */}
+        <div className="h-24" />
       </div>
+
+      {/* Bottom navigation */}
+      <nav
+        className="fixed inset-x-0 bottom-0 z-30 border-t border-purple-500/20 bg-[#060210]/95 backdrop-blur"
+        style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+      >
+        <div className="mx-auto flex max-w-md items-end justify-between px-4 pt-2 pb-2 sm:max-w-lg">
+          <BottomItem icon={<Home className="h-5 w-5" />} label="INICIO" active />
+          <BottomItem icon={<Gamepad2 className="h-5 w-5" />} label="JUEGOS" />
+          <BottomCenter />
+          <BottomItem icon={<Wallet className="h-5 w-5" />} label="DEPÓSITO" />
+          <BottomItem icon={<User className="h-5 w-5" />} label="PERFIL" />
+        </div>
+      </nav>
+    </div>
+  );
+}
+
+function BottomItem({ icon, label, active }: { icon: React.ReactNode; label: string; active?: boolean }) {
+  return (
+    <button
+      className={`flex w-14 flex-col items-center gap-1 ${active ? "text-emerald-400" : "text-purple-300/70 hover:text-purple-200"}`}
+    >
+      {icon}
+      <span className="text-[9px] font-bold tracking-wider">{label}</span>
+    </button>
+  );
+}
+
+function BottomCenter() {
+  return (
+    <Link to="/" className="-mt-7 flex w-16 flex-col items-center gap-1">
+      <span className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-purple-400/60 bg-gradient-to-br from-purple-600 to-indigo-700 shadow-lg shadow-purple-900/60">
+        <img src={astronautRocket} alt="" className="h-9 w-9 object-contain" />
+      </span>
+      <span className="text-[9px] font-bold tracking-wider text-purple-200">SPACEMAN</span>
+    </Link>
+  );
+}
+
+/* sentinel */
+function _unused() {
+  return null;
+}
     </div>
   );
 }
