@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Menu, Settings, Trophy, ChevronRight, Gift, Home, Gamepad2, Wallet, User } from "lucide-react";
 import { useState } from "react";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
+import heroImg from "@/assets/home-hero.jpg";
 import gameSpaceman from "@/assets/game-spaceman.jpg";
 import gameCrash from "@/assets/game-crash.jpg";
 import gameMines from "@/assets/game-mines.jpg";
@@ -80,14 +81,14 @@ function HomePage() {
         </div>
 
         {/* Hero banner */}
-        <section className="mt-3 overflow-hidden rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-950/80 via-indigo-950/70 to-[#1a0b3a]">
+        <section className="mt-3 overflow-hidden rounded-2xl border border-purple-500/30 bg-[#1a0b3a]">
           <div className="relative h-44 sm:h-52">
             <img
-              src={astronautRocket}
-              alt="Astronauta en cohete"
-              className="absolute right-0 top-1/2 h-[110%] -translate-y-1/2 object-contain"
+              src={heroImg}
+              alt="Astronauta volando en el universo"
+              className="absolute inset-0 h-full w-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#1a0b3a] via-[#1a0b3a]/70 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#1a0b3a] via-[#1a0b3a]/80 to-transparent" />
             <div className="absolute inset-0 flex flex-col justify-center gap-2 p-4 sm:p-5">
               <p className="font-display text-xs tracking-widest text-purple-100/80">¡BIENVENIDO A</p>
               <h2 className="font-display text-2xl font-black leading-tight tracking-wide text-white drop-shadow sm:text-3xl">
