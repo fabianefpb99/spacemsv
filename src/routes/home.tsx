@@ -289,8 +289,13 @@ function BottomItem({ icon, label, active }: { icon: React.ReactNode; label: str
 function BottomCenter() {
   return (
     <Link to="/" className="-mt-7 flex w-16 flex-col items-center gap-1">
-      <span className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-purple-400/60 bg-gradient-to-br from-purple-600 to-indigo-700 shadow-lg shadow-purple-900/60">
-        <img src={astronautRocket} alt="" className="h-9 w-9 object-contain" />
+      <span className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-2 border-purple-400/60 shadow-lg shadow-purple-900/60">
+        <img
+          src={gameSpaceman}
+          alt=""
+          className="h-full w-full object-cover"
+          style={{ objectPosition: "50% 28%", transform: "scale(1.6)" }}
+        />
       </span>
       <span className="text-[9px] font-bold tracking-wider text-purple-200">SPACEMAN</span>
     </Link>
