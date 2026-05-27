@@ -457,6 +457,7 @@ export function SpacemanGame() {
   };
 
   const progressPct = phase === "betting" ? bettingProgress : 100;
+  const progressTransitionMs = phase === "betting" && bettingProgress > 1 ? 100 : 0;
   const countdownLabel = Math.min(BETTING_MS / 1000, Math.max(1, Math.ceil(countdown)));
 
   // ---- Render ----
@@ -819,7 +820,7 @@ export function SpacemanGame() {
                 background:
                   "repeating-linear-gradient(45deg,#ff4d4d,#ff4d4d 10px,#c91f1f 10px,#c91f1f 20px)",
                 boxShadow: "0 0 16px rgba(255,80,80,0.55)",
-                transitionDuration: phase === "betting" ? "100ms" : "0ms",
+                transitionDuration: `${progressTransitionMs}ms`,
               }}
             />
           </div>
