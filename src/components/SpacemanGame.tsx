@@ -11,6 +11,7 @@ type Phase = "betting" | "running" | "crashed";
 type HistoryItem = { id: number; value: number };
 
 const MIN_BET = 500;
+const MAX_BET = 100000;
 const BET_STEP = 500;
 const QUICK_ADDS = [1000, 2000, 5000, 10000];
 const BETTING_MS = 5000;
@@ -866,7 +867,7 @@ export function SpacemanGame() {
             />
             <button
               className="btn-bet flex h-14 w-14 shrink-0 items-center justify-center rounded-lg text-2xl font-black sm:h-16 sm:w-16"
-              onClick={() => setBet((b) => Math.min(balance, b + BET_STEP))}
+              onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b + BET_STEP))}
               disabled={!!activeBet}
               aria-label="Sumar 500"
             >
