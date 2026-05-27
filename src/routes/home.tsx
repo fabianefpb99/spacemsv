@@ -193,29 +193,47 @@ function HomePage() {
           <h3 className="font-display text-xs font-bold uppercase tracking-widest text-white">
             Últimas ganancias
           </h3>
-          <ul className="mt-3 space-y-2">
-            {LAST_WINS.map((w) => (
-              <li
-                key={w.user}
-                className="flex items-center gap-3 rounded-lg border border-purple-500/20 bg-[#150830]/60 px-2.5 py-2"
-              >
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-purple-600/30 ring-1 ring-purple-400/30">
-                  <User className="h-4 w-4 text-purple-200" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="truncate text-xs font-semibold text-white">{w.user}</div>
-                  <div className="text-[10px] uppercase tracking-wider text-purple-300/70">{w.game}</div>
-                </div>
-                <div className="text-right">
-                  <div className="font-display text-xs font-bold">
-                    <span className="neon-green mr-0.5">$</span>
-                    <span className="text-white">{formatCOP(w.amount)} COP</span>
+          <div
+            className="relative mt-3 overflow-hidden"
+            style={{
+              height: "calc(4 * 52px)",
+              maskImage: "linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent)",
+              WebkitMaskImage: "linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent)",
+            }}
+          >
+            <ul
+              className="flex flex-col gap-2"
+              style={{ animation: `wins-scroll ${LAST_WINS.length * 2.2}s linear infinite` }}
+            >
+              {[...LAST_WINS, ...LAST_WINS].map((w, i) => (
+                <li
+                  key={`${w.user}-${i}`}
+                  className="flex h-[44px] items-center gap-3 rounded-lg border border-purple-500/20 bg-[#150830]/60 px-2.5"
+                >
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-purple-600/30 ring-1 ring-purple-400/30">
+                    <User className="h-4 w-4 text-purple-200" />
                   </div>
-                  <div className="text-[10px] font-bold text-purple-300">{w.mult.toFixed(2)}x</div>
-                </div>
-              </li>
-            ))}
-          </ul>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-xs font-semibold text-white">{w.user}</div>
+                    <div className="text-[10px] uppercase tracking-wider text-purple-300/70">{w.game}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-display text-xs font-bold">
+                      <span className="neon-green mr-0.5">$</span>
+                      <span className="text-white">{formatCOP(w.amount)} COP</span>
+                    </div>
+                    <div className="text-[10px] font-bold text-purple-300">{w.mult.toFixed(2)}x</div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <style>{`
+            @keyframes wins-scroll {
+              0% { transform: translateY(0); }
+              100% { transform: translateY(calc(-${LAST_WINS.length} * 52px)); }
+            }
+          `}</style>
         </section>
 
         {/* Invita y gana */}
