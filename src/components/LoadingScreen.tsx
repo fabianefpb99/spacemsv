@@ -41,6 +41,7 @@ function preloadAsset(asset: { src: string; type: "image" | "audio" }): Promise<
 export function LoadingScreen({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
+  const [targetProgress, setTargetProgress] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -50,7 +51,7 @@ export function LoadingScreen({ children }: { children: React.ReactNode }) {
     const tasks = ASSETS.map((a) =>
       preloadAsset(a).then(() => {
         completed += 1;
-        if (!cancelled) setProgress(Math.round((completed / ASSETS.length) * 100));
+        if (!cancelled) setTargetProgress(Math.round((completed / ASSETS.length) * 95));
       })
     );
 
@@ -59,7 +60,7 @@ export function LoadingScreen({ children }: { children: React.ReactNode }) {
       const wait = Math.max(0, MIN_VISIBLE_MS - elapsed);
       setTimeout(() => {
         if (!cancelled) {
-          setProgress(100);
+          setTargetProgress(100);
           setLoading(false);
         }
       }, wait);
@@ -69,6 +70,21 @@ export function LoadingScreen({ children }: { children: React.ReactNode }) {
       cancelled = true;
     };
   }, []);
+
+  // Smoothly animate the visible progress toward the target so the bar fills continuously
+  useEffect(() => {
+    let raf: number;
+    const tick = () => {
+      setProgress((p) => {
+        if (p >= targetProgress) return p;
+        const delta = Math.max(0.4, (targetProgress - p) * 0.06);
+        return Math.min(targetProgress, p + delta);
+      });
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [targetProgress]);
 
   // Re-show loader if the app was in background for a long time
   useEffect(() => {
@@ -81,11 +97,12 @@ export function LoadingScreen({ children }: { children: React.ReactNode }) {
         hiddenAt = null;
         if (away >= BACKGROUND_THRESHOLD_MS) {
           setProgress(0);
+          setTargetProgress(0);
           setLoading(true);
           let p = 0;
           const id = setInterval(() => {
             p = Math.min(100, p + 10);
-            setProgress(p);
+            setTargetProgress(p);
             if (p >= 100) {
               clearInterval(id);
               setTimeout(() => setLoading(false), 250);
