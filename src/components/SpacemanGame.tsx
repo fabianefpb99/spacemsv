@@ -639,7 +639,7 @@ export function SpacemanGame() {
                       className="pointer-events-none absolute -inset-2 rounded-xl bg-fuchsia-500/20 blur-xl animate-[msg-pulse_2.2s_ease-in-out_infinite]"
                     />
                     <p
-                      className="relative font-display text-[11px] sm:text-[13px] font-bold italic leading-tight text-white/95 drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)] animate-[msg-beat_2.2s_ease-in-out_infinite] text-right"
+                      className="relative font-display text-[11px] sm:text-[13px] font-bold italic leading-tight text-white/95 drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)] animate-[msg-beat_2.2s_ease-in-out_infinite] text-right [text-wrap:balance]"
                       style={{ textShadow: "0 0 12px rgba(180,140,255,0.55)" }}
                     >
                       {flightMessage}
