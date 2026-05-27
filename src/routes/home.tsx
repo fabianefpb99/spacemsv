@@ -1,10 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Menu, Settings, Trophy, ChevronRight } from "lucide-react";
+import { Menu, Settings, Trophy, ChevronRight, Gift, Home, Gamepad2, Wallet, User } from "lucide-react";
 import { useState } from "react";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
 import gameCrash from "@/assets/game-crash.jpg";
 import gameMines from "@/assets/game-mines.jpg";
 import gameDice from "@/assets/game-dice.jpg";
+
+const LAST_WINS = [
+  { user: "Usuario123", game: "Spaceman", amount: 250000, mult: 1.85 },
+  { user: "Astronauta7", game: "Crash", amount: 120000, mult: 2.34 },
+  { user: "GalaxyWin", game: "Mines", amount: 80000, mult: 3.12 },
+  { user: "MoonPlayer", game: "Dice", amount: 60000, mult: 1.45 },
+];
 
 export const Route = createFileRoute("/home")({
   head: () => ({
