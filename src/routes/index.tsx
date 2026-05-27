@@ -1,15 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { SpacemanGame } from "@/components/SpacemanGame";
-import { LoadingScreen } from "@/components/LoadingScreen";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
   component: Page,
 });
 
 function Page() {
-  return (
-    <LoadingScreen>
-      <SpacemanGame />
-    </LoadingScreen>
-  );
+  return <Navigate to="/home" />;
 }
