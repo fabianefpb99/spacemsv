@@ -343,8 +343,8 @@ export function SpacemanGame() {
     const tick = () => {
       const elapsed = performance.now() - start;
       const remaining = Math.max(0, BETTING_MS - elapsed);
-      setCountdown(Math.ceil(remaining / 1000));
       if (remaining > 0) {
+        setCountdown(remaining / 1000);
         rafRef.current = requestAnimationFrame(tick);
       } else {
         startRunning();
@@ -452,6 +452,7 @@ export function SpacemanGame() {
   };
 
   const progressPct = phase === "betting" ? (1 - countdown / (BETTING_MS / 1000)) * 100 : 100;
+  const countdownLabel = Math.ceil(countdown);
 
   // ---- Render ----
   const buttonState = (() => {
@@ -802,7 +803,7 @@ export function SpacemanGame() {
               </span>
             </div>
             <span className="neon-red font-display text-base font-bold shrink-0 tabular-nums w-12 text-right brightness-125">
-              {phase === "betting" ? `${countdown}s` : ""}
+              {phase === "betting" ? `${countdownLabel}s` : ""}
             </span>
           </div>
           <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-purple-950/60">
