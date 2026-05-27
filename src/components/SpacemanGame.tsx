@@ -347,7 +347,8 @@ export function SpacemanGame() {
       const remaining = Math.max(0, BETTING_MS - elapsed);
       if (remaining > 0) {
         setCountdown(remaining / 1000);
-        setBettingProgress((elapsed / BETTING_MS) * 100);
+        // La barra se completa cuando queda 1s en pantalla (sensación de "listo")
+        setBettingProgress(Math.min(100, (elapsed / (BETTING_MS - 1000)) * 100));
         rafRef.current = requestAnimationFrame(tick);
       } else {
         setCountdown(0);
