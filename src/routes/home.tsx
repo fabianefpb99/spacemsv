@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Menu, Settings, Trophy, ChevronRight, Gift, Home, Gamepad2, Wallet, User } from "lucide-react";
 import { useState } from "react";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
+import gameSpaceman from "@/assets/game-spaceman.jpg";
 import gameCrash from "@/assets/game-crash.jpg";
 import gameMines from "@/assets/game-mines.jpg";
 import gameDice from "@/assets/game-dice.jpg";
@@ -30,7 +31,7 @@ function formatCOP(n: number) {
 }
 
 const GAMES = [
-  { name: "SPACEMAN", img: astronautRocket, tag: "POPULAR", tagCls: "bg-purple-600/40 text-purple-200 border-purple-500/50", to: "/" },
+  { name: "SPACEMAN", img: gameSpaceman, tag: "POPULAR", tagCls: "bg-purple-600/40 text-purple-200 border-purple-500/50", to: "/" },
   { name: "CRASH", img: gameCrash, tag: "NUEVO", tagCls: "bg-emerald-600/30 text-emerald-200 border-emerald-500/50", to: "/home" },
   { name: "MINES", img: gameMines, tag: "POPULAR", tagCls: "bg-purple-600/40 text-purple-200 border-purple-500/50", to: "/home" },
   { name: "DICE", img: gameDice, tag: "CLÁSICO", tagCls: "bg-rose-600/30 text-rose-200 border-rose-500/50", to: "/home" },
