@@ -44,7 +44,7 @@ function formatCOP(n: number) {
 }
 
 const GAMES = [
-  { name: "SPACEMAN", img: gameSpaceman, tag: "POPULAR", tagCls: "bg-purple-600/40 text-purple-200 border-purple-500/50", to: "/" },
+  { name: "SPACEMAN", img: gameSpaceman, tag: "POPULAR", tagCls: "bg-purple-600/40 text-purple-200 border-purple-500/50", to: "/spaceman" },
   { name: "CRASH", img: gameCrash, tag: "NUEVO", tagCls: "bg-emerald-600/30 text-emerald-200 border-emerald-500/50", to: "/home" },
   { name: "MINES", img: gameMines, tag: "POPULAR", tagCls: "bg-purple-600/40 text-purple-200 border-purple-500/50", to: "/home" },
   { name: "DICE", img: gameDice, tag: "CLÁSICO", tagCls: "bg-rose-600/30 text-rose-200 border-rose-500/50", to: "/home" },
@@ -290,7 +290,7 @@ function BottomItem({ icon, label, active }: { icon: React.ReactNode; label: str
 
 function BottomCenter() {
   return (
-    <Link to="/" className="-mt-7 flex w-16 flex-col items-center gap-1">
+    <Link to="/spaceman" className="-mt-7 flex w-16 flex-col items-center gap-1">
       <span className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-2 border-purple-400/60 shadow-lg shadow-purple-900/60">
         <img src={gameSpaceman} alt="" className="h-full w-full object-cover" />
       </span>
