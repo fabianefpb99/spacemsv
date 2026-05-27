@@ -794,7 +794,7 @@ export function SpacemanGame() {
             </div>
 
             {cashedOutAt != null && lastWin != null && phase !== "crashed" && (
-              <div className="absolute right-2 top-0 rounded-lg border border-emerald-400/50 bg-emerald-950/60 px-3 py-2 text-right shadow-lg">
+              <div className="result-pop-win absolute right-2 top-0 rounded-lg border border-emerald-400/50 bg-emerald-950/60 px-3 py-2 text-right shadow-lg">
                 <div className="text-[10px] uppercase tracking-wider text-emerald-200">
                   Retirado a {cashedOutAt.toFixed(2)}x
                 </div>
@@ -805,7 +805,7 @@ export function SpacemanGame() {
             )}
 
             {phase === "crashed" && activeBet != null && cashedOutAt == null && (
-              <div className="absolute right-2 top-0 rounded-lg border border-rose-500/60 bg-rose-950/70 px-3 py-2 text-right">
+              <div className="result-pop-lose absolute right-2 top-0 rounded-lg border border-rose-500/60 bg-rose-950/70 px-3 py-2 text-right">
                 <div className="text-[10px] uppercase tracking-wider text-rose-200">Resultado</div>
                 <div className="font-display text-lg font-bold text-rose-300">PERDISTE</div>
               </div>
