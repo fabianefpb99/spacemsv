@@ -480,12 +480,12 @@ export function SpacemanGame() {
   const buttonState = (() => {
     if (phase === "running" && activeBet != null && cashedOutAt == null) {
       const profit = activeBet * (multiplier - 1);
-      return { label: `RETIRAR  +${formatCOP(profit)}`, cls: "btn-primary-red", disabled: false };
+      return { label: `RETIRAR  +${formatCOP(profit)}`, cls: "btn-primary-red", disabled: false, key: "cashout" };
     }
     if (phase === "betting") {
-      return { label: activeBet ? "APUESTA REGISTRADA" : "APOSTAR", cls: "btn-primary-green", disabled: !!activeBet || bet < MIN_BET || bet > balance };
+      return { label: activeBet ? "APUESTA REGISTRADA" : "APOSTAR", cls: "btn-primary-green", disabled: !!activeBet || bet < MIN_BET || bet > balance, key: activeBet ? "registered" : "bet" };
     }
-    return { label: "ESPERANDO RONDA", cls: "btn-primary-green opacity-50 brightness-75", disabled: true };
+    return { label: "ESPERANDO RONDA", cls: "btn-primary-green opacity-50 brightness-75", disabled: true, key: "waiting" };
   })();
 
   return (
