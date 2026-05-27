@@ -1,0 +1,175 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Menu, Settings, Trophy, ChevronRight } from "lucide-react";
+import { useState } from "react";
+import heroImg from "@/assets/home-hero.jpg";
+import gameSpaceman from "@/assets/game-spaceman.jpg";
+import gameCrash from "@/assets/game-crash.jpg";
+import gameMines from "@/assets/game-mines.jpg";
+import gameDice from "@/assets/game-dice.jpg";
+
+export const Route = createFileRoute("/home")({
+  head: () => ({
+    meta: [
+      { title: "Inicio — BetSpaceman" },
+      { name: "description", content: "Tu home en BetSpaceman: juegos destacados, jackpot y más." },
+      { property: "og:title", content: "Inicio — BetSpaceman" },
+      { property: "og:description", content: "Tu home en BetSpaceman: juegos destacados, jackpot y más." },
+    ],
+  }),
+  component: HomePage,
+});
+
+function formatCOP(n: number) {
+  return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
+}
+
+const GAMES = [
+  { name: "SPACEMAN", img: gameSpaceman, tag: "POPULAR", tagCls: "bg-purple-600/40 text-purple-200 border-purple-500/50", to: "/" },
+  { name: "CRASH", img: gameCrash, tag: "NUEVO", tagCls: "bg-emerald-600/30 text-emerald-200 border-emerald-500/50", to: "/home" },
+  { name: "MINES", img: gameMines, tag: "POPULAR", tagCls: "bg-purple-600/40 text-purple-200 border-purple-500/50", to: "/home" },
+  { name: "DICE", img: gameDice, tag: "CLÁSICO", tagCls: "bg-rose-600/30 text-rose-200 border-rose-500/50", to: "/home" },
+];
+
+function HomePage() {
+  const [balance] = useState(100000);
+  const [online] = useState(219);
+  const [slide, setSlide] = useState(0);
+  const slides = 4;
+
+  return (
+    <div className="min-h-screen bg-[#060210] text-white">
+      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4">
+        {/* Header — must match SpacemanGame header exactly, sin icono de sonido */}
+        <header
+          className="flex items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
+          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.75rem)" }}
+        >
+          <button className="rounded-md p-2 text-white hover:bg-white/10">
+            <Menu className="h-7 w-7" strokeWidth={3} />
+          </button>
+          <h1 className="font-display text-sm font-black leading-tight tracking-widest sm:text-base">
+            BETSPACEMAN
+          </h1>
+          <div className="flex items-center gap-2">
+            <div className="text-right">
+              <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
+              <div className="font-display text-xs font-bold sm:text-sm text-white">
+                <span className="neon-green mr-0.5">$</span>{formatCOP(balance)} COP
+              </div>
+            </div>
+            <button className="rounded-md p-1.5 text-purple-200/80 hover:bg-white/5">
+              <Settings className="h-5 w-5 sm:h-6 sm:w-6" />
+            </button>
+          </div>
+        </header>
+
+        {/* Online indicator */}
+        <div className="mt-3 flex items-center gap-2 text-sm">
+          <span className="relative inline-flex h-2.5 w-2.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
+          </span>
+          <span className="font-semibold text-emerald-300/90">{online} ONLINE</span>
+        </div>
+
+        {/* Hero banner */}
+        <section className="mt-3 overflow-hidden rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-950/60 to-indigo-950/60">
+          <div className="relative">
+            <img
+              src={heroImg}
+              alt="BetSpaceman hero"
+              className="h-44 w-full object-cover sm:h-52"
+              width={1024}
+              height={576}
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#1a0b3a]/95 via-[#1a0b3a]/60 to-transparent" />
+            <div className="absolute inset-0 flex flex-col justify-center gap-2 p-4 sm:p-5">
+              <p className="font-display text-xs tracking-widest text-purple-100/80">¡BIENVENIDO A</p>
+              <h2 className="font-display text-2xl font-black leading-tight tracking-wide text-white drop-shadow sm:text-3xl">
+                BETSPACEMAN!
+              </h2>
+              <p className="max-w-[55%] text-xs text-purple-100/80 sm:text-sm">
+                Apuesta, multiplica<br />y gana en las estrellas.
+              </p>
+              <Link
+                to="/"
+                className="mt-1 inline-flex w-fit items-center justify-center rounded-md bg-purple-600 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-purple-900/50 transition hover:bg-purple-500"
+              >
+                Jugar ahora
+              </Link>
+            </div>
+          </div>
+          <div className="flex items-center justify-center gap-1.5 py-2.5">
+            {Array.from({ length: slides }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setSlide(i)}
+                aria-label={`Slide ${i + 1}`}
+                className={`h-1.5 rounded-full transition-all ${i === slide ? "w-4 bg-purple-400" : "w-1.5 bg-purple-200/30"}`}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* Featured games */}
+        <section className="mt-5">
+          <div className="flex items-end justify-between">
+            <h3 className="font-display text-sm font-bold uppercase tracking-widest text-white">
+              Juegos destacados
+            </h3>
+            <button className="text-xs font-semibold text-purple-300 hover:text-purple-200">
+              Ver todos
+            </button>
+          </div>
+          <div className="mt-3 grid grid-cols-4 gap-2 sm:gap-3">
+            {GAMES.map((g) => (
+              <Link
+                key={g.name}
+                to={g.to}
+                className="group flex flex-col overflow-hidden rounded-xl border border-purple-500/20 bg-[#0c0620] transition hover:border-purple-400/50"
+              >
+                <div className="aspect-square w-full overflow-hidden">
+                  <img
+                    src={g.img}
+                    alt={g.name}
+                    loading="lazy"
+                    width={512}
+                    height={512}
+                    className="h-full w-full object-cover transition group-hover:scale-105"
+                  />
+                </div>
+                <div className="flex flex-col items-center gap-1 px-1 py-2">
+                  <span className="font-display text-[10px] font-bold tracking-wider text-white sm:text-xs">
+                    {g.name}
+                  </span>
+                  <span className={`rounded-full border px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider sm:text-[9px] ${g.tagCls}`}>
+                    {g.tag}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* Jackpot */}
+        <section className="mt-5 flex items-center gap-3 rounded-xl border border-purple-500/30 bg-gradient-to-r from-[#1a0b3a]/80 to-[#0c0620] p-3 sm:p-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-amber-500/20 sm:h-14 sm:w-14">
+            <Trophy className="h-7 w-7 text-amber-400 sm:h-8 sm:w-8" strokeWidth={2.5} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-[10px] uppercase tracking-widest text-purple-200/70">
+              Jackpot activo
+            </div>
+            <div className="font-display text-base font-bold sm:text-lg">
+              <span className="neon-green mr-1">$</span>
+              <span className="text-white">{formatCOP(25000000)} COP</span>
+            </div>
+          </div>
+          <button className="rounded-full border border-purple-500/40 p-2 text-purple-200 hover:bg-purple-500/10">
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </section>
+      </div>
+    </div>
+  );
+}
