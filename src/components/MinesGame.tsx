@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, Settings, Minus, Plus, Volume2, VolumeX, ChevronDown, Bomb, Gem, TrendingUp, User } from "lucide-react";
-import { setMuted as setAudioMuted, playCrashSound, playCashoutSound, playRevealSound, resetRevealStreak } from "@/lib/gameAudio";
+import { setMuted as setAudioMuted, playCrashSound, playCashoutSound, isMuted } from "@/lib/gameAudio";
+import coinRevealSfx from "@/assets/sfx/coin-reveal.mp3";
 
 type Phase = "betting" | "playing" | "lost" | "cashed";
 
@@ -14,6 +15,37 @@ const MIN_BET = 500;
 const MAX_BET = 100000;
 const BET_STEP = 500;
 const QUICK_ADDS = [1000, 2000, 5000, 10000];
+
+// Preloaded pool for the reveal SFX — allows rapid overlapping playback.
+const REVEAL_POOL_SIZE = 4;
+let revealPool: HTMLAudioElement[] | null = null;
+let revealIdx = 0;
+let revealStreak = 0;
+function ensureRevealPool() {
+  if (typeof window === "undefined") return;
+  if (revealPool) return;
+  revealPool = Array.from({ length: REVEAL_POOL_SIZE }, () => {
+    const a = new Audio(coinRevealSfx);
+    a.preload = "auto";
+    a.volume = 0.85;
+    return a;
+  });
+}
+function playReveal() {
+  if (isMuted()) return;
+  ensureRevealPool();
+  if (!revealPool) return;
+  const a = revealPool[revealIdx % REVEAL_POOL_SIZE];
+  revealIdx++;
+  try {
+    a.currentTime = 0;
+    // Slight pitch-like change via playbackRate, escalates with streak for retention
+    a.playbackRate = Math.min(1.4, 1 + revealStreak * 0.04);
+    revealStreak++;
+    void a.play();
+  } catch {}
+}
+function resetRevealStreak() { revealStreak = 0; }
 
 function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
@@ -123,19 +155,18 @@ export function MinesGame() {
   }, []);
   useEffect(() => {
     const t = setInterval(() => {
-      const burst = 1 + Math.floor(Math.random() * 3); // 1-3 per tick
-      const items: HistoryItem[] = [];
-      for (let i = 0; i < burst; i++) {
-        const exploded = Math.random() < 0.18;
-        const mn = 1 + Math.floor(Math.random() * 8);
-        const pk = exploded ? 0 : 1 + Math.floor(Math.random() * Math.min(6, TILES - mn));
-        const mult = exploded ? 0 : multiplierFor(mn, pk);
-        const stake = [500, 1000, 2000, 5000, 10000][Math.floor(Math.random() * 5)];
-        const amount = exploded ? stake : Math.floor(stake * mult);
-        items.push({ id: ++historyId.current, user: pickUser(), mines: mn, multiplier: mult, amount, exploded, ts: Date.now() - i * 200 });
-      }
-      setHistory((h) => [...items, ...h].slice(0, 30));
-    }, 1800);
+      // One entry at a time so it visually empuja a los demás
+      const exploded = Math.random() < 0.18;
+      const mn = 1 + Math.floor(Math.random() * 8);
+      const pk = exploded ? 0 : 1 + Math.floor(Math.random() * Math.min(6, TILES - mn));
+      const mult = exploded ? 0 : multiplierFor(mn, pk);
+      const stake = [500, 1000, 2000, 5000, 10000][Math.floor(Math.random() * 5)];
+      const amount = exploded ? stake : Math.floor(stake * mult);
+      setHistory((h) => [
+        { id: ++historyId.current, user: pickUser(), mines: mn, multiplier: mult, amount, exploded, ts: Date.now() },
+        ...h,
+      ].slice(0, 30));
+    }, 2800);
     return () => clearInterval(t);
   }, []);
 
@@ -206,7 +237,7 @@ export function MinesGame() {
       setTimeout(() => resetRound(), 2400);
     } else {
       setPicks((p) => p + 1);
-      playRevealSound();
+      playReveal();
       // auto cashout if all safes opened
       const safeOpened = nextRev.size; // includes this safe pick
       const safeTotal = TILES - mines;
