@@ -341,7 +341,8 @@ export function SpacemanGame() {
   }, [muted]);
 
   const playBeep = useCallback(() => {
-    playTone(1046.5, 120, 0.09, "square");
+    // Matches the first 3 beeps of the reference audio (~1050 Hz sine, ~65 ms)
+    playTone(1050, 70, 0.12, "sine");
   }, [playTone]);
 
   const playGo = useCallback(() => {
@@ -354,22 +355,22 @@ export function SpacemanGame() {
       ctx.resume().catch(() => {});
     }
 
+    // Matches the final beep of the reference audio (~3350 Hz sine, ~60 ms, higher pitch)
     const now = ctx.currentTime;
     const oscillator = ctx.createOscillator();
     const gainNode = ctx.createGain();
 
-    oscillator.type = "triangle";
-    oscillator.frequency.setValueAtTime(740, now);
-    oscillator.frequency.exponentialRampToValueAtTime(1180, now + 0.28);
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(3350, now);
     gainNode.gain.setValueAtTime(0.0001, now);
-    gainNode.gain.exponentialRampToValueAtTime(0.11, now + 0.02);
-    gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
+    gainNode.gain.exponentialRampToValueAtTime(0.14, now + 0.008);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.06);
 
     oscillator.connect(gainNode);
     gainNode.connect(ctx.destination);
 
     oscillator.start(now);
-    oscillator.stop(now + 0.34);
+    oscillator.stop(now + 0.09);
     oscillator.onended = () => {
       oscillator.disconnect();
       gainNode.disconnect();
