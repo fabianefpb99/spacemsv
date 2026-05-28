@@ -7,6 +7,8 @@ import astronautFlyingSrc from "@/assets/astronaut-flying.png";
 import meteorSrc from "@/assets/asteroid.svg";
 import { startFlight, stopFlight, setMuted as setAudioMuted, playCrashSound, playCashoutSound } from "@/lib/gameAudio";
 import bgMusicUrl from "@/assets/bg-music.mp3";
+import countdownBeepUrl from "@/assets/audio/countdown-beep.mp3";
+import countdownGoUrl from "@/assets/audio/countdown-go.mp3";
 
 type Phase = "betting" | "running" | "crashed";
 type HistoryItem = { id: number; value: number };
@@ -264,6 +266,35 @@ export function SpacemanGame() {
     };
   }, []);
 
+  // Countdown SFX (3, 2, 1, go) synced with betting phase
+  const beepAudioRef = useRef<HTMLAudioElement | null>(null);
+  const goAudioRef = useRef<HTMLAudioElement | null>(null);
+  const countdownFiredRef = useRef<Set<number>>(new Set());
+  useEffect(() => {
+    const beep = new Audio(countdownBeepUrl);
+    beep.volume = 0.55;
+    beep.preload = "auto";
+    const go = new Audio(countdownGoUrl);
+    go.volume = 0.6;
+    go.preload = "auto";
+    beepAudioRef.current = beep;
+    goAudioRef.current = go;
+    return () => {
+      beepAudioRef.current = null;
+      goAudioRef.current = null;
+    };
+  }, []);
+  const playBeep = useCallback(() => {
+    const a = beepAudioRef.current;
+    if (!a || muted) return;
+    try { a.currentTime = 0; a.play().catch(() => {}); } catch {}
+  }, [muted]);
+  const playGo = useCallback(() => {
+    const a = goAudioRef.current;
+    if (!a || muted) return;
+    try { a.currentTime = 0; a.play().catch(() => {}); } catch {}
+  }, [muted]);
+
   // Flight whoosh while running
   useEffect(() => {
     if (phase === "running") startFlight();
@@ -366,6 +397,7 @@ export function SpacemanGame() {
     setCountdown(BETTING_MS / 1000);
     setBettingBarDuration(0);
     setBettingBarFill(0);
+    countdownFiredRef.current = new Set();
 
     bettingBarRafRef.current = requestAnimationFrame(() => {
       bettingBarRafRef.current = requestAnimationFrame(() => {
@@ -380,15 +412,27 @@ export function SpacemanGame() {
       const remaining = Math.max(0, BETTING_MS - elapsed);
       if (remaining > 0) {
         setCountdown(remaining / 1000);
+        const fired = countdownFiredRef.current;
+        const remSec = remaining / 1000;
+        [3, 2, 1].forEach((n) => {
+          if (!fired.has(n) && remSec <= n && remSec > n - 1) {
+            fired.add(n);
+            playBeep();
+          }
+        });
         rafRef.current = requestAnimationFrame(tick);
       } else {
         setCountdown(0);
         setBettingBarFill(100);
+        if (!countdownFiredRef.current.has(0)) {
+          countdownFiredRef.current.add(0);
+          playGo();
+        }
         startRunning();
       }
     };
     rafRef.current = requestAnimationFrame(tick);
-  }, []);
+  }, [playBeep, playGo]);
 
   // keep crash point in ref so the rAF closure sees fresh value
   const crashPointRef = useRef(crashPoint);
