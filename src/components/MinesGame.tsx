@@ -250,13 +250,6 @@ export function MinesGame() {
                 <span className="neon-green mr-0.5">$</span>{formatCOP(balance)} COP
               </div>
             </div>
-            <button
-              onClick={() => setMuted((m) => !m)}
-              className="rounded-md p-1.5 text-purple-200/80 hover:bg-white/5"
-              aria-label={muted ? "Activar sonido" : "Silenciar"}
-            >
-              {muted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
-            </button>
             <button className="rounded-md p-1.5 text-purple-200/80 hover:bg-white/5">
               <Settings className="h-5 w-5 sm:h-6 sm:w-6" />
             </button>
@@ -272,7 +265,13 @@ export function MinesGame() {
             </span>
             <span className="font-semibold text-emerald-300/90">{online} ONLINE</span>
           </div>
-          <div className="text-[10px] uppercase tracking-widest text-purple-300/70">MINES</div>
+          <button
+            onClick={() => setMuted((m) => !m)}
+            className="rounded-md p-1 text-purple-200/80 hover:bg-white/5"
+            aria-label={muted ? "Activar sonido" : "Silenciar"}
+          >
+            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          </button>
         </div>
 
         {/* HUD */}
