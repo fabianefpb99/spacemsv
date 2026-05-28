@@ -121,7 +121,7 @@ export function LoadingScreen({ children }: { children: React.ReactNode }) {
       {loading && (
         <div
           className="fixed inset-0 z-[9999] flex flex-col items-center justify-center"
-          style={{ backgroundColor: "#1a0a1f" }}
+          style={{ backgroundColor: "#14082a" }}
           aria-live="polite"
           aria-busy="true"
         >
