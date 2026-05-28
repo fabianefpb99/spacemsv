@@ -1086,6 +1086,15 @@ export function SpacemanGame() {
             </button>
           </div>
           <div className="mt-2 flex items-center justify-center gap-2">
+            <button
+              className="btn-bet rounded-md px-3 py-1.5 text-xs font-bold"
+              onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b * 2))}
+              disabled={!!activeBet}
+              aria-label="Doblar apuesta"
+              title="Doblar apuesta"
+            >
+              x2
+            </button>
             {QUICK_ADDS.map((amt) => (
               <button
                 key={amt}
@@ -1093,7 +1102,7 @@ export function SpacemanGame() {
                 onClick={() => addToBet(amt)}
                 disabled={!!activeBet}
               >
-                +{amt}
+                +{formatCOP(amt)}
               </button>
             ))}
           </div>
