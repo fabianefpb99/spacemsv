@@ -548,7 +548,7 @@ export function SpacemanGame() {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     setPhase("crashed");
     setMultiplier(crashPointRef.current);
-    setHistory((h) => [{ id: Date.now(), value: crashPointRef.current }, ...h].slice(0, 12));
+    setHistory((h) => [{ id: Date.now(), value: crashPointRef.current }, ...h].slice(0, 50));
     playCrashSound();
     // Duck background music during crash
     const bg = bgAudioRef.current;
