@@ -48,33 +48,39 @@ function playReveal() {
 function resetRevealStreak() { revealStreak = 0; }
 
 // --- Voice praise (Web Speech API) ---
-const PRAISES = ["¡Nice!", "¡Muy bien!", "¡Una más!", "¡Excelente!", "¡Increíble!", "¡Sigue así!"];
+const PRAISES = ["¡Muy bien!", "¡Una más!", "¡Excelente!", "¡Increíble!", "¡Sigue así!"];
 let lastPraiseIdx = -1;
 let cachedEsVoice: SpeechSynthesisVoice | null = null;
 function pickSpanishVoice(): SpeechSynthesisVoice | null {
   if (cachedEsVoice) return cachedEsVoice;
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return null;
   const voices = window.speechSynthesis.getVoices();
-  const es = voices.find((v) => v.lang?.toLowerCase().startsWith("es"));
-  cachedEsVoice = es ?? null;
+  const esVoices = voices.filter((v) => v.lang?.toLowerCase().startsWith("es"));
+  // Prefer deep / male announcer-style voices when available
+  const preferredNames = [
+    "Jorge", "Diego", "Carlos", "Enrique", "Paulina", "Google español",
+    "Microsoft Pablo", "Microsoft Jorge", "Microsoft Raul", "Juan",
+  ];
+  const byPreferred = esVoices.find((v) => preferredNames.some((n) => v.name?.toLowerCase().includes(n.toLowerCase())));
+  cachedEsVoice = byPreferred ?? esVoices[0] ?? null;
   return cachedEsVoice;
 }
 function speakPraise() {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
   if (isMuted()) return;
-  // Pick a different phrase than the previous one
   let i = Math.floor(Math.random() * PRAISES.length);
   if (i === lastPraiseIdx) i = (i + 1) % PRAISES.length;
   lastPraiseIdx = i;
   const u = new SpeechSynthesisUtterance(PRAISES[i]);
   u.lang = "es-ES";
-  u.rate = 1.05;
-  u.pitch = 1.15;
-  u.volume = 0.9;
+  // Mortal-Kombat-announcer: slower, deep, loud
+  u.rate = 0.92;
+  u.pitch = 0.55;
+  u.volume = 1.0;
   const v = pickSpanishVoice();
   if (v) u.voice = v;
   try {
-    window.speechSynthesis.cancel();
+    // Do NOT cancel — let it queue so it never gets cut off
     window.speechSynthesis.speak(u);
   } catch {}
 }
@@ -276,7 +282,7 @@ export function MinesGame() {
       const newPicks = picks + 1;
       setPicks(newPicks);
       playReveal();
-      if (newPicks >= 2) speakPraise();
+      if (newPicks === 2 || newPicks === 5) speakPraise();
       // auto cashout if all safes opened
       const safeOpened = nextRev.size; // includes this safe pick
       const safeTotal = TILES - mines;
