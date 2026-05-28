@@ -220,15 +220,16 @@ export function SpacemanGame() {
   const [countdown, setCountdown] = useState(BETTING_MS / 1000);
   const [bettingBarFill, setBettingBarFill] = useState(0);
   const [bettingBarDuration, setBettingBarDuration] = useState(0);
-  const [history, setHistory] = useState<HistoryItem[]>([
-    { id: 1, value: 1.22 },
-    { id: 2, value: 3.11 },
-    { id: 3, value: 19.4 },
-    { id: 4, value: 1.3 },
-    { id: 5, value: 7.02 },
-    { id: 6, value: 54.35 },
-    { id: 7, value: 1.78 },
-  ]);
+  const [history, setHistory] = useState<HistoryItem[]>(() => {
+    const seed = [
+      1.22, 3.11, 19.4, 1.3, 7.02, 54.35, 1.78, 2.45, 1.05, 4.8,
+      1.9, 1.13, 8.22, 1.14, 1.33, 5.91, 1.08, 2.1, 1.06, 1.75,
+      3.62, 12.45, 1.17, 2.25, 1.09, 4.36, 1.15, 1.97, 7.23, 1.11,
+      2.05, 1.35, 1.6, 3.74, 1.01, 1.66, 2.91, 1.18, 6.45, 1.07,
+      1.89, 9.2, 1.25, 1.43, 2.2, 1.12, 3.88, 1.16, 2.7, 5.1,
+    ];
+    return seed.map((v, i) => ({ id: i + 1, value: v }));
+  });
 
   const [balance, setBalance] = useState(100000);
   const [bet, setBet] = useState(2000);
@@ -1114,7 +1115,7 @@ export function SpacemanGame() {
                   50 últimos
                 </div>
               </div>
-              <div className="grid grid-cols-10 gap-1.5 max-h-[40vh] overflow-y-auto hide-scrollbar">
+              <div className="grid grid-cols-5 xs:grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-1.5 max-h-[50vh] overflow-y-auto hide-scrollbar">
                 {history.slice(0, 50).map((h) => (
                   h.value >= 15 ? (
                     <div key={h.id} className="jackpot-chip rounded">
