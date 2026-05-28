@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, Settings, Clock, ArrowRight, Minus, Plus, Volume2, VolumeX, Crown } from "lucide-react";
+import { Menu, Settings, Clock, ArrowRight, Minus, Plus, Volume2, VolumeX } from "lucide-react";
 import bgImage from "@/assets/space-bg-full.png";
 import astronautIdlePng from "@/assets/astronaut-idle.svg";
 import astronautFlyingSrc from "@/assets/astronaut-flying.png";
@@ -927,18 +927,20 @@ export function SpacemanGame() {
         <div className="mt-2 flex items-center gap-1.5 overflow-x-auto hide-scrollbar px-1">
           <Clock className="h-3 w-3 shrink-0 text-purple-200/70" />
           {history.map((h) => (
-            <div
-              key={h.id}
-              className={`relative shrink-0 rounded border px-1.5 py-0.5 font-display text-[10px] font-bold leading-none ${colorFor(h.value)}`}
-            >
-              {h.value >= 10 && (
-                <Crown
-                  className="absolute -top-1.5 -right-1.5 h-2.5 w-2.5 text-amber-300 drop-shadow-[0_0_3px_rgba(251,191,36,0.9)]"
-                  fill="currentColor"
-                />
-              )}
-              {h.value.toFixed(2)}x
-            </div>
+            h.value >= 10 ? (
+              <div key={h.id} className="shrink-0 jackpot-chip rounded">
+                <div className="rounded-[3px] px-1.5 py-0.5 font-display text-[10px] font-bold leading-none text-amber-200 bg-amber-950/60">
+                  {h.value.toFixed(2)}x
+                </div>
+              </div>
+            ) : (
+              <div
+                key={h.id}
+                className={`shrink-0 rounded border px-1.5 py-0.5 font-display text-[10px] font-bold leading-none ${colorFor(h.value)}`}
+              >
+                {h.value.toFixed(2)}x
+              </div>
+            )
           ))}
         </div>
       </div>
