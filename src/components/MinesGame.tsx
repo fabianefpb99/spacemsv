@@ -3,6 +3,9 @@ import { Link } from "@tanstack/react-router";
 import { Menu, Settings, Minus, Plus, Volume2, VolumeX, ChevronDown, Bomb, Gem, TrendingUp, User } from "lucide-react";
 import { setMuted as setAudioMuted, playCrashSound, playCashoutSound, isMuted } from "@/lib/gameAudio";
 import coinRevealSfx from "@/assets/sfx/coin-reveal.mp3";
+import victorySfx from "@/assets/sfx/victory.mp3";
+import gameOverSfx from "@/assets/sfx/game-over.mp3";
+import minesBg from "@/assets/mines-bg.png";
 
 type Phase = "betting" | "playing" | "lost" | "cashed";
 
@@ -46,6 +49,19 @@ function playReveal() {
   } catch {}
 }
 function resetRevealStreak() { revealStreak = 0; }
+
+let victoryAudio: HTMLAudioElement | null = null;
+let gameOverAudio: HTMLAudioElement | null = null;
+function playVictory() {
+  if (isMuted() || typeof window === "undefined") return;
+  if (!victoryAudio) { victoryAudio = new Audio(victorySfx); victoryAudio.volume = 0.7; }
+  try { victoryAudio.currentTime = 0; void victoryAudio.play(); } catch {}
+}
+function playGameOver() {
+  if (isMuted() || typeof window === "undefined") return;
+  if (!gameOverAudio) { gameOverAudio = new Audio(gameOverSfx); gameOverAudio.volume = 0.7; }
+  try { gameOverAudio.currentTime = 0; void gameOverAudio.play(); } catch {}
+}
 
 function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
@@ -219,6 +235,7 @@ export function MinesGame() {
     if (isMine) {
       setExplodedTile(idx);
       playCrashSound();
+      playGameOver();
       setShake(true);
       setTimeout(() => setShake(false), 400);
       // reveal all mines
@@ -246,6 +263,7 @@ export function MinesGame() {
         const win = Math.floor(bet * mult);
         setBalance((b) => b + win);
         playCashoutSound();
+        playVictory();
         setHistory((h) => [
           { id: ++historyId.current, user: "Tú", mines, multiplier: mult, amount: win, exploded: false, ts: Date.now() },
           ...h,
