@@ -133,7 +133,7 @@ function HomePage() {
               />
             ))}
             <div className="absolute inset-0 bg-gradient-to-r from-[#1a0b3a] via-[#1a0b3a]/80 to-transparent" />
-            <div key={slide} className="absolute inset-0 flex flex-col justify-center gap-2 p-4 sm:p-5 animate-[fadeIn_500ms_ease-out]">
+            <div key={slide} className="absolute inset-0 flex flex-col justify-center gap-2 p-4 sm:p-5">
               <p className="font-display text-xs tracking-widest text-purple-100/80">{current.eyebrow}</p>
               <h2 className="font-display text-2xl font-black leading-tight tracking-wide text-white drop-shadow sm:text-3xl">
                 {current.title}
