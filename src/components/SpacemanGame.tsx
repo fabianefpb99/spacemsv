@@ -7,8 +7,6 @@ import astronautFlyingSrc from "@/assets/astronaut-flying.png";
 import meteorSrc from "@/assets/asteroid.svg";
 import { startFlight, stopFlight, setMuted as setAudioMuted, playCrashSound, playCashoutSound } from "@/lib/gameAudio";
 import bgMusicUrl from "@/assets/bg-music.mp3";
-import countdownBeepUrl from "@/assets/audio/countdown-beep.mp3";
-import countdownGoUrl from "@/assets/audio/countdown-go.mp3";
 
 type Phase = "betting" | "running" | "crashed";
 type HistoryItem = { id: number; value: number };
@@ -267,72 +265,115 @@ export function SpacemanGame() {
   }, []);
 
   // Countdown SFX (3, 2, 1, go) synced with betting phase
-  const beepAudioRef = useRef<HTMLAudioElement | null>(null);
-  const goAudioRef = useRef<HTMLAudioElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
   const countdownFiredRef = useRef<Set<number>>(new Set());
   const sfxUnlockedRef = useRef(false);
   useEffect(() => {
-    const beep = new Audio(countdownBeepUrl);
-    beep.volume = 0.55;
-    beep.preload = "auto";
-    beep.load();
-    const go = new Audio(countdownGoUrl);
-    go.volume = 0.6;
-    go.preload = "auto";
-    go.load();
-    beepAudioRef.current = beep;
-    goAudioRef.current = go;
-    // Unlock on first user gesture (autoplay policy)
-    const unlock = () => {
-      if (sfxUnlockedRef.current) return;
-      sfxUnlockedRef.current = true;
-      [beep, go].forEach((a) => {
-        const prev = a.volume;
-        a.volume = 0;
-        a.play()
-          .then(() => {
-            a.pause();
-            a.currentTime = 0;
-            a.volume = prev;
-          })
-          .catch(() => {
-            a.volume = prev;
-          });
-      });
+    type WindowWithWebAudio = Window & typeof globalThis & {
+      webkitAudioContext?: typeof AudioContext;
+    };
+
+    const unlock = async () => {
+      const AudioContextCtor = window.AudioContext || (window as WindowWithWebAudio).webkitAudioContext;
+      if (!AudioContextCtor) return;
+
+      try {
+        if (!audioContextRef.current) audioContextRef.current = new AudioContextCtor();
+        if (audioContextRef.current.state === "suspended") {
+          await audioContextRef.current.resume();
+        }
+        sfxUnlockedRef.current = audioContextRef.current.state === "running";
+      } catch {
+        sfxUnlockedRef.current = false;
+      }
+
+      if (!sfxUnlockedRef.current) return;
+
       window.removeEventListener("pointerdown", unlock);
       window.removeEventListener("keydown", unlock);
       window.removeEventListener("touchstart", unlock);
     };
+
     window.addEventListener("pointerdown", unlock);
     window.addEventListener("keydown", unlock);
     window.addEventListener("touchstart", unlock);
+
     return () => {
       window.removeEventListener("pointerdown", unlock);
       window.removeEventListener("keydown", unlock);
       window.removeEventListener("touchstart", unlock);
-      beepAudioRef.current = null;
-      goAudioRef.current = null;
+      sfxUnlockedRef.current = false;
+      const ctx = audioContextRef.current;
+      audioContextRef.current = null;
+      ctx?.close().catch(() => {});
     };
   }, []);
-  const playBeep = useCallback(() => {
-    const a = beepAudioRef.current;
-    if (!a || muted) return;
-    try {
-      a.currentTime = 0;
-      a.play().catch((e) => console.warn("[beep] play failed", e));
-    } catch (e) {
-      console.warn("[beep] threw", e);
+
+  const playTone = useCallback((frequency: number, durationMs: number, volume: number, type: OscillatorType = "sine") => {
+    if (muted || !sfxUnlockedRef.current) return;
+
+    const ctx = audioContextRef.current;
+    if (!ctx) return;
+
+    if (ctx.state === "suspended") {
+      ctx.resume().catch(() => {});
     }
+
+    const now = ctx.currentTime;
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(frequency, now);
+    gainNode.gain.setValueAtTime(0.0001, now);
+    gainNode.gain.exponentialRampToValueAtTime(volume, now + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, now + durationMs / 1000);
+
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    oscillator.start(now);
+    oscillator.stop(now + durationMs / 1000 + 0.02);
+    oscillator.onended = () => {
+      oscillator.disconnect();
+      gainNode.disconnect();
+    };
   }, [muted]);
+
+  const playBeep = useCallback(() => {
+    playTone(1046.5, 120, 0.09, "square");
+  }, [playTone]);
+
   const playGo = useCallback(() => {
-    const a = goAudioRef.current;
-    if (!a || muted) return;
-    try {
-      a.currentTime = 0;
-      a.play().catch((e) => console.warn("[go] play failed", e));
-    } catch (e) {
-      console.warn("[go] threw", e);
+    if (muted || !sfxUnlockedRef.current) return;
+
+    const ctx = audioContextRef.current;
+    if (!ctx) return;
+
+    if (ctx.state === "suspended") {
+      ctx.resume().catch(() => {});
     }
+
+    const now = ctx.currentTime;
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+
+    oscillator.type = "triangle";
+    oscillator.frequency.setValueAtTime(740, now);
+    oscillator.frequency.exponentialRampToValueAtTime(1180, now + 0.28);
+    gainNode.gain.setValueAtTime(0.0001, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.11, now + 0.02);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
+
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    oscillator.start(now);
+    oscillator.stop(now + 0.34);
+    oscillator.onended = () => {
+      oscillator.disconnect();
+      gainNode.disconnect();
+    };
   }, [muted]);
 
   // Flight whoosh while running
