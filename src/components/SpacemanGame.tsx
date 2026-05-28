@@ -397,6 +397,7 @@ export function SpacemanGame() {
     setCountdown(BETTING_MS / 1000);
     setBettingBarDuration(0);
     setBettingBarFill(0);
+    countdownFiredRef.current = new Set();
 
     bettingBarRafRef.current = requestAnimationFrame(() => {
       bettingBarRafRef.current = requestAnimationFrame(() => {
@@ -411,15 +412,27 @@ export function SpacemanGame() {
       const remaining = Math.max(0, BETTING_MS - elapsed);
       if (remaining > 0) {
         setCountdown(remaining / 1000);
+        const fired = countdownFiredRef.current;
+        const remSec = remaining / 1000;
+        [3, 2, 1].forEach((n) => {
+          if (!fired.has(n) && remSec <= n && remSec > n - 1) {
+            fired.add(n);
+            playBeep();
+          }
+        });
         rafRef.current = requestAnimationFrame(tick);
       } else {
         setCountdown(0);
         setBettingBarFill(100);
+        if (!countdownFiredRef.current.has(0)) {
+          countdownFiredRef.current.add(0);
+          playGo();
+        }
         startRunning();
       }
     };
     rafRef.current = requestAnimationFrame(tick);
-  }, []);
+  }, [playBeep, playGo]);
 
   // keep crash point in ref so the rAF closure sees fresh value
   const crashPointRef = useRef(crashPoint);
