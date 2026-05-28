@@ -967,7 +967,7 @@ export function SpacemanGame() {
                 className={`h-2 w-2 shrink-0 rounded-full ${phase === "running" ? "bg-emerald-400" : "bg-rose-500"}`}
               />
               <span className="truncate uppercase tracking-wider text-purple-100/80 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
-                {phase === "betting" ? "Preparando ronda" : phase === "running" ? "En vuelo" : "Crash"}
+                {phase === "betting" ? "¡Apuestas abiertas!" : phase === "running" ? "En vuelo" : "Crash"}
               </span>
             </div>
             <span className="neon-red font-display text-base font-bold shrink-0 tabular-nums w-12 text-right brightness-125">
