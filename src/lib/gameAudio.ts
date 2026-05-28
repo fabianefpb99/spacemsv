@@ -366,3 +366,63 @@ export function playCashoutSound() {
   noiseSrc.start(now);
   noiseSrc.stop(now + 0.35);
 }
+
+// ---- Reveal sound (satisfying gem chime for Mines) ----
+// Bright ascending bell-like ping with a soft sparkle tail. Pitch rises
+// slightly with each pick to reward the player and push them to continue.
+let revealStreak = 0;
+export function resetRevealStreak() {
+  revealStreak = 0;
+}
+export function playRevealSound() {
+  const c = getCtx();
+  if (!c || muted || !masterGain) return;
+  const now = c.currentTime;
+  const step = Math.min(revealStreak, 12);
+  revealStreak++;
+  const base = 660 * Math.pow(2, step / 12); // semitone up per pick
+
+  // Bell tone
+  const o1 = c.createOscillator();
+  o1.type = "sine";
+  o1.frequency.setValueAtTime(base, now);
+  const g1 = c.createGain();
+  g1.gain.setValueAtTime(0, now);
+  g1.gain.linearRampToValueAtTime(0.22, now + 0.008);
+  g1.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+  o1.connect(g1).connect(masterGain);
+  o1.start(now); o1.stop(now + 0.5);
+
+  // Harmonic shimmer
+  const o2 = c.createOscillator();
+  o2.type = "triangle";
+  o2.frequency.setValueAtTime(base * 2, now);
+  const g2 = c.createGain();
+  g2.gain.setValueAtTime(0, now);
+  g2.gain.linearRampToValueAtTime(0.09, now + 0.01);
+  g2.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+  o2.connect(g2).connect(masterGain);
+  o2.start(now); o2.stop(now + 0.4);
+
+  // Sparkle high
+  const o3 = c.createOscillator();
+  o3.type = "sine";
+  o3.frequency.setValueAtTime(base * 3, now + 0.02);
+  const g3 = c.createGain();
+  g3.gain.setValueAtTime(0, now + 0.02);
+  g3.gain.linearRampToValueAtTime(0.05, now + 0.04);
+  g3.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+  o3.connect(g3).connect(masterGain);
+  o3.start(now + 0.02); o3.stop(now + 0.3);
+
+  // Tiny click for tactility
+  const click = c.createOscillator();
+  click.type = "square";
+  click.frequency.setValueAtTime(1800, now);
+  const cg = c.createGain();
+  cg.gain.setValueAtTime(0, now);
+  cg.gain.linearRampToValueAtTime(0.05, now + 0.003);
+  cg.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+  click.connect(cg).connect(masterGain);
+  click.start(now); click.stop(now + 0.06);
+}

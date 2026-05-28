@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, Settings, Minus, Plus, Volume2, VolumeX, ChevronDown, Bomb, Gem, TrendingUp, User } from "lucide-react";
-import { setMuted as setAudioMuted, playCrashSound, playCashoutSound } from "@/lib/gameAudio";
+import { setMuted as setAudioMuted, playCrashSound, playCashoutSound, playRevealSound, resetRevealStreak } from "@/lib/gameAudio";
 
 type Phase = "betting" | "playing" | "lost" | "cashed";
 
@@ -123,20 +123,19 @@ export function MinesGame() {
   }, []);
   useEffect(() => {
     const t = setInterval(() => {
-      // small chance to append a fake win
-      if (Math.random() < 0.5) {
-        const exploded = Math.random() < 0.25;
+      const burst = 1 + Math.floor(Math.random() * 3); // 1-3 per tick
+      const items: HistoryItem[] = [];
+      for (let i = 0; i < burst; i++) {
+        const exploded = Math.random() < 0.18;
         const mn = 1 + Math.floor(Math.random() * 8);
         const pk = exploded ? 0 : 1 + Math.floor(Math.random() * Math.min(6, TILES - mn));
         const mult = exploded ? 0 : multiplierFor(mn, pk);
         const stake = [500, 1000, 2000, 5000, 10000][Math.floor(Math.random() * 5)];
         const amount = exploded ? stake : Math.floor(stake * mult);
-        setHistory((h) => [
-          { id: ++historyId.current, user: pickUser(), mines: mn, multiplier: mult, amount, exploded, ts: Date.now() },
-          ...h,
-        ].slice(0, 20));
+        items.push({ id: ++historyId.current, user: pickUser(), mines: mn, multiplier: mult, amount, exploded, ts: Date.now() - i * 200 });
       }
-    }, 9000);
+      setHistory((h) => [...items, ...h].slice(0, 30));
+    }, 1800);
     return () => clearInterval(t);
   }, []);
 
@@ -154,6 +153,7 @@ export function MinesGame() {
     setRevealed(new Set());
     setPicks(0);
     setExplodedTile(null);
+    resetRevealStreak();
     setPhase("playing");
   }, [phase, bet, balance, mines]);
 
@@ -206,6 +206,7 @@ export function MinesGame() {
       setTimeout(() => resetRound(), 2400);
     } else {
       setPicks((p) => p + 1);
+      playRevealSound();
       // auto cashout if all safes opened
       const safeOpened = nextRev.size; // includes this safe pick
       const safeTotal = TILES - mines;
@@ -250,13 +251,6 @@ export function MinesGame() {
                 <span className="neon-green mr-0.5">$</span>{formatCOP(balance)} COP
               </div>
             </div>
-            <button
-              onClick={() => setMuted((m) => !m)}
-              className="rounded-md p-1.5 text-purple-200/80 hover:bg-white/5"
-              aria-label={muted ? "Activar sonido" : "Silenciar"}
-            >
-              {muted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
-            </button>
             <button className="rounded-md p-1.5 text-purple-200/80 hover:bg-white/5">
               <Settings className="h-5 w-5 sm:h-6 sm:w-6" />
             </button>
@@ -272,7 +266,13 @@ export function MinesGame() {
             </span>
             <span className="font-semibold text-emerald-300/90">{online} ONLINE</span>
           </div>
-          <div className="text-[10px] uppercase tracking-widest text-purple-300/70">MINES</div>
+          <button
+            onClick={() => setMuted((m) => !m)}
+            className="rounded-md p-1 text-purple-200/80 hover:bg-white/5"
+            aria-label={muted ? "Activar sonido" : "Silenciar"}
+          >
+            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          </button>
         </div>
 
         {/* HUD */}
