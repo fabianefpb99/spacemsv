@@ -47,6 +47,43 @@ function playReveal() {
 }
 function resetRevealStreak() { revealStreak = 0; }
 
+// --- Voice praise (Web Speech API) ---
+const PRAISES = ["¡Nice!", "¡Muy bien!", "¡Una más!", "¡Excelente!", "¡Increíble!", "¡Sigue así!"];
+let lastPraiseIdx = -1;
+let cachedEsVoice: SpeechSynthesisVoice | null = null;
+function pickSpanishVoice(): SpeechSynthesisVoice | null {
+  if (cachedEsVoice) return cachedEsVoice;
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return null;
+  const voices = window.speechSynthesis.getVoices();
+  const es = voices.find((v) => v.lang?.toLowerCase().startsWith("es"));
+  cachedEsVoice = es ?? null;
+  return cachedEsVoice;
+}
+function speakPraise() {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+  if (isMuted()) return;
+  // Pick a different phrase than the previous one
+  let i = Math.floor(Math.random() * PRAISES.length);
+  if (i === lastPraiseIdx) i = (i + 1) % PRAISES.length;
+  lastPraiseIdx = i;
+  const u = new SpeechSynthesisUtterance(PRAISES[i]);
+  u.lang = "es-ES";
+  u.rate = 1.05;
+  u.pitch = 1.15;
+  u.volume = 0.9;
+  const v = pickSpanishVoice();
+  if (v) u.voice = v;
+  try {
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+  } catch {}
+}
+// Warm-up voices list (some browsers load it asynchronously)
+if (typeof window !== "undefined" && "speechSynthesis" in window) {
+  window.speechSynthesis.onvoiceschanged = () => { cachedEsVoice = null; pickSpanishVoice(); };
+  pickSpanishVoice();
+}
+
 function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
 }
@@ -236,8 +273,10 @@ export function MinesGame() {
       setPhase("lost");
       setTimeout(() => resetRound(), 2400);
     } else {
-      setPicks((p) => p + 1);
+      const newPicks = picks + 1;
+      setPicks(newPicks);
       playReveal();
+      if (newPicks >= 2) speakPraise();
       // auto cashout if all safes opened
       const safeOpened = nextRev.size; // includes this safe pick
       const safeTotal = TILES - mines;
