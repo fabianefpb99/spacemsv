@@ -443,8 +443,8 @@ html, body {
     );
   animation: jackpot-spin 2.2s linear infinite;
   box-shadow:
-    0 0 8px rgba(251, 191, 36, 0.55),
-    0 0 16px rgba(245, 158, 11, 0.35);
+    0 0 5px rgba(251, 191, 36, 0.38),
+    0 0 10px rgba(245, 158, 11, 0.22);
 }
 /* Fallback for browsers without @property — fake the spin using a hue shift */
 @supports not (background: conic-gradient(from 0deg, red, blue)) {
