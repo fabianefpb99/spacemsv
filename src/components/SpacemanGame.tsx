@@ -79,7 +79,7 @@ function formatCOP(n: number) {
 function colorFor(mult: number) {
   if (mult < 1.95) return "text-rose-400 border-rose-500/50 bg-rose-950/40";
   if (mult < 2.95) return "text-purple-300 border-purple-500/50 bg-purple-950/40";
-  if (mult < 10) return "text-emerald-300 border-emerald-500/50 bg-emerald-950/40";
+  if (mult < 15) return "text-emerald-300 border-emerald-500/50 bg-emerald-950/40";
   return "text-amber-300 border-amber-400/60 bg-amber-950/40 shadow-[0_0_10px_rgba(251,191,36,0.45)]";
 }
 
@@ -927,9 +927,9 @@ export function SpacemanGame() {
         <div className="mt-2 flex items-center gap-1.5 overflow-x-auto hide-scrollbar px-1">
           <Clock className="h-3 w-3 shrink-0 text-purple-200/70" />
           {history.map((h) => (
-            h.value >= 10 ? (
+            h.value >= 15 ? (
               <div key={h.id} className="shrink-0 jackpot-chip rounded">
-                <div className="rounded-[3px] px-1.5 py-0.5 font-display text-[10px] font-bold leading-none text-amber-200 bg-amber-950/60">
+                <div className="rounded-[3px] px-1.5 py-0.5 font-display text-[10px] font-bold leading-none text-amber-100 bg-amber-950/60 drop-shadow-[0_1px_0_rgba(120,60,0,0.9)]" style={{ textShadow: '0 -1px 0 rgba(0,0,0,0.85), 0 1px 0 rgba(255,255,255,0.25)' }}>
                   {h.value.toFixed(2)}x
                 </div>
               </div>
