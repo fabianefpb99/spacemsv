@@ -434,14 +434,6 @@ export function MinesGame() {
             })}
           </div>
 
-          {/* Red tension overlay */}
-          <div
-            className={`pointer-events-none absolute inset-0 z-[1] rounded-2xl bg-red-900/30 transition-opacity duration-700 ${
-              showRedOverlay ? "opacity-100" : "opacity-0"
-            }`}
-            aria-hidden="true"
-          />
-
           {/* Win/Lose overlay */}
           {phase === "lost" && (
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
