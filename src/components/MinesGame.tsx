@@ -233,9 +233,9 @@ export function MinesGame() {
     nextRev.add(idx);
     setRevealed(nextRev);
     if (isMine) {
+      playGameOver();
       setExplodedTile(idx);
       playCrashSound();
-      playGameOver();
       setShake(true);
       setTimeout(() => setShake(false), 400);
       // reveal all mines
