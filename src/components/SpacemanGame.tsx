@@ -586,7 +586,10 @@ export function SpacemanGame() {
         </div>
       ))}
 
-      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-4 pt-4 sm:max-w-lg sm:px-4">
+      <div
+        className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pt-4 sm:max-w-lg sm:px-4"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 1.25rem)" }}
+      >
         {/* Header */}
         <header
           className="flex items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
