@@ -389,10 +389,10 @@ export function MinesGame() {
 
         {/* Board */}
         <section
-          className={`relative mt-2 rounded-2xl border border-purple-500/30 bg-stars overflow-hidden p-2 sm:p-2.5 ${shake ? "mines-shake" : ""}`}
+          className={`relative mt-2 rounded-2xl border border-purple-500/30 overflow-hidden p-2 sm:p-2.5 backdrop-blur-sm ${shake ? "mines-shake" : ""}`}
           style={{
             background:
-              "radial-gradient(ellipse at 50% 0%, rgba(80,30,150,0.35), transparent 60%), linear-gradient(180deg, #0c0420, #060210)",
+              "radial-gradient(ellipse at 50% 0%, rgba(80,30,150,0.25), transparent 65%), rgba(12,4,32,0.45)",
           }}
         >
           <div className="grid grid-cols-4 gap-2 sm:gap-2.5">
