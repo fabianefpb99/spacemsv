@@ -7,6 +7,8 @@ import astronautFlyingSrc from "@/assets/astronaut-flying.png";
 import meteorSrc from "@/assets/asteroid.svg";
 import { startFlight, stopFlight, setMuted as setAudioMuted, playCrashSound, playCashoutSound } from "@/lib/gameAudio";
 import bgMusicUrl from "@/assets/bg-music.mp3";
+import countdownBeepUrl from "@/assets/audio/countdown-beep.mp3";
+import countdownGoUrl from "@/assets/audio/countdown-go.mp3";
 
 type Phase = "betting" | "running" | "crashed";
 type HistoryItem = { id: number; value: number };
@@ -263,6 +265,35 @@ export function SpacemanGame() {
       bgAudioRef.current = null;
     };
   }, []);
+
+  // Countdown SFX (3, 2, 1, go) synced with betting phase
+  const beepAudioRef = useRef<HTMLAudioElement | null>(null);
+  const goAudioRef = useRef<HTMLAudioElement | null>(null);
+  const countdownFiredRef = useRef<Set<number>>(new Set());
+  useEffect(() => {
+    const beep = new Audio(countdownBeepUrl);
+    beep.volume = 0.55;
+    beep.preload = "auto";
+    const go = new Audio(countdownGoUrl);
+    go.volume = 0.6;
+    go.preload = "auto";
+    beepAudioRef.current = beep;
+    goAudioRef.current = go;
+    return () => {
+      beepAudioRef.current = null;
+      goAudioRef.current = null;
+    };
+  }, []);
+  const playBeep = useCallback(() => {
+    const a = beepAudioRef.current;
+    if (!a || muted) return;
+    try { a.currentTime = 0; a.play().catch(() => {}); } catch {}
+  }, [muted]);
+  const playGo = useCallback(() => {
+    const a = goAudioRef.current;
+    if (!a || muted) return;
+    try { a.currentTime = 0; a.play().catch(() => {}); } catch {}
+  }, [muted]);
 
   // Flight whoosh while running
   useEffect(() => {
