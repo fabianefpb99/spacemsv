@@ -255,7 +255,7 @@
 }
 
 .glass-panel {
-  background: linear-gradient(180deg, rgb(28, 10, 52), rgb(12, 4, 28));
+  background: linear-gradient(180deg, rgba(10, 4, 24, 0.88), rgba(6, 2, 16, 0.92));
   border: 1px solid rgba(140, 70, 220, 0.30);
   box-shadow:
     0 0 0 1px rgba(140, 70, 220, 0.10) inset,
