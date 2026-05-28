@@ -5,6 +5,7 @@ import bgImage from "@/assets/space-bg-full.png";
 import astronautIdlePng from "@/assets/astronaut-idle.svg";
 import astronautFlyingSrc from "@/assets/astronaut-flying.png";
 import meteorSrc from "@/assets/asteroid.svg";
+import saturnSrc from "@/assets/saturn.svg";
 import { startFlight, stopFlight, setMuted as setAudioMuted, playCrashSound, playCashoutSound } from "@/lib/gameAudio";
 import bgMusicUrl from "@/assets/bg-music.mp3";
 
@@ -241,6 +242,8 @@ export function SpacemanGame() {
   const [flightMessage, setFlightMessage] = useState<string | null>(null);
   const [meteors, setMeteors] = useState<{ id: number; threshold: number; topPct: number }[]>([]);
   const meteorFiredRef = useRef<Set<number>>(new Set());
+  const [saturns, setSaturns] = useState<{ id: number; leftPct: number }[]>([]);
+  const saturnFiredRef = useRef<boolean>(false);
 
   // Background music (mp3) — starts on first user interaction (browsers require a gesture)
   const bgAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -440,6 +443,24 @@ export function SpacemanGame() {
       }
     }
   }, [multiplier, phase, meteors.length]);
+
+  // Saturno pasa una vez por ronda al superar 14.9x
+  useEffect(() => {
+    if (phase !== "running") {
+      if (saturnFiredRef.current) saturnFiredRef.current = false;
+      if (saturns.length > 0) setSaturns([]);
+      return;
+    }
+    if (multiplier >= 14.9 && !saturnFiredRef.current) {
+      saturnFiredRef.current = true;
+      const id = Date.now();
+      const leftPct = 10 + Math.random() * 30;
+      setSaturns((s) => [...s, { id, leftPct }]);
+      setTimeout(() => {
+        setSaturns((s) => s.filter((x) => x.id !== id));
+      }, 5200);
+    }
+  }, [multiplier, phase, saturns.length]);
 
   const startRef = useRef<number>(0);
   const rafRef = useRef<number | null>(null);
