@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, Settings, Minus, Plus, Volume2, VolumeX, ChevronDown, Bomb, Gem, TrendingUp, User } from "lucide-react";
-import { setMuted as setAudioMuted, playCrashSound, playCashoutSound } from "@/lib/gameAudio";
+import { setMuted as setAudioMuted, playCrashSound, playCashoutSound, playRevealSound, resetRevealStreak } from "@/lib/gameAudio";
 
 type Phase = "betting" | "playing" | "lost" | "cashed";
 
