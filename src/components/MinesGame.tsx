@@ -530,6 +530,19 @@ export function MinesGame() {
 
         <div className="h-3" />
       </div>
+
+      {phase === "cashed" && (
+        <div className="pointer-events-none fixed inset-0 z-[100] flex items-center justify-center">
+          <div className="relative">
+            <WinCoins />
+            <div className="result-pop-win rounded-xl border border-emerald-500/60 bg-[#0c0620]/90 px-5 py-3 text-center shadow-2xl">
+              <div className="text-[10px] uppercase tracking-widest text-emerald-200/80">¡Ganaste!</div>
+              <div className="font-display text-2xl font-black neon-green">+{formatCOP(cashoutAmount)} COP</div>
+              <div className="text-xs font-bold text-emerald-300">{currentMult.toFixed(2)}x</div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
