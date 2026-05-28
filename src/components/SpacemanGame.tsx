@@ -246,6 +246,20 @@ export function SpacemanGame() {
   const [saturns, setSaturns] = useState<{ id: number; leftPct: number }[]>([]);
   const saturnFiredRef = useRef<boolean>(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const historyRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!historyOpen) return;
+    const onDown = (e: MouseEvent | TouchEvent) => {
+      const el = historyRef.current;
+      if (el && !el.contains(e.target as Node)) setHistoryOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("touchstart", onDown);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("touchstart", onDown);
+    };
+  }, [historyOpen]);
 
   // Background music (mp3) — starts on first user interaction (browsers require a gesture)
   const bgAudioRef = useRef<HTMLAudioElement | null>(null);
