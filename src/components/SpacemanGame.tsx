@@ -588,7 +588,7 @@ export function SpacemanGame() {
 
       <div
         className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pt-4 sm:max-w-lg sm:px-4"
-        style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 1.25rem)" }}
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) * 0.85 + 1.05rem)" }}
       >
         {/* Header */}
         <header
