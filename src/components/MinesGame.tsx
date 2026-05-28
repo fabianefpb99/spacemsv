@@ -198,7 +198,7 @@ export function MinesGame() {
       ...h,
     ].slice(0, 20));
     setPhase("cashed");
-    setTimeout(() => resetRound(), 1600);
+    setTimeout(() => resetRound(), 1750);
   }, [phase, picks, bet, currentMult, mines]);
 
   const resetRound = useCallback(() => {
