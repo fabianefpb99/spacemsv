@@ -5,7 +5,7 @@ import bgImage from "@/assets/space-bg-full.png";
 import astronautIdlePng from "@/assets/astronaut-idle.svg";
 import astronautFlyingSrc from "@/assets/astronaut-flying.png";
 import meteorSrc from "@/assets/asteroid.svg";
-import saturnSrc from "@/assets/neptune.svg";
+import saturnSrc from "@/assets/saturn.svg";
 import { startFlight, stopFlight, setMuted as setAudioMuted, playCrashSound, playCashoutSound } from "@/lib/gameAudio";
 import bgMusicUrl from "@/assets/bg-music.mp3";
 
@@ -95,16 +95,6 @@ function colorFor(mult: number) {
 //   50.00x - 100.00x    -> 0.18%
 //   100.00x (jackpot)   -> 0.02%
 function generateCrashPoint(): number {
-  // DEBUG TEMPORAL: forzar 12x en las próximas N rondas para ver Neptuno.
-  // Eliminar este bloque después de la verificación.
-  if (typeof window !== "undefined") {
-    const w = window as unknown as { __forceCrashLeft?: number };
-    if (w.__forceCrashLeft === undefined) w.__forceCrashLeft = 3;
-    if (w.__forceCrashLeft > 0) {
-      w.__forceCrashLeft -= 1;
-      return 12;
-    }
-  }
   const r = Math.random();
   // 3.5% fallo instantaneo exacto en 1.00x
   if (r < 0.035) return 1.0;
@@ -454,14 +444,14 @@ export function SpacemanGame() {
     }
   }, [multiplier, phase, meteors.length]);
 
-  // Neptuno pasa una vez por ronda al superar 11x
+  // Saturno pasa una vez por ronda al superar 14.9x
   useEffect(() => {
     if (phase !== "running") {
       if (saturnFiredRef.current) saturnFiredRef.current = false;
       if (saturns.length > 0) setSaturns([]);
       return;
     }
-    if (multiplier >= 11 && !saturnFiredRef.current) {
+    if (multiplier >= 14.9 && !saturnFiredRef.current) {
       saturnFiredRef.current = true;
       const id = Date.now();
       const leftPct = 10 + Math.random() * 30;
