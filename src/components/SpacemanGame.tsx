@@ -1115,7 +1115,7 @@ export function SpacemanGame() {
                   50 últimos
                 </div>
               </div>
-              <div className="grid grid-cols-10 gap-1.5 max-h-[40vh] overflow-y-auto hide-scrollbar">
+              <div className="grid grid-cols-5 xs:grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-1.5 max-h-[50vh] overflow-y-auto hide-scrollbar">
                 {history.slice(0, 50).map((h) => (
                   h.value >= 15 ? (
                     <div key={h.id} className="jackpot-chip rounded">
