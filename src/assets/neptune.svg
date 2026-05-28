@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-100 -100 200 200">
+  <defs>
+    <radialGradient id="nBody" cx="0.35" cy="0.32" r="0.9">
+      <stop offset="0%" stop-color="#bfe6ff"/>
+      <stop offset="35%" stop-color="#4aa3e0"/>
+      <stop offset="75%" stop-color="#1e4ea8"/>
+      <stop offset="100%" stop-color="#0a1a4a"/>
+    </radialGradient>
+    <linearGradient id="nBand" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8ec9f0" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#8ec9f0" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#8ec9f0" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="nSpot" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#0a1a4a" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#0a1a4a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="0" cy="0" r="78" fill="url(#nBody)"/>
+  <ellipse cx="0" cy="-22" rx="74" ry="8" fill="url(#nBand)"/>
+  <ellipse cx="0" cy="-4" rx="76" ry="7" fill="url(#nBand)" opacity="0.7"/>
+  <ellipse cx="0" cy="14" rx="72" ry="6" fill="url(#nBand)" opacity="0.6"/>
+  <ellipse cx="0" cy="32" rx="64" ry="5" fill="url(#nBand)" opacity="0.5"/>
+  <ellipse cx="18" cy="-6" rx="22" ry="12" fill="url(#nSpot)"/>
+  <ellipse cx="-24" cy="-30" rx="20" ry="6" fill="#e8f4ff" opacity="0.25"/>
+</svg>
