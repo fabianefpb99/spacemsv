@@ -16,7 +16,7 @@ export const Route = createFileRoute("/mines")({
 
 function Page() {
   return (
-    <LoadingScreen>
+    <LoadingScreen variant="mine">
       <MinesGame />
     </LoadingScreen>
   );
