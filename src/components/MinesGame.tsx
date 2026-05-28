@@ -27,7 +27,7 @@ function ensureRevealPool() {
   revealPool = Array.from({ length: REVEAL_POOL_SIZE }, () => {
     const a = new Audio(coinRevealSfx);
     a.preload = "auto";
-    a.volume = 0.35;
+    a.volume = 0.4;
     return a;
   });
 }
@@ -40,7 +40,7 @@ function playReveal() {
   try {
     a.currentTime = 0;
     // Slight pitch-like change via playbackRate, escalates with streak for retention
-    a.playbackRate = Math.min(1.25, 1 + revealStreak * 0.025);
+    a.playbackRate = Math.min(1.6, 1.25 + revealStreak * 0.03);
     revealStreak++;
     void a.play();
   } catch {}
