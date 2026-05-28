@@ -95,6 +95,16 @@ function colorFor(mult: number) {
 //   50.00x - 100.00x    -> 0.18%
 //   100.00x (jackpot)   -> 0.02%
 function generateCrashPoint(): number {
+  // DEBUG TEMPORAL: forzar 17x en las próximas N rondas para ver Saturno.
+  // Eliminar este bloque después de la verificación.
+  if (typeof window !== "undefined") {
+    const w = window as unknown as { __forceCrashLeft?: number };
+    if (w.__forceCrashLeft === undefined) w.__forceCrashLeft = 3;
+    if (w.__forceCrashLeft > 0) {
+      w.__forceCrashLeft -= 1;
+      return 17;
+    }
+  }
   const r = Math.random();
   // 3.5% fallo instantaneo exacto en 1.00x
   if (r < 0.035) return 1.0;
