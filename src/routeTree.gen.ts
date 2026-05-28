@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SpacemanRouteImport } from './routes/spaceman'
+import { Route as MinesRouteImport } from './routes/mines'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SpacemanRoute = SpacemanRouteImport.update({
   id: '/spaceman',
   path: '/spaceman',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MinesRoute = MinesRouteImport.update({
+  id: '/mines',
+  path: '/mines',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HomeRoute = HomeRouteImport.update({
@@ -32,30 +38,34 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/home': typeof HomeRoute
+  '/mines': typeof MinesRoute
   '/spaceman': typeof SpacemanRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/home': typeof HomeRoute
+  '/mines': typeof MinesRoute
   '/spaceman': typeof SpacemanRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/home': typeof HomeRoute
+  '/mines': typeof MinesRoute
   '/spaceman': typeof SpacemanRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/home' | '/spaceman'
+  fullPaths: '/' | '/home' | '/mines' | '/spaceman'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/home' | '/spaceman'
-  id: '__root__' | '/' | '/home' | '/spaceman'
+  to: '/' | '/home' | '/mines' | '/spaceman'
+  id: '__root__' | '/' | '/home' | '/mines' | '/spaceman'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HomeRoute: typeof HomeRoute
+  MinesRoute: typeof MinesRoute
   SpacemanRoute: typeof SpacemanRoute
 }
 
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/spaceman'
       fullPath: '/spaceman'
       preLoaderRoute: typeof SpacemanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mines': {
+      id: '/mines'
+      path: '/mines'
+      fullPath: '/mines'
+      preLoaderRoute: typeof MinesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/home': {
@@ -88,8 +105,19 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HomeRoute: HomeRoute,
+  MinesRoute: MinesRoute,
   SpacemanRoute: SpacemanRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
