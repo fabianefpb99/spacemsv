@@ -270,16 +270,46 @@ export function SpacemanGame() {
   const beepAudioRef = useRef<HTMLAudioElement | null>(null);
   const goAudioRef = useRef<HTMLAudioElement | null>(null);
   const countdownFiredRef = useRef<Set<number>>(new Set());
+  const sfxUnlockedRef = useRef(false);
   useEffect(() => {
     const beep = new Audio(countdownBeepUrl);
     beep.volume = 0.55;
     beep.preload = "auto";
+    beep.load();
     const go = new Audio(countdownGoUrl);
     go.volume = 0.6;
     go.preload = "auto";
+    go.load();
     beepAudioRef.current = beep;
     goAudioRef.current = go;
+    // Unlock on first user gesture (autoplay policy)
+    const unlock = () => {
+      if (sfxUnlockedRef.current) return;
+      sfxUnlockedRef.current = true;
+      [beep, go].forEach((a) => {
+        const prev = a.volume;
+        a.volume = 0;
+        a.play()
+          .then(() => {
+            a.pause();
+            a.currentTime = 0;
+            a.volume = prev;
+          })
+          .catch(() => {
+            a.volume = prev;
+          });
+      });
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("keydown", unlock);
+      window.removeEventListener("touchstart", unlock);
+    };
+    window.addEventListener("pointerdown", unlock);
+    window.addEventListener("keydown", unlock);
+    window.addEventListener("touchstart", unlock);
     return () => {
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("keydown", unlock);
+      window.removeEventListener("touchstart", unlock);
       beepAudioRef.current = null;
       goAudioRef.current = null;
     };
@@ -287,12 +317,22 @@ export function SpacemanGame() {
   const playBeep = useCallback(() => {
     const a = beepAudioRef.current;
     if (!a || muted) return;
-    try { a.currentTime = 0; a.play().catch(() => {}); } catch {}
+    try {
+      a.currentTime = 0;
+      a.play().catch((e) => console.warn("[beep] play failed", e));
+    } catch (e) {
+      console.warn("[beep] threw", e);
+    }
   }, [muted]);
   const playGo = useCallback(() => {
     const a = goAudioRef.current;
     if (!a || muted) return;
-    try { a.currentTime = 0; a.play().catch(() => {}); } catch {}
+    try {
+      a.currentTime = 0;
+      a.play().catch((e) => console.warn("[go] play failed", e));
+    } catch (e) {
+      console.warn("[go] threw", e);
+    }
   }, [muted]);
 
   // Flight whoosh while running
