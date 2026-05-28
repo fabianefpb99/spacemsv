@@ -264,7 +264,7 @@ export function MinesGame() {
         </header>
 
         {/* Online */}
-        <div className="mt-3 flex items-center justify-between text-sm">
+        <div className="mt-2 flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
             <span className="relative inline-flex h-2.5 w-2.5">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
@@ -276,7 +276,7 @@ export function MinesGame() {
         </div>
 
         {/* HUD */}
-        <section className="mt-3 grid grid-cols-3 gap-2 rounded-2xl border border-purple-500/30 glass-panel p-2.5 sm:p-3">
+        <section className="mt-2 grid grid-cols-3 gap-2 rounded-2xl border border-purple-500/30 glass-panel p-2 sm:p-2.5">
           {/* Mines selector */}
           <div className="relative">
             <div className="text-[9px] uppercase tracking-widest text-purple-200/70 text-center">Minas</div>
@@ -330,7 +330,7 @@ export function MinesGame() {
 
         {/* Board */}
         <section
-          className={`relative mt-3 rounded-2xl border border-purple-500/30 bg-stars overflow-hidden p-2.5 sm:p-3 ${shake ? "mines-shake" : ""}`}
+          className={`relative mt-2 rounded-2xl border border-purple-500/30 bg-stars overflow-hidden p-2 sm:p-2.5 ${shake ? "mines-shake" : ""}`}
           style={{
             background:
               "radial-gradient(ellipse at 50% 0%, rgba(80,30,150,0.35), transparent 60%), linear-gradient(180deg, #0c0420, #060210)",
@@ -394,7 +394,7 @@ export function MinesGame() {
         </section>
 
         {/* Bet panel */}
-        <section className="mt-3 rounded-2xl border border-purple-500/30 glass-panel p-3">
+        <section className="mt-2 rounded-2xl border border-purple-500/30 glass-panel p-2.5">
           <div className="text-center text-[10px] uppercase tracking-widest text-purple-200/70">Apuesta (COP)</div>
           <div className="mt-1.5 flex items-center gap-2">
             <button
