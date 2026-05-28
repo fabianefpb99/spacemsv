@@ -5,7 +5,7 @@ import { setMuted as setAudioMuted, playCrashSound, playCashoutSound, isMuted } 
 import coinRevealSfx from "@/assets/sfx/coin-reveal.mp3";
 import victorySfx from "@/assets/sfx/victory.mp3";
 import gameOverSfx from "@/assets/sfx/game-over.mp3";
-import minesBg from "@/assets/space-bg-full.png";
+import minesBg from "@/assets/mines-page-bg.png";
 
 type Phase = "betting" | "playing" | "lost" | "cashed";
 
@@ -281,16 +281,28 @@ export function MinesGame() {
 
   return (
     <div
-      className="min-h-screen text-white"
+      className="relative min-h-screen text-white"
       style={{
         backgroundColor: "#060210",
-        backgroundImage: `linear-gradient(180deg, rgba(6,2,16,0.55), rgba(6,2,16,0.85)), url(${minesBg})`,
+        backgroundImage: `url(${minesBg})`,
         backgroundSize: "cover",
         backgroundPosition: "center top",
         backgroundRepeat: "no-repeat",
         backgroundAttachment: "fixed",
       }}
     >
+      {/* Red tension overlay sobre el fondo de la página */}
+      <div
+        aria-hidden="true"
+        className={`pointer-events-none fixed inset-0 z-0 transition-opacity duration-700 ${
+          showRedOverlay ? "opacity-100" : "opacity-0"
+        }`}
+        style={{
+          background:
+            "radial-gradient(ellipse at 50% 50%, rgba(220,0,0,0.55) 0%, rgba(150,0,0,0.45) 55%, rgba(80,0,0,0.55) 100%)",
+          mixBlendMode: "multiply",
+        }}
+      />
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4">
         {/* Header */}
         <header
@@ -433,14 +445,6 @@ export function MinesGame() {
               );
             })}
           </div>
-
-          {/* Red tension overlay */}
-          <div
-            className={`pointer-events-none absolute inset-0 z-[1] rounded-2xl bg-red-900/30 transition-opacity duration-700 ${
-              showRedOverlay ? "opacity-100" : "opacity-0"
-            }`}
-            aria-hidden="true"
-          />
 
           {/* Win/Lose overlay */}
           {phase === "lost" && (
