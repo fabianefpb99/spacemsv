@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, Settings, Clock, ArrowRight, Minus, Plus, Volume2, VolumeX } from "lucide-react";
+import { Menu, Settings, Clock, ArrowRight, Minus, Plus, Volume2, VolumeX, Crown } from "lucide-react";
 import bgImage from "@/assets/space-bg-full.png";
 import astronautIdlePng from "@/assets/astronaut-idle.svg";
 import astronautFlyingSrc from "@/assets/astronaut-flying.png";
@@ -77,9 +77,10 @@ function formatCOP(n: number) {
 }
 
 function colorFor(mult: number) {
-  if (mult < 2) return "text-rose-400 border-rose-500/50 bg-rose-950/40";
-  if (mult < 3) return "text-purple-300 border-purple-500/50 bg-purple-950/40";
-  return "text-emerald-300 border-emerald-500/50 bg-emerald-950/40";
+  if (mult < 1.95) return "text-rose-400 border-rose-500/50 bg-rose-950/40";
+  if (mult < 2.95) return "text-purple-300 border-purple-500/50 bg-purple-950/40";
+  if (mult < 10) return "text-emerald-300 border-emerald-500/50 bg-emerald-950/40";
+  return "text-amber-300 border-amber-400/60 bg-amber-950/40 shadow-[0_0_10px_rgba(251,191,36,0.45)]";
 }
 
 // Crash distribution: heavily weighted toward early crashes
@@ -928,8 +929,14 @@ export function SpacemanGame() {
           {history.map((h) => (
             <div
               key={h.id}
-              className={`shrink-0 rounded border px-1.5 py-0.5 font-display text-[10px] font-bold leading-none ${colorFor(h.value)}`}
+              className={`relative shrink-0 rounded border px-1.5 py-0.5 font-display text-[10px] font-bold leading-none ${colorFor(h.value)}`}
             >
+              {h.value >= 10 && (
+                <Crown
+                  className="absolute -top-1.5 -right-1.5 h-2.5 w-2.5 text-amber-300 drop-shadow-[0_0_3px_rgba(251,191,36,0.9)]"
+                  fill="currentColor"
+                />
+              )}
               {h.value.toFixed(2)}x
             </div>
           ))}
