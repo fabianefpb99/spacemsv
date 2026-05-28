@@ -1067,14 +1067,10 @@ export function SpacemanGame() {
             <input
               type="text"
               value={formatCOP(bet)}
-              onChange={(e) => {
-                const digits = e.target.value.replace(/\D/g, "");
-                const n = parseInt(digits || "0", 10);
-                setBet(Math.min(MAX_BET, Math.max(0, n)));
-              }}
+              readOnly
               disabled={!!activeBet}
               inputMode="numeric"
-              className="no-spinner min-w-0 flex-1 rounded-lg border border-purple-500/30 bg-black/40 px-2 text-center font-display text-2xl font-bold text-white outline-none focus:border-purple-400/60 disabled:opacity-70 sm:text-3xl"
+              className="no-spinner min-w-0 flex-1 rounded-lg border border-purple-500/30 bg-black/40 px-2 text-center font-display text-2xl font-bold text-white outline-none disabled:opacity-70 sm:text-3xl cursor-default"
             />
             <button
               className="btn-bet flex h-14 w-14 shrink-0 items-center justify-center rounded-lg text-2xl font-black sm:h-16 sm:w-16"
