@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Menu, Settings, Trophy, ChevronRight, Gift, Home, Gamepad2, Wallet, User } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
 import heroImg from "@/assets/home-hero.jpg";
+import heroMinesImg from "@/assets/home-hero-mines.jpg";
 import gameSpaceman from "@/assets/game-spaceman.jpg";
 import gameCrash from "@/assets/game-crash.jpg";
 import gameMines from "@/assets/game-mines.jpg";
@@ -46,15 +47,41 @@ function formatCOP(n: number) {
 const GAMES = [
   { name: "SPACEMAN", img: gameSpaceman, tag: "POPULAR", tagCls: "bg-purple-600/40 text-purple-200 border-purple-500/50", to: "/spaceman" },
   { name: "CRASH", img: gameCrash, tag: "NUEVO", tagCls: "bg-emerald-600/30 text-emerald-200 border-emerald-500/50", to: "/home" },
-  { name: "MINES", img: gameMines, tag: "POPULAR", tagCls: "bg-purple-600/40 text-purple-200 border-purple-500/50", to: "/mines" },
+  { name: "MINAS", img: gameMines, tag: "POPULAR", tagCls: "bg-purple-600/40 text-purple-200 border-purple-500/50", to: "/mines" },
   { name: "DICE", img: gameDice, tag: "CLÁSICO", tagCls: "bg-rose-600/30 text-rose-200 border-rose-500/50", to: "/home" },
+];
+
+const SLIDES = [
+  {
+    img: heroImg,
+    eyebrow: "¡BIENVENIDO A",
+    title: "BETSPACEMAN!",
+    desc: "Apuesta, multiplica\ny gana en las estrellas.",
+    cta: "Jugar ahora",
+    to: "/spaceman" as const,
+  },
+  {
+    img: heroMinesImg,
+    eyebrow: "DESCUBRE",
+    title: "BUSCAMINAS",
+    desc: "Esquiva minas,\nrevela gemas y gana.",
+    cta: "Jugar Minas",
+    to: "/mines" as const,
+  },
 ];
 
 function HomePage() {
   const [balance] = useState(100000);
   const [online] = useState(219);
   const [slide, setSlide] = useState(0);
-  const slides = 4;
+  const slides = SLIDES.length;
+
+  useEffect(() => {
+    const id = setInterval(() => setSlide((s) => (s + 1) % SLIDES.length), 5000);
+    return () => clearInterval(id);
+  }, []);
+
+  const current = SLIDES[slide];
 
   return (
     <div className="min-h-screen bg-[#060210] text-white">
@@ -97,25 +124,28 @@ function HomePage() {
         {/* Hero banner */}
         <section className="mt-3 overflow-hidden rounded-2xl border border-purple-500/30 bg-[#1a0b3a]">
           <div className="relative h-44 sm:h-52">
-            <img
-              src={heroImg}
-              alt="Astronauta volando en el universo"
-              className="absolute inset-0 h-full w-full object-cover"
-            />
+            {SLIDES.map((s, i) => (
+              <img
+                key={i}
+                src={s.img}
+                alt={s.title}
+                className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${i === slide ? "opacity-100" : "opacity-0"}`}
+              />
+            ))}
             <div className="absolute inset-0 bg-gradient-to-r from-[#1a0b3a] via-[#1a0b3a]/80 to-transparent" />
-            <div className="absolute inset-0 flex flex-col justify-center gap-2 p-4 sm:p-5">
-              <p className="font-display text-xs tracking-widest text-purple-100/80">¡BIENVENIDO A</p>
+            <div key={slide} className="absolute inset-0 flex flex-col justify-center gap-2 p-4 sm:p-5 animate-[fadeIn_500ms_ease-out]">
+              <p className="font-display text-xs tracking-widest text-purple-100/80">{current.eyebrow}</p>
               <h2 className="font-display text-2xl font-black leading-tight tracking-wide text-white drop-shadow sm:text-3xl">
-                BETSPACEMAN!
+                {current.title}
               </h2>
-              <p className="max-w-[55%] text-xs text-purple-100/80 sm:text-sm">
-                Apuesta, multiplica<br />y gana en las estrellas.
+              <p className="max-w-[55%] whitespace-pre-line text-xs text-purple-100/80 sm:text-sm">
+                {current.desc}
               </p>
               <Link
-                to="/"
+                to={current.to}
                 className="mt-1 inline-flex w-fit items-center justify-center rounded-md bg-purple-600 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-purple-900/50 transition hover:bg-purple-500"
               >
-                Jugar ahora
+                {current.cta}
               </Link>
             </div>
           </div>
