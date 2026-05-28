@@ -576,3 +576,37 @@ function Shards({ mine = false }: { mine?: boolean }) {
     </>
   );
 }
+
+/** Neon coin burst shown briefly on cashout. */
+function WinCoins() {
+  const coins = useMemo(() => {
+    return Array.from({ length: 14 }).map(() => {
+      const ang = Math.random() * Math.PI * 2;
+      const dist = 60 + Math.random() * 80;
+      return {
+        cx: Math.cos(ang) * dist,
+        cy: Math.sin(ang) * dist - 40, // bias upward
+        delay: Math.random() * 180,
+        size: 6 + Math.random() * 8,
+      };
+    });
+  }, []);
+  return (
+    <div className="pointer-events-none absolute inset-0">
+      {coins.map((c, i) => (
+        <span
+          key={i}
+          className="win-coin"
+          style={{
+            // @ts-ignore CSS vars
+            "--cx": `${c.cx}px`,
+            "--cy": `${c.cy}px`,
+            width: `${c.size}px`,
+            height: `${c.size}px`,
+            animationDelay: `${c.delay}ms`,
+          } as React.CSSProperties}
+        />
+      ))}
+    </div>
+  );
+}
