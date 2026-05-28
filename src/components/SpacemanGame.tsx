@@ -1115,11 +1115,11 @@ export function SpacemanGame() {
         </div>
 
         {/* History (compact + expandable overlay) */}
-        <div className="relative mt-2">
+        <div className="relative mt-2" ref={historyRef}>
           {/* Expanded dropdown — absolute overlay so it does NOT shift game layout */}
           {historyOpen && (
             <div
-              className="absolute bottom-full left-0 right-0 z-40 mb-2 glass-panel rounded-xl p-3 shadow-2xl animate-[msg-in_.2s_ease-out]"
+              className="absolute bottom-full left-0 right-0 z-40 mb-2 glass-panel rounded-xl p-3 shadow-2xl animate-[history-rise_.32s_cubic-bezier(.22,.61,.36,1)]"
             >
               <div className="mb-2 flex items-center justify-between">
                 <div className="font-display text-[11px] font-bold uppercase tracking-[0.18em] text-purple-100/90">
@@ -1147,6 +1147,17 @@ export function SpacemanGame() {
                   )
                 ))}
               </div>
+              {/* Close button — wide arrow-down */}
+              <button
+                type="button"
+                onClick={() => setHistoryOpen(false)}
+                aria-label="Cerrar historial"
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-purple-500/30 bg-purple-900/30 py-1.5 text-purple-100/90 hover:bg-purple-800/40 transition-colors"
+              >
+                <ChevronDown className="h-5 w-5" strokeWidth={3} />
+                <ChevronDown className="h-5 w-5 -ml-3" strokeWidth={3} />
+                <ChevronDown className="h-5 w-5 -ml-3" strokeWidth={3} />
+              </button>
             </div>
           )}
 
