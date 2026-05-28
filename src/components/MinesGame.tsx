@@ -198,7 +198,7 @@ export function MinesGame() {
       ...h,
     ].slice(0, 20));
     setPhase("cashed");
-    setTimeout(() => resetRound(), 1600);
+    setTimeout(() => resetRound(), 1750);
   }, [phase, picks, bet, currentMult, mines]);
 
   const resetRound = useCallback(() => {
@@ -407,6 +407,7 @@ export function MinesGame() {
           {/* Win/Lose overlay */}
           {phase === "cashed" && (
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+              <WinCoins />
               <div className="result-pop-win rounded-xl border border-emerald-500/60 bg-[#0c0620]/85 px-5 py-3 text-center">
                 <div className="text-[10px] uppercase tracking-widest text-emerald-200/80">¡Ganaste!</div>
                 <div className="font-display text-2xl font-black neon-green">+{formatCOP(cashoutAmount)} COP</div>
@@ -573,5 +574,39 @@ function Shards({ mine = false }: { mine?: boolean }) {
         />
       ))}
     </>
+  );
+}
+
+/** Neon coin burst shown briefly on cashout. */
+function WinCoins() {
+  const coins = useMemo(() => {
+    return Array.from({ length: 14 }).map(() => {
+      const ang = Math.random() * Math.PI * 2;
+      const dist = 60 + Math.random() * 80;
+      return {
+        cx: Math.cos(ang) * dist,
+        cy: Math.sin(ang) * dist - 40, // bias upward
+        delay: Math.random() * 180,
+        size: 6 + Math.random() * 8,
+      };
+    });
+  }, []);
+  return (
+    <div className="pointer-events-none absolute inset-0">
+      {coins.map((c, i) => (
+        <span
+          key={i}
+          className="win-coin"
+          style={{
+            // @ts-ignore CSS vars
+            "--cx": `${c.cx}px`,
+            "--cy": `${c.cy}px`,
+            width: `${c.size}px`,
+            height: `${c.size}px`,
+            animationDelay: `${c.delay}ms`,
+          } as React.CSSProperties}
+        />
+      ))}
+    </div>
   );
 }
