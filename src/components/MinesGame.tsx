@@ -264,7 +264,7 @@ export function MinesGame() {
         </header>
 
         {/* Online */}
-        <div className="mt-3 flex items-center justify-between text-sm">
+        <div className="mt-2 flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
             <span className="relative inline-flex h-2.5 w-2.5">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
@@ -276,7 +276,7 @@ export function MinesGame() {
         </div>
 
         {/* HUD */}
-        <section className="mt-3 grid grid-cols-3 gap-2 rounded-2xl border border-purple-500/30 glass-panel p-2.5 sm:p-3">
+        <section className="mt-2 grid grid-cols-3 gap-2 rounded-2xl border border-purple-500/30 glass-panel p-2 sm:p-2.5">
           {/* Mines selector */}
           <div className="relative">
             <div className="text-[9px] uppercase tracking-widest text-purple-200/70 text-center">Minas</div>
@@ -330,7 +330,7 @@ export function MinesGame() {
 
         {/* Board */}
         <section
-          className={`relative mt-3 rounded-2xl border border-purple-500/30 bg-stars overflow-hidden p-2.5 sm:p-3 ${shake ? "mines-shake" : ""}`}
+          className={`relative mt-2 rounded-2xl border border-purple-500/30 bg-stars overflow-hidden p-2 sm:p-2.5 ${shake ? "mines-shake" : ""}`}
           style={{
             background:
               "radial-gradient(ellipse at 50% 0%, rgba(80,30,150,0.35), transparent 60%), linear-gradient(180deg, #0c0420, #060210)",
@@ -393,55 +393,8 @@ export function MinesGame() {
           )}
         </section>
 
-        {/* History */}
-        <section className="mt-3 rounded-2xl border border-purple-500/30 glass-panel p-2.5 sm:p-3">
-          <div className="flex items-center gap-1.5">
-            <TrendingUp className="h-3.5 w-3.5 text-emerald-400" />
-            <h3 className="font-display text-[11px] font-bold uppercase tracking-widest text-white">
-              Últimas ganancias
-            </h3>
-          </div>
-          <div className="mt-2 flex gap-2 overflow-x-auto hide-scrollbar">
-            {history.slice(0, 10).map((h) => (
-              <div
-                key={h.id}
-                className={`flex min-w-[112px] flex-col items-center gap-0.5 rounded-lg border px-2 py-2 ${
-                  h.exploded
-                    ? "border-rose-500/40 bg-rose-950/30"
-                    : "border-emerald-500/30 bg-emerald-950/20"
-                }`}
-              >
-                <div className="flex items-center gap-1">
-                  {h.exploded ? (
-                    <Bomb className="h-4 w-4 text-rose-400" />
-                  ) : (
-                    <Gem className="h-4 w-4 text-emerald-400" />
-                  )}
-                  <span className={`font-display text-sm font-bold ${h.exploded ? "neon-red" : "neon-green"}`}>
-                    {h.exploded ? "EXPLOTÓ" : `${h.multiplier.toFixed(2)}x`}
-                  </span>
-                </div>
-                <div className="text-[10px] text-purple-200/80">{h.mines} minas</div>
-                {!h.exploded && (
-                  <div className="font-display text-[11px] font-bold text-white">
-                    <span className="neon-green">$</span>{formatCOP(h.amount)}
-                  </div>
-                )}
-                <div className="mt-0.5 flex items-center gap-1 text-[9px] text-purple-300/70">
-                  <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-purple-600/40">
-                    <User className="h-2.5 w-2.5" />
-                  </span>
-                  <span className="truncate max-w-[60px]">{h.user}</span>
-                  <span>·</span>
-                  <span>{relativeTime(h.ts, now)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
         {/* Bet panel */}
-        <section className="mt-3 rounded-2xl border border-purple-500/30 glass-panel p-3">
+        <section className="mt-2 rounded-2xl border border-purple-500/30 glass-panel p-2.5">
           <div className="text-center text-[10px] uppercase tracking-widest text-purple-200/70">Apuesta (COP)</div>
           <div className="mt-1.5 flex items-center gap-2">
             <button
@@ -519,7 +472,41 @@ export function MinesGame() {
           </div>
         </section>
 
-        <div className="h-6" />
+        {/* History (compact) */}
+        <section className="mt-2 rounded-xl border border-purple-500/30 glass-panel px-2 py-1.5">
+          <div className="flex items-center gap-2">
+            <div className="flex shrink-0 items-center gap-1">
+              <TrendingUp className="h-3 w-3 text-emerald-400" />
+              <span className="font-display text-[9px] font-bold uppercase tracking-widest text-white/80">
+                Últimas
+              </span>
+            </div>
+            <div className="flex flex-1 gap-1 overflow-x-auto hide-scrollbar">
+              {history.slice(0, 14).map((h) => (
+                <div
+                  key={h.id}
+                  title={`${h.user} · ${h.mines} minas · ${h.exploded ? "Explotó" : formatCOP(h.amount) + " COP"} · ${relativeTime(h.ts, now)}`}
+                  className={`flex shrink-0 items-center gap-1 rounded-md border px-1.5 py-0.5 ${
+                    h.exploded
+                      ? "border-rose-500/40 bg-rose-950/30"
+                      : "border-emerald-500/30 bg-emerald-950/20"
+                  }`}
+                >
+                  {h.exploded ? (
+                    <Bomb className="h-3 w-3 text-rose-400" />
+                  ) : (
+                    <Gem className="h-3 w-3 text-emerald-400" />
+                  )}
+                  <span className={`font-display text-[10px] font-bold ${h.exploded ? "neon-red" : "neon-green"}`}>
+                    {h.exploded ? "X" : `${h.multiplier.toFixed(2)}x`}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <div className="h-3" />
       </div>
     </div>
   );
