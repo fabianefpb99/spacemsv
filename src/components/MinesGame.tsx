@@ -407,6 +407,7 @@ export function MinesGame() {
           {/* Win/Lose overlay */}
           {phase === "cashed" && (
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+              <WinCoins />
               <div className="result-pop-win rounded-xl border border-emerald-500/60 bg-[#0c0620]/85 px-5 py-3 text-center">
                 <div className="text-[10px] uppercase tracking-widest text-emerald-200/80">¡Ganaste!</div>
                 <div className="font-display text-2xl font-black neon-green">+{formatCOP(cashoutAmount)} COP</div>
