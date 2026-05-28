@@ -1154,9 +1154,19 @@ export function SpacemanGame() {
                 aria-label="Cerrar historial"
                 className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-purple-500/30 bg-purple-900/30 py-1.5 text-purple-100/90 hover:bg-purple-800/40 transition-colors"
               >
-                <ChevronDown className="h-5 w-5" strokeWidth={3} />
-                <ChevronDown className="h-5 w-5 -ml-3" strokeWidth={3} />
-                <ChevronDown className="h-5 w-5 -ml-3" strokeWidth={3} />
+                <svg
+                  viewBox="0 0 100 16"
+                  preserveAspectRatio="none"
+                  className="h-3 w-24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <polyline points="2,2 50,14 98,2" />
+                </svg>
               </button>
             </div>
           )}
