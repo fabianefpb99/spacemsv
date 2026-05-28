@@ -451,7 +451,7 @@ export function SpacemanGame() {
       if (saturns.length > 0) setSaturns([]);
       return;
     }
-    if (multiplier >= 14.9 && !saturnFiredRef.current) {
+    if (multiplier >= 9 && !saturnFiredRef.current) {
       saturnFiredRef.current = true;
       const id = Date.now();
       const leftPct = 10 + Math.random() * 30;
