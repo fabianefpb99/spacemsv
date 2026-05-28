@@ -3,6 +3,9 @@ import { Link } from "@tanstack/react-router";
 import { Menu, Settings, Minus, Plus, Volume2, VolumeX, ChevronDown, Bomb, Gem, TrendingUp, User } from "lucide-react";
 import { setMuted as setAudioMuted, playCrashSound, playCashoutSound, isMuted } from "@/lib/gameAudio";
 import coinRevealSfx from "@/assets/sfx/coin-reveal.mp3";
+import victorySfx from "@/assets/sfx/victory.mp3";
+import gameOverSfx from "@/assets/sfx/game-over.mp3";
+import minesBg from "@/assets/mines-bg.png";
 
 type Phase = "betting" | "playing" | "lost" | "cashed";
 
@@ -46,6 +49,19 @@ function playReveal() {
   } catch {}
 }
 function resetRevealStreak() { revealStreak = 0; }
+
+let victoryAudio: HTMLAudioElement | null = null;
+let gameOverAudio: HTMLAudioElement | null = null;
+function playVictory() {
+  if (isMuted() || typeof window === "undefined") return;
+  if (!victoryAudio) { victoryAudio = new Audio(victorySfx); victoryAudio.volume = 0.7; }
+  try { victoryAudio.currentTime = 0; void victoryAudio.play(); } catch {}
+}
+function playGameOver() {
+  if (isMuted() || typeof window === "undefined") return;
+  if (!gameOverAudio) { gameOverAudio = new Audio(gameOverSfx); gameOverAudio.volume = 0.7; }
+  try { gameOverAudio.currentTime = 0; void gameOverAudio.play(); } catch {}
+}
 
 function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
@@ -219,6 +235,7 @@ export function MinesGame() {
     if (isMine) {
       setExplodedTile(idx);
       playCrashSound();
+      playGameOver();
       setShake(true);
       setTimeout(() => setShake(false), 400);
       // reveal all mines
@@ -246,6 +263,7 @@ export function MinesGame() {
         const win = Math.floor(bet * mult);
         setBalance((b) => b + win);
         playCashoutSound();
+        playVictory();
         setHistory((h) => [
           { id: ++historyId.current, user: "Tú", mines, multiplier: mult, amount: win, exploded: false, ts: Date.now() },
           ...h,
@@ -260,11 +278,21 @@ export function MinesGame() {
   const canCashout = phase === "playing" && picks > 0;
 
   return (
-    <div className="min-h-screen bg-[#060210] text-white">
+    <div
+      className="min-h-screen text-white"
+      style={{
+        backgroundColor: "#060210",
+        backgroundImage: `linear-gradient(180deg, rgba(6,2,16,0.55), rgba(6,2,16,0.85)), url(${minesBg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center top",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+      }}
+    >
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4">
         {/* Header */}
         <header
-          className="flex items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
+          className="flex items-center justify-between bg-[#060210]/80 backdrop-blur-sm border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.75rem)" }}
         >
           <Link to="/home" className="rounded-md p-2 text-white hover:bg-white/10">
@@ -361,10 +389,10 @@ export function MinesGame() {
 
         {/* Board */}
         <section
-          className={`relative mt-2 rounded-2xl border border-purple-500/30 bg-stars overflow-hidden p-2 sm:p-2.5 ${shake ? "mines-shake" : ""}`}
+          className={`relative mt-2 rounded-2xl border border-purple-500/30 overflow-hidden p-2 sm:p-2.5 backdrop-blur-sm ${shake ? "mines-shake" : ""}`}
           style={{
             background:
-              "radial-gradient(ellipse at 50% 0%, rgba(80,30,150,0.35), transparent 60%), linear-gradient(180deg, #0c0420, #060210)",
+              "radial-gradient(ellipse at 50% 0%, rgba(80,30,150,0.25), transparent 65%), rgba(12,4,32,0.45)",
           }}
         >
           <div className="grid grid-cols-4 gap-2 sm:gap-2.5">
