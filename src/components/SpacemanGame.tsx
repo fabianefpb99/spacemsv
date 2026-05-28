@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, Settings, Clock, ArrowRight, Minus, Plus, Volume2, VolumeX } from "lucide-react";
+import { Menu, Settings, Clock, ArrowRight, Minus, Plus, Volume2, VolumeX, ChevronDown, ChevronUp } from "lucide-react";
 import bgImage from "@/assets/space-bg-full.png";
 import astronautIdlePng from "@/assets/astronaut-idle.svg";
 import astronautFlyingSrc from "@/assets/astronaut-flying.png";
@@ -244,6 +244,7 @@ export function SpacemanGame() {
   const meteorFiredRef = useRef<Set<number>>(new Set());
   const [saturns, setSaturns] = useState<{ id: number; leftPct: number }[]>([]);
   const saturnFiredRef = useRef<boolean>(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   // Background music (mp3) — starts on first user interaction (browsers require a gesture)
   const bgAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -547,7 +548,7 @@ export function SpacemanGame() {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     setPhase("crashed");
     setMultiplier(crashPointRef.current);
-    setHistory((h) => [{ id: Date.now(), value: crashPointRef.current }, ...h].slice(0, 12));
+    setHistory((h) => [{ id: Date.now(), value: crashPointRef.current }, ...h].slice(0, 50));
     playCrashSound();
     // Duck background music during crash
     const bg = bgAudioRef.current;
@@ -1098,25 +1099,69 @@ export function SpacemanGame() {
           </button>
         </div>
 
-        {/* History (compact) */}
-        <div className="mt-2 flex items-center gap-1.5 overflow-x-auto hide-scrollbar px-1">
-          <Clock className="h-3 w-3 shrink-0 text-purple-200/70" />
-          {history.map((h) => (
-            h.value >= 15 ? (
-              <div key={h.id} className="shrink-0 jackpot-chip rounded">
-                <div className="rounded-[3px] px-1.5 py-0.5 font-display text-[10px] font-bold leading-none text-amber-100 bg-amber-950/60 drop-shadow-[0_1px_0_rgba(120,60,0,0.9)]" style={{ textShadow: '0 -1px 0 rgba(0,0,0,0.85), 0 1px 0 rgba(255,255,255,0.25)' }}>
-                  {h.value.toFixed(2)}x
+        {/* History (compact + expandable overlay) */}
+        <div className="relative mt-2">
+          {/* Expanded dropdown — absolute overlay so it does NOT shift game layout */}
+          {historyOpen && (
+            <div
+              className="absolute bottom-full left-0 right-0 z-40 mb-2 glass-panel rounded-xl p-3 shadow-2xl animate-[msg-in_.2s_ease-out]"
+            >
+              <div className="mb-2 flex items-center justify-between">
+                <div className="font-display text-[11px] font-bold uppercase tracking-[0.18em] text-purple-100/90">
+                  Historial de últimos tiros
+                </div>
+                <div className="text-[10px] uppercase tracking-wider text-purple-200/70">
+                  50 últimos
                 </div>
               </div>
-            ) : (
-              <div
-                key={h.id}
-                className={`shrink-0 rounded border px-1.5 py-0.5 font-display text-[10px] font-bold leading-none ${colorFor(h.value)}`}
-              >
-                {h.value.toFixed(2)}x
+              <div className="grid grid-cols-10 gap-1.5 max-h-[40vh] overflow-y-auto hide-scrollbar">
+                {history.slice(0, 50).map((h) => (
+                  h.value >= 15 ? (
+                    <div key={h.id} className="jackpot-chip rounded">
+                      <div className="rounded-[3px] px-1 py-0.5 text-center font-display text-[10px] font-bold leading-none text-amber-100 bg-amber-950/60" style={{ textShadow: '0 -1px 0 rgba(0,0,0,0.85), 0 1px 0 rgba(255,255,255,0.25)' }}>
+                        {h.value.toFixed(2)}x
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      key={h.id}
+                      className={`rounded border px-1 py-0.5 text-center font-display text-[10px] font-bold leading-none ${colorFor(h.value)}`}
+                    >
+                      {h.value.toFixed(2)}x
+                    </div>
+                  )
+                ))}
               </div>
-            )
-          ))}
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={() => setHistoryOpen((o) => !o)}
+            aria-expanded={historyOpen}
+            className="flex w-full items-center gap-1.5 overflow-x-auto hide-scrollbar px-1 py-1 rounded-md hover:bg-white/5 transition-colors"
+          >
+            <Clock className="h-3 w-3 shrink-0 text-purple-200/70" />
+            {history.slice(0, 12).map((h) => (
+              h.value >= 15 ? (
+                <div key={h.id} className="shrink-0 jackpot-chip rounded">
+                  <div className="rounded-[3px] px-1.5 py-0.5 font-display text-[10px] font-bold leading-none text-amber-100 bg-amber-950/60 drop-shadow-[0_1px_0_rgba(120,60,0,0.9)]" style={{ textShadow: '0 -1px 0 rgba(0,0,0,0.85), 0 1px 0 rgba(255,255,255,0.25)' }}>
+                    {h.value.toFixed(2)}x
+                  </div>
+                </div>
+              ) : (
+                <div
+                  key={h.id}
+                  className={`shrink-0 rounded border px-1.5 py-0.5 font-display text-[10px] font-bold leading-none ${colorFor(h.value)}`}
+                >
+                  {h.value.toFixed(2)}x
+                </div>
+              )
+            ))}
+            <span className="ml-auto shrink-0 text-purple-200/70">
+              {historyOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
+            </span>
+          </button>
         </div>
       </div>
 
