@@ -235,6 +235,11 @@
   0% { transform: rotate(-8deg); }
   100% { transform: rotate(352deg); }
 }
+@keyframes history-rise {
+  0%   { opacity: 0; transform: translateY(100%) scaleY(0.6); transform-origin: bottom; }
+  60%  { opacity: 1; }
+  100% { opacity: 1; transform: translateY(0) scaleY(1); transform-origin: bottom; }
+}
 
 
 .font-display {
