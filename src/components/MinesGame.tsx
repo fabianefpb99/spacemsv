@@ -278,11 +278,21 @@ export function MinesGame() {
   const canCashout = phase === "playing" && picks > 0;
 
   return (
-    <div className="min-h-screen bg-[#060210] text-white">
+    <div
+      className="min-h-screen text-white"
+      style={{
+        backgroundColor: "#060210",
+        backgroundImage: `linear-gradient(180deg, rgba(6,2,16,0.55), rgba(6,2,16,0.85)), url(${minesBg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center top",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+      }}
+    >
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4">
         {/* Header */}
         <header
-          className="flex items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
+          className="flex items-center justify-between bg-[#060210]/80 backdrop-blur-sm border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.75rem)" }}
         >
           <Link to="/home" className="rounded-md p-2 text-white hover:bg-white/10">
