@@ -733,6 +733,31 @@ export function SpacemanGame() {
         </div>
       ))}
 
+      {/* Saturno cruza/cae al pasar 14.9x */}
+      {saturns.map((s) => (
+        <div
+          key={s.id}
+          aria-hidden
+          className="pointer-events-none absolute h-40 w-40 sm:h-56 sm:w-56"
+          style={{
+            top: "-10%",
+            left: `${s.leftPct}%`,
+            animation: "saturn-fall 5.2s linear forwards",
+            zIndex: 0,
+          }}
+        >
+          <img
+            src={saturnSrc}
+            alt=""
+            className="h-full w-full"
+            style={{
+              animation: "saturn-spin 14s linear infinite",
+              filter: "drop-shadow(0 0 18px rgba(240,200,140,0.45))",
+            }}
+          />
+        </div>
+      ))}
+
       <div
         className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pt-4 sm:max-w-lg sm:px-4"
         style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) * 0.85 + 1.05rem)" }}
