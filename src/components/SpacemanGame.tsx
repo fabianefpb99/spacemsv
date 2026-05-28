@@ -444,7 +444,7 @@ export function SpacemanGame() {
     }
   }, [multiplier, phase, meteors.length]);
 
-  // Saturno pasa una vez por ronda al superar 14.9x
+  // Saturno pasa una vez por ronda al superar 9x
   useEffect(() => {
     if (phase !== "running") {
       if (saturnFiredRef.current) saturnFiredRef.current = false;
