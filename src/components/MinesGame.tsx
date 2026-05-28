@@ -5,7 +5,7 @@ import { setMuted as setAudioMuted, playCrashSound, playCashoutSound, isMuted } 
 import coinRevealSfx from "@/assets/sfx/coin-reveal.mp3";
 import victorySfx from "@/assets/sfx/victory.mp3";
 import gameOverSfx from "@/assets/sfx/game-over.mp3";
-import minesBg from "@/assets/mines-bg.png";
+import minesBg from "@/assets/space-bg-full.png";
 
 type Phase = "betting" | "playing" | "lost" | "cashed";
 
