@@ -276,6 +276,8 @@ export function MinesGame() {
 
   const canStart = phase === "betting" && bet >= MIN_BET && bet <= balance;
   const canCashout = phase === "playing" && picks > 0;
+  const revealProgress = revealed.size / TILES;
+  const showRedOverlay = revealProgress >= 0.30 && phase === "playing";
 
   return (
     <div
