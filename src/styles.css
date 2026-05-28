@@ -225,6 +225,16 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+@keyframes saturn-fall {
+  0% { transform: translate3d(-30vw, -40vh, 0); opacity: 0; }
+  12% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { transform: translate3d(40vw, 120vh, 0); opacity: 0; }
+}
+@keyframes saturn-spin {
+  0% { transform: rotate(-8deg); }
+  100% { transform: rotate(352deg); }
+}
 
 
 .font-display {
