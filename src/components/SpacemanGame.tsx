@@ -244,6 +244,7 @@ export function SpacemanGame() {
   const meteorFiredRef = useRef<Set<number>>(new Set());
   const [saturns, setSaturns] = useState<{ id: number; leftPct: number }[]>([]);
   const saturnFiredRef = useRef<boolean>(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   // Background music (mp3) — starts on first user interaction (browsers require a gesture)
   const bgAudioRef = useRef<HTMLAudioElement | null>(null);
