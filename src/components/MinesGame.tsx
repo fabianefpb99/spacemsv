@@ -36,7 +36,7 @@ function ensureRevealPool() {
   revealPool = Array.from({ length: REVEAL_POOL_SIZE }, () => {
     const a = new Audio(coinRevealSfx);
     a.preload = "auto";
-    a.volume = 0.22;
+    a.volume = 0.20;
     return a;
   });
 }
@@ -65,7 +65,7 @@ function playVictory() {
 }
 function playGameOver() {
   if (isMuted() || typeof window === "undefined") return;
-  if (!gameOverAudio) { gameOverAudio = new Audio(gameOverSfx); gameOverAudio.volume = 0.35; }
+  if (!gameOverAudio) { gameOverAudio = new Audio(gameOverSfx); gameOverAudio.volume = 0.32; }
   try { gameOverAudio.currentTime = 0; void gameOverAudio.play(); } catch {}
 }
 
