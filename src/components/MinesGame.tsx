@@ -10,19 +10,19 @@ import minesBg from "@/assets/mines-page-bg.png";
 type Phase = "betting" | "playing" | "lost" | "cashed";
 
 const TILES = 16;
-const RTP_BASE = 0.91;
+const RTP_BASE = 0.907;
 // Las variantes de bajo riesgo (≤3 minas) son las más explotables:
 // aplicamos una penalización extra para equilibrar la ganancia temprana.
-const RTP_LOW_RISK = 0.89; // mines ≤ 3
+const RTP_LOW_RISK = 0.887; // mines ≤ 3
 function rtpFor(mines: number) {
   // Coeficientes por nº de minas (calibrados para la primera revelación):
   //  1 mina  → 0.95x  (castigo en la primera, obliga a seguir)
   //  2 minas → 1.00x  (mínimo justo)
   //  3 minas → 1.15x  (RTP > 100%, casa en pérdida estadística leve)
-  //  4+      → RTP_BASE (0.91)
-  if (mines <= 1) return 0.890625; // 0.890625 * 16/15 = 0.95x
-  if (mines === 2) return 0.92;
-  if (mines === 3) return 1.012;
+  //  4+      → RTP_BASE (0.907)
+  if (mines <= 1) return 0.887625; // 0.887625 * 16/15 ≈ 0.95x
+  if (mines === 2) return 0.917;
+  if (mines === 3) return 1.009;
   return RTP_BASE;
 }
 const MIN_MINES = 1;
