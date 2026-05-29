@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Settings, Copy, Check, Info, CheckCircle2 } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import nequiAstronaut from "@/assets/nequi-astronaut-wide.png";
