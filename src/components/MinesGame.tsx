@@ -328,7 +328,7 @@ export function MinesGame() {
         style={{
           opacity: redIntensity,
           background:
-            "linear-gradient(to bottom, rgba(190,15,15,0.55) 0%, rgba(150,10,10,0.32) 35%, rgba(120,0,0,0.15) 65%, rgba(80,0,0,0) 100%)",
+            "linear-gradient(to bottom, rgba(190,15,15,0.30) 0%, rgba(150,10,10,0.18) 35%, rgba(120,0,0,0.08) 65%, rgba(80,0,0,0) 100%)",
           mixBlendMode: "screen",
         }}
       />
