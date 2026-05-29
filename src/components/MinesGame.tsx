@@ -321,15 +321,15 @@ export function MinesGame() {
           mixBlendMode: "multiply",
         }}
       />
-      {/* Capa superior aditiva: rellena el rojo donde el fondo es muy oscuro (parte de arriba) */}
+      {/* Capa aditiva sutil para que el rojo se perciba también en la zona oscura superior */}
       <div
         aria-hidden="true"
         className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-700"
         style={{
-          opacity: redIntensity,
+          opacity: redIntensity * 0.55,
           background:
-            "linear-gradient(to bottom, rgba(190,15,15,0.30) 0%, rgba(150,10,10,0.18) 35%, rgba(120,0,0,0.08) 65%, rgba(80,0,0,0) 100%)",
-          mixBlendMode: "screen",
+            "linear-gradient(to bottom, rgba(60,5,5,0.85) 0%, rgba(45,4,4,0.55) 30%, rgba(30,2,2,0.25) 60%, rgba(15,0,0,0) 100%)",
+          mixBlendMode: "normal",
         }}
       />
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4">
