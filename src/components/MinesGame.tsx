@@ -22,7 +22,7 @@ function rtpFor(mines: number) {
   //  4+      → RTP_BASE (0.907)
   if (mines <= 1) return 0.887625; // 0.887625 * 16/15 ≈ 0.95x
   if (mines === 2) return 0.917;
-  if (mines === 3) return 1.009;
+  if (mines === 3) return 0.934375; // 0.934375 * 16/13 = 1.15x primera revelación
   return RTP_BASE;
 }
 const MIN_MINES = 1;
