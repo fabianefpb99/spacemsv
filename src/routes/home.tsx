@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Menu, Settings, Trophy, ChevronRight, Gift, Home, Gamepad2, Wallet, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PromoPopup } from "@/components/PromoPopup";

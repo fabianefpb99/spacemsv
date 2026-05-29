@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import betspaceLogo from "@/assets/betspace-logo.svg";
 import { ArrowLeft, Settings, Check, CreditCard, ChevronDown, ArrowDown } from "lucide-react";
 import { useState } from "react";
 import nequiLogo from "@/assets/nequi.svg";
