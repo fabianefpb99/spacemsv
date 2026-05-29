@@ -57,7 +57,7 @@ const SLIDES = [
   {
     img: heroImg,
     eyebrow: "¡BIENVENIDO A",
-    title: "BETSPACEMAN!",
+    title: "SPACEMAN",
     desc: "Apuesta, multiplica\ny gana en las estrellas.",
     cta: "Jugar ahora",
     to: "/spaceman" as const,
