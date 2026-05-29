@@ -15,7 +15,15 @@ const RTP_BASE = 0.91;
 // aplicamos una penalización extra para equilibrar la ganancia temprana.
 const RTP_LOW_RISK = 0.89; // mines ≤ 3
 function rtpFor(mines: number) {
-  return mines <= 3 ? RTP_LOW_RISK : RTP_BASE;
+  // Coeficientes por nº de minas (calibrados para la primera revelación):
+  //  1 mina  → 0.93x  (castigo, obliga a seguir)
+  //  2 minas → 1.00x  (mínimo justo)
+  //  3 minas → 1.15x  (RTP > 100%, casa en pérdida estadística leve)
+  //  4+      → RTP_BASE (0.91)
+  if (mines <= 1) return 0.89;
+  if (mines === 2) return 0.92;
+  if (mines === 3) return 1.012;
+  return RTP_BASE;
 }
 const MIN_MINES = 1;
 const MAX_MINES = 15;
