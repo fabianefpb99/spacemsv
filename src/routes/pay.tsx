@@ -79,7 +79,7 @@ function PayPage() {
           <div className="flex items-center gap-2">
             <div className="text-right">
               <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
-              <div className="font-display text-xs font-bold sm:text-sm text-white">
+              <div className="text-xs font-bold sm:text-sm text-white">
                 <span className="neon-green mr-0.5">$</span>{formatCOP(balance)} COP
               </div>
             </div>
@@ -90,21 +90,21 @@ function PayPage() {
         </header>
 
         {/* Title */}
-        <h2 className="mt-5 text-center font-display text-xl font-black uppercase tracking-widest text-white sm:text-2xl">
+        <h2 className="mt-5 text-center text-xl font-extrabold tracking-tight text-white sm:text-2xl">
           Recargar saldo
         </h2>
 
         {/* Current balance pill */}
         <div className="mt-4 rounded-2xl border border-purple-500/30 bg-[#0c0620] px-4 py-4 text-center">
           <div className="text-[10px] uppercase tracking-widest text-purple-200/70">Saldo actual</div>
-          <div className="mt-1 font-display text-2xl font-bold sm:text-3xl">
+          <div className="mt-1 text-2xl font-bold sm:text-3xl">
             <span className="neon-green mr-1">$</span>
             <span className="neon-green">{formatCOP(balance)} COP</span>
           </div>
         </div>
 
         {/* Step 1: payment method */}
-        <h3 className="mt-6 font-display text-sm font-bold uppercase tracking-widest text-white">
+        <h3 className="mt-6 text-sm font-semibold text-white">
           1. Selecciona tu medio de pago
         </h3>
         <div className="mt-3 flex flex-col gap-2.5">
@@ -235,7 +235,7 @@ function PayPage() {
         </div>
 
         {/* Step 2: combos */}
-        <h3 className="mt-6 font-display text-sm font-bold uppercase tracking-widest text-white">
+        <h3 className="mt-6 text-sm font-semibold text-white">
           2. Selecciona el monto
         </h3>
         <div className="mt-3 flex flex-col gap-2.5">
@@ -260,7 +260,7 @@ function PayPage() {
                 </span>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">
-                    <div className="font-display text-base font-bold">
+                    <div className="text-base font-bold">
                       <span className="neon-green mr-1">$</span>
                       <span className="text-white">{formatCOP(c.amount)} COP</span>
                     </div>
@@ -281,7 +281,7 @@ function PayPage() {
                       <div className="text-[9px] uppercase tracking-wider text-purple-200/60">
                         Recibes en total
                       </div>
-                      <div className="font-display text-sm font-bold">
+                      <div className="text-sm font-bold">
                         <span className="neon-green mr-0.5">$</span>
                         <span className="neon-green">{formatCOP(c.amount + c.bonus)} COP</span>
                       </div>
@@ -296,7 +296,7 @@ function PayPage() {
         {/* Continue button */}
         <button
           disabled={!canContinue}
-          className={`mt-6 inline-flex items-center justify-center rounded-xl px-4 py-3.5 font-display text-sm font-black uppercase tracking-widest transition ${
+          className={`mt-6 inline-flex items-center justify-center rounded-xl px-4 py-3.5 text-sm font-bold tracking-tight transition ${
             canContinue
               ? "bg-emerald-500 text-[#04130c] shadow-[0_0_24px_-6px_rgba(52,211,153,0.8)] hover:bg-emerald-400"
               : "cursor-not-allowed bg-emerald-900/40 text-emerald-200/40 ring-1 ring-emerald-700/40"
@@ -344,7 +344,7 @@ function MethodCard({
           {logo}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="font-display text-sm font-bold tracking-wider text-white">{title}</div>
+          <div className="text-sm font-bold text-white">{title}</div>
           <div className="text-[11px] text-purple-200/70">{subtitle}</div>
         </div>
         {expandable ? (
