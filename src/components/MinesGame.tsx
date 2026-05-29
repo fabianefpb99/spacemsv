@@ -10,7 +10,13 @@ import minesBg from "@/assets/mines-page-bg.png";
 type Phase = "betting" | "playing" | "lost" | "cashed";
 
 const TILES = 16;
-const RTP = 0.97;
+const RTP_BASE = 0.91;
+// Las variantes de bajo riesgo (≤3 minas) son las más explotables:
+// aplicamos una penalización extra para equilibrar la ganancia temprana.
+const RTP_LOW_RISK = 0.89; // mines ≤ 3
+function rtpFor(mines: number) {
+  return mines <= 3 ? RTP_LOW_RISK : RTP_BASE;
+}
 const MIN_MINES = 1;
 const MAX_MINES = 15;
 
@@ -30,7 +36,7 @@ function ensureRevealPool() {
   revealPool = Array.from({ length: REVEAL_POOL_SIZE }, () => {
     const a = new Audio(coinRevealSfx);
     a.preload = "auto";
-    a.volume = 0.22;
+    a.volume = 0.20;
     return a;
   });
 }
@@ -59,7 +65,7 @@ function playVictory() {
 }
 function playGameOver() {
   if (isMuted() || typeof window === "undefined") return;
-  if (!gameOverAudio) { gameOverAudio = new Audio(gameOverSfx); gameOverAudio.volume = 0.35; }
+  if (!gameOverAudio) { gameOverAudio = new Audio(gameOverSfx); gameOverAudio.volume = 0.32; }
   try { gameOverAudio.currentTime = 0; void gameOverAudio.play(); } catch {}
 }
 
@@ -76,7 +82,7 @@ function multiplierFor(mines: number, picks: number): number {
   if (picks <= 0) return 1;
   const safeTotal = TILES - mines;
   if (picks > safeTotal) return 0;
-  let m = RTP;
+  let m = rtpFor(mines);
   for (let i = 0; i < picks; i++) {
     m *= (TILES - i) / (safeTotal - i);
   }
