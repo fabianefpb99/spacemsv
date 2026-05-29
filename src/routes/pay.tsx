@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import { ArrowLeft, Settings, Check, CreditCard, ChevronDown, ArrowDown } from "lucide-react";
+import { ArrowLeft, Settings, Check, CreditCard, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import nequiLogo from "@/assets/nequi.svg";
 import bancolombiaLogo from "@/assets/bancolombia.svg";
@@ -121,12 +121,19 @@ function PayPage() {
             Recargar saldo
           </h2>
           <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-purple-500/40 bg-[#0c0620] px-3 py-1.5 text-[11px] font-semibold text-white shadow-[0_0_18px_-8px_rgba(168,85,247,0.7)] sm:text-xs">
-            <span className="text-purple-100/90">Tiempo para aprovechar bonus</span>
+            <span className="text-purple-100/90">
+              Tiempo para aprovechar{" "}
+              <span className="bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-400 bg-clip-text font-bold uppercase tracking-wide text-transparent drop-shadow-[0_0_6px_rgba(251,191,36,0.45)]">
+                bonus
+              </span>
+            </span>
             <span className="text-purple-300/60">|</span>
             <span className="font-mono tabular-nums text-emerald-300">{bonusLabel}</span>
           </div>
-          <div className="mt-2 animate-bounce-slow">
-            <ArrowDown className="h-6 w-6 text-emerald-400/80" strokeWidth={3} />
+          <div className="mt-1 animate-bounce-slow -mb-2">
+            <svg viewBox="0 0 64 20" className="h-4 w-12 text-emerald-400/90" fill="none" stroke="currentColor" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="4,4 32,16 60,4" />
+            </svg>
           </div>
         </div>
 
