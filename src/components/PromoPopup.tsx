@@ -58,14 +58,14 @@ export function PromoPopup() {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 px-4 py-6 backdrop-blur-sm animate-in fade-in duration-300"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4 py-6 backdrop-blur-sm animate-in fade-in duration-300"
       role="dialog"
       aria-modal="true"
       aria-label="Promoción Combo Starter"
       onClick={() => setOpen(false)}
     >
       <div
-        className="relative w-full max-w-sm sm:max-w-md animate-in zoom-in-95 duration-300"
+        className="relative w-full max-w-[260px] sm:max-w-[300px] animate-in zoom-in-95 duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -76,7 +76,7 @@ export function PromoPopup() {
           <X className="h-5 w-5" strokeWidth={3} />
         </button>
 
-        <div className="relative overflow-hidden rounded-2xl ring-1 ring-purple-500/40 shadow-2xl shadow-purple-900/60">
+        <div className="relative overflow-hidden rounded-2xl ring-1 ring-purple-500/40 shadow-2xl shadow-purple-900/60 cursor-pointer" onClick={handleImageClick}>
           <img
             src={comboImg}
             alt="Combo Starter Apuesta"
