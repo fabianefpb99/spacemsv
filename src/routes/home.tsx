@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Menu, Settings, Trophy, ChevronRight, Gift, Home, Gamepad2, Wallet, User } from "lucide-react";
 import { useEffect, useState } from "react";
+import { PromoPopup } from "@/components/PromoPopup";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
 import heroImg from "@/assets/home-hero.jpg";
 import heroMinesImg from "@/assets/home-hero-mines.jpg";
@@ -85,6 +86,7 @@ function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#060210] text-white">
+      <PromoPopup />
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4">
         {/* Header — must match SpacemanGame header exactly, sin icono de sonido */}
         <header
