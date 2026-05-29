@@ -1,6 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, Settings, Check, CreditCard, ChevronDown } from "lucide-react";
 import { useState } from "react";
+import nequiLogo from "@/assets/nequi.svg";
+import bancolombiaLogo from "@/assets/bancolombia.svg";
+import brebLogo from "@/assets/bre-b.svg";
 
 export const Route = createFileRoute("/pay")({
   head: () => ({
@@ -18,7 +21,7 @@ function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
 }
 
-type Method = "nequi" | "daviplata" | "bancolombia" | "card";
+type Method = "nequi" | "breb" | "bancolombia" | "card";
 
 const COMBOS = [
   { id: "c1", amount: 25000, bonus: 5000, tag: "BÁSICO", tagCls: "bg-purple-600/30 text-purple-200 border-purple-500/40" },
@@ -113,11 +116,11 @@ function PayPage() {
             subtitle="Pago instantáneo"
           />
           <MethodCard
-            selected={method === "daviplata"}
-            onClick={() => setMethod("daviplata")}
-            logo={<DaviplataLogo />}
-            title="DAVIPLATA"
-            subtitle="Pago instantáneo"
+            selected={method === "breb"}
+            onClick={() => setMethod("breb")}
+            logo={<BrebLogo />}
+            title="BRE-B"
+            subtitle="Pago instantáneo interbancario"
           />
           <MethodCard
             selected={method === "bancolombia"}
@@ -367,47 +370,25 @@ function MethodCard({
 
 function NequiLogo() {
   return (
-    <svg viewBox="0 0 40 40" className="h-8 w-8">
-      <defs>
-        <linearGradient id="nequiGrad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#ff2d87" />
-          <stop offset="50%" stopColor="#c2185b" />
-          <stop offset="100%" stopColor="#3d0a8a" />
-        </linearGradient>
-      </defs>
-      <circle cx="20" cy="20" r="18" fill="url(#nequiGrad)" />
-      <circle cx="20" cy="20" r="6.5" fill="none" stroke="#fff" strokeWidth="2.4" />
-      <circle cx="20" cy="9.5" r="2.2" fill="#fff" />
-      <circle cx="20" cy="30.5" r="2.2" fill="#fff" />
-      <circle cx="9.5" cy="20" r="2.2" fill="#fff" />
-      <circle cx="30.5" cy="20" r="2.2" fill="#fff" />
-    </svg>
+    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-white">
+      <img src={nequiLogo} alt="Nequi" className="h-7 w-7 object-contain" />
+    </div>
   );
 }
 
-function DaviplataLogo() {
+function BrebLogo() {
   return (
-    <svg viewBox="0 0 40 40" className="h-8 w-8">
-      <rect width="40" height="40" rx="8" fill="#fff" />
-      {/* Stylized red elephant silhouette */}
-      <path
-        d="M9 24c0-5 4-9 9-9 3 0 5 1 7 3l3-2c1 0 2 1 2 2l-1 3 2 1c1 1 0 3-1 3l-3 0-1 3c0 1-1 2-2 2h-2v-3h-3v3h-3v-3c-3 0-6-1-7-3z"
-        fill="#e30613"
-      />
-      <circle cx="15" cy="20" r="1.3" fill="#fff" />
-    </svg>
+    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-white">
+      <img src={brebLogo} alt="BRE-B" className="h-6 w-7 object-contain" />
+    </div>
   );
 }
 
 function BancolombiaLogo() {
   return (
-    <svg viewBox="0 0 40 40" className="h-8 w-8">
-      <rect width="40" height="40" rx="6" fill="#1a1a1a" />
-      {/* Yellow stylized brand mark */}
-      <path d="M8 28 L20 8 L32 28 Z" fill="#ffd100" />
-      <path d="M14 28 L20 18 L26 28 Z" fill="#1a1a1a" />
-      <rect x="8" y="28" width="24" height="3" fill="#ffd100" />
-    </svg>
+    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-white">
+      <img src={bancolombiaLogo} alt="Bancolombia" className="h-6 w-7 object-contain" />
+    </div>
   );
 }
 
