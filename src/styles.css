@@ -247,6 +247,12 @@
   letter-spacing: 0.02em;
 }
 
+.font-pay {
+  font-family: 'Manrope', 'Inter', system-ui, sans-serif;
+  font-feature-settings: 'ss01', 'cv11';
+  letter-spacing: -0.005em;
+}
+
 .neon-red {
   color: #ff3636;
   -webkit-text-stroke: 1.25px rgba(60, 0, 0, 0.85);
