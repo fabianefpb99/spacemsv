@@ -57,7 +57,7 @@ function PayPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#060210] text-white">
+    <div className="min-h-screen bg-[#060210] text-white font-pay">
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-10 pt-4 sm:max-w-lg sm:px-4">
         {/* Header — same as Home */}
         <header
@@ -370,7 +370,7 @@ function MethodCard({
 
 function NequiLogo() {
   return (
-    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-white">
+    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white">
       <img src={nequiLogo} alt="Nequi" className="h-7 w-7 object-contain" />
     </div>
   );
@@ -378,17 +378,13 @@ function NequiLogo() {
 
 function BrebLogo() {
   return (
-    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-white">
-      <img src={brebLogo} alt="BRE-B" className="h-6 w-7 object-contain" />
-    </div>
+    <img src={brebLogo} alt="BRE-B" className="h-8 w-8 object-contain" />
   );
 }
 
 function BancolombiaLogo() {
   return (
-    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-white">
-      <img src={bancolombiaLogo} alt="Bancolombia" className="h-6 w-7 object-contain" />
-    </div>
+    <img src={bancolombiaLogo} alt="Bancolombia" className="h-9 w-9 object-contain" />
   );
 }
 
