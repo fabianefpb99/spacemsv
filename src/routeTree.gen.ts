@@ -14,7 +14,7 @@ import { Route as PayRouteImport } from './routes/pay'
 import { Route as MinesRouteImport } from './routes/mines'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as PayBrebRouteImport } from './routes/pay.breb'
+import { Route as PayBrebRouteImport } from './routes/pay_.breb'
 
 const SpacemanRoute = SpacemanRouteImport.update({
   id: '/spaceman',
@@ -42,16 +42,16 @@ const IndexRoute = IndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const PayBrebRoute = PayBrebRouteImport.update({
-  id: '/breb',
-  path: '/breb',
-  getParentRoute: () => PayRoute,
+  id: '/pay_/breb',
+  path: '/pay/breb',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/home': typeof HomeRoute
   '/mines': typeof MinesRoute
-  '/pay': typeof PayRouteWithChildren
+  '/pay': typeof PayRoute
   '/spaceman': typeof SpacemanRoute
   '/pay/breb': typeof PayBrebRoute
 }
@@ -59,7 +59,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/home': typeof HomeRoute
   '/mines': typeof MinesRoute
-  '/pay': typeof PayRouteWithChildren
+  '/pay': typeof PayRoute
   '/spaceman': typeof SpacemanRoute
   '/pay/breb': typeof PayBrebRoute
 }
@@ -68,24 +68,32 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/home': typeof HomeRoute
   '/mines': typeof MinesRoute
-  '/pay': typeof PayRouteWithChildren
+  '/pay': typeof PayRoute
   '/spaceman': typeof SpacemanRoute
-  '/pay/breb': typeof PayBrebRoute
+  '/pay_/breb': typeof PayBrebRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths: '/' | '/home' | '/mines' | '/pay' | '/spaceman' | '/pay/breb'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/home' | '/mines' | '/pay' | '/spaceman' | '/pay/breb'
-  id: '__root__' | '/' | '/home' | '/mines' | '/pay' | '/spaceman' | '/pay/breb'
+  id:
+    | '__root__'
+    | '/'
+    | '/home'
+    | '/mines'
+    | '/pay'
+    | '/spaceman'
+    | '/pay_/breb'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HomeRoute: typeof HomeRoute
   MinesRoute: typeof MinesRoute
-  PayRoute: typeof PayRouteWithChildren
+  PayRoute: typeof PayRoute
   SpacemanRoute: typeof SpacemanRoute
+  PayBrebRoute: typeof PayBrebRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -125,33 +133,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/pay/breb': {
-      id: '/pay/breb'
-      path: '/breb'
+    '/pay_/breb': {
+      id: '/pay_/breb'
+      path: '/pay/breb'
       fullPath: '/pay/breb'
       preLoaderRoute: typeof PayBrebRouteImport
-      parentRoute: typeof PayRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
-
-interface PayRouteChildren {
-  PayBrebRoute: typeof PayBrebRoute
-}
-
-const PayRouteChildren: PayRouteChildren = {
-  PayBrebRoute: PayBrebRoute,
-}
-
-const PayRouteWithChildren = PayRoute._addFileChildren(PayRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HomeRoute: HomeRoute,
   MinesRoute: MinesRoute,
-  PayRoute: PayRouteWithChildren,
+  PayRoute: PayRoute,
   SpacemanRoute: SpacemanRoute,
+  PayBrebRoute: PayBrebRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
