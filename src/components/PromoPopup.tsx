@@ -18,8 +18,6 @@ export function PromoPopup() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    // Mostrar solo en la primera apertura de la sesión
-    if (sessionStorage.getItem(SEEN_KEY)) return;
 
     let deadline = Number(localStorage.getItem(STORAGE_KEY));
     const now = Date.now();
@@ -36,7 +34,6 @@ export function PromoPopup() {
 
     const t = setTimeout(() => setOpen(true), 450);
     const id = setInterval(tick, 1000);
-    sessionStorage.setItem(SEEN_KEY, "1");
 
     return () => {
       clearTimeout(t);
