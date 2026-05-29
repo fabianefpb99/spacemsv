@@ -290,8 +290,13 @@ export function MinesGame() {
 
   const canStart = phase === "betting" && bet >= MIN_BET && bet <= balance;
   const canCashout = phase === "playing" && picks > 0;
-  const revealProgress = revealed.size / TILES;
+  const safeTilesTotal = Math.max(1, TILES - mines);
+  const revealProgress = revealed.size / safeTilesTotal;
   const showRedOverlay = revealProgress >= 0.30 && phase === "playing";
+  // Intensidad sutil: arranca en 0.6 al cruzar 30% y sube hasta 1 al 100%
+  const redIntensity = showRedOverlay
+    ? 0.6 + 0.4 * Math.min(1, (revealProgress - 0.3) / 0.7)
+    : 0;
 
   return (
     <div
@@ -305,16 +310,26 @@ export function MinesGame() {
         backgroundAttachment: "fixed",
       }}
     >
-      {/* Red tension overlay sobre el fondo de la página */}
+      {/* Red tension overlay sobre el fondo de la página (multiply, tiñe lo existente) */}
       <div
         aria-hidden="true"
-        className={`pointer-events-none fixed inset-0 z-0 transition-opacity duration-700 ${
-          showRedOverlay ? "opacity-100" : "opacity-0"
-        }`}
+        className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-700"
         style={{
+          opacity: redIntensity,
           background:
             "radial-gradient(ellipse at 50% 50%, rgba(220,0,0,0.55) 0%, rgba(150,0,0,0.45) 55%, rgba(80,0,0,0.55) 100%)",
           mixBlendMode: "multiply",
+        }}
+      />
+      {/* Capa superior aditiva: rellena el rojo donde el fondo es muy oscuro (parte de arriba) */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-700"
+        style={{
+          opacity: redIntensity,
+          background:
+            "linear-gradient(to bottom, rgba(190,15,15,0.55) 0%, rgba(150,10,10,0.32) 35%, rgba(120,0,0,0.15) 65%, rgba(80,0,0,0) 100%)",
+          mixBlendMode: "screen",
         }}
       />
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4">
