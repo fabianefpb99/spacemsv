@@ -14,6 +14,7 @@ function pad(n: number) {
 export function PromoPopup() {
   const [open, setOpen] = useState(false);
   const [remaining, setRemaining] = useState(DURATION_MS);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -49,6 +50,11 @@ export function PromoPopup() {
   const h = Math.floor(totalSec / 3600);
   const m = Math.floor((totalSec % 3600) / 60);
   const s = totalSec % 60;
+
+  const handleImageClick = () => {
+    navigate({ to: "/pay" });
+    setOpen(false);
+  };
 
   return (
     <div
