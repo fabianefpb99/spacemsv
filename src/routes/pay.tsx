@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, Settings, Check, CreditCard, ChevronDown } from "lucide-react";
+import { ArrowLeft, Settings, Check, CreditCard, ChevronDown, ArrowDown } from "lucide-react";
 import { useState } from "react";
 import nequiLogo from "@/assets/nequi.svg";
 import bancolombiaLogo from "@/assets/bancolombia.svg";
@@ -90,16 +90,12 @@ function PayPage() {
         </header>
 
         {/* Title */}
-        <h2 className="mt-5 text-center text-xl font-extrabold tracking-tight text-white sm:text-2xl">
-          Recargar saldo
-        </h2>
-
-        {/* Current balance pill */}
-        <div className="mt-4 rounded-2xl border border-purple-500/30 bg-[#0c0620] px-4 py-4 text-center">
-          <div className="text-[10px] uppercase tracking-widest text-purple-200/70">Saldo actual</div>
-          <div className="mt-1 text-2xl font-bold sm:text-3xl">
-            <span className="neon-green mr-1">$</span>
-            <span className="neon-green">{formatCOP(balance)} COP</span>
+        <div className="mt-5 flex flex-col items-center">
+          <h2 className="text-center text-xl font-extrabold tracking-tight text-white sm:text-2xl">
+            Recargar saldo
+          </h2>
+          <div className="mt-2 animate-bounce-slow">
+            <ArrowDown className="h-6 w-6 text-emerald-400/80" strokeWidth={3} />
           </div>
         </div>
 

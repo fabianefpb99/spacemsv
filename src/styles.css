@@ -241,6 +241,11 @@
   100% { opacity: 1; transform: translateY(0) scaleY(1); transform-origin: bottom; }
 }
 
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); opacity: 0.55; }
+  50%      { transform: translateY(8px); opacity: 1; }
+}
+
 
 .font-display {
   font-family: 'Orbitron', 'Inter', system-ui, sans-serif;
@@ -503,6 +508,10 @@ html, body {
     background: linear-gradient(120deg, #fde68a, #f59e0b, #fbbf24, #fde68a);
     animation: none;
   }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2.2s ease-in-out infinite;
 }
 
 /* === Mines Game === */
