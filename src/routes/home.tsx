@@ -301,7 +301,7 @@ function HomePage() {
           <BottomItem icon={<Home className="h-5 w-5" />} label="INICIO" active />
           <BottomItem icon={<Gamepad2 className="h-5 w-5" />} label="JUEGOS" />
           <BottomCenter />
-          <BottomItem icon={<Wallet className="h-5 w-5" />} label="DEPÓSITO" />
+          <BottomItem icon={<Wallet className="h-5 w-5" />} label="DEPÓSITO" to="/pay" />
           <BottomItem icon={<User className="h-5 w-5" />} label="PERFIL" />
         </div>
       </nav>
@@ -309,11 +309,18 @@ function HomePage() {
   );
 }
 
-function BottomItem({ icon, label, active }: { icon: React.ReactNode; label: string; active?: boolean }) {
+function BottomItem({ icon, label, active, to }: { icon: React.ReactNode; label: string; active?: boolean; to?: string }) {
+  const className = `flex w-14 flex-col items-center gap-1 ${active ? "text-emerald-400" : "text-purple-300/70 hover:text-purple-200"}`;
+  if (to) {
+    return (
+      <Link to={to} className={className}>
+        {icon}
+        <span className="text-[9px] font-bold tracking-wider">{label}</span>
+      </Link>
+    );
+  }
   return (
-    <button
-      className={`flex w-14 flex-col items-center gap-1 ${active ? "text-emerald-400" : "text-purple-300/70 hover:text-purple-200"}`}
-    >
+    <button className={className}>
       {icon}
       <span className="text-[9px] font-bold tracking-wider">{label}</span>
     </button>
