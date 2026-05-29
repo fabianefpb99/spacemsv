@@ -787,9 +787,11 @@ export function SpacemanGame() {
             <Menu className="h-7 w-7" strokeWidth={3} />
           </button>
           <Link to="/">
-            <h1 className="font-display text-sm font-black leading-tight tracking-widest sm:text-base cursor-pointer">
-              BETSPACEMAN
-            </h1>
+            <img
+              src={betspaceLogo}
+              alt="BETSPACE"
+              className="h-6 w-auto sm:h-7 cursor-pointer"
+            />
           </Link>
           <div className="flex items-center gap-2">
             <div className="text-right">

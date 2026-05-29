@@ -72,9 +72,11 @@ function PayPage() {
             <ArrowLeft className="h-7 w-7" strokeWidth={3} />
           </button>
           <Link to="/home">
-            <h1 className="font-display text-sm font-black leading-tight tracking-widest sm:text-base">
-              BETSPACEMAN
-            </h1>
+            <img
+              src={betspaceLogo}
+              alt="BETSPACE"
+              className="h-6 w-auto sm:h-7"
+            />
           </Link>
           <div className="flex items-center gap-2">
             <div className="text-right">
