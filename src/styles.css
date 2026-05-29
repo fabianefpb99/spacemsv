@@ -510,6 +510,10 @@ html, body {
   }
 }
 
+.animate-bounce-slow {
+  animation: bounce-slow 2.2s ease-in-out infinite;
+}
+
 /* === Mines Game === */
 @keyframes mines-shard {
   0%   { opacity: 1; transform: translate(0,0) rotate(0deg) scale(1); }
