@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 import comboImg from "@/assets/combo-starter.png";
 
 const STORAGE_KEY = "betspaceman:promo-starter:deadline";
@@ -13,6 +14,7 @@ function pad(n: number) {
 export function PromoPopup() {
   const [open, setOpen] = useState(false);
   const [remaining, setRemaining] = useState(DURATION_MS);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -49,16 +51,21 @@ export function PromoPopup() {
   const m = Math.floor((totalSec % 3600) / 60);
   const s = totalSec % 60;
 
+  const handleImageClick = () => {
+    navigate({ to: "/pay" });
+    setOpen(false);
+  };
+
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 px-4 py-6 backdrop-blur-sm animate-in fade-in duration-300"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4 py-6 backdrop-blur-sm animate-in fade-in duration-300"
       role="dialog"
       aria-modal="true"
       aria-label="Promoción Combo Starter"
       onClick={() => setOpen(false)}
     >
       <div
-        className="relative w-full max-w-sm sm:max-w-md animate-in zoom-in-95 duration-300"
+        className="relative w-full max-w-[260px] sm:max-w-[300px] animate-in zoom-in-95 duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -69,7 +76,7 @@ export function PromoPopup() {
           <X className="h-5 w-5" strokeWidth={3} />
         </button>
 
-        <div className="relative overflow-hidden rounded-2xl ring-1 ring-purple-500/40 shadow-2xl shadow-purple-900/60">
+        <div className="relative overflow-hidden rounded-2xl ring-1 ring-purple-500/40 shadow-2xl shadow-purple-900/60 cursor-pointer" onClick={handleImageClick}>
           <img
             src={comboImg}
             alt="Combo Starter Apuesta"
