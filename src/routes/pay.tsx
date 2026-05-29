@@ -65,20 +65,22 @@ function PayPage() {
           className="flex items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.75rem)" }}
         >
-          <button
-            onClick={() => navigate({ to: "/home" })}
-            className="rounded-md p-2 text-white hover:bg-white/10"
-            aria-label="Volver"
-          >
-            <ArrowLeft className="h-7 w-7" strokeWidth={3} />
-          </button>
-          <Link to="/home">
-            <img
-              src={betspaceLogo}
-              alt="BETSPACE"
-              className="h-6 w-auto sm:h-7"
-            />
-          </Link>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => navigate({ to: "/home" })}
+              className="rounded-md p-2 text-white hover:bg-white/10"
+              aria-label="Volver"
+            >
+              <ArrowLeft className="h-7 w-7" strokeWidth={3} />
+            </button>
+            <Link to="/home">
+              <img
+                src={betspaceLogo}
+                alt="BETSPACE"
+                className="h-6 w-auto sm:h-7"
+              />
+            </Link>
+          </div>
           <div className="flex items-center gap-2">
             <div className="text-right">
               <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
