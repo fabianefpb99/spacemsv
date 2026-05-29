@@ -4,7 +4,6 @@ import { useNavigate } from "@tanstack/react-router";
 import comboImg from "@/assets/combo-starter.png";
 
 const STORAGE_KEY = "betspaceman:promo-starter:deadline";
-const SEEN_KEY = "betspaceman:promo-starter:seen";
 const DURATION_MS = 60 * 60 * 1000; // 1 hora
 
 function pad(n: number) {
@@ -55,14 +54,14 @@ export function PromoPopup() {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4 py-6 backdrop-blur-sm animate-in fade-in duration-300"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4 py-6 backdrop-blur-sm animate-in fade-in duration-300"
       role="dialog"
       aria-modal="true"
       aria-label="Promoción Combo Starter"
       onClick={() => setOpen(false)}
     >
       <div
-        className="relative w-full max-w-[260px] sm:max-w-[300px] animate-in zoom-in-95 duration-300"
+        className="relative w-full max-w-sm sm:max-w-md animate-in zoom-in-95 duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         <button
