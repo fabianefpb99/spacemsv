@@ -61,13 +61,13 @@ function PayBrebPage() {
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.75rem)" }}
         >
           <div className="flex items-center gap-1">
-            <button
-              onClick={() => navigate({ to: "/pay" })}
+            <Link
+              to="/pay"
               className="rounded-md p-2 text-white hover:bg-white/10"
               aria-label="Volver"
             >
               <ArrowLeft className="h-7 w-7" strokeWidth={3} />
-            </button>
+            </Link>
             <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-purple-200/80">
               Pago <span className="text-purple-400/60">|</span> Depósito
             </div>
