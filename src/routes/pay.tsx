@@ -330,6 +330,16 @@ function PayPage() {
         {/* Continue button */}
         <button
           disabled={!canContinue}
+          onClick={() => {
+            if (!canContinue || !combo || !method) return;
+            const c = COMBOS.find((x) => x.id === combo)!;
+            if (method === "nequi" || method === "breb") {
+              navigate({
+                to: "/pay/breb",
+                search: { method, amount: c.amount, bonus: c.bonus },
+              });
+            }
+          }}
           className={`mt-6 inline-flex items-center justify-center rounded-xl px-4 py-3.5 text-sm font-bold tracking-tight transition ${
             canContinue
               ? "bg-emerald-500 text-[#04130c] shadow-[0_0_24px_-6px_rgba(52,211,153,0.8)] hover:bg-emerald-400"
