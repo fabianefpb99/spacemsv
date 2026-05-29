@@ -8,7 +8,7 @@ import brebLogo from "@/assets/bre-b.svg";
 
 type Method = "nequi" | "breb";
 
-export const Route = createFileRoute("/pay/breb")({
+export const Route = createFileRoute("/pay_/breb")({
   validateSearch: (search: Record<string, unknown>) => {
     const m = search.method === "nequi" || search.method === "breb" ? (search.method as Method) : "nequi";
     const amount = Number(search.amount) || 20000;
