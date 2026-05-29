@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { ArrowLeft, Settings, Check, CreditCard, ChevronDown, ArrowDown } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import nequiLogo from "@/assets/nequi.svg";
 import bancolombiaLogo from "@/assets/bancolombia.svg";
 import brebLogo from "@/assets/bre-b.svg";
@@ -36,6 +36,27 @@ function PayPage() {
   const [balance] = useState(100000);
   const [method, setMethod] = useState<Method | null>(null);
   const [combo, setCombo] = useState<string | null>(null);
+
+  // Bonus countdown: 10 minutes, restarts every time PAY is opened, and
+  // auto-restarts when it hits 00:00 (psychological urgency).
+  const BONUS_MS = 10 * 60 * 1000;
+  const [bonusLeft, setBonusLeft] = useState(BONUS_MS);
+  useEffect(() => {
+    let deadline = Date.now() + BONUS_MS;
+    setBonusLeft(BONUS_MS);
+    const id = setInterval(() => {
+      let left = deadline - Date.now();
+      if (left <= 0) {
+        deadline = Date.now() + BONUS_MS;
+        left = BONUS_MS;
+      }
+      setBonusLeft(left);
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
+  const bonusMin = Math.floor(bonusLeft / 60000);
+  const bonusSec = Math.floor((bonusLeft % 60000) / 1000);
+  const bonusLabel = `${String(bonusMin).padStart(2, "0")}:${String(bonusSec).padStart(2, "0")}`;
 
   // Card form state
   const [cardNumber, setCardNumber] = useState("");
@@ -99,6 +120,11 @@ function PayPage() {
           <h2 className="text-center text-xl font-extrabold tracking-tight text-white sm:text-2xl">
             Recargar saldo
           </h2>
+          <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-purple-500/40 bg-[#0c0620] px-3 py-1.5 text-[11px] font-semibold text-white shadow-[0_0_18px_-8px_rgba(168,85,247,0.7)] sm:text-xs">
+            <span className="text-purple-100/90">Tiempo para aprovechar bonus</span>
+            <span className="text-purple-300/60">|</span>
+            <span className="font-mono tabular-nums text-emerald-300">{bonusLabel}</span>
+          </div>
           <div className="mt-2 animate-bounce-slow">
             <ArrowDown className="h-6 w-6 text-emerald-400/80" strokeWidth={3} />
           </div>
