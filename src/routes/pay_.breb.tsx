@@ -1,8 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Settings, Copy, Check, Info, CheckCircle2 } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import nequiAstronaut from "@/assets/nequi-astronaut.png";
+import nequiAstronaut from "@/assets/nequi-astronaut-wide.png";
 import nequiLogo from "@/assets/nequi.svg";
 import brebLogo from "@/assets/bre-b.svg";
 
@@ -38,7 +38,8 @@ function PayBrebPage() {
   const navigate = useNavigate();
   const { method, amount, bonus } = Route.useSearch();
   const [balance] = useState(100000);
-  const reference = useMemo(() => genReference(), []);
+  const [reference, setReference] = useState("SPM-XXXX-XXXX");
+  useEffect(() => { setReference(genReference()); }, []);
   const brebAlias = "@spaceman.breb";
 
   const isNequi = method === "nequi";
@@ -93,9 +94,9 @@ function PayBrebPage() {
             src={nequiAstronaut}
             alt=""
             aria-hidden="true"
-            className="pointer-events-none absolute -right-6 top-2 h-44 w-auto select-none object-contain opacity-80 sm:h-52"
+            className="pointer-events-none absolute inset-0 h-full w-full select-none object-cover object-right"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0a0420] via-[#0a0420]/85 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0a0420] via-[#0a0420]/75 to-transparent" />
 
           <div className="relative p-4">
             <img src={brandLogo} alt={brandName} className="h-8 w-auto" />
