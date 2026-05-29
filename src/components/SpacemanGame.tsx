@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
+import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Link } from "@tanstack/react-router";
 import { Menu, Settings, Clock, ArrowRight, Minus, Plus, Volume2, VolumeX, ChevronDown, ChevronUp } from "lucide-react";
 import bgImage from "@/assets/space-bg-full.png";
@@ -787,9 +788,11 @@ export function SpacemanGame() {
             <Menu className="h-7 w-7" strokeWidth={3} />
           </button>
           <Link to="/">
-            <h1 className="font-display text-sm font-black leading-tight tracking-widest sm:text-base cursor-pointer">
-              BETSPACEMAN
-            </h1>
+            <img
+              src={betspaceLogo}
+              alt="BETSPACE"
+              className="h-6 w-auto sm:h-7 cursor-pointer"
+            />
           </Link>
           <div className="flex items-center gap-2">
             <div className="text-right">

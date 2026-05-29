@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import betspaceLogo from "@/assets/betspace-logo.svg";
 import { ArrowLeft, Settings, Check, CreditCard, ChevronDown, ArrowDown } from "lucide-react";
 import { useState } from "react";
 import nequiLogo from "@/assets/nequi.svg";
@@ -72,9 +73,11 @@ function PayPage() {
             <ArrowLeft className="h-7 w-7" strokeWidth={3} />
           </button>
           <Link to="/home">
-            <h1 className="font-display text-sm font-black leading-tight tracking-widest sm:text-base">
-              BETSPACEMAN
-            </h1>
+            <img
+              src={betspaceLogo}
+              alt="BETSPACE"
+              className="h-6 w-auto sm:h-7"
+            />
           </Link>
           <div className="flex items-center gap-2">
             <div className="text-right">

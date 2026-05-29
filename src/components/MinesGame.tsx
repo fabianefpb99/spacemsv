@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Link } from "@tanstack/react-router";
 import { Menu, Settings, Minus, Plus, Volume2, VolumeX, ChevronDown, Bomb, Gem, TrendingUp, User } from "lucide-react";
 import { setMuted as setAudioMuted, playCrashSound, playCashoutSound, isMuted } from "@/lib/gameAudio";
@@ -342,9 +343,11 @@ export function MinesGame() {
             <Menu className="h-7 w-7" strokeWidth={3} />
           </Link>
           <Link to="/home">
-            <h1 className="font-display text-sm font-black leading-tight tracking-widest sm:text-base">
-              BETSPACEMAN
-            </h1>
+            <img
+              src={betspaceLogo}
+              alt="BETSPACE"
+              className="h-6 w-auto sm:h-7"
+            />
           </Link>
           <div className="flex items-center gap-2">
             <div className="text-right">
