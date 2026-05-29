@@ -26,8 +26,14 @@ export function PromoPopup() {
     }
 
     const tick = () => {
-      const left = Math.max(0, deadline - Date.now());
-      setRemaining(left);
+      let left = deadline - Date.now();
+      if (left <= 0) {
+        // Reinicia automáticamente para mantener la urgencia
+        deadline = Date.now() + DURATION_MS;
+        localStorage.setItem(STORAGE_KEY, String(deadline));
+        left = deadline - Date.now();
+      }
+      setRemaining(Math.max(0, left));
     };
     tick();
 
