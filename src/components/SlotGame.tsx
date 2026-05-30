@@ -588,17 +588,37 @@ export function SlotGame() {
                 background: "#0a041c",
               }}
             >
-          <div className="grid grid-cols-5 gap-1.5 pt-3">
-            {grid.map((reel, ri) => (
-              <Reel
-                key={ri}
-                finalSyms={reel}
-                spinning={spinning}
-                reelIndex={ri}
-                onStop={handleReelStop}
-                winRows={highlightedCells.get(ri) ?? new Set()}
-              />
-            ))}
+          <div className="relative pt-3">
+            <div className="grid grid-cols-5 gap-0">
+              {grid.map((reel, ri) => (
+                <Reel
+                  key={ri}
+                  finalSyms={reel}
+                  spinning={spinning}
+                  reelIndex={ri}
+                  onStop={handleReelStop}
+                  winRows={highlightedCells.get(ri) ?? new Set()}
+                />
+              ))}
+              {/* Single neon vertical dividers between reels */}
+              <div className="pointer-events-none absolute inset-y-3 left-0 z-20 grid w-full grid-cols-5">
+                {[0, 1, 2, 3, 4].map((i) => (
+                  <div key={i} className="relative">
+                    {i < 4 && (
+                      <div
+                        className="absolute right-0 top-0 h-full w-px"
+                        style={{
+                          background:
+                            "linear-gradient(180deg, transparent 0%, rgba(168,85,247,0.85) 15%, rgba(192,132,252,0.95) 50%, rgba(168,85,247,0.85) 85%, transparent 100%)",
+                          boxShadow:
+                            "0 0 6px rgba(168,85,247,0.85), 0 0 12px rgba(168,85,247,0.5)",
+                        }}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
             </div>
