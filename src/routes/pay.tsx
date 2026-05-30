@@ -25,10 +25,10 @@ function formatCOP(n: number) {
 type Method = "nequi" | "breb" | "bancolombia" | "card";
 
 const COMBOS = [
-  { id: "c1", amount: 25000, bonus: 5000, tag: "BÁSICO", tagCls: "bg-purple-600/30 text-purple-200 border-purple-500/40" },
-  { id: "c2", amount: 50000, bonus: 10000, tag: "POPULAR", tagCls: "bg-emerald-600/30 text-emerald-200 border-emerald-500/40" },
-  { id: "c3", amount: 100000, bonus: 25000, tag: "MEJOR VALOR", tagCls: "bg-amber-600/30 text-amber-200 border-amber-500/40" },
-  { id: "c4", amount: 200000, bonus: 60000, tag: "VIP", tagCls: "bg-pink-600/30 text-pink-200 border-pink-500/40" },
+  { id: "c1", amount: 25000, bonus: 2000, tag: "BÁSICO", tagCls: "bg-purple-600/30 text-purple-200 border-purple-500/40" },
+  { id: "c2", amount: 50000, bonus: 5000, tag: "POPULAR", tagCls: "bg-emerald-600/30 text-emerald-200 border-emerald-500/40" },
+  { id: "c3", amount: 100000, bonus: 10000, tag: "MEJOR VALOR", tagCls: "bg-amber-600/30 text-amber-200 border-amber-500/40" },
+  { id: "c4", amount: 200000, bonus: 20000, tag: "VIP", tagCls: "bg-pink-600/30 text-pink-200 border-pink-500/40" },
 ];
 
 function PayPage() {
