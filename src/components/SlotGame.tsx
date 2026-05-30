@@ -182,6 +182,119 @@ function playReelStop() {
   o.start(); o.stop(c.currentTime + 0.13);
 }
 
+/* Lever / button press — classic slot "ka-chunk" + coin ping */
+function playSpinPress() {
+  if (isMuted()) return;
+  const c = ctx(); if (!c) return;
+  const now = c.currentTime;
+
+  // Mechanical thunk (low filtered noise burst)
+  const len = Math.floor(c.sampleRate * 0.18);
+  const buf = c.createBuffer(1, len, c.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
+  const src = c.createBufferSource();
+  src.buffer = buf;
+  const lp = c.createBiquadFilter();
+  lp.type = "lowpass";
+  lp.frequency.setValueAtTime(900, now);
+  lp.frequency.exponentialRampToValueAtTime(180, now + 0.18);
+  const ng = c.createGain();
+  ng.gain.setValueAtTime(0.0001, now);
+  ng.gain.linearRampToValueAtTime(0.22, now + 0.005);
+  ng.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+  src.connect(lp).connect(ng).connect(c.destination);
+  src.start(now); src.stop(now + 0.22);
+
+  // Sub-thump
+  const sub = c.createOscillator();
+  sub.type = "sine";
+  sub.frequency.setValueAtTime(140, now);
+  sub.frequency.exponentialRampToValueAtTime(45, now + 0.18);
+  const sg = c.createGain();
+  sg.gain.setValueAtTime(0.0001, now);
+  sg.gain.linearRampToValueAtTime(0.28, now + 0.008);
+  sg.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+  sub.connect(sg).connect(c.destination);
+  sub.start(now); sub.stop(now + 0.24);
+
+  // Bright coin ping shortly after
+  const ping = c.createOscillator();
+  ping.type = "triangle";
+  ping.frequency.setValueAtTime(1760, now + 0.04);
+  ping.frequency.exponentialRampToValueAtTime(1320, now + 0.22);
+  const pg = c.createGain();
+  pg.gain.setValueAtTime(0.0001, now + 0.04);
+  pg.gain.linearRampToValueAtTime(0.09, now + 0.05);
+  pg.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
+  ping.connect(pg).connect(c.destination);
+  ping.start(now + 0.04); ping.stop(now + 0.3);
+}
+
+/* Reels spinning loop — soft whirring + rhythmic ticks */
+let reelLoopNodes: {
+  whirSrc: AudioBufferSourceNode;
+  whirGain: GainNode;
+  tickTimer: number;
+} | null = null;
+
+function startReelLoop() {
+  if (isMuted()) return;
+  const c = ctx(); if (!c || reelLoopNodes) return;
+  // Whirring noise bed
+  const len = c.sampleRate * 2;
+  const buf = c.createBuffer(1, len, c.sampleRate);
+  const d = buf.getChannelData(0);
+  let last = 0;
+  for (let i = 0; i < len; i++) {
+    const w = Math.random() * 2 - 1;
+    last = (last + 0.03 * w) / 1.03;
+    d[i] = last * 2.5;
+  }
+  const src = c.createBufferSource();
+  src.buffer = buf;
+  src.loop = true;
+  const bp = c.createBiquadFilter();
+  bp.type = "bandpass";
+  bp.frequency.value = 850;
+  bp.Q.value = 0.9;
+  const g = c.createGain();
+  g.gain.setValueAtTime(0.0001, c.currentTime);
+  g.gain.linearRampToValueAtTime(0.08, c.currentTime + 0.08);
+  src.connect(bp).connect(g).connect(c.destination);
+  src.start();
+
+  // Rhythmic high tick like reel pegs
+  const tick = () => {
+    const cc = ctx(); if (!cc) return;
+    const t = cc.currentTime;
+    const o = cc.createOscillator();
+    o.type = "square";
+    o.frequency.setValueAtTime(2200, t);
+    const og = cc.createGain();
+    og.gain.setValueAtTime(0.0001, t);
+    og.gain.linearRampToValueAtTime(0.025, t + 0.002);
+    og.gain.exponentialRampToValueAtTime(0.0001, t + 0.04);
+    o.connect(og).connect(cc.destination);
+    o.start(t); o.stop(t + 0.05);
+  };
+  const tickTimer = window.setInterval(tick, 70);
+  reelLoopNodes = { whirSrc: src, whirGain: g, tickTimer };
+}
+
+function stopReelLoop() {
+  const c = actx;
+  if (!c || !reelLoopNodes) return;
+  const { whirSrc, whirGain, tickTimer } = reelLoopNodes;
+  clearInterval(tickTimer);
+  const t = c.currentTime;
+  whirGain.gain.cancelScheduledValues(t);
+  whirGain.gain.setValueAtTime(whirGain.gain.value, t);
+  whirGain.gain.linearRampToValueAtTime(0, t + 0.15);
+  setTimeout(() => { try { whirSrc.stop(); } catch {} }, 200);
+  reelLoopNodes = null;
+}
+
 /* ============================================================
    Reel component — continuous translateY strip (no flicker)
    ============================================================ */
@@ -400,6 +513,8 @@ export function SlotGame() {
   const spin = useCallback(() => {
     if (spinning) return;
     if (bet < MIN_BET || bet > balance) return;
+    playSpinPress();
+    startReelLoop();
     setBalance((b) => b - bet);
     setLastWin(0);
     setTotalWonRound(0);
@@ -418,6 +533,7 @@ export function SlotGame() {
   // When all reels stopped → evaluate
   useEffect(() => {
     if (!spinning || reelsStopped < REELS) return;
+    stopReelLoop();
     const { wins: w, total } = evaluateGrid(grid, lineBet);
     setWins(w);
     setLastWin(total);
