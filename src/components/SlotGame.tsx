@@ -1,54 +1,57 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import { Menu, Settings, Volume2, VolumeX, Minus, Plus, User, TrendingUp } from "lucide-react";
+import { Menu, Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "lucide-react";
 import { setMuted as setAudioMuted, playCashoutSound, isMuted } from "@/lib/gameAudio";
 
+import bossImg from "@/assets/slot/boss.png";
+import hatImg from "@/assets/slot/hat.png";
+import briefcaseImg from "@/assets/slot/briefcase.png";
+import watchImg from "@/assets/slot/watch.png";
+import goldImg from "@/assets/slot/gold.png";
+import carImg from "@/assets/slot/car.png";
+import chipImg from "@/assets/slot/chip.png";
+import cardImg from "@/assets/slot/card.png";
+
 /* ============================================================
-   Symbols — Gangster theme (years 20s)
-   Index 0 is the highest-paying symbol.
+   Symbols — Mafia Royale (Peaky Blinders theme)
+   Index 0 = highest-paying.
    ============================================================ */
 type SymbolDef = {
   id: string;
-  glyph: string;
+  img: string;
   label: string;
-  /** Pay multipliers of LINE BET for 3 / 4 / 5 of a kind. */
-  pay: [number, number, number];
-  /** Reel weight (higher = more frequent). */
+  pay: [number, number, number]; // 3 / 4 / 5 of a kind, multiplier of LINE BET
   weight: number;
-  /** Background gradient for the tile. */
-  bg: string;
-  /** Glow color (rgb). */
-  glow: string;
+  glow: string; // rgb for highlight glow
 };
 
 const SYMBOLS: SymbolDef[] = [
-  { id: "boss",  glyph: "👑", label: "EL PADRINO", pay: [25, 150, 750], weight: 2,  bg: "linear-gradient(160deg,#3d1b0a 0%,#1a0a04 100%)", glow: "255,200,80"  },
-  { id: "car",   glyph: "🚗", label: "CADILLAC",   pay: [15, 75, 300],  weight: 3,  bg: "linear-gradient(160deg,#0d1a3a 0%,#06081a 100%)", glow: "120,160,255" },
-  { id: "money", glyph: "💰", label: "MALETÍN $",  pay: [10, 40, 180],  weight: 4,  bg: "linear-gradient(160deg,#0d2a14 0%,#05140a 100%)", glow: "80,255,150"  },
-  { id: "gold",  glyph: "🪙", label: "LINGOTE",    pay: [8, 25, 120],   weight: 5,  bg: "linear-gradient(160deg,#3a2a05 0%,#1a1402 100%)", glow: "255,210,80"  },
-  { id: "watch", glyph: "⌚", label: "RELOJ",      pay: [5, 18, 75],    weight: 6,  bg: "linear-gradient(160deg,#1a1530 0%,#0a0820 100%)", glow: "180,150,255" },
-  { id: "brief", glyph: "💼", label: "MALETÍN",    pay: [4, 12, 50],    weight: 7,  bg: "linear-gradient(160deg,#2a1505 0%,#150a02 100%)", glow: "210,160,80"  },
-  { id: "hat",   glyph: "🎩", label: "SOMBRERO",   pay: [3, 8, 30],     weight: 8,  bg: "linear-gradient(160deg,#1a0a2a 0%,#080414 100%)", glow: "200,120,255" },
-  { id: "cigar", glyph: "🚬", label: "PURO",       pay: [2, 6, 20],     weight: 9,  bg: "linear-gradient(160deg,#2a1a0a 0%,#140a04 100%)", glow: "200,140,80"  },
-  { id: "card",  glyph: "🃏", label: "CARTA A",    pay: [2, 5, 15],     weight: 10, bg: "linear-gradient(160deg,#1a0820 0%,#0a0410 100%)", glow: "255,80,160"  },
+  { id: "boss",  img: bossImg,      label: "EL PADRINO", pay: [25, 150, 750], weight: 2,  glow: "168,85,247"  },
+  { id: "car",   img: carImg,       label: "CADILLAC",   pay: [15, 75, 300],  weight: 3,  glow: "180,180,255" },
+  { id: "brief", img: briefcaseImg, label: "MALETÍN $",  pay: [10, 40, 180],  weight: 4,  glow: "46,255,161"  },
+  { id: "gold",  img: goldImg,      label: "LINGOTE",    pay: [8, 25, 120],   weight: 5,  glow: "255,210,80"  },
+  { id: "watch", img: watchImg,     label: "RELOJ ORO",  pay: [5, 18, 75],    weight: 6,  glow: "255,200,80"  },
+  { id: "chip",  img: chipImg,      label: "FICHA",      pay: [4, 12, 50],    weight: 7,  glow: "168,85,247"  },
+  { id: "hat",   img: hatImg,       label: "SOMBRERO",   pay: [3, 8, 30],     weight: 8,  glow: "200,120,255" },
+  { id: "card",  img: cardImg,      label: "AS",         pay: [2, 5, 15],     weight: 10, glow: "255,180,80"  },
 ];
 
 const SYMBOL_INDEX = new Map(SYMBOLS.map((s, i) => [s.id, i]));
 
-/* Weighted reel strip generation */
-const REEL_LEN = 24;
-function buildReelStrip(): string[] {
+/* Weighted random fillers for the spinning strip */
+const SPIN_FILLER_COUNT = 18; // tiles above the final 3
+function pickRandomFillers(n: number): string[] {
   const totalWeight = SYMBOLS.reduce((a, s) => a + s.weight, 0);
-  const strip: string[] = [];
-  while (strip.length < REEL_LEN) {
+  const out: string[] = [];
+  for (let i = 0; i < n; i++) {
     let r = Math.random() * totalWeight;
     for (const s of SYMBOLS) {
       r -= s.weight;
-      if (r <= 0) { strip.push(s.id); break; }
+      if (r <= 0) { out.push(s.id); break; }
     }
   }
-  return strip;
+  return out;
 }
 
 const REELS = 5;
@@ -75,15 +78,6 @@ const QUICK_BETS = [1000, 2000, 5000, 10000];
 
 function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
-}
-
-function rand(max: number) {
-  if (typeof crypto !== "undefined" && crypto.getRandomValues) {
-    const a = new Uint32Array(1);
-    crypto.getRandomValues(a);
-    return a[0] % max;
-  }
-  return Math.floor(Math.random() * max);
 }
 
 function pickWeightedSymbol(): string {
@@ -140,7 +134,7 @@ function evaluateGrid(grid: string[][], lineBet: number): { wins: WinLine[]; tot
 type HistoryItem = {
   id: number;
   user: string;
-  symbol: string;
+  symbolId: string;
   multiplier: number;
   amount: number;
   ts: number;
@@ -189,66 +183,135 @@ function playReelStop() {
 }
 
 /* ============================================================
-   Reel component — spinning strip
+   Reel component — continuous translateY strip (no flicker)
    ============================================================ */
+const TILE_H = 76; // px per tile (3 rows visible = 228px tall window)
+const SPIN_BASE_MS = 1400;
+const SPIN_STAGGER_MS = 220;
+
 function Reel({
   finalSyms,
   spinning,
-  delay,
+  reelIndex,
   onStop,
   winRows,
 }: {
   finalSyms: string[];
   spinning: boolean;
-  delay: number;
+  reelIndex: number;
   onStop: () => void;
   winRows: Set<number>;
 }) {
-  const [strip, setStrip] = useState<string[]>(() => buildReelStrip());
-  const [phase, setPhase] = useState<"idle" | "spinning" | "stopping">("idle");
+  // Strip: [fillers..., finalSyms[0], finalSyms[1], finalSyms[2]]
+  // When idle: strip = finalSyms (3 tiles), translateY = 0.
+  const [strip, setStrip] = useState<string[]>(finalSyms);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const spinTokenRef = useRef(0);
+
+  // Sync strip with finalSyms when not spinning (e.g. initial render).
+  useEffect(() => {
+    if (spinning) return;
+    setStrip(finalSyms);
+    const el = innerRef.current;
+    if (el) {
+      el.style.transition = "none";
+      el.style.transform = "translateY(0)";
+    }
+  }, [finalSyms, spinning]);
 
   useEffect(() => {
     if (!spinning) return;
-    setPhase("spinning");
-    // Build a long strip ending with the final 3 symbols
-    const spinStrip = [...buildReelStrip(), ...buildReelStrip(), ...finalSyms];
-    setStrip(spinStrip);
-    const timer = setTimeout(() => {
-      setPhase("stopping");
+    const token = ++spinTokenRef.current;
+    const fillers = pickRandomFillers(SPIN_FILLER_COUNT);
+    const longStrip = [...fillers, ...finalSyms];
+    setStrip(longStrip);
+
+    const el = innerRef.current;
+    if (!el) return;
+
+    // 1) Position at top (showing fillers[0..2]) without animation.
+    el.style.transition = "none";
+    el.style.transform = "translateY(0)";
+    // force reflow so the next frame sees the new transform
+    void el.offsetHeight;
+
+    // 2) Next frame: animate to landing position.
+    const dur = SPIN_BASE_MS + reelIndex * SPIN_STAGGER_MS;
+    const targetY = (longStrip.length - ROWS) * TILE_H;
+
+    const raf = requestAnimationFrame(() => {
+      if (spinTokenRef.current !== token) return;
+      el.style.transition = `transform ${dur}ms cubic-bezier(.16,.84,.32,1)`;
+      el.style.transform = `translateY(-${targetY}px)`;
+    });
+
+    // Fallback: ensure onStop fires even if transitionend is missed.
+    const fallback = setTimeout(() => {
+      if (spinTokenRef.current !== token) return;
+      finishSpin();
+    }, dur + 250);
+
+    function finishSpin() {
+      const e = innerRef.current;
+      if (!e) return;
+      e.style.transition = "none";
+      e.style.transform = "translateY(0)";
+      setStrip(finalSyms);
       playReelStop();
       onStop();
-    }, 800 + delay);
-    return () => clearTimeout(timer);
+    }
+
+    const handleEnd = (ev: TransitionEvent) => {
+      if (ev.propertyName !== "transform") return;
+      if (spinTokenRef.current !== token) return;
+      clearTimeout(fallback);
+      el.removeEventListener("transitionend", handleEnd);
+      finishSpin();
+    };
+    el.addEventListener("transitionend", handleEnd);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(fallback);
+      el.removeEventListener("transitionend", handleEnd);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spinning]);
 
-  // When not spinning, show finalSyms statically
-  const visibleSyms = phase === "spinning" ? strip.slice(-ROWS) : finalSyms;
-  const animKey = spinning ? `spin-${delay}` : "idle";
-
+  const visibleRows = ROWS;
   return (
-    <div className="relative h-full overflow-hidden rounded-md bg-black/40 border border-purple-500/20">
-      {phase === "spinning" ? (
-        <div
-          key={animKey}
-          className="absolute inset-x-0 flex flex-col"
-          style={{
-            animation: `slot-spin ${0.8 + delay / 1000}s cubic-bezier(.4,.05,.2,1) forwards`,
-          }}
-        >
-          {strip.map((sid, i) => {
-            const s = SYMBOLS[SYMBOL_INDEX.get(sid)!];
-            return <SymbolTile key={i} sym={s} highlight={false} />;
-          })}
-        </div>
-      ) : (
-        <div className="flex h-full flex-col">
-          {visibleSyms.map((sid, row) => {
-            const s = SYMBOLS[SYMBOL_INDEX.get(sid)!];
-            return <SymbolTile key={row} sym={s} highlight={winRows.has(row)} />;
-          })}
-        </div>
-      )}
+    <div
+      className="relative overflow-hidden rounded-lg"
+      style={{
+        height: TILE_H * visibleRows,
+        background:
+          "linear-gradient(180deg, rgba(8,3,22,0.92) 0%, rgba(18,8,42,0.85) 50%, rgba(8,3,22,0.92) 100%)",
+        boxShadow:
+          "inset 0 0 0 1px rgba(168,85,247,0.25), inset 0 8px 14px rgba(0,0,0,0.55), inset 0 -8px 14px rgba(0,0,0,0.55)",
+      }}
+    >
+      {/* top + bottom inner shadow for depth */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-5 z-10"
+           style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.85), transparent)" }} />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-5 z-10"
+           style={{ background: "linear-gradient(0deg, rgba(0,0,0,0.85), transparent)" }} />
+      {/* vertical reflection sheen */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-[2px] z-10"
+           style={{ background: "linear-gradient(180deg, transparent, rgba(255,255,255,0.18), transparent)" }} />
+
+      <div
+        ref={innerRef}
+        className="absolute inset-x-0 top-0 flex flex-col will-change-transform"
+        style={{ transform: "translateY(0)" }}
+      >
+        {strip.map((sid, i) => {
+          const s = SYMBOLS[SYMBOL_INDEX.get(sid)!];
+          // Highlight only when not spinning and tile is in visible row range.
+          const isVisibleTile = !spinning && i < ROWS;
+          const highlight = isVisibleTile && winRows.has(i);
+          return <SymbolTile key={`${i}-${sid}`} sym={s} highlight={highlight} />;
+        })}
+      </div>
     </div>
   );
 }
@@ -256,26 +319,34 @@ function Reel({
 function SymbolTile({ sym, highlight }: { sym: SymbolDef; highlight: boolean }) {
   return (
     <div
-      className="flex flex-1 items-center justify-center relative"
+      className="relative flex items-center justify-center"
       style={{
-        background: sym.bg,
+        height: TILE_H,
+        background: highlight
+          ? `radial-gradient(70% 60% at 50% 50%, rgba(${sym.glow},0.30) 0%, rgba(${sym.glow},0.08) 60%, transparent 100%)`
+          : "transparent",
         boxShadow: highlight
-          ? `inset 0 0 0 2px rgba(${sym.glow},0.9), 0 0 18px rgba(${sym.glow},0.7)`
-          : "inset 0 0 0 1px rgba(168,85,247,0.10)",
-        transition: "box-shadow 200ms ease",
+          ? `inset 0 0 0 2px rgba(${sym.glow},0.85), 0 0 20px rgba(${sym.glow},0.55)`
+          : undefined,
+        transition: "box-shadow 200ms ease, background 200ms ease",
       }}
     >
-      <span
-        className="text-3xl sm:text-4xl select-none"
+      <img
+        src={sym.img}
+        alt={sym.label}
+        draggable={false}
+        loading="lazy"
+        className="select-none pointer-events-none"
         style={{
+          width: "78%",
+          height: "78%",
+          objectFit: "contain",
           filter: highlight
-            ? `drop-shadow(0 0 8px rgba(${sym.glow},0.9)) drop-shadow(0 0 16px rgba(${sym.glow},0.6))`
-            : `drop-shadow(0 2px 4px rgba(0,0,0,0.6)) drop-shadow(0 0 6px rgba(${sym.glow},0.35))`,
+            ? `drop-shadow(0 0 10px rgba(${sym.glow},0.95)) drop-shadow(0 0 20px rgba(${sym.glow},0.6))`
+            : `drop-shadow(0 4px 6px rgba(0,0,0,0.55)) drop-shadow(0 0 8px rgba(${sym.glow},0.25))`,
           animation: highlight ? "slot-win-pulse 0.9s ease-in-out infinite" : undefined,
         }}
-      >
-        {sym.glyph}
-      </span>
+      />
     </div>
   );
 }
@@ -318,7 +389,7 @@ export function SlotGame() {
       const mult = sym.pay[count - 3];
       const amount = Math.floor(stake * mult);
       setHistory((h) =>
-        [{ id: ++historyId.current, user: pickUser(), symbol: sym.glyph, multiplier: mult, amount, ts: Date.now() }, ...h].slice(0, 30)
+        [{ id: ++historyId.current, user: pickUser(), symbolId: sym.id, multiplier: mult, amount, ts: Date.now() }, ...h].slice(0, 30)
       );
     }, 3200);
     return () => clearInterval(t);
@@ -355,9 +426,8 @@ export function SlotGame() {
       setBalance((b) => b + total);
       playCashoutSound();
       const best = [...w].sort((a, b) => b.payout - a.payout)[0];
-      const bestSym = SYMBOLS[SYMBOL_INDEX.get(best.symbolId)!];
       setHistory((h) =>
-        [{ id: ++historyId.current, user: "Tú", symbol: bestSym.glyph, multiplier: total / bet, amount: total, ts: Date.now() }, ...h].slice(0, 30)
+        [{ id: ++historyId.current, user: "Tú", symbolId: best.symbolId, multiplier: total / bet, amount: total, ts: Date.now() }, ...h].slice(0, 30)
       );
     }
     setSpinning(false);
@@ -382,21 +452,21 @@ export function SlotGame() {
   }, [activeWin]);
 
   const canSpin = !spinning && bet >= MIN_BET && bet <= balance;
+  const winMult = lastWin > 0 ? lastWin / bet : 1;
 
   return (
     <div className="relative min-h-screen text-white" style={{ backgroundColor: "#060210" }}>
-      {/* starfield bg */}
       <div className="pointer-events-none fixed inset-0 bg-stars opacity-40" aria-hidden />
       <div
         className="pointer-events-none fixed inset-0"
         aria-hidden
         style={{
           background:
-            "radial-gradient(60% 50% at 50% 0%, rgba(120,40,200,0.25) 0%, transparent 60%), radial-gradient(40% 30% at 50% 100%, rgba(46,255,161,0.10) 0%, transparent 70%)",
+            "radial-gradient(60% 50% at 50% 0%, rgba(120,40,200,0.28) 0%, transparent 60%), radial-gradient(40% 30% at 50% 100%, rgba(46,255,161,0.10) 0%, transparent 70%)",
         }}
       />
 
-      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4">
+      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-4 pt-4 sm:max-w-lg sm:px-4">
         {/* Header */}
         <header
           className="flex items-center justify-between bg-[#060210]/80 backdrop-blur-sm border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
@@ -423,7 +493,7 @@ export function SlotGame() {
           </div>
         </header>
 
-        {/* Online */}
+        {/* Online + mute */}
         <div className="mt-2 flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
             <span className="relative inline-flex h-2.5 w-2.5">
@@ -441,60 +511,81 @@ export function SlotGame() {
           </button>
         </div>
 
-        {/* HUD */}
-        <section className="mt-2 grid grid-cols-4 gap-2 rounded-2xl glass-panel p-2 sm:p-2.5">
+        {/* HUD (matches reference) */}
+        <section className="mt-2 grid grid-cols-4 gap-1.5 rounded-2xl glass-panel p-1.5 sm:p-2">
           <HudCell label="LÍNEAS" value={String(LINES)} />
-          <HudCell label="APUESTA" value={`${formatCOP(bet)}`} accent="green" />
-          <HudCell label="ÚLTIMA" value={lastWin > 0 ? `${formatCOP(lastWin)}` : "—"} accent={lastWin > 0 ? "green" : "muted"} />
-          <HudCell label="x LÍNEA" value={`${formatCOP(lineBet)}`} accent="purple" />
+          <HudCell label="PREMIO TOTAL" value={lastWin > 0 ? `${formatCOP(lastWin)} COP` : "—"} accent="green" wide />
+          <HudCell label="TIRADAS GRATIS" value="--" accent="muted" />
+          <HudCell label="MULTIPLICADOR" value={`x${winMult >= 10 ? winMult.toFixed(1) : winMult.toFixed(2).replace(/\.?0+$/, "")}`} accent="purple" />
         </section>
 
-        {/* Title */}
-        <div className="mt-3 text-center">
-          <h1 className="font-display text-2xl font-black tracking-widest"
-              style={{
-                background: "linear-gradient(180deg,#ffd870 0%,#c4892b 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                filter: "drop-shadow(0 0 12px rgba(255,200,80,0.45))",
-              }}>
-            MAFIA SLOTS
-          </h1>
-          <p className="text-[10px] uppercase tracking-[0.3em] text-purple-200/60">El juego del padrino</p>
-        </div>
-
-        {/* Reels */}
+        {/* Reels frame */}
         <section
           className="relative mt-3 rounded-2xl p-2 sm:p-2.5"
           style={{
-            background: "linear-gradient(160deg,#160830 0%,#0a041c 100%)",
-            border: "2px solid rgba(168,85,247,0.45)",
+            background: "linear-gradient(160deg,#150728 0%,#0a041c 50%,#0d0522 100%)",
+            border: "2px solid rgba(168,85,247,0.55)",
             boxShadow:
-              "0 0 0 1px rgba(168,85,247,0.15) inset, 0 0 30px rgba(140,70,220,0.35), 0 12px 30px rgba(0,0,0,0.55)",
+              "0 0 0 1px rgba(168,85,247,0.20) inset, 0 0 40px rgba(140,70,220,0.45), 0 12px 30px rgba(0,0,0,0.6)",
           }}
         >
-          {/* corner accents */}
-          <div className="pointer-events-none absolute -top-px left-3 right-3 h-px bg-gradient-to-r from-transparent via-purple-400/60 to-transparent" />
-          <div className="pointer-events-none absolute -bottom-px left-3 right-3 h-px bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent" />
+          {/* Title badge on frame */}
+          <div className="absolute left-1/2 -top-4 z-20 -translate-x-1/2">
+            <div
+              className="flex items-center gap-2 rounded-full px-4 py-1"
+              style={{
+                background: "linear-gradient(180deg, rgba(20,8,42,0.95), rgba(8,2,18,0.95))",
+                border: "1px solid rgba(168,85,247,0.65)",
+                boxShadow: "0 0 18px rgba(168,85,247,0.55), inset 0 0 8px rgba(168,85,247,0.25)",
+              }}
+            >
+              <span className="text-[10px]">✦</span>
+              <span
+                className="font-display text-sm font-black tracking-[0.18em]"
+                style={{
+                  background: "linear-gradient(180deg,#c084fc 0%,#7c3aed 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  filter: "drop-shadow(0 0 8px rgba(168,85,247,0.7))",
+                }}
+              >MAFIA</span>
+              <span
+                className="font-display text-sm font-black tracking-[0.18em] neon-green"
+              >ROYALE</span>
+              <span className="text-[10px]">✦</span>
+            </div>
+          </div>
 
-          <div className="grid grid-cols-5 gap-1.5 h-[300px] sm:h-[340px]">
+          {/* Lines side labels */}
+          <div className="pointer-events-none absolute -left-1 top-1/2 z-20 -translate-y-1/2 -rotate-90">
+            <span className="font-display text-[10px] font-bold tracking-[0.3em] neon-green">{LINES} LÍNEAS</span>
+          </div>
+          <div className="pointer-events-none absolute -right-1 top-1/2 z-20 -translate-y-1/2 rotate-90">
+            <span className="font-display text-[10px] font-bold tracking-[0.3em] neon-green">{LINES} LÍNEAS</span>
+          </div>
+
+          {/* corner accents */}
+          <div className="pointer-events-none absolute -top-px left-3 right-3 h-px bg-gradient-to-r from-transparent via-purple-400/70 to-transparent" />
+          <div className="pointer-events-none absolute -bottom-px left-3 right-3 h-px bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent" />
+
+          <div className="grid grid-cols-5 gap-1.5 pt-3">
             {grid.map((reel, ri) => (
               <Reel
                 key={ri}
                 finalSyms={reel}
                 spinning={spinning}
-                delay={ri * 140}
+                reelIndex={ri}
                 onStop={handleReelStop}
                 winRows={highlightedCells.get(ri) ?? new Set()}
               />
             ))}
           </div>
 
-          {/* Win banner */}
+          {/* Big win banner */}
           {lastWin > 0 && !spinning && (
             <div
               className="absolute inset-x-0 -bottom-3 mx-auto w-fit rounded-full border border-emerald-400/60 bg-[#062014]/95 px-4 py-1 backdrop-blur"
-              style={{ boxShadow: "0 0 24px rgba(46,255,161,0.55)" }}
+              style={{ boxShadow: "0 0 24px rgba(46,255,161,0.55)", animation: "scale-in 0.3s ease-out" }}
             >
               <span className="font-display text-xs font-bold uppercase tracking-widest text-emerald-300">
                 ¡Ganaste! <span className="neon-green ml-1">${formatCOP(lastWin)}</span>
@@ -503,132 +594,151 @@ export function SlotGame() {
           )}
         </section>
 
-        {/* Pay table preview (top symbols) */}
+        {/* Pay table preview (top 5 symbols) */}
         <section className="mt-4 grid grid-cols-5 gap-1.5">
           {SYMBOLS.slice(0, 5).map((s) => (
             <div
               key={s.id}
-              className="flex flex-col items-center rounded-lg border border-purple-500/20 bg-[#0c0620]/70 p-1.5"
+              className="flex flex-col items-center rounded-lg border border-purple-500/25 bg-[#0c0620]/70 px-1 py-1.5"
             >
-              <span className="text-2xl" style={{ filter: `drop-shadow(0 0 6px rgba(${s.glow},0.4))` }}>{s.glyph}</span>
-              <span className="mt-0.5 font-display text-[10px] font-bold neon-green">
-                {s.pay[2]}x
-              </span>
+              <div className="flex items-center gap-0.5">
+                {[0, 1, 2].map((i) => (
+                  <img
+                    key={i}
+                    src={s.img}
+                    alt=""
+                    aria-hidden
+                    loading="lazy"
+                    className="h-5 w-5 object-contain"
+                    style={{ filter: `drop-shadow(0 0 4px rgba(${s.glow},0.45))` }}
+                  />
+                ))}
+              </div>
+              <span className="mt-1 font-display text-[10px] font-bold neon-green">{s.pay[2]}.00x</span>
             </div>
           ))}
         </section>
 
-        {/* Bet controls */}
-        <section className="mt-4 rounded-2xl glass-panel p-3">
-          <div className="text-[10px] uppercase tracking-widest text-purple-200/70 text-center">APUESTA (COP)</div>
-          <div className="mt-1 flex items-center gap-2">
-            <button
-              onClick={() => setBet((b) => Math.max(MIN_BET, b - BET_STEP))}
-              disabled={spinning}
-              className="flex h-12 w-12 items-center justify-center rounded-xl btn-bet disabled:opacity-40"
-            >
-              <Minus className="h-5 w-5" />
-            </button>
-            <div className="flex-1 rounded-xl border border-purple-500/40 bg-[#0c0620] py-2.5 text-center font-display text-xl font-bold text-white">
-              {formatCOP(bet)}
+        {/* Bet panel */}
+        <section className="mt-3 rounded-2xl glass-panel p-3">
+          <div className="flex gap-2.5">
+            {/* Left: bet controls */}
+            <div className="flex-1">
+              <div className="text-[10px] uppercase tracking-widest text-purple-200/70 text-center">APUESTA (COP)</div>
+              <div className="mt-1 flex items-center gap-1.5">
+                <button
+                  onClick={() => setBet((b) => Math.max(MIN_BET, b - BET_STEP))}
+                  disabled={spinning}
+                  className="flex h-11 w-11 items-center justify-center rounded-xl btn-bet disabled:opacity-40"
+                ><Minus className="h-5 w-5" /></button>
+                <div className="flex-1 rounded-xl border border-purple-500/40 bg-[#0c0620] py-2.5 text-center font-display text-lg font-bold text-white">
+                  {formatCOP(bet)}
+                </div>
+                <button
+                  onClick={() => setBet((b) => Math.min(MAX_BET, b + BET_STEP))}
+                  disabled={spinning}
+                  className="flex h-11 w-11 items-center justify-center rounded-xl btn-bet disabled:opacity-40"
+                ><Plus className="h-5 w-5" /></button>
+              </div>
+              <div className="mt-1.5 grid grid-cols-5 gap-1">
+                <button
+                  onClick={() => setBet((b) => Math.min(MAX_BET, Math.max(MIN_BET, b * 2)))}
+                  disabled={spinning}
+                  className="rounded-md btn-bet py-1 text-[11px] font-bold disabled:opacity-40"
+                >x2</button>
+                {QUICK_BETS.map((q) => (
+                  <button
+                    key={q}
+                    onClick={() => setBet((b) => Math.min(MAX_BET, b + q))}
+                    disabled={spinning}
+                    className="rounded-md btn-bet py-1 text-[10px] font-bold disabled:opacity-40"
+                  >+{q >= 1000 ? `${q / 1000}k` : q}</button>
+                ))}
+              </div>
             </div>
+
+            {/* Right: GIRAR */}
             <button
-              onClick={() => setBet((b) => Math.min(MAX_BET, b + BET_STEP))}
-              disabled={spinning}
-              className="flex h-12 w-12 items-center justify-center rounded-xl btn-bet disabled:opacity-40"
+              onClick={spin}
+              disabled={!canSpin}
+              className="w-[42%] rounded-2xl btn-primary-green btn-primary-action flex flex-col items-center justify-center font-display font-black uppercase disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ minHeight: 102 }}
             >
-              <Plus className="h-5 w-5" />
+              <span className="text-xl tracking-[0.15em]">{spinning ? "GIRANDO…" : "GIRAR"}</span>
+              <span className="mt-0.5 text-[9px] font-bold tracking-widest opacity-90">MANTENER PARA AUTO</span>
             </button>
           </div>
-          <div className="mt-2 grid grid-cols-5 gap-1.5">
-            <button
-              onClick={() => setBet((b) => Math.min(MAX_BET, b * 2))}
-              disabled={spinning}
-              className="rounded-md btn-bet py-1.5 text-xs font-bold disabled:opacity-40"
-            >x2</button>
-            {QUICK_BETS.map((q) => (
-              <button
-                key={q}
-                onClick={() => setBet((b) => Math.min(MAX_BET, b + q))}
-                disabled={spinning}
-                className="rounded-md btn-bet py-1.5 text-[11px] font-bold disabled:opacity-40"
-              >+{q >= 1000 ? `${q / 1000}k` : q}</button>
-            ))}
-          </div>
-
-          <button
-            onClick={spin}
-            disabled={!canSpin}
-            className="mt-3 w-full rounded-xl btn-primary-green btn-primary-action py-4 font-display text-xl font-black uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {spinning ? "GIRANDO…" : "GIRAR"}
-          </button>
-          <div className="mt-1 text-center text-[10px] text-purple-200/60">
+          <div className="mt-2 text-center text-[10px] text-purple-200/60">
             MÍNIMO: {formatCOP(MIN_BET)} COP · MÁXIMO: {formatCOP(MAX_BET)} COP
           </div>
         </section>
 
-        {/* Last wins (live ticker) */}
-        <section className="mt-4 rounded-xl border border-purple-500/30 bg-[#0c0620]/80 p-3">
+        {/* Last wins ticker */}
+        <section className="mt-3 rounded-xl border border-purple-500/30 bg-[#0c0620]/80 p-2.5">
           <div className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-purple-300" />
-            <h3 className="font-display text-xs font-bold uppercase tracking-widest text-white">Últimas ganancias</h3>
+            <h3 className="font-display text-[11px] font-bold uppercase tracking-widest text-white">Últimas ganancias</h3>
+            <Trophy className="ml-auto h-4 w-4 text-purple-300/70" />
           </div>
-          <ul className="mt-3 flex max-h-[180px] flex-col gap-2 overflow-hidden">
-            {history.slice(0, 6).map((w) => (
-              <li
-                key={w.id}
-                className="flex h-[44px] items-center gap-3 rounded-lg border border-purple-500/20 bg-[#150830]/60 px-2.5"
-              >
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-purple-600/30 ring-1 ring-purple-400/30">
-                  <User className="h-4 w-4 text-purple-200" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="truncate text-xs font-semibold text-white">{w.user}</div>
-                  <div className="text-[10px] uppercase tracking-wider text-purple-300/70">
-                    {w.symbol} · {relativeTime(w.ts, now)}
+          <ul className="mt-2 flex gap-2 overflow-x-auto hide-scrollbar pb-1">
+            {history.slice(0, 8).map((w) => {
+              const sym = SYMBOLS[SYMBOL_INDEX.get(w.symbolId)!];
+              return (
+                <li
+                  key={w.id}
+                  className="flex shrink-0 items-center gap-2 rounded-full border border-emerald-400/30 bg-[#08221a]/70 px-2.5 py-1"
+                  style={{ boxShadow: "0 0 10px rgba(46,255,161,0.18) inset" }}
+                >
+                  <img src={sym.img} alt="" aria-hidden loading="lazy" className="h-5 w-5 object-contain"
+                       style={{ filter: `drop-shadow(0 0 4px rgba(${sym.glow},0.5))` }} />
+                  <div className="leading-tight">
+                    <div className="font-display text-[11px] font-bold neon-green">{w.multiplier.toFixed(2)}x</div>
+                    <div className="text-[9px] font-semibold text-purple-100/80">{formatCOP(w.amount)} COP</div>
                   </div>
-                </div>
-                <div className="text-right">
-                  <div className="font-display text-xs font-bold">
-                    <span className="neon-green mr-0.5">$</span>
-                    <span className="text-white">{formatCOP(w.amount)} COP</span>
-                  </div>
-                  <div className="text-[10px] font-bold text-purple-300">{w.multiplier.toFixed(2)}x</div>
-                </div>
-              </li>
-            ))}
+                  <span className="text-[8px] uppercase tracking-wider text-purple-300/60 ml-1">
+                    {w.user} · {relativeTime(w.ts, now)}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         </section>
-
-        <div className="h-6" />
       </div>
 
       <style>{`
-        @keyframes slot-spin {
-          0%   { transform: translateY(0); }
-          100% { transform: translateY(calc(-${REEL_LEN * 2} * (100% / ${ROWS}))); }
-        }
         @keyframes slot-win-pulse {
           0%, 100% { transform: scale(1); }
-          50%      { transform: scale(1.18); }
+          50%      { transform: scale(1.10); }
         }
       `}</style>
     </div>
   );
 }
 
-function HudCell({ label, value, accent }: { label: string; value: string; accent?: "green" | "purple" | "muted" }) {
+function HudCell({
+  label,
+  value,
+  accent,
+  wide,
+}: {
+  label: string;
+  value: string;
+  accent?: "green" | "purple" | "muted";
+  wide?: boolean;
+}) {
   const cls =
     accent === "green"  ? "neon-green" :
-    accent === "purple" ? "text-purple-200" :
+    accent === "purple" ? "text-purple-300" :
     accent === "muted"  ? "text-purple-300/50" :
     "text-white";
   return (
     <div className="text-center">
-      <div className="text-[9px] uppercase tracking-widest text-purple-200/70">{label}</div>
-      <div className="mt-1 rounded-lg border border-purple-500/30 bg-[#160830]/60 py-1.5">
-        <span className={`font-display text-sm font-bold ${cls}`}>{value}</span>
+      <div className="text-[8px] uppercase tracking-widest text-purple-200/70">{label}</div>
+      <div
+        className="mt-1 rounded-lg border border-purple-500/30 bg-[#160830]/70 py-1.5"
+        style={{ boxShadow: "inset 0 0 8px rgba(168,85,247,0.18)" }}
+      >
+        <span className={`font-display ${wide ? "text-[11px]" : "text-xs"} font-bold ${cls}`}>{value}</span>
       </div>
     </div>
   );
@@ -638,11 +748,11 @@ function seedHistory(): HistoryItem[] {
   const now = Date.now();
   let id = 1;
   return [
-    { id: id++, user: "TommyGun",  symbol: "👑", multiplier: 12.5, amount: 250000, ts: now - 8_000 },
-    { id: id++, user: "VitoC",     symbol: "🚗", multiplier: 4.8,  amount: 96000,  ts: now - 22_000 },
-    { id: id++, user: "AlCapone",  symbol: "💰", multiplier: 3.2,  amount: 64000,  ts: now - 45_000 },
-    { id: id++, user: "PeakyB",    symbol: "🪙", multiplier: 2.1,  amount: 42000,  ts: now - 70_000 },
-    { id: id++, user: "DonLuca",   symbol: "⌚", multiplier: 1.6,  amount: 32000,  ts: now - 110_000 },
-    { id: id++, user: "MissFox",   symbol: "💼", multiplier: 1.2,  amount: 24000,  ts: now - 160_000 },
+    { id: id++, user: "TommyGun",  symbolId: "boss",  multiplier: 12.5, amount: 250000, ts: now - 8_000 },
+    { id: id++, user: "VitoC",     symbolId: "car",   multiplier: 4.8,  amount: 96000,  ts: now - 22_000 },
+    { id: id++, user: "AlCapone",  symbolId: "brief", multiplier: 3.2,  amount: 64000,  ts: now - 45_000 },
+    { id: id++, user: "PeakyB",    symbolId: "gold",  multiplier: 2.1,  amount: 42000,  ts: now - 70_000 },
+    { id: id++, user: "DonLuca",   symbolId: "watch", multiplier: 1.6,  amount: 32000,  ts: now - 110_000 },
+    { id: id++, user: "MissFox",   symbolId: "chip",  multiplier: 1.2,  amount: 24000,  ts: now - 160_000 },
   ];
 }
