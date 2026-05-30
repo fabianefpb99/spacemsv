@@ -464,7 +464,6 @@ export function SlotGame() {
   const spin = useCallback(() => {
     if (spinning) return;
     if (bet < MIN_BET || bet > balance) return;
-    playSpinPress();
     startReelLoop();
     setBalance((b) => b - bet);
     setLastWin(0);
