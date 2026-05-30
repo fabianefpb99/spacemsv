@@ -281,13 +281,13 @@ function Reel({
   const visibleRows = ROWS;
   return (
     <div
-      className="relative overflow-hidden rounded-lg"
+      className="relative overflow-hidden"
       style={{
         height: TILE_H * visibleRows,
         background:
           "linear-gradient(180deg, rgba(8,3,22,0.92) 0%, rgba(18,8,42,0.85) 50%, rgba(8,3,22,0.92) 100%)",
         boxShadow:
-          "inset 0 0 0 1px rgba(168,85,247,0.25), inset 0 8px 14px rgba(0,0,0,0.55), inset 0 -8px 14px rgba(0,0,0,0.55)",
+          "inset 0 8px 14px rgba(0,0,0,0.55), inset 0 -8px 14px rgba(0,0,0,0.55)",
       }}
     >
       {/* top + bottom inner shadow for depth */}
@@ -295,9 +295,6 @@ function Reel({
            style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.85), transparent)" }} />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-5 z-10"
            style={{ background: "linear-gradient(0deg, rgba(0,0,0,0.85), transparent)" }} />
-      {/* vertical reflection sheen */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-[2px] z-10"
-           style={{ background: "linear-gradient(180deg, transparent, rgba(255,255,255,0.18), transparent)" }} />
 
       <div
         ref={innerRef}
