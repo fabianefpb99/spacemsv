@@ -182,55 +182,6 @@ function playReelStop() {
   o.start(); o.stop(c.currentTime + 0.13);
 }
 
-/* Lever / button press — classic slot "ka-chunk" + coin ping */
-function playSpinPress() {
-  if (isMuted()) return;
-  const c = ctx(); if (!c) return;
-  const now = c.currentTime;
-
-  // Mechanical thunk (low filtered noise burst)
-  const len = Math.floor(c.sampleRate * 0.18);
-  const buf = c.createBuffer(1, len, c.sampleRate);
-  const d = buf.getChannelData(0);
-  for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
-  const src = c.createBufferSource();
-  src.buffer = buf;
-  const lp = c.createBiquadFilter();
-  lp.type = "lowpass";
-  lp.frequency.setValueAtTime(900, now);
-  lp.frequency.exponentialRampToValueAtTime(180, now + 0.18);
-  const ng = c.createGain();
-  ng.gain.setValueAtTime(0.0001, now);
-  ng.gain.linearRampToValueAtTime(0.22, now + 0.005);
-  ng.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
-  src.connect(lp).connect(ng).connect(c.destination);
-  src.start(now); src.stop(now + 0.22);
-
-  // Sub-thump
-  const sub = c.createOscillator();
-  sub.type = "sine";
-  sub.frequency.setValueAtTime(140, now);
-  sub.frequency.exponentialRampToValueAtTime(45, now + 0.18);
-  const sg = c.createGain();
-  sg.gain.setValueAtTime(0.0001, now);
-  sg.gain.linearRampToValueAtTime(0.28, now + 0.008);
-  sg.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
-  sub.connect(sg).connect(c.destination);
-  sub.start(now); sub.stop(now + 0.24);
-
-  // Bright coin ping shortly after
-  const ping = c.createOscillator();
-  ping.type = "triangle";
-  ping.frequency.setValueAtTime(1760, now + 0.04);
-  ping.frequency.exponentialRampToValueAtTime(1320, now + 0.22);
-  const pg = c.createGain();
-  pg.gain.setValueAtTime(0.0001, now + 0.04);
-  pg.gain.linearRampToValueAtTime(0.09, now + 0.05);
-  pg.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
-  ping.connect(pg).connect(c.destination);
-  ping.start(now + 0.04); ping.stop(now + 0.3);
-}
-
 /* Reels spinning loop — soft whirring + rhythmic ticks */
 let reelLoopNodes: {
   whirSrc: AudioBufferSourceNode;
@@ -513,7 +464,6 @@ export function SlotGame() {
   const spin = useCallback(() => {
     if (spinning) return;
     if (bet < MIN_BET || bet > balance) return;
-    playSpinPress();
     startReelLoop();
     setBalance((b) => b - bet);
     setLastWin(0);
