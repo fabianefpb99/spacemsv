@@ -143,7 +143,7 @@ function evaluateGrid(grid: string[][], lineBet: number): { wins: WinLine[]; tot
 type HistoryItem = {
   id: number;
   user: string;
-  symbol: string;
+  symbolId: string;
   multiplier: number;
   amount: number;
   ts: number;
@@ -398,7 +398,7 @@ export function SlotGame() {
       const mult = sym.pay[count - 3];
       const amount = Math.floor(stake * mult);
       setHistory((h) =>
-        [{ id: ++historyId.current, user: pickUser(), symbol: sym.glyph, multiplier: mult, amount, ts: Date.now() }, ...h].slice(0, 30)
+        [{ id: ++historyId.current, user: pickUser(), symbolId: sym.id, multiplier: mult, amount, ts: Date.now() }, ...h].slice(0, 30)
       );
     }, 3200);
     return () => clearInterval(t);
@@ -435,9 +435,8 @@ export function SlotGame() {
       setBalance((b) => b + total);
       playCashoutSound();
       const best = [...w].sort((a, b) => b.payout - a.payout)[0];
-      const bestSym = SYMBOLS[SYMBOL_INDEX.get(best.symbolId)!];
       setHistory((h) =>
-        [{ id: ++historyId.current, user: "Tú", symbol: bestSym.glyph, multiplier: total / bet, amount: total, ts: Date.now() }, ...h].slice(0, 30)
+        [{ id: ++historyId.current, user: "Tú", symbolId: best.symbolId, multiplier: total / bet, amount: total, ts: Date.now() }, ...h].slice(0, 30)
       );
     }
     setSpinning(false);
