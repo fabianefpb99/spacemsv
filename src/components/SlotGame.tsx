@@ -1,54 +1,57 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import { Menu, Settings, Volume2, VolumeX, Minus, Plus, User, TrendingUp } from "lucide-react";
+import { Menu, Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "lucide-react";
 import { setMuted as setAudioMuted, playCashoutSound, isMuted } from "@/lib/gameAudio";
 
+import bossImg from "@/assets/slot/boss.png";
+import hatImg from "@/assets/slot/hat.png";
+import briefcaseImg from "@/assets/slot/briefcase.png";
+import watchImg from "@/assets/slot/watch.png";
+import goldImg from "@/assets/slot/gold.png";
+import carImg from "@/assets/slot/car.png";
+import chipImg from "@/assets/slot/chip.png";
+import cardImg from "@/assets/slot/card.png";
+
 /* ============================================================
-   Symbols — Gangster theme (years 20s)
-   Index 0 is the highest-paying symbol.
+   Symbols — Mafia Royale (Peaky Blinders theme)
+   Index 0 = highest-paying.
    ============================================================ */
 type SymbolDef = {
   id: string;
-  glyph: string;
+  img: string;
   label: string;
-  /** Pay multipliers of LINE BET for 3 / 4 / 5 of a kind. */
-  pay: [number, number, number];
-  /** Reel weight (higher = more frequent). */
+  pay: [number, number, number]; // 3 / 4 / 5 of a kind, multiplier of LINE BET
   weight: number;
-  /** Background gradient for the tile. */
-  bg: string;
-  /** Glow color (rgb). */
-  glow: string;
+  glow: string; // rgb for highlight glow
 };
 
 const SYMBOLS: SymbolDef[] = [
-  { id: "boss",  glyph: "👑", label: "EL PADRINO", pay: [25, 150, 750], weight: 2,  bg: "linear-gradient(160deg,#3d1b0a 0%,#1a0a04 100%)", glow: "255,200,80"  },
-  { id: "car",   glyph: "🚗", label: "CADILLAC",   pay: [15, 75, 300],  weight: 3,  bg: "linear-gradient(160deg,#0d1a3a 0%,#06081a 100%)", glow: "120,160,255" },
-  { id: "money", glyph: "💰", label: "MALETÍN $",  pay: [10, 40, 180],  weight: 4,  bg: "linear-gradient(160deg,#0d2a14 0%,#05140a 100%)", glow: "80,255,150"  },
-  { id: "gold",  glyph: "🪙", label: "LINGOTE",    pay: [8, 25, 120],   weight: 5,  bg: "linear-gradient(160deg,#3a2a05 0%,#1a1402 100%)", glow: "255,210,80"  },
-  { id: "watch", glyph: "⌚", label: "RELOJ",      pay: [5, 18, 75],    weight: 6,  bg: "linear-gradient(160deg,#1a1530 0%,#0a0820 100%)", glow: "180,150,255" },
-  { id: "brief", glyph: "💼", label: "MALETÍN",    pay: [4, 12, 50],    weight: 7,  bg: "linear-gradient(160deg,#2a1505 0%,#150a02 100%)", glow: "210,160,80"  },
-  { id: "hat",   glyph: "🎩", label: "SOMBRERO",   pay: [3, 8, 30],     weight: 8,  bg: "linear-gradient(160deg,#1a0a2a 0%,#080414 100%)", glow: "200,120,255" },
-  { id: "cigar", glyph: "🚬", label: "PURO",       pay: [2, 6, 20],     weight: 9,  bg: "linear-gradient(160deg,#2a1a0a 0%,#140a04 100%)", glow: "200,140,80"  },
-  { id: "card",  glyph: "🃏", label: "CARTA A",    pay: [2, 5, 15],     weight: 10, bg: "linear-gradient(160deg,#1a0820 0%,#0a0410 100%)", glow: "255,80,160"  },
+  { id: "boss",  img: bossImg,      label: "EL PADRINO", pay: [25, 150, 750], weight: 2,  glow: "168,85,247"  },
+  { id: "car",   img: carImg,       label: "CADILLAC",   pay: [15, 75, 300],  weight: 3,  glow: "180,180,255" },
+  { id: "brief", img: briefcaseImg, label: "MALETÍN $",  pay: [10, 40, 180],  weight: 4,  glow: "46,255,161"  },
+  { id: "gold",  img: goldImg,      label: "LINGOTE",    pay: [8, 25, 120],   weight: 5,  glow: "255,210,80"  },
+  { id: "watch", img: watchImg,     label: "RELOJ ORO",  pay: [5, 18, 75],    weight: 6,  glow: "255,200,80"  },
+  { id: "chip",  img: chipImg,      label: "FICHA",      pay: [4, 12, 50],    weight: 7,  glow: "168,85,247"  },
+  { id: "hat",   img: hatImg,       label: "SOMBRERO",   pay: [3, 8, 30],     weight: 8,  glow: "200,120,255" },
+  { id: "card",  img: cardImg,      label: "AS",         pay: [2, 5, 15],     weight: 10, glow: "255,180,80"  },
 ];
 
 const SYMBOL_INDEX = new Map(SYMBOLS.map((s, i) => [s.id, i]));
 
-/* Weighted reel strip generation */
-const REEL_LEN = 24;
-function buildReelStrip(): string[] {
+/* Weighted random fillers for the spinning strip */
+const SPIN_FILLER_COUNT = 18; // tiles above the final 3
+function pickRandomFillers(n: number): string[] {
   const totalWeight = SYMBOLS.reduce((a, s) => a + s.weight, 0);
-  const strip: string[] = [];
-  while (strip.length < REEL_LEN) {
+  const out: string[] = [];
+  for (let i = 0; i < n; i++) {
     let r = Math.random() * totalWeight;
     for (const s of SYMBOLS) {
       r -= s.weight;
-      if (r <= 0) { strip.push(s.id); break; }
+      if (r <= 0) { out.push(s.id); break; }
     }
   }
-  return strip;
+  return out;
 }
 
 const REELS = 5;
