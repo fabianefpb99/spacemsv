@@ -338,8 +338,8 @@ function SymbolTile({ sym, highlight }: { sym: SymbolDef; highlight: boolean }) 
         loading="lazy"
         className="select-none pointer-events-none"
         style={{
-          width: "92%",
-          height: "92%",
+          width: "96%",
+          height: "96%",
           objectFit: "contain",
           filter: highlight
             ? `drop-shadow(0 0 10px rgba(${sym.glow},0.95)) drop-shadow(0 0 20px rgba(${sym.glow},0.6))`
