@@ -361,6 +361,7 @@ function PayPage() {
 function MethodCard({
   selected,
   onClick,
+  disabled,
   logo,
   title,
   subtitle,
@@ -369,6 +370,7 @@ function MethodCard({
 }: {
   selected: boolean;
   onClick: () => void;
+  disabled?: boolean;
   logo: React.ReactNode;
   title: string;
   subtitle: string;
@@ -377,13 +379,20 @@ function MethodCard({
 }) {
   return (
     <div
-      onClick={onClick}
-      className={`cursor-pointer rounded-xl border bg-[#0c0620] p-3 transition ${
-        selected
-          ? "border-emerald-400/70 ring-1 ring-emerald-400/40 shadow-[0_0_20px_-8px_rgba(52,211,153,0.6)]"
-          : "border-purple-500/25 hover:border-purple-400/50"
+      onClick={disabled ? undefined : onClick}
+      className={`relative rounded-xl border bg-[#0c0620] p-3 transition ${
+        disabled
+          ? "border-purple-500/15 opacity-60 cursor-not-allowed"
+          : selected
+            ? "border-emerald-400/70 ring-1 ring-emerald-400/40 shadow-[0_0_20px_-8px_rgba(52,211,153,0.6)] cursor-pointer"
+            : "border-purple-500/25 hover:border-purple-400/50 cursor-pointer"
       }`}
     >
+      {disabled && (
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full border border-purple-500/30 bg-purple-900/40 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-purple-200/70">
+          Próximamente
+        </span>
+      )}
       <div className="flex items-center gap-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[#150830] ring-1 ring-purple-500/20">
           {logo}
