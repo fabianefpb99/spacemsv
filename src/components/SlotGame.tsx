@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Menu, Settings, Volume2, VolumeX, Minus, Plus, User, TrendingUp } from "lucide-react";
-import { setMuted as setAudioMuted, playCashoutSound, playCrashSound, isMuted } from "@/lib/gameAudio";
+import { setMuted as setAudioMuted, playCashoutSound, isMuted } from "@/lib/gameAudio";
 
 /* ============================================================
    Symbols — Gangster theme (years 20s)
