@@ -32,10 +32,10 @@ const SYMBOLS: SymbolDef[] = [
   { id: "car",   img: carImg,       label: "CADILLAC",   pay: [34, 130, 440],  weight: 3,  glow: "180,180,255" },
   { id: "brief", img: briefcaseImg, label: "MALETÍN $",  pay: [24, 72, 240],   weight: 4,  glow: "46,255,161"  },
   { id: "gold",  img: goldImg,      label: "LINGOTE",    pay: [19, 50, 165],   weight: 5,  glow: "255,210,80"  },
-  { id: "watch", img: watchImg,     label: "RELOJ ORO",  pay: [16, 38, 110],   weight: 7,  glow: "255,200,80"  },
-  { id: "chip",  img: chipImg,      label: "FICHA",      pay: [14, 30, 80],    weight: 10, glow: "168,85,247"  },
-  { id: "hat",   img: hatImg,       label: "SOMBRERO",   pay: [11, 22, 58],    weight: 13, glow: "200,120,255" },
-  { id: "card",  img: cardImg,      label: "AS",         pay: [10, 18, 38],    weight: 16, glow: "255,180,80"  },
+  { id: "watch", img: watchImg,     label: "RELOJ ORO",  pay: [13, 32, 95],    weight: 6,  glow: "255,200,80"  },
+  { id: "chip",  img: chipImg,      label: "FICHA",      pay: [10, 24, 68],    weight: 8,  glow: "168,85,247"  },
+  { id: "hat",   img: hatImg,       label: "SOMBRERO",   pay: [8, 18, 50],     weight: 10, glow: "200,120,255" },
+  { id: "card",  img: cardImg,      label: "AS",         pay: [7, 14, 32],     weight: 12, glow: "255,180,80"  },
 ];
 
 const SYMBOL_INDEX = new Map(SYMBOLS.map((s, i) => [s.id, i]));
