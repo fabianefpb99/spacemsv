@@ -80,15 +80,6 @@ function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
 }
 
-function rand(max: number) {
-  if (typeof crypto !== "undefined" && crypto.getRandomValues) {
-    const a = new Uint32Array(1);
-    crypto.getRandomValues(a);
-    return a[0] % max;
-  }
-  return Math.floor(Math.random() * max);
-}
-
 function pickWeightedSymbol(): string {
   const total = SYMBOLS.reduce((a, s) => a + s.weight, 0);
   let r = Math.random() * total;
