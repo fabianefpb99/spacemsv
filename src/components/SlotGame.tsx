@@ -532,7 +532,7 @@ export function SlotGame() {
         </section>
 
         {/* Reels frame wrapper — leaves side gutters for "10 LÍNEAS" labels */}
-        <section className="relative mt-3 px-6 sm:px-7">
+        <section className="relative mt-3 px-4 sm:px-5">
           {/* Title badge on frame — OUTSIDE clip so it isn't cut */}
           <div className="absolute left-1/2 -top-3 z-30 -translate-x-1/2">
             <div
@@ -559,12 +559,12 @@ export function SlotGame() {
           </div>
 
           {/* Lines side labels — OUTSIDE the frame, in the gutter */}
-          <div className="pointer-events-none absolute left-0 top-1/2 z-20 -translate-y-1/2 -rotate-90">
+          <div className="pointer-events-none absolute -left-1 top-1/2 z-20 -translate-y-1/2 -rotate-90">
             <span className="font-display text-[10px] font-bold tracking-[0.32em] neon-green whitespace-nowrap">
               {LINES} LÍNEAS
             </span>
           </div>
-          <div className="pointer-events-none absolute right-0 top-1/2 z-20 -translate-y-1/2 rotate-90">
+          <div className="pointer-events-none absolute -right-1 top-1/2 z-20 -translate-y-1/2 rotate-90">
             <span className="font-display text-[10px] font-bold tracking-[0.32em] neon-green whitespace-nowrap">
               {LINES} LÍNEAS
             </span>
