@@ -28,14 +28,14 @@ type SymbolDef = {
 };
 
 const SYMBOLS: SymbolDef[] = [
-  { id: "boss",  img: bossImg,      label: "EL PADRINO", pay: [20, 120, 600], weight: 2,  glow: "168,85,247"  },
-  { id: "car",   img: carImg,       label: "CADILLAC",   pay: [12, 60, 240],  weight: 3,  glow: "180,180,255" },
-  { id: "brief", img: briefcaseImg, label: "MALETÍN $",  pay: [8, 32, 140],   weight: 4,  glow: "46,255,161"  },
-  { id: "gold",  img: goldImg,      label: "LINGOTE",    pay: [6, 20, 90],    weight: 5,  glow: "255,210,80"  },
-  { id: "watch", img: watchImg,     label: "RELOJ ORO",  pay: [4, 14, 55],    weight: 6,  glow: "255,200,80"  },
-  { id: "chip",  img: chipImg,      label: "FICHA",      pay: [3, 9, 38],     weight: 7,  glow: "168,85,247"  },
-  { id: "hat",   img: hatImg,       label: "SOMBRERO",   pay: [2, 6, 22],     weight: 8,  glow: "200,120,255" },
-  { id: "card",  img: cardImg,      label: "AS",         pay: [2, 4, 12],     weight: 10, glow: "255,180,80"  },
+  { id: "boss",  img: bossImg,      label: "EL PADRINO", pay: [40, 200, 1000], weight: 2,  glow: "168,85,247"  },
+  { id: "car",   img: carImg,       label: "CADILLAC",   pay: [25, 110, 400],  weight: 3,  glow: "180,180,255" },
+  { id: "brief", img: briefcaseImg, label: "MALETÍN $",  pay: [18, 60, 220],   weight: 4,  glow: "46,255,161"  },
+  { id: "gold",  img: goldImg,      label: "LINGOTE",    pay: [14, 42, 150],   weight: 5,  glow: "255,210,80"  },
+  { id: "watch", img: watchImg,     label: "RELOJ ORO",  pay: [10, 30, 100],   weight: 6,  glow: "255,200,80"  },
+  { id: "chip",  img: chipImg,      label: "FICHA",      pay: [8, 22, 70],     weight: 7,  glow: "168,85,247"  },
+  { id: "hat",   img: hatImg,       label: "SOMBRERO",   pay: [6, 16, 50],     weight: 8,  glow: "200,120,255" },
+  { id: "card",  img: cardImg,      label: "AS",         pay: [5, 12, 32],     weight: 9,  glow: "255,180,80"  },
 ];
 
 const SYMBOL_INDEX = new Map(SYMBOLS.map((s, i) => [s.id, i]));
