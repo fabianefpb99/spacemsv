@@ -632,10 +632,32 @@ export function SlotGame() {
 
         {/* HUD (matches reference) */}
         <section className="mt-2 grid grid-cols-4 gap-1.5 rounded-2xl glass-panel p-1.5 sm:p-2">
-          <HudCell label="LÍNEAS" value={String(LINES)} />
+          <HudCell label="LÍNEAS" value={String(activeLines)} />
           <HudCell label="PREMIO TOTAL" value={lastWin > 0 ? `${formatCOP(lastWin)} COP` : "—"} accent="green" wide />
-          <HudCell label="TIRADAS GRATIS" value="--" accent="muted" />
+          <HudCell label="APUESTA/LÍNEA" value={`${formatCOP(lineBet)}`} accent="muted" />
           <HudCell label="MULTIPLICADOR" value={`x${winMult >= 10 ? winMult.toFixed(1) : winMult.toFixed(2).replace(/\.?0+$/, "")}`} accent="purple" />
+        </section>
+
+        {/* Lines selector */}
+        <section className="mt-2 flex items-center justify-between rounded-xl border border-purple-500/30 bg-[#0c0620]/70 px-2.5 py-1.5">
+          <span className="font-display text-[10px] font-bold uppercase tracking-widest text-purple-200/80">Líneas activas</span>
+          <div className="flex items-center gap-1">
+            {LINE_PRESETS.map((n) => (
+              <button
+                key={n}
+                onClick={() => setActiveLines(n)}
+                disabled={spinning}
+                aria-pressed={activeLines === n}
+                className={`min-w-[28px] rounded-md px-1.5 py-0.5 text-[11px] font-display font-bold transition disabled:opacity-40 ${
+                  activeLines === n
+                    ? "bg-purple-500 text-white shadow-[0_0_10px_rgba(168,85,247,0.6)]"
+                    : "bg-[#1a0f33] text-purple-200 border border-purple-500/40 hover:bg-[#22134a]"
+                }`}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
         </section>
 
         {/* Reels frame wrapper — labels sit on the neon border edge */}
@@ -668,12 +690,12 @@ export function SlotGame() {
           {/* Lines side labels — OUTSIDE the frame, in the gutter */}
           <div className="pointer-events-none absolute left-0 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2 -rotate-90">
             <span className="font-display text-[9px] font-bold tracking-[0.32em] neon-green whitespace-nowrap">
-              {LINES} LÍNEAS
+              {activeLines} LÍNEAS
             </span>
           </div>
           <div className="pointer-events-none absolute right-0 top-1/2 z-30 translate-x-1/2 -translate-y-1/2 rotate-90">
             <span className="font-display text-[9px] font-bold tracking-[0.32em] neon-green whitespace-nowrap">
-              {LINES} LÍNEAS
+              {activeLines} LÍNEAS
             </span>
           </div>
 
