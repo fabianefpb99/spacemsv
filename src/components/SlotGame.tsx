@@ -192,66 +192,135 @@ function playReelStop() {
 }
 
 /* ============================================================
-   Reel component — spinning strip
+   Reel component — continuous translateY strip (no flicker)
    ============================================================ */
+const TILE_H = 76; // px per tile (3 rows visible = 228px tall window)
+const SPIN_BASE_MS = 1400;
+const SPIN_STAGGER_MS = 220;
+
 function Reel({
   finalSyms,
   spinning,
-  delay,
+  reelIndex,
   onStop,
   winRows,
 }: {
   finalSyms: string[];
   spinning: boolean;
-  delay: number;
+  reelIndex: number;
   onStop: () => void;
   winRows: Set<number>;
 }) {
-  const [strip, setStrip] = useState<string[]>(() => buildReelStrip());
-  const [phase, setPhase] = useState<"idle" | "spinning" | "stopping">("idle");
+  // Strip: [fillers..., finalSyms[0], finalSyms[1], finalSyms[2]]
+  // When idle: strip = finalSyms (3 tiles), translateY = 0.
+  const [strip, setStrip] = useState<string[]>(finalSyms);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const spinTokenRef = useRef(0);
+
+  // Sync strip with finalSyms when not spinning (e.g. initial render).
+  useEffect(() => {
+    if (spinning) return;
+    setStrip(finalSyms);
+    const el = innerRef.current;
+    if (el) {
+      el.style.transition = "none";
+      el.style.transform = "translateY(0)";
+    }
+  }, [finalSyms, spinning]);
 
   useEffect(() => {
     if (!spinning) return;
-    setPhase("spinning");
-    // Build a long strip ending with the final 3 symbols
-    const spinStrip = [...buildReelStrip(), ...buildReelStrip(), ...finalSyms];
-    setStrip(spinStrip);
-    const timer = setTimeout(() => {
-      setPhase("stopping");
+    const token = ++spinTokenRef.current;
+    const fillers = pickRandomFillers(SPIN_FILLER_COUNT);
+    const longStrip = [...fillers, ...finalSyms];
+    setStrip(longStrip);
+
+    const el = innerRef.current;
+    if (!el) return;
+
+    // 1) Position at top (showing fillers[0..2]) without animation.
+    el.style.transition = "none";
+    el.style.transform = "translateY(0)";
+    // force reflow so the next frame sees the new transform
+    void el.offsetHeight;
+
+    // 2) Next frame: animate to landing position.
+    const dur = SPIN_BASE_MS + reelIndex * SPIN_STAGGER_MS;
+    const targetY = (longStrip.length - ROWS) * TILE_H;
+
+    const raf = requestAnimationFrame(() => {
+      if (spinTokenRef.current !== token) return;
+      el.style.transition = `transform ${dur}ms cubic-bezier(.16,.84,.32,1)`;
+      el.style.transform = `translateY(-${targetY}px)`;
+    });
+
+    // Fallback: ensure onStop fires even if transitionend is missed.
+    const fallback = setTimeout(() => {
+      if (spinTokenRef.current !== token) return;
+      finishSpin();
+    }, dur + 250);
+
+    function finishSpin() {
+      const e = innerRef.current;
+      if (!e) return;
+      e.style.transition = "none";
+      e.style.transform = "translateY(0)";
+      setStrip(finalSyms);
       playReelStop();
       onStop();
-    }, 800 + delay);
-    return () => clearTimeout(timer);
+    }
+
+    const handleEnd = (ev: TransitionEvent) => {
+      if (ev.propertyName !== "transform") return;
+      if (spinTokenRef.current !== token) return;
+      clearTimeout(fallback);
+      el.removeEventListener("transitionend", handleEnd);
+      finishSpin();
+    };
+    el.addEventListener("transitionend", handleEnd);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(fallback);
+      el.removeEventListener("transitionend", handleEnd);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spinning]);
 
-  // When not spinning, show finalSyms statically
-  const visibleSyms = phase === "spinning" ? strip.slice(-ROWS) : finalSyms;
-  const animKey = spinning ? `spin-${delay}` : "idle";
-
+  const visibleRows = ROWS;
   return (
-    <div className="relative h-full overflow-hidden rounded-md bg-black/40 border border-purple-500/20">
-      {phase === "spinning" ? (
-        <div
-          key={animKey}
-          className="absolute inset-x-0 flex flex-col"
-          style={{
-            animation: `slot-spin ${0.8 + delay / 1000}s cubic-bezier(.4,.05,.2,1) forwards`,
-          }}
-        >
-          {strip.map((sid, i) => {
-            const s = SYMBOLS[SYMBOL_INDEX.get(sid)!];
-            return <SymbolTile key={i} sym={s} highlight={false} />;
-          })}
-        </div>
-      ) : (
-        <div className="flex h-full flex-col">
-          {visibleSyms.map((sid, row) => {
-            const s = SYMBOLS[SYMBOL_INDEX.get(sid)!];
-            return <SymbolTile key={row} sym={s} highlight={winRows.has(row)} />;
-          })}
-        </div>
-      )}
+    <div
+      className="relative overflow-hidden rounded-lg"
+      style={{
+        height: TILE_H * visibleRows,
+        background:
+          "linear-gradient(180deg, rgba(8,3,22,0.92) 0%, rgba(18,8,42,0.85) 50%, rgba(8,3,22,0.92) 100%)",
+        boxShadow:
+          "inset 0 0 0 1px rgba(168,85,247,0.25), inset 0 8px 14px rgba(0,0,0,0.55), inset 0 -8px 14px rgba(0,0,0,0.55)",
+      }}
+    >
+      {/* top + bottom inner shadow for depth */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-5 z-10"
+           style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.85), transparent)" }} />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-5 z-10"
+           style={{ background: "linear-gradient(0deg, rgba(0,0,0,0.85), transparent)" }} />
+      {/* vertical reflection sheen */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-[2px] z-10"
+           style={{ background: "linear-gradient(180deg, transparent, rgba(255,255,255,0.18), transparent)" }} />
+
+      <div
+        ref={innerRef}
+        className="absolute inset-x-0 top-0 flex flex-col will-change-transform"
+        style={{ transform: "translateY(0)" }}
+      >
+        {strip.map((sid, i) => {
+          const s = SYMBOLS[SYMBOL_INDEX.get(sid)!];
+          // Highlight only when not spinning and tile is in visible row range.
+          const isVisibleTile = !spinning && i < ROWS;
+          const highlight = isVisibleTile && winRows.has(i);
+          return <SymbolTile key={`${i}-${sid}`} sym={s} highlight={highlight} />;
+        })}
+      </div>
     </div>
   );
 }
@@ -259,26 +328,34 @@ function Reel({
 function SymbolTile({ sym, highlight }: { sym: SymbolDef; highlight: boolean }) {
   return (
     <div
-      className="flex flex-1 items-center justify-center relative"
+      className="relative flex items-center justify-center"
       style={{
-        background: sym.bg,
+        height: TILE_H,
+        background: highlight
+          ? `radial-gradient(70% 60% at 50% 50%, rgba(${sym.glow},0.30) 0%, rgba(${sym.glow},0.08) 60%, transparent 100%)`
+          : "transparent",
         boxShadow: highlight
-          ? `inset 0 0 0 2px rgba(${sym.glow},0.9), 0 0 18px rgba(${sym.glow},0.7)`
-          : "inset 0 0 0 1px rgba(168,85,247,0.10)",
-        transition: "box-shadow 200ms ease",
+          ? `inset 0 0 0 2px rgba(${sym.glow},0.85), 0 0 20px rgba(${sym.glow},0.55)`
+          : undefined,
+        transition: "box-shadow 200ms ease, background 200ms ease",
       }}
     >
-      <span
-        className="text-3xl sm:text-4xl select-none"
+      <img
+        src={sym.img}
+        alt={sym.label}
+        draggable={false}
+        loading="lazy"
+        className="select-none pointer-events-none"
         style={{
+          width: "78%",
+          height: "78%",
+          objectFit: "contain",
           filter: highlight
-            ? `drop-shadow(0 0 8px rgba(${sym.glow},0.9)) drop-shadow(0 0 16px rgba(${sym.glow},0.6))`
-            : `drop-shadow(0 2px 4px rgba(0,0,0,0.6)) drop-shadow(0 0 6px rgba(${sym.glow},0.35))`,
+            ? `drop-shadow(0 0 10px rgba(${sym.glow},0.95)) drop-shadow(0 0 20px rgba(${sym.glow},0.6))`
+            : `drop-shadow(0 4px 6px rgba(0,0,0,0.55)) drop-shadow(0 0 8px rgba(${sym.glow},0.25))`,
           animation: highlight ? "slot-win-pulse 0.9s ease-in-out infinite" : undefined,
         }}
-      >
-        {sym.glyph}
-      </span>
+      />
     </div>
   );
 }
