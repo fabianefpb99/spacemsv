@@ -58,19 +58,49 @@ function pickRandomFillers(n: number): string[] {
 const REELS = 5;
 const ROWS = 4;
 
-/* 10 paylines on 5x3 grid (row index per reel) */
+/* 30 paylines on 5x4 grid (row index per reel) — horizontal, vertical, diagonal, V, zigzag, arch */
 const PAYLINES: number[][] = [
-  [1, 1, 1, 1, 1], // middle
-  [0, 0, 0, 0, 0], // top
-  [2, 2, 2, 2, 2], // bottom
-  [0, 1, 2, 1, 0], // V
-  [2, 1, 0, 1, 2], // ^
-  [0, 0, 1, 2, 2], // diag down
-  [2, 2, 1, 0, 0], // diag up
-  [1, 0, 0, 0, 1], // U top
-  [1, 2, 2, 2, 1], // U bottom
-  [0, 1, 1, 1, 0], // arch
+  // Horizontales
+  [1, 1, 1, 1, 1],
+  [0, 0, 0, 0, 0],
+  [2, 2, 2, 2, 2],
+  [3, 3, 3, 3, 3],
+  // V / ^ pequeñas
+  [0, 1, 2, 1, 0],
+  [2, 1, 0, 1, 2],
+  [1, 2, 3, 2, 1],
+  [3, 2, 1, 2, 3],
+  // Diagonales cortas
+  [0, 0, 1, 2, 2],
+  [2, 2, 1, 0, 0],
+  [1, 1, 2, 3, 3],
+  [3, 3, 2, 1, 1],
+  // Diagonales largas (full grid)
+  [0, 1, 2, 3, 3],
+  [3, 2, 1, 0, 0],
+  // Escalones
+  [0, 0, 0, 1, 2],
+  [2, 1, 0, 0, 0],
+  [3, 3, 3, 2, 1],
+  [1, 2, 3, 3, 3],
+  // Zigzags
+  [0, 1, 0, 1, 0],
+  [1, 0, 1, 0, 1],
+  [2, 3, 2, 3, 2],
+  [3, 2, 3, 2, 3],
+  [0, 2, 0, 2, 0],
+  [3, 1, 3, 1, 3],
+  // U shapes
+  [1, 0, 0, 0, 1],
+  [2, 3, 3, 3, 2],
+  // Arcos
+  [0, 1, 1, 1, 0],
+  [3, 2, 2, 2, 3],
+  [1, 2, 2, 2, 1],
+  [2, 1, 1, 1, 2],
 ];
+
+const LINE_PRESETS = [1, 5, 10, 20, 30];
 
 const MIN_BET = 500;
 const MAX_BET = 100000;
@@ -106,9 +136,9 @@ type WinLine = {
   cells: [number, number][]; // [reel, row]
 };
 
-function evaluateGrid(grid: string[][], lineBet: number): { wins: WinLine[]; total: number } {
+function evaluateGrid(grid: string[][], lineBet: number, activeLines: number): { wins: WinLine[]; total: number } {
   const wins: WinLine[] = [];
-  PAYLINES.forEach((line, lineIdx) => {
+  PAYLINES.slice(0, activeLines).forEach((line, lineIdx) => {
     const firstSym = grid[0][line[0]];
     let count = 1;
     for (let r = 1; r < REELS; r++) {
