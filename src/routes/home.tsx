@@ -120,12 +120,12 @@ function HomePage() {
         </header>
 
         {/* Online indicator */}
-        <div className="mt-3 flex items-center gap-2 text-sm">
-          <span className="relative inline-flex h-2.5 w-2.5">
+        <div className="mt-3 flex items-center gap-2">
+          <span className="relative inline-flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
           </span>
-          <span className="font-semibold text-emerald-300/90">{online} ONLINE</span>
+          <span className="text-xs font-semibold text-white/90">{online} ONLINE</span>
         </div>
 
         {/* Hero banner */}
