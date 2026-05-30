@@ -314,6 +314,7 @@ function Reel({
 }
 
 function SymbolTile({ sym, highlight }: { sym: SymbolDef; highlight: boolean }) {
+  const scale = sym.id === "hat" ? 1.18 : sym.id === "boss" ? 1.12 : 1;
   return (
     <div
       className="relative flex items-center justify-center"
@@ -338,6 +339,7 @@ function SymbolTile({ sym, highlight }: { sym: SymbolDef; highlight: boolean }) 
           width: "96%",
           height: "96%",
           objectFit: "contain",
+          transform: scale !== 1 ? `scale(${scale})` : undefined,
           filter: highlight
             ? `drop-shadow(0 0 10px rgba(${sym.glow},0.95)) drop-shadow(0 0 20px rgba(${sym.glow},0.6))`
             : `drop-shadow(0 4px 6px rgba(0,0,0,0.55)) drop-shadow(0 0 8px rgba(${sym.glow},0.25))`,
