@@ -682,12 +682,12 @@ export function SlotGame() {
           {/* Lines side labels — OUTSIDE the frame, in the gutter */}
           <div className="pointer-events-none absolute left-0 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2 -rotate-90">
             <span className="font-display text-[9px] font-bold tracking-[0.32em] neon-green whitespace-nowrap">
-              {LINES} LÍNEAS
+              {LINES} LÍNEAS · 2 VÍAS
             </span>
           </div>
           <div className="pointer-events-none absolute right-0 top-1/2 z-30 translate-x-1/2 -translate-y-1/2 rotate-90">
             <span className="font-display text-[9px] font-bold tracking-[0.32em] neon-green whitespace-nowrap">
-              {LINES} LÍNEAS
+              {LINES} LÍNEAS · 2 VÍAS
             </span>
           </div>
 
