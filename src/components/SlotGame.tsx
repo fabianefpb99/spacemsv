@@ -664,7 +664,6 @@ export function SlotGame() {
               </div>
             )}
           </div>
-          )}
         </section>
 
         {/* Pay table preview (top 5 symbols) */}
