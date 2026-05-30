@@ -28,14 +28,14 @@ type SymbolDef = {
 };
 
 const SYMBOLS: SymbolDef[] = [
-  { id: "boss",  img: bossImg,      label: "EL PADRINO", pay: [25, 150, 750], weight: 2,  glow: "168,85,247"  },
-  { id: "car",   img: carImg,       label: "CADILLAC",   pay: [15, 75, 300],  weight: 3,  glow: "180,180,255" },
-  { id: "brief", img: briefcaseImg, label: "MALETÍN $",  pay: [10, 40, 180],  weight: 4,  glow: "46,255,161"  },
-  { id: "gold",  img: goldImg,      label: "LINGOTE",    pay: [8, 25, 120],   weight: 5,  glow: "255,210,80"  },
-  { id: "watch", img: watchImg,     label: "RELOJ ORO",  pay: [5, 18, 75],    weight: 6,  glow: "255,200,80"  },
-  { id: "chip",  img: chipImg,      label: "FICHA",      pay: [4, 12, 50],    weight: 7,  glow: "168,85,247"  },
-  { id: "hat",   img: hatImg,       label: "SOMBRERO",   pay: [3, 8, 30],     weight: 8,  glow: "200,120,255" },
-  { id: "card",  img: cardImg,      label: "AS",         pay: [2, 5, 15],     weight: 10, glow: "255,180,80"  },
+  { id: "boss",  img: bossImg,      label: "EL PADRINO", pay: [20, 120, 600], weight: 2,  glow: "168,85,247"  },
+  { id: "car",   img: carImg,       label: "CADILLAC",   pay: [12, 60, 240],  weight: 3,  glow: "180,180,255" },
+  { id: "brief", img: briefcaseImg, label: "MALETÍN $",  pay: [8, 32, 140],   weight: 4,  glow: "46,255,161"  },
+  { id: "gold",  img: goldImg,      label: "LINGOTE",    pay: [6, 20, 90],    weight: 5,  glow: "255,210,80"  },
+  { id: "watch", img: watchImg,     label: "RELOJ ORO",  pay: [4, 14, 55],    weight: 6,  glow: "255,200,80"  },
+  { id: "chip",  img: chipImg,      label: "FICHA",      pay: [3, 9, 38],     weight: 7,  glow: "168,85,247"  },
+  { id: "hat",   img: hatImg,       label: "SOMBRERO",   pay: [2, 6, 22],     weight: 8,  glow: "200,120,255" },
+  { id: "card",  img: cardImg,      label: "AS",         pay: [2, 4, 12],     weight: 10, glow: "255,180,80"  },
 ];
 
 const SYMBOL_INDEX = new Map(SYMBOLS.map((s, i) => [s.id, i]));
@@ -58,18 +58,28 @@ function pickRandomFillers(n: number): string[] {
 const REELS = 5;
 const ROWS = 4;
 
-/* 10 paylines on 5x3 grid (row index per reel) */
+/* 20 paylines on 5x4 grid (row index per reel, 0=top, 3=bottom) */
 const PAYLINES: number[][] = [
-  [1, 1, 1, 1, 1], // middle
-  [0, 0, 0, 0, 0], // top
-  [2, 2, 2, 2, 2], // bottom
-  [0, 1, 2, 1, 0], // V
-  [2, 1, 0, 1, 2], // ^
-  [0, 0, 1, 2, 2], // diag down
-  [2, 2, 1, 0, 0], // diag up
-  [1, 0, 0, 0, 1], // U top
-  [1, 2, 2, 2, 1], // U bottom
-  [0, 1, 1, 1, 0], // arch
+  [1, 1, 1, 1, 1], // row 2
+  [2, 2, 2, 2, 2], // row 3
+  [0, 0, 0, 0, 0], // row 1 (top)
+  [3, 3, 3, 3, 3], // row 4 (bottom)
+  [0, 1, 2, 1, 0], // V top
+  [3, 2, 1, 2, 3], // ^ bottom
+  [1, 2, 3, 2, 1], // V mid
+  [2, 1, 0, 1, 2], // ^ mid
+  [0, 0, 1, 2, 2], // diag down upper
+  [3, 3, 2, 1, 1], // diag up lower
+  [1, 0, 0, 0, 1], // U upper
+  [2, 3, 3, 3, 2], // U lower
+  [0, 1, 1, 1, 0], // arch upper
+  [3, 2, 2, 2, 3], // arch lower
+  [1, 2, 1, 2, 1], // zigzag mid
+  [2, 1, 2, 1, 2], // zigzag mid 2
+  [0, 1, 2, 3, 3], // staircase down
+  [3, 2, 1, 0, 0], // staircase up
+  [1, 1, 2, 3, 3], // step down
+  [2, 2, 1, 0, 0], // step up
 ];
 
 const MIN_BET = 500;
