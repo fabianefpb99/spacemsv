@@ -104,7 +104,7 @@ function PayBrebPage() {
               PAGO CON
               <br />
               <span className="bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
-                {brandName}
+                {isNequi ? "NEQUI / BRE-B" : brandName}
               </span>
             </h1>
             <p className="mt-3 max-w-[55%] text-[11px] leading-snug text-purple-200/80 sm:text-xs">
@@ -138,11 +138,11 @@ function PayBrebPage() {
         <Field label={isNequi ? "NEQUI" : "BRE-B"}>
           <div className="flex items-center justify-between gap-3">
             <div className="font-mono text-base font-bold tracking-wide text-white">
-              {isNequi ? "3001234567" : brebAlias}
+              {isNequi ? "0092255552" : brebAlias}
             </div>
             <CopyButton
               copied={copied === "alias"}
-              onClick={() => copy("alias", isNequi ? "3001234567" : brebAlias)}
+              onClick={() => copy("alias", isNequi ? "0092255552" : brebAlias)}
             />
           </div>
         </Field>
