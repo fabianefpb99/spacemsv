@@ -705,32 +705,36 @@ export function SlotGame() {
           )}
         </section>
 
-        {/* Pay table preview — all symbols, 1 icon + x3 chip */}
-        <section className="mt-4 grid grid-cols-4 gap-1.5">
-          {SYMBOLS.map((s) => (
-            <div
-              key={s.id}
-              className="flex flex-col items-center rounded-lg border border-purple-500/25 bg-[#0c0620]/70 px-1.5 py-2"
-            >
-              <div className="flex items-center gap-1.5">
-                <img
-                  src={s.img}
-                  alt=""
-                  aria-hidden
-                  loading="lazy"
-                  className="h-9 w-9 object-contain"
-                  style={{ filter: `drop-shadow(0 0 6px rgba(${s.glow},0.55))` }}
-                />
-                <span
-                  className="rounded-md border border-emerald-400/40 bg-emerald-400/10 px-1.5 py-0.5 font-display text-[10px] font-bold leading-none text-emerald-300"
-                  style={{ textShadow: "0 0 6px rgba(46,255,161,0.55)" }}
-                >
-                  x3
-                </span>
+        {/* Pay table preview — horizontal scroll carousel */}
+        <section className="mt-4 -mx-3 px-3 overflow-x-auto scrollbar-hide">
+          <div className="flex gap-1.5 w-max">
+            {SYMBOLS.map((s) => (
+              <div
+                key={s.id}
+                className="flex flex-col items-center rounded-lg border border-purple-500/25 bg-[#0c0620]/70 px-1.5 py-1.5 shrink-0"
+              >
+                <div className="flex items-center -gap-0.5">
+                  <img
+                    src={s.img}
+                    alt=""
+                    aria-hidden
+                    loading="lazy"
+                    className="h-11 w-11 object-contain"
+                    style={{
+                      filter: `drop-shadow(0 2px 3px rgba(0,0,0,0.7)) drop-shadow(0 0 6px rgba(${s.glow},0.55))`,
+                    }}
+                  />
+                  <span
+                    className="-ml-1 font-display text-[11px] font-bold leading-none text-emerald-300"
+                    style={{ textShadow: "0 0 6px rgba(46,255,161,0.7), 0 1px 2px rgba(0,0,0,0.8)" }}
+                  >
+                    x3
+                  </span>
+                </div>
+                <span className="mt-1 font-display text-[11px] font-bold neon-green leading-none">{s.pay[2]}.00x</span>
               </div>
-              <span className="mt-1.5 font-display text-[11px] font-bold neon-green">{s.pay[2]}.00x</span>
-            </div>
-          ))}
+            ))}
+          </div>
         </section>
 
         {/* Bet panel */}
