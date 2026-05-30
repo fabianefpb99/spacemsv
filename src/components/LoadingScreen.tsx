@@ -6,6 +6,7 @@ import astronautFlying from "@/assets/astronaut-flying.png";
 import meteor from "@/assets/asteroid.svg";
 import bgMusic from "@/assets/bg-music.mp3";
 import mineLogo from "@/assets/mine-logo.png";
+import slotBoss from "@/assets/slot/boss.png";
 
 const ASSETS: { src: string; type: "image" | "audio" }[] = [
   { src: bgImage, type: "image" },
@@ -39,7 +40,7 @@ function preloadAsset(asset: { src: string; type: "image" | "audio" }): Promise<
   });
 }
 
-export function LoadingScreen({ children, variant = "rocket" }: { children: React.ReactNode; variant?: "rocket" | "mine" }) {
+export function LoadingScreen({ children, variant = "rocket" }: { children: React.ReactNode; variant?: "rocket" | "mine" | "slot" }) {
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
   const [targetProgress, setTargetProgress] = useState(0);
@@ -127,7 +128,7 @@ export function LoadingScreen({ children, variant = "rocket" }: { children: Reac
           aria-busy="true"
         >
           <img
-            src={variant === "mine" ? mineLogo : astronautRocket}
+            src={variant === "mine" ? mineLogo : variant === "slot" ? slotBoss : astronautRocket}
             alt=""
             className="w-40 h-40 object-contain animate-pulse drop-shadow-[0_0_25px_rgba(244,63,94,0.45)]"
             draggable={false}
