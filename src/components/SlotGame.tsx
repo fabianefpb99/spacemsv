@@ -119,19 +119,46 @@ type WinLine = {
 function evaluateGrid(grid: string[][], lineBet: number): { wins: WinLine[]; total: number } {
   const wins: WinLine[] = [];
   PAYLINES.forEach((line, lineIdx) => {
+    // --- Left → Right (starts at reel 0) ---
     const firstSym = grid[0][line[0]];
-    let count = 1;
+    let countL = 1;
     for (let r = 1; r < REELS; r++) {
-      if (grid[r][line[r]] === firstSym) count++;
+      if (grid[r][line[r]] === firstSym) countL++;
       else break;
     }
-    if (count >= 3) {
+    if (countL >= 3) {
       const sym = SYMBOLS[SYMBOL_INDEX.get(firstSym)!];
-      const payout = sym.pay[count - 3] * lineBet;
+      const payout = sym.pay[countL - 3] * lineBet;
       if (payout > 0) {
         const cells: [number, number][] = [];
-        for (let r = 0; r < count; r++) cells.push([r, line[r]]);
-        wins.push({ lineIdx, symbolId: firstSym, count, payout, cells });
+        for (let r = 0; r < countL; r++) cells.push([r, line[r]]);
+        wins.push({ lineIdx, symbolId: firstSym, count: countL, payout, cells });
+      }
+    }
+
+    // --- Right → Left (starts at reel 4) — Pay Both Ways ---
+    // Skip if the L→R already covered all 5 reels (would double-count the same combo).
+    if (countL >= REELS) return;
+    const lastSym = grid[REELS - 1][line[REELS - 1]];
+    let countR = 1;
+    for (let r = REELS - 2; r >= 0; r--) {
+      if (grid[r][line[r]] === lastSym) countR++;
+      else break;
+    }
+    if (countR >= 3) {
+      // Avoid overlap with the L→R win on the same line+symbol
+      // (e.g. all 5 are "ficha" → already paid above; but countL===5 was skipped).
+      // If both directions hit with different symbols, both pay independently.
+      const sym = SYMBOLS[SYMBOL_INDEX.get(lastSym)!];
+      const payout = sym.pay[countR - 3] * lineBet;
+      if (payout > 0) {
+        const cells: [number, number][] = [];
+        for (let i = 0; i < countR; i++) {
+          const r = REELS - 1 - i;
+          cells.push([r, line[r]]);
+        }
+        // 20 paylines L→R + 20 R→L = lineIdx + LINES so highlight cycler treats them as distinct
+        wins.push({ lineIdx: lineIdx + PAYLINES.length, symbolId: lastSym, count: countR, payout, cells });
       }
     }
   });
