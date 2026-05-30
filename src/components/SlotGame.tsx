@@ -531,18 +531,64 @@ export function SlotGame() {
           <HudCell label="MULTIPLICADOR" value={`x${winMult >= 10 ? winMult.toFixed(1) : winMult.toFixed(2).replace(/\.?0+$/, "")}`} accent="purple" />
         </section>
 
-        {/* Reels frame */}
-        <section
-          className="relative mt-3 rounded-2xl p-2 sm:p-2.5"
-          style={{
-            background: "linear-gradient(160deg,#150728 0%,#0a041c 50%,#0d0522 100%)",
-            border: "2px solid rgba(168,85,247,0.55)",
-            boxShadow:
-              "0 0 0 1px rgba(168,85,247,0.20) inset, 0 0 40px rgba(140,70,220,0.45), 0 12px 30px rgba(0,0,0,0.6)",
-          }}
-        >
-          {/* Title badge on frame */}
-          <div className="absolute left-1/2 -top-4 z-20 -translate-x-1/2">
+        {/* Reels machine chassis */}
+        <section className="relative mt-4">
+          {/* Outer chassis (futuristic clipped frame) */}
+          <div
+            className="relative"
+            style={{
+              padding: "14px 30px 18px 30px",
+              background:
+                "linear-gradient(180deg,#1a0a36 0%,#0e0524 50%,#160830 100%)",
+              clipPath:
+                "polygon(18px 0, calc(100% - 18px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 18px) 100%, 18px 100%, 0 calc(100% - 14px), 0 14px)",
+              boxShadow:
+                "0 0 0 1px rgba(168,85,247,0.45), 0 0 50px rgba(140,70,220,0.55), 0 16px 40px rgba(0,0,0,0.7)",
+            }}
+          >
+            {/* Inner neon stroke that follows the same clipped shape */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-[3px]"
+              style={{
+                clipPath:
+                  "polygon(16px 0, calc(100% - 16px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 16px) 100%, 16px 100%, 0 calc(100% - 12px), 0 12px)",
+                background:
+                  "linear-gradient(180deg, rgba(192,132,252,0.45), rgba(46,255,161,0.18) 50%, rgba(192,132,252,0.45))",
+              }}
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-[4px]"
+              style={{
+                clipPath:
+                  "polygon(15px 0, calc(100% - 15px) 0, 100% 11px, 100% calc(100% - 11px), calc(100% - 15px) 100%, 15px 100%, 0 calc(100% - 11px), 0 11px)",
+                background:
+                  "linear-gradient(160deg,#150728 0%,#0a041c 50%,#0d0522 100%)",
+              }}
+            />
+
+            {/* Decorative corner bolts */}
+            {[
+              "top-1 left-1",
+              "top-1 right-1",
+              "bottom-1 left-1",
+              "bottom-1 right-1",
+            ].map((pos) => (
+              <span
+                key={pos}
+                aria-hidden
+                className={`pointer-events-none absolute ${pos} h-1.5 w-1.5 rounded-full`}
+                style={{
+                  background:
+                    "radial-gradient(circle, #f0abfc 0%, #a855f7 50%, #3b0764 100%)",
+                  boxShadow: "0 0 6px rgba(192,132,252,0.9)",
+                }}
+              />
+            ))}
+
+            {/* Title badge on frame */}
+            <div className="absolute left-1/2 -top-4 z-20 -translate-x-1/2">
             <div
               className="flex items-center gap-2 rounded-full px-4 py-1"
               style={{
@@ -568,41 +614,56 @@ export function SlotGame() {
             </div>
           </div>
 
-          {/* Lines side labels */}
-          <div className="pointer-events-none absolute -left-1 top-1/2 z-20 -translate-y-1/2 -rotate-90">
-            <span className="font-display text-[10px] font-bold tracking-[0.3em] neon-green">{LINES} LÍNEAS</span>
-          </div>
-          <div className="pointer-events-none absolute -right-1 top-1/2 z-20 -translate-y-1/2 rotate-90">
-            <span className="font-display text-[10px] font-bold tracking-[0.3em] neon-green">{LINES} LÍNEAS</span>
-          </div>
+            {/* Side rails with "10 LÍNEAS" + indicator dots */}
+            <SideRail side="left" />
+            <SideRail side="right" />
 
-          {/* corner accents */}
-          <div className="pointer-events-none absolute -top-px left-3 right-3 h-px bg-gradient-to-r from-transparent via-purple-400/70 to-transparent" />
-          <div className="pointer-events-none absolute -bottom-px left-3 right-3 h-px bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent" />
-
-          <div className="grid grid-cols-5 gap-1.5 pt-3">
-            {grid.map((reel, ri) => (
-              <Reel
-                key={ri}
-                finalSyms={reel}
-                spinning={spinning}
-                reelIndex={ri}
-                onStop={handleReelStop}
-                winRows={highlightedCells.get(ri) ?? new Set()}
-              />
-            ))}
-          </div>
-
-          {/* Big win banner */}
-          {lastWin > 0 && !spinning && (
+            {/* Inner recessed reel panel */}
             <div
-              className="absolute inset-x-0 -bottom-3 mx-auto w-fit rounded-full border border-emerald-400/60 bg-[#062014]/95 px-4 py-1 backdrop-blur"
-              style={{ boxShadow: "0 0 24px rgba(46,255,161,0.55)", animation: "scale-in 0.3s ease-out" }}
+              className="relative z-10 rounded-xl"
+              style={{
+                padding: "10px 8px 10px 8px",
+                background:
+                  "radial-gradient(ellipse at top, #1a0a3a 0%, #0a0420 70%, #060212 100%)",
+                boxShadow:
+                  "inset 0 2px 12px rgba(0,0,0,0.85), inset 0 0 0 1px rgba(168,85,247,0.4), inset 0 0 24px rgba(140,70,220,0.25)",
+              }}
             >
-              <span className="font-display text-xs font-bold uppercase tracking-widest text-emerald-300">
-                ¡Ganaste! <span className="neon-green ml-1">${formatCOP(lastWin)}</span>
-              </span>
+              {/* Top glossy reflection */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-x-2 top-1 h-3 rounded-t-lg"
+                style={{
+                  background:
+                    "linear-gradient(180deg, rgba(255,255,255,0.10), transparent)",
+                }}
+              />
+              <div className="grid grid-cols-5 gap-1.5">
+                {grid.map((reel, ri) => (
+                  <Reel
+                    key={ri}
+                    finalSyms={reel}
+                    spinning={spinning}
+                    reelIndex={ri}
+                    onStop={handleReelStop}
+                    winRows={highlightedCells.get(ri) ?? new Set()}
+                  />
+                ))}
+              </div>
             </div>
+
+            {/* Big win banner */}
+            {lastWin > 0 && !spinning && (
+              <div
+                className="absolute inset-x-0 -bottom-3 z-30 mx-auto w-fit rounded-full border border-emerald-400/60 bg-[#062014]/95 px-4 py-1 backdrop-blur"
+                style={{ boxShadow: "0 0 24px rgba(46,255,161,0.55)", animation: "scale-in 0.3s ease-out" }}
+              >
+                <span className="font-display text-xs font-bold uppercase tracking-widest text-emerald-300">
+                  ¡Ganaste! <span className="neon-green ml-1">${formatCOP(lastWin)}</span>
+                </span>
+              </div>
+            )}
+          </div>
           )}
         </section>
 
