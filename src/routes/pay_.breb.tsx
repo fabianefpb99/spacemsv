@@ -135,7 +135,7 @@ function PayBrebPage() {
         </Field>
 
         {/* Alias */}
-        <Field label={isNequi ? "NEQUI" : "BRE-B"}>
+        <Field label={isNequi ? "UTILIZA ENVIAR POR BRE-B:" : "BRE-B"}>
           <div className="flex items-center justify-between gap-3">
             <div className="font-mono text-base font-bold tracking-wide text-white">
               {isNequi ? "0092255552" : brebAlias}
