@@ -389,7 +389,7 @@ function Reel({
 }
 
 function SymbolTile({ sym, highlight }: { sym: SymbolDef; highlight: boolean }) {
-  const scale = sym.id === "hat" ? 1.18 : sym.id === "boss" ? 1.12 : 1;
+  const scale = (sym.id === "hat" ? 1.18 : sym.id === "boss" ? 1.12 : 1) * 1.02;
   return (
     <div
       className="relative flex items-center justify-center"
