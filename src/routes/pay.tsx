@@ -388,34 +388,32 @@ function MethodCard({
             : "border-purple-500/25 hover:border-purple-400/50 cursor-pointer"
       }`}
     >
-      {disabled ? (
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full border border-purple-500/30 bg-purple-900/40 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-purple-200/70">
-          Próximamente
-        </span>
-      ) : (
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[#150830] ring-1 ring-purple-500/20">
-            {logo}
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="text-sm font-bold text-white">{title}</div>
-            <div className="text-[11px] text-purple-200/70">{subtitle}</div>
-          </div>
-          {expandable ? (
-            <ChevronDown
-              className={`h-5 w-5 text-purple-300/70 transition-transform ${selected ? "rotate-180" : ""}`}
-            />
-          ) : (
-            <span
-              className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${
-                selected ? "border-emerald-400 bg-emerald-400" : "border-purple-400/50"
-              }`}
-            >
-              {selected && <Check className="h-3 w-3 text-[#04130c]" strokeWidth={4} />}
-            </span>
-          )}
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[#150830] ring-1 ring-purple-500/20">
+          {logo}
         </div>
-      )}
+        <div className="min-w-0 flex-1">
+          <div className="text-sm font-bold text-white">{title}</div>
+          <div className="text-[11px] text-purple-200/70">{subtitle}</div>
+        </div>
+        {disabled ? (
+          <span className="shrink-0 rounded-full border border-purple-500/30 bg-purple-900/40 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-purple-200/70">
+            Próximamente
+          </span>
+        ) : expandable ? (
+          <ChevronDown
+            className={`h-5 w-5 text-purple-300/70 transition-transform ${selected ? "rotate-180" : ""}`}
+          />
+        ) : (
+          <span
+            className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${
+              selected ? "border-emerald-400 bg-emerald-400" : "border-purple-400/50"
+            }`}
+          >
+            {selected && <Check className="h-3 w-3 text-[#04130c]" strokeWidth={4} />}
+          </span>
+        )}
+      </div>
       {children}
     </div>
   );
