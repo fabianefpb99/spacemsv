@@ -139,7 +139,7 @@ function HomePage() {
                 className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${i === slide ? "opacity-100" : "opacity-0"}`}
               />
             ))}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#1a0b3a] via-[#1a0b3a]/80 to-transparent" />
+            {/* overlay removed to show full slider image */}
             <div key={slide} className="absolute inset-0 flex flex-col justify-center gap-2 p-4 sm:p-5">
               <p className="font-display text-xs tracking-widest text-purple-100/80">{current.eyebrow}</p>
               <h2 className="font-display text-2xl font-black leading-tight tracking-wide text-white drop-shadow sm:text-3xl">
