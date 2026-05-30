@@ -185,7 +185,7 @@ function playReelStop() {
 /* ============================================================
    Reel component — continuous translateY strip (no flicker)
    ============================================================ */
-const TILE_H = 76; // px per tile (3 rows visible = 228px tall window)
+const TILE_H = 88; // px per tile (3 rows visible = 264px tall window)
 const SPIN_BASE_MS = 1400;
 const SPIN_STAGGER_MS = 220;
 
@@ -338,8 +338,8 @@ function SymbolTile({ sym, highlight }: { sym: SymbolDef; highlight: boolean }) 
         loading="lazy"
         className="select-none pointer-events-none"
         style={{
-          width: "92%",
-          height: "92%",
+          width: "96%",
+          height: "96%",
           objectFit: "contain",
           filter: highlight
             ? `drop-shadow(0 0 10px rgba(${sym.glow},0.95)) drop-shadow(0 0 20px rgba(${sym.glow},0.6))`
