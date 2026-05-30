@@ -58,19 +58,49 @@ function pickRandomFillers(n: number): string[] {
 const REELS = 5;
 const ROWS = 4;
 
-/* 10 paylines on 5x3 grid (row index per reel) */
+/* 30 paylines on 5x4 grid (row index per reel) — horizontal, vertical, diagonal, V, zigzag, arch */
 const PAYLINES: number[][] = [
-  [1, 1, 1, 1, 1], // middle
-  [0, 0, 0, 0, 0], // top
-  [2, 2, 2, 2, 2], // bottom
-  [0, 1, 2, 1, 0], // V
-  [2, 1, 0, 1, 2], // ^
-  [0, 0, 1, 2, 2], // diag down
-  [2, 2, 1, 0, 0], // diag up
-  [1, 0, 0, 0, 1], // U top
-  [1, 2, 2, 2, 1], // U bottom
-  [0, 1, 1, 1, 0], // arch
+  // Horizontales
+  [1, 1, 1, 1, 1],
+  [0, 0, 0, 0, 0],
+  [2, 2, 2, 2, 2],
+  [3, 3, 3, 3, 3],
+  // V / ^ pequeñas
+  [0, 1, 2, 1, 0],
+  [2, 1, 0, 1, 2],
+  [1, 2, 3, 2, 1],
+  [3, 2, 1, 2, 3],
+  // Diagonales cortas
+  [0, 0, 1, 2, 2],
+  [2, 2, 1, 0, 0],
+  [1, 1, 2, 3, 3],
+  [3, 3, 2, 1, 1],
+  // Diagonales largas (full grid)
+  [0, 1, 2, 3, 3],
+  [3, 2, 1, 0, 0],
+  // Escalones
+  [0, 0, 0, 1, 2],
+  [2, 1, 0, 0, 0],
+  [3, 3, 3, 2, 1],
+  [1, 2, 3, 3, 3],
+  // Zigzags
+  [0, 1, 0, 1, 0],
+  [1, 0, 1, 0, 1],
+  [2, 3, 2, 3, 2],
+  [3, 2, 3, 2, 3],
+  [0, 2, 0, 2, 0],
+  [3, 1, 3, 1, 3],
+  // U shapes
+  [1, 0, 0, 0, 1],
+  [2, 3, 3, 3, 2],
+  // Arcos
+  [0, 1, 1, 1, 0],
+  [3, 2, 2, 2, 3],
+  [1, 2, 2, 2, 1],
+  [2, 1, 1, 1, 2],
 ];
+
+const LINE_PRESETS = [1, 5, 10, 20, 30];
 
 const MIN_BET = 500;
 const MAX_BET = 100000;
@@ -106,9 +136,9 @@ type WinLine = {
   cells: [number, number][]; // [reel, row]
 };
 
-function evaluateGrid(grid: string[][], lineBet: number): { wins: WinLine[]; total: number } {
+function evaluateGrid(grid: string[][], lineBet: number, activeLines: number): { wins: WinLine[]; total: number } {
   const wins: WinLine[] = [];
-  PAYLINES.forEach((line, lineIdx) => {
+  PAYLINES.slice(0, activeLines).forEach((line, lineIdx) => {
     const firstSym = grid[0][line[0]];
     let count = 1;
     for (let r = 1; r < REELS; r++) {
@@ -418,11 +448,12 @@ function SymbolTile({ sym, highlight }: { sym: SymbolDef; highlight: boolean }) 
 /* ============================================================
    Main game
    ============================================================ */
-const LINES = PAYLINES.length;
+const MAX_LINES = PAYLINES.length;
 
 export function SlotGame() {
   const [balance, setBalance] = useState(100000);
   const [bet, setBet] = useState(2000);
+  const [activeLines, setActiveLines] = useState(10);
   const [muted, setMuted] = useState(false);
   const [online] = useState(263);
 
@@ -460,7 +491,7 @@ export function SlotGame() {
     return () => clearInterval(t);
   }, []);
 
-  const lineBet = useMemo(() => Math.max(1, Math.floor(bet / LINES)), [bet]);
+  const lineBet = useMemo(() => Math.max(1, Math.floor(bet / activeLines)), [bet, activeLines]);
 
   const spin = useCallback(() => {
     if (spinning) return;
@@ -485,7 +516,7 @@ export function SlotGame() {
   useEffect(() => {
     if (!spinning || reelsStopped < REELS) return;
     stopReelLoop();
-    const { wins: w, total } = evaluateGrid(grid, lineBet);
+    const { wins: w, total } = evaluateGrid(grid, lineBet, activeLines);
     setWins(w);
     setLastWin(total);
     setTotalWonRound(total);
@@ -601,10 +632,32 @@ export function SlotGame() {
 
         {/* HUD (matches reference) */}
         <section className="mt-2 grid grid-cols-4 gap-1.5 rounded-2xl glass-panel p-1.5 sm:p-2">
-          <HudCell label="LÍNEAS" value={String(LINES)} />
+          <HudCell label="LÍNEAS" value={String(activeLines)} />
           <HudCell label="PREMIO TOTAL" value={lastWin > 0 ? `${formatCOP(lastWin)} COP` : "—"} accent="green" wide />
-          <HudCell label="TIRADAS GRATIS" value="--" accent="muted" />
+          <HudCell label="APUESTA/LÍNEA" value={`${formatCOP(lineBet)}`} accent="muted" />
           <HudCell label="MULTIPLICADOR" value={`x${winMult >= 10 ? winMult.toFixed(1) : winMult.toFixed(2).replace(/\.?0+$/, "")}`} accent="purple" />
+        </section>
+
+        {/* Lines selector */}
+        <section className="mt-2 flex items-center justify-between rounded-xl border border-purple-500/30 bg-[#0c0620]/70 px-2.5 py-1.5">
+          <span className="font-display text-[10px] font-bold uppercase tracking-widest text-purple-200/80">Líneas activas</span>
+          <div className="flex items-center gap-1">
+            {LINE_PRESETS.map((n) => (
+              <button
+                key={n}
+                onClick={() => setActiveLines(n)}
+                disabled={spinning}
+                aria-pressed={activeLines === n}
+                className={`min-w-[28px] rounded-md px-1.5 py-0.5 text-[11px] font-display font-bold transition disabled:opacity-40 ${
+                  activeLines === n
+                    ? "bg-purple-500 text-white shadow-[0_0_10px_rgba(168,85,247,0.6)]"
+                    : "bg-[#1a0f33] text-purple-200 border border-purple-500/40 hover:bg-[#22134a]"
+                }`}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
         </section>
 
         {/* Reels frame wrapper — labels sit on the neon border edge */}
@@ -637,12 +690,12 @@ export function SlotGame() {
           {/* Lines side labels — OUTSIDE the frame, in the gutter */}
           <div className="pointer-events-none absolute left-0 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2 -rotate-90">
             <span className="font-display text-[9px] font-bold tracking-[0.32em] neon-green whitespace-nowrap">
-              {LINES} LÍNEAS
+              {activeLines} LÍNEAS
             </span>
           </div>
           <div className="pointer-events-none absolute right-0 top-1/2 z-30 translate-x-1/2 -translate-y-1/2 rotate-90">
             <span className="font-display text-[9px] font-bold tracking-[0.32em] neon-green whitespace-nowrap">
-              {LINES} LÍNEAS
+              {activeLines} LÍNEAS
             </span>
           </div>
 
