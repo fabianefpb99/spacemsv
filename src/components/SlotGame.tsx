@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Menu, Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "lucide-react";
 import { setMuted as setAudioMuted, playCashoutSound, isMuted } from "@/lib/gameAudio";
+import pageBg from "@/assets/mines-page-bg.png";
 
 import bossImg from "@/assets/slot/boss.png";
 import hatImg from "@/assets/slot/hat.png";
@@ -532,7 +533,17 @@ export function SlotGame() {
   const winMult = lastWin > 0 ? lastWin / bet : 1;
 
   return (
-    <div className="relative min-h-screen text-white" style={{ backgroundColor: "#060210" }}>
+    <div
+      className="relative min-h-screen text-white"
+      style={{
+        backgroundColor: "#060210",
+        backgroundImage: `url(${pageBg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center top",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+      }}
+    >
       <div className="pointer-events-none fixed inset-0 bg-stars opacity-40" aria-hidden />
       <div
         className="pointer-events-none fixed inset-0"
