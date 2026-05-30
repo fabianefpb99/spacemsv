@@ -828,6 +828,54 @@ function HudCell({
   );
 }
 
+function SideRail({ side }: { side: "left" | "right" }) {
+  const isLeft = side === "left";
+  return (
+    <div
+      aria-hidden
+      className={`pointer-events-none absolute top-3 bottom-3 z-10 flex w-[26px] flex-col items-center justify-between ${
+        isLeft ? "left-0" : "right-0"
+      }`}
+      style={{
+        background:
+          "linear-gradient(180deg, rgba(168,85,247,0.18), rgba(46,255,161,0.08) 50%, rgba(168,85,247,0.18))",
+        clipPath: isLeft
+          ? "polygon(0 8px, 100% 0, 100% 100%, 0 calc(100% - 8px))"
+          : "polygon(0 0, 100% 8px, 100% calc(100% - 8px), 0 100%)",
+        boxShadow: "inset 0 0 12px rgba(168,85,247,0.35)",
+      }}
+    >
+      {/* top dot */}
+      <span
+        className="mt-1 h-1 w-1 rounded-full"
+        style={{ background: "#2effa1", boxShadow: "0 0 6px #2effa1" }}
+      />
+      {/* vertical "10 LÍNEAS" label */}
+      <div
+        className={`flex-1 flex items-center justify-center ${
+          isLeft ? "-rotate-90" : "rotate-90"
+        }`}
+      >
+        <span
+          className="font-display text-[9px] font-black tracking-[0.45em] whitespace-nowrap"
+          style={{
+            color: "#86efac",
+            textShadow:
+              "0 0 6px rgba(46,255,161,0.85), 0 0 12px rgba(46,255,161,0.5)",
+          }}
+        >
+          {LINES} LÍNEAS
+        </span>
+      </div>
+      {/* bottom dot */}
+      <span
+        className="mb-1 h-1 w-1 rounded-full"
+        style={{ background: "#c084fc", boxShadow: "0 0 6px #c084fc" }}
+      />
+    </div>
+  );
+}
+
 function seedHistory(): HistoryItem[] {
   const now = Date.now();
   let id = 1;
