@@ -706,14 +706,14 @@ export function SlotGame() {
         </section>
 
         {/* Pay table preview — horizontal scroll carousel */}
-        <section className="mt-4 -mx-3 px-3 overflow-x-auto scrollbar-hide">
+        <section className="mt-4 -mx-3 px-3 overflow-x-auto hide-scrollbar">
           <div className="flex gap-1.5 w-max">
             {SYMBOLS.map((s) => (
               <div
                 key={s.id}
                 className="flex flex-col items-center rounded-lg border border-purple-500/25 bg-[#0c0620]/70 px-1.5 py-1.5 shrink-0"
               >
-                <div className="flex items-center -gap-0.5">
+                <div className="flex items-center">
                   <img
                     src={s.img}
                     alt=""
