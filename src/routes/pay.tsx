@@ -157,11 +157,12 @@ function PayPage() {
             subtitle="Pago instantáneo interbancario"
           />
           <MethodCard
-            selected={method === "bancolombia"}
-            onClick={() => setMethod("bancolombia")}
+            disabled
+            selected={false}
+            onClick={() => {}}
             logo={<BancolombiaLogo />}
             title="BANCOLOMBIA (PSE)"
-            subtitle="Transferencia PSE"
+            subtitle="No disponible"
           />
           <MethodCard
             selected={method === "card"}
