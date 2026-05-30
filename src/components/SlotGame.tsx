@@ -533,6 +533,31 @@ export function SlotGame() {
 
         {/* Reels frame wrapper — leaves side gutters for "10 LÍNEAS" labels */}
         <section className="relative mt-3 px-6 sm:px-7">
+          {/* Title badge on frame — OUTSIDE clip so it isn't cut */}
+          <div className="absolute left-1/2 -top-3 z-30 -translate-x-1/2">
+            <div
+              className="flex items-center gap-2 rounded-full px-4 py-1"
+              style={{
+                background: "linear-gradient(180deg, rgba(20,8,42,0.95), rgba(8,2,18,0.95))",
+                border: "1px solid rgba(168,85,247,0.65)",
+                boxShadow: "0 0 18px rgba(168,85,247,0.55), inset 0 0 8px rgba(168,85,247,0.25)",
+              }}
+            >
+              <span className="text-[10px]">✦</span>
+              <span
+                className="font-display text-sm font-black tracking-[0.18em]"
+                style={{
+                  background: "linear-gradient(180deg,#c084fc 0%,#7c3aed 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  filter: "drop-shadow(0 0 8px rgba(168,85,247,0.7))",
+                }}
+              >MAFIA</span>
+              <span className="font-display text-sm font-black tracking-[0.18em] neon-green">ROYALE</span>
+              <span className="text-[10px]">✦</span>
+            </div>
+          </div>
+
           {/* Lines side labels — OUTSIDE the frame, in the gutter */}
           <div className="pointer-events-none absolute left-0 top-1/2 z-20 -translate-y-1/2 -rotate-90">
             <span className="font-display text-[10px] font-bold tracking-[0.32em] neon-green whitespace-nowrap">
@@ -566,33 +591,6 @@ export function SlotGame() {
                 background: "#0a041c",
               }}
             >
-          {/* Title badge on frame */}
-          <div className="absolute left-1/2 -top-3 z-20 -translate-x-1/2">
-            <div
-              className="flex items-center gap-2 rounded-full px-4 py-1"
-              style={{
-                background: "linear-gradient(180deg, rgba(20,8,42,0.95), rgba(8,2,18,0.95))",
-                border: "1px solid rgba(168,85,247,0.65)",
-                boxShadow: "0 0 18px rgba(168,85,247,0.55), inset 0 0 8px rgba(168,85,247,0.25)",
-              }}
-            >
-              <span className="text-[10px]">✦</span>
-              <span
-                className="font-display text-sm font-black tracking-[0.18em]"
-                style={{
-                  background: "linear-gradient(180deg,#c084fc 0%,#7c3aed 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  filter: "drop-shadow(0 0 8px rgba(168,85,247,0.7))",
-                }}
-              >MAFIA</span>
-              <span
-                className="font-display text-sm font-black tracking-[0.18em] neon-green"
-              >ROYALE</span>
-              <span className="text-[10px]">✦</span>
-            </div>
-          </div>
-
           <div className="grid grid-cols-5 gap-1.5 pt-3">
             {grid.map((reel, ri) => (
               <Reel
@@ -606,10 +604,13 @@ export function SlotGame() {
             ))}
           </div>
 
-          {/* Big win banner */}
+            </div>
+          </div>
+
+          {/* Big win banner — OUTSIDE clip so it isn't cut */}
           {lastWin > 0 && !spinning && (
             <div
-              className="absolute inset-x-0 -bottom-3 mx-auto w-fit rounded-full border border-emerald-400/60 bg-[#062014]/95 px-4 py-1 backdrop-blur"
+              className="absolute inset-x-0 -bottom-3 z-30 mx-auto w-fit rounded-full border border-emerald-400/60 bg-[#062014]/95 px-4 py-1 backdrop-blur"
               style={{ boxShadow: "0 0 24px rgba(46,255,161,0.55)", animation: "scale-in 0.3s ease-out" }}
             >
               <span className="font-display text-xs font-bold uppercase tracking-widest text-emerald-300">
@@ -617,8 +618,6 @@ export function SlotGame() {
               </span>
             </div>
           )}
-            </div>
-          </div>
         </section>
 
         {/* Pay table preview (top 5 symbols) */}
