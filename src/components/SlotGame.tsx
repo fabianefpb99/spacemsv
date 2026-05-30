@@ -364,6 +364,7 @@ export function SlotGame() {
 
   const [grid, setGrid] = useState<string[][]>(() => generateGrid());
   const [spinning, setSpinning] = useState(false);
+  const [autoSpin, setAutoSpin] = useState(false);
   const [reelsStopped, setReelsStopped] = useState(0);
   const [wins, setWins] = useState<WinLine[]>([]);
   const [lastWin, setLastWin] = useState(0);
@@ -433,6 +434,17 @@ export function SlotGame() {
     setSpinning(false);
     setReelsStopped(0);
   }, [reelsStopped, spinning, grid, lineBet, bet]);
+
+  // Auto-spin: re-trigger spin after each round when enabled
+  useEffect(() => {
+    if (!autoSpin || spinning) return;
+    if (bet < MIN_BET || bet > balance) {
+      setAutoSpin(false);
+      return;
+    }
+    const t = setTimeout(() => spin(), 900);
+    return () => clearTimeout(t);
+  }, [autoSpin, spinning, bet, balance, spin]);
 
   // Cycle through wins to highlight one at a time
   useEffect(() => {
@@ -657,16 +669,28 @@ export function SlotGame() {
               </div>
             </div>
 
-            {/* Right: GIRAR */}
-            <button
-              onClick={spin}
-              disabled={!canSpin}
-              className="w-[42%] rounded-2xl btn-primary-green btn-primary-action flex flex-col items-center justify-center font-display font-black uppercase disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ minHeight: 102 }}
-            >
-              <span className="text-xl tracking-[0.15em]">{spinning ? "GIRANDO…" : "GIRAR"}</span>
-              <span className="mt-0.5 text-[9px] font-bold tracking-widest opacity-90">MANTENER PARA AUTO</span>
-            </button>
+            {/* Right: GIRAR + AUTO */}
+            <div className="flex w-[42%] flex-col gap-1.5" style={{ minHeight: 102 }}>
+              <button
+                onClick={spin}
+                disabled={!canSpin}
+                className="flex-1 rounded-2xl btn-primary-green btn-primary-action flex items-center justify-center font-display font-black uppercase disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span className="text-xl tracking-[0.15em]">{spinning ? "GIRANDO…" : "GIRAR"}</span>
+              </button>
+              <button
+                onClick={() => setAutoSpin((a) => !a)}
+                disabled={bet < MIN_BET || bet > balance}
+                aria-pressed={autoSpin}
+                className={`h-9 rounded-xl font-display font-black uppercase tracking-[0.2em] text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed border ${
+                  autoSpin
+                    ? "bg-gradient-to-b from-amber-300 to-amber-500 text-[#1a0a02] border-amber-200 shadow-[0_0_18px_rgba(251,191,36,0.55)]"
+                    : "bg-[#1a0f33] text-purple-100 border-purple-500/50 hover:border-purple-400 hover:bg-[#221347] shadow-[0_0_10px_rgba(168,85,247,0.25)]"
+                }`}
+              >
+                {autoSpin ? "AUTO ON" : "AUTO"}
+              </button>
+            </div>
           </div>
           <div className="mt-2 text-center text-[10px] text-purple-200/60">
             MÍNIMO: {formatCOP(MIN_BET)} COP · MÁXIMO: {formatCOP(MAX_BET)} COP
