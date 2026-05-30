@@ -531,8 +531,8 @@ export function SlotGame() {
           <HudCell label="MULTIPLICADOR" value={`x${winMult >= 10 ? winMult.toFixed(1) : winMult.toFixed(2).replace(/\.?0+$/, "")}`} accent="purple" />
         </section>
 
-        {/* Reels frame wrapper — leaves side gutters for "10 LÍNEAS" labels */}
-        <section className="relative mt-3 px-4 sm:px-5">
+        {/* Reels frame wrapper — labels sit on the neon border edge */}
+        <section className="relative mt-3">
           {/* Title badge on frame — OUTSIDE clip so it isn't cut */}
           <div className="absolute left-1/2 -top-3 z-30 -translate-x-1/2">
             <div
@@ -559,13 +559,13 @@ export function SlotGame() {
           </div>
 
           {/* Lines side labels — OUTSIDE the frame, in the gutter */}
-          <div className="pointer-events-none absolute -left-1 top-1/2 z-20 -translate-y-1/2 -rotate-90">
-            <span className="font-display text-[10px] font-bold tracking-[0.32em] neon-green whitespace-nowrap">
+          <div className="pointer-events-none absolute left-0 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2 -rotate-90">
+            <span className="font-display text-[9px] font-bold tracking-[0.32em] neon-green whitespace-nowrap">
               {LINES} LÍNEAS
             </span>
           </div>
-          <div className="pointer-events-none absolute -right-1 top-1/2 z-20 -translate-y-1/2 rotate-90">
-            <span className="font-display text-[10px] font-bold tracking-[0.32em] neon-green whitespace-nowrap">
+          <div className="pointer-events-none absolute right-0 top-1/2 z-30 translate-x-1/2 -translate-y-1/2 rotate-90">
+            <span className="font-display text-[9px] font-bold tracking-[0.32em] neon-green whitespace-nowrap">
               {LINES} LÍNEAS
             </span>
           </div>
