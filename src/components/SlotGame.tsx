@@ -56,7 +56,7 @@ function pickRandomFillers(n: number): string[] {
 }
 
 const REELS = 5;
-const ROWS = 3;
+const ROWS = 4;
 
 /* 10 paylines on 5x3 grid (row index per reel) */
 const PAYLINES: number[][] = [
@@ -250,7 +250,7 @@ function stopReelLoop() {
 /* ============================================================
    Reel component — continuous translateY strip (no flicker)
    ============================================================ */
-const TILE_H = 88; // px per tile (3 rows visible = 264px tall window)
+const TILE_H = 66; // px per tile (4 rows visible = 264px tall window, same as before)
 const SPIN_BASE_MS = 1400;
 const SPIN_STAGGER_MS = 220;
 
