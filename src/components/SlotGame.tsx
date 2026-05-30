@@ -782,7 +782,9 @@ export function SlotGame() {
                 disabled={!canSpin}
                 className="flex-1 rounded-2xl btn-primary-green btn-primary-action flex items-center justify-center font-display font-black uppercase disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <span className="text-xl tracking-[0.15em]">{spinning ? "GIRANDO…" : "GIRAR"}</span>
+                <span className={`${spinning ? "text-sm tracking-[0.1em]" : "text-xl tracking-[0.15em]"} whitespace-nowrap leading-none`}>
+                  {spinning ? "GIRANDO…" : "GIRAR"}
+                </span>
               </button>
               <button
                 onClick={() => setAutoSpin((a) => !a)}
