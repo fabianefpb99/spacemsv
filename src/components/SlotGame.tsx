@@ -282,11 +282,15 @@ function Reel({
   const [strip, setStrip] = useState<string[]>(finalSyms);
   const innerRef = useRef<HTMLDivElement>(null);
   const spinTokenRef = useRef(0);
+  // Tracks the symbols currently shown in the visible window, so a new spin
+  // can start from them (no visual jump when fillers get inserted).
+  const displayedRef = useRef<string[]>(finalSyms);
 
   // Sync strip with finalSyms when not spinning (e.g. initial render).
   useEffect(() => {
     if (spinning) return;
     setStrip(finalSyms);
+    displayedRef.current = finalSyms;
     const el = innerRef.current;
     if (el) {
       el.style.transition = "none";
@@ -298,13 +302,16 @@ function Reel({
     if (!spinning) return;
     const token = ++spinTokenRef.current;
     const fillers = pickRandomFillers(SPIN_FILLER_COUNT);
-    const longStrip = [...fillers, ...finalSyms];
+    // Start the strip with what's already on screen so the swap is invisible,
+    // then fillers, then the new landing symbols.
+    const startSyms = displayedRef.current;
+    const longStrip = [...startSyms, ...fillers, ...finalSyms];
     setStrip(longStrip);
 
     const el = innerRef.current;
     if (!el) return;
 
-    // 1) Position at top (showing fillers[0..2]) without animation.
+    // 1) Position at top (showing the previously-visible symbols) — no jump.
     el.style.transition = "none";
     el.style.transform = "translateY(0)";
     // force reflow so the next frame sees the new transform
@@ -332,6 +339,7 @@ function Reel({
       e.style.transition = "none";
       e.style.transform = "translateY(0)";
       setStrip(finalSyms);
+      displayedRef.current = finalSyms;
       playReelStop();
       onStop();
     }
