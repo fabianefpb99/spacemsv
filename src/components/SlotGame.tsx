@@ -461,21 +461,21 @@ export function SlotGame() {
   }, [activeWin]);
 
   const canSpin = !spinning && bet >= MIN_BET && bet <= balance;
+  const winMult = lastWin > 0 ? lastWin / bet : 1;
 
   return (
     <div className="relative min-h-screen text-white" style={{ backgroundColor: "#060210" }}>
-      {/* starfield bg */}
       <div className="pointer-events-none fixed inset-0 bg-stars opacity-40" aria-hidden />
       <div
         className="pointer-events-none fixed inset-0"
         aria-hidden
         style={{
           background:
-            "radial-gradient(60% 50% at 50% 0%, rgba(120,40,200,0.25) 0%, transparent 60%), radial-gradient(40% 30% at 50% 100%, rgba(46,255,161,0.10) 0%, transparent 70%)",
+            "radial-gradient(60% 50% at 50% 0%, rgba(120,40,200,0.28) 0%, transparent 60%), radial-gradient(40% 30% at 50% 100%, rgba(46,255,161,0.10) 0%, transparent 70%)",
         }}
       />
 
-      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4">
+      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-4 pt-4 sm:max-w-lg sm:px-4">
         {/* Header */}
         <header
           className="flex items-center justify-between bg-[#060210]/80 backdrop-blur-sm border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
@@ -502,7 +502,7 @@ export function SlotGame() {
           </div>
         </header>
 
-        {/* Online */}
+        {/* Online + mute */}
         <div className="mt-2 flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
             <span className="relative inline-flex h-2.5 w-2.5">
@@ -520,60 +520,81 @@ export function SlotGame() {
           </button>
         </div>
 
-        {/* HUD */}
-        <section className="mt-2 grid grid-cols-4 gap-2 rounded-2xl glass-panel p-2 sm:p-2.5">
+        {/* HUD (matches reference) */}
+        <section className="mt-2 grid grid-cols-4 gap-1.5 rounded-2xl glass-panel p-1.5 sm:p-2">
           <HudCell label="LÍNEAS" value={String(LINES)} />
-          <HudCell label="APUESTA" value={`${formatCOP(bet)}`} accent="green" />
-          <HudCell label="ÚLTIMA" value={lastWin > 0 ? `${formatCOP(lastWin)}` : "—"} accent={lastWin > 0 ? "green" : "muted"} />
-          <HudCell label="x LÍNEA" value={`${formatCOP(lineBet)}`} accent="purple" />
+          <HudCell label="PREMIO TOTAL" value={lastWin > 0 ? `${formatCOP(lastWin)} COP` : "—"} accent="green" wide />
+          <HudCell label="TIRADAS GRATIS" value="--" accent="muted" />
+          <HudCell label="MULTIPLICADOR" value={`x${winMult >= 10 ? winMult.toFixed(1) : winMult.toFixed(2).replace(/\.?0+$/, "")}`} accent="purple" />
         </section>
 
-        {/* Title */}
-        <div className="mt-3 text-center">
-          <h1 className="font-display text-2xl font-black tracking-widest"
-              style={{
-                background: "linear-gradient(180deg,#ffd870 0%,#c4892b 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                filter: "drop-shadow(0 0 12px rgba(255,200,80,0.45))",
-              }}>
-            MAFIA SLOTS
-          </h1>
-          <p className="text-[10px] uppercase tracking-[0.3em] text-purple-200/60">El juego del padrino</p>
-        </div>
-
-        {/* Reels */}
+        {/* Reels frame */}
         <section
           className="relative mt-3 rounded-2xl p-2 sm:p-2.5"
           style={{
-            background: "linear-gradient(160deg,#160830 0%,#0a041c 100%)",
-            border: "2px solid rgba(168,85,247,0.45)",
+            background: "linear-gradient(160deg,#150728 0%,#0a041c 50%,#0d0522 100%)",
+            border: "2px solid rgba(168,85,247,0.55)",
             boxShadow:
-              "0 0 0 1px rgba(168,85,247,0.15) inset, 0 0 30px rgba(140,70,220,0.35), 0 12px 30px rgba(0,0,0,0.55)",
+              "0 0 0 1px rgba(168,85,247,0.20) inset, 0 0 40px rgba(140,70,220,0.45), 0 12px 30px rgba(0,0,0,0.6)",
           }}
         >
-          {/* corner accents */}
-          <div className="pointer-events-none absolute -top-px left-3 right-3 h-px bg-gradient-to-r from-transparent via-purple-400/60 to-transparent" />
-          <div className="pointer-events-none absolute -bottom-px left-3 right-3 h-px bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent" />
+          {/* Title badge on frame */}
+          <div className="absolute left-1/2 -top-4 z-20 -translate-x-1/2">
+            <div
+              className="flex items-center gap-2 rounded-full px-4 py-1"
+              style={{
+                background: "linear-gradient(180deg, rgba(20,8,42,0.95), rgba(8,2,18,0.95))",
+                border: "1px solid rgba(168,85,247,0.65)",
+                boxShadow: "0 0 18px rgba(168,85,247,0.55), inset 0 0 8px rgba(168,85,247,0.25)",
+              }}
+            >
+              <span className="text-[10px]">✦</span>
+              <span
+                className="font-display text-sm font-black tracking-[0.18em]"
+                style={{
+                  background: "linear-gradient(180deg,#c084fc 0%,#7c3aed 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  filter: "drop-shadow(0 0 8px rgba(168,85,247,0.7))",
+                }}
+              >MAFIA</span>
+              <span
+                className="font-display text-sm font-black tracking-[0.18em] neon-green"
+              >ROYALE</span>
+              <span className="text-[10px]">✦</span>
+            </div>
+          </div>
 
-          <div className="grid grid-cols-5 gap-1.5 h-[300px] sm:h-[340px]">
+          {/* Lines side labels */}
+          <div className="pointer-events-none absolute -left-1 top-1/2 z-20 -translate-y-1/2 -rotate-90">
+            <span className="font-display text-[10px] font-bold tracking-[0.3em] neon-green">{LINES} LÍNEAS</span>
+          </div>
+          <div className="pointer-events-none absolute -right-1 top-1/2 z-20 -translate-y-1/2 rotate-90">
+            <span className="font-display text-[10px] font-bold tracking-[0.3em] neon-green">{LINES} LÍNEAS</span>
+          </div>
+
+          {/* corner accents */}
+          <div className="pointer-events-none absolute -top-px left-3 right-3 h-px bg-gradient-to-r from-transparent via-purple-400/70 to-transparent" />
+          <div className="pointer-events-none absolute -bottom-px left-3 right-3 h-px bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent" />
+
+          <div className="grid grid-cols-5 gap-1.5 pt-3">
             {grid.map((reel, ri) => (
               <Reel
                 key={ri}
                 finalSyms={reel}
                 spinning={spinning}
-                delay={ri * 140}
+                reelIndex={ri}
                 onStop={handleReelStop}
                 winRows={highlightedCells.get(ri) ?? new Set()}
               />
             ))}
           </div>
 
-          {/* Win banner */}
+          {/* Big win banner */}
           {lastWin > 0 && !spinning && (
             <div
               className="absolute inset-x-0 -bottom-3 mx-auto w-fit rounded-full border border-emerald-400/60 bg-[#062014]/95 px-4 py-1 backdrop-blur"
-              style={{ boxShadow: "0 0 24px rgba(46,255,161,0.55)" }}
+              style={{ boxShadow: "0 0 24px rgba(46,255,161,0.55)", animation: "scale-in 0.3s ease-out" }}
             >
               <span className="font-display text-xs font-bold uppercase tracking-widest text-emerald-300">
                 ¡Ganaste! <span className="neon-green ml-1">${formatCOP(lastWin)}</span>
@@ -582,132 +603,151 @@ export function SlotGame() {
           )}
         </section>
 
-        {/* Pay table preview (top symbols) */}
+        {/* Pay table preview (top 5 symbols) */}
         <section className="mt-4 grid grid-cols-5 gap-1.5">
           {SYMBOLS.slice(0, 5).map((s) => (
             <div
               key={s.id}
-              className="flex flex-col items-center rounded-lg border border-purple-500/20 bg-[#0c0620]/70 p-1.5"
+              className="flex flex-col items-center rounded-lg border border-purple-500/25 bg-[#0c0620]/70 px-1 py-1.5"
             >
-              <span className="text-2xl" style={{ filter: `drop-shadow(0 0 6px rgba(${s.glow},0.4))` }}>{s.glyph}</span>
-              <span className="mt-0.5 font-display text-[10px] font-bold neon-green">
-                {s.pay[2]}x
-              </span>
+              <div className="flex items-center gap-0.5">
+                {[0, 1, 2].map((i) => (
+                  <img
+                    key={i}
+                    src={s.img}
+                    alt=""
+                    aria-hidden
+                    loading="lazy"
+                    className="h-5 w-5 object-contain"
+                    style={{ filter: `drop-shadow(0 0 4px rgba(${s.glow},0.45))` }}
+                  />
+                ))}
+              </div>
+              <span className="mt-1 font-display text-[10px] font-bold neon-green">{s.pay[2]}.00x</span>
             </div>
           ))}
         </section>
 
-        {/* Bet controls */}
-        <section className="mt-4 rounded-2xl glass-panel p-3">
-          <div className="text-[10px] uppercase tracking-widest text-purple-200/70 text-center">APUESTA (COP)</div>
-          <div className="mt-1 flex items-center gap-2">
-            <button
-              onClick={() => setBet((b) => Math.max(MIN_BET, b - BET_STEP))}
-              disabled={spinning}
-              className="flex h-12 w-12 items-center justify-center rounded-xl btn-bet disabled:opacity-40"
-            >
-              <Minus className="h-5 w-5" />
-            </button>
-            <div className="flex-1 rounded-xl border border-purple-500/40 bg-[#0c0620] py-2.5 text-center font-display text-xl font-bold text-white">
-              {formatCOP(bet)}
+        {/* Bet panel */}
+        <section className="mt-3 rounded-2xl glass-panel p-3">
+          <div className="flex gap-2.5">
+            {/* Left: bet controls */}
+            <div className="flex-1">
+              <div className="text-[10px] uppercase tracking-widest text-purple-200/70 text-center">APUESTA (COP)</div>
+              <div className="mt-1 flex items-center gap-1.5">
+                <button
+                  onClick={() => setBet((b) => Math.max(MIN_BET, b - BET_STEP))}
+                  disabled={spinning}
+                  className="flex h-11 w-11 items-center justify-center rounded-xl btn-bet disabled:opacity-40"
+                ><Minus className="h-5 w-5" /></button>
+                <div className="flex-1 rounded-xl border border-purple-500/40 bg-[#0c0620] py-2.5 text-center font-display text-lg font-bold text-white">
+                  {formatCOP(bet)}
+                </div>
+                <button
+                  onClick={() => setBet((b) => Math.min(MAX_BET, b + BET_STEP))}
+                  disabled={spinning}
+                  className="flex h-11 w-11 items-center justify-center rounded-xl btn-bet disabled:opacity-40"
+                ><Plus className="h-5 w-5" /></button>
+              </div>
+              <div className="mt-1.5 grid grid-cols-5 gap-1">
+                <button
+                  onClick={() => setBet((b) => Math.min(MAX_BET, Math.max(MIN_BET, b * 2)))}
+                  disabled={spinning}
+                  className="rounded-md btn-bet py-1 text-[11px] font-bold disabled:opacity-40"
+                >x2</button>
+                {QUICK_BETS.map((q) => (
+                  <button
+                    key={q}
+                    onClick={() => setBet((b) => Math.min(MAX_BET, b + q))}
+                    disabled={spinning}
+                    className="rounded-md btn-bet py-1 text-[10px] font-bold disabled:opacity-40"
+                  >+{q >= 1000 ? `${q / 1000}k` : q}</button>
+                ))}
+              </div>
             </div>
+
+            {/* Right: GIRAR */}
             <button
-              onClick={() => setBet((b) => Math.min(MAX_BET, b + BET_STEP))}
-              disabled={spinning}
-              className="flex h-12 w-12 items-center justify-center rounded-xl btn-bet disabled:opacity-40"
+              onClick={spin}
+              disabled={!canSpin}
+              className="w-[42%] rounded-2xl btn-primary-green btn-primary-action flex flex-col items-center justify-center font-display font-black uppercase disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ minHeight: 102 }}
             >
-              <Plus className="h-5 w-5" />
+              <span className="text-xl tracking-[0.15em]">{spinning ? "GIRANDO…" : "GIRAR"}</span>
+              <span className="mt-0.5 text-[9px] font-bold tracking-widest opacity-90">MANTENER PARA AUTO</span>
             </button>
           </div>
-          <div className="mt-2 grid grid-cols-5 gap-1.5">
-            <button
-              onClick={() => setBet((b) => Math.min(MAX_BET, b * 2))}
-              disabled={spinning}
-              className="rounded-md btn-bet py-1.5 text-xs font-bold disabled:opacity-40"
-            >x2</button>
-            {QUICK_BETS.map((q) => (
-              <button
-                key={q}
-                onClick={() => setBet((b) => Math.min(MAX_BET, b + q))}
-                disabled={spinning}
-                className="rounded-md btn-bet py-1.5 text-[11px] font-bold disabled:opacity-40"
-              >+{q >= 1000 ? `${q / 1000}k` : q}</button>
-            ))}
-          </div>
-
-          <button
-            onClick={spin}
-            disabled={!canSpin}
-            className="mt-3 w-full rounded-xl btn-primary-green btn-primary-action py-4 font-display text-xl font-black uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {spinning ? "GIRANDO…" : "GIRAR"}
-          </button>
-          <div className="mt-1 text-center text-[10px] text-purple-200/60">
+          <div className="mt-2 text-center text-[10px] text-purple-200/60">
             MÍNIMO: {formatCOP(MIN_BET)} COP · MÁXIMO: {formatCOP(MAX_BET)} COP
           </div>
         </section>
 
-        {/* Last wins (live ticker) */}
-        <section className="mt-4 rounded-xl border border-purple-500/30 bg-[#0c0620]/80 p-3">
+        {/* Last wins ticker */}
+        <section className="mt-3 rounded-xl border border-purple-500/30 bg-[#0c0620]/80 p-2.5">
           <div className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-purple-300" />
-            <h3 className="font-display text-xs font-bold uppercase tracking-widest text-white">Últimas ganancias</h3>
+            <h3 className="font-display text-[11px] font-bold uppercase tracking-widest text-white">Últimas ganancias</h3>
+            <Trophy className="ml-auto h-4 w-4 text-purple-300/70" />
           </div>
-          <ul className="mt-3 flex max-h-[180px] flex-col gap-2 overflow-hidden">
-            {history.slice(0, 6).map((w) => (
-              <li
-                key={w.id}
-                className="flex h-[44px] items-center gap-3 rounded-lg border border-purple-500/20 bg-[#150830]/60 px-2.5"
-              >
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-purple-600/30 ring-1 ring-purple-400/30">
-                  <User className="h-4 w-4 text-purple-200" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="truncate text-xs font-semibold text-white">{w.user}</div>
-                  <div className="text-[10px] uppercase tracking-wider text-purple-300/70">
-                    {w.symbol} · {relativeTime(w.ts, now)}
+          <ul className="mt-2 flex gap-2 overflow-x-auto hide-scrollbar pb-1">
+            {history.slice(0, 8).map((w) => {
+              const sym = SYMBOLS[SYMBOL_INDEX.get(w.symbolId)!];
+              return (
+                <li
+                  key={w.id}
+                  className="flex shrink-0 items-center gap-2 rounded-full border border-emerald-400/30 bg-[#08221a]/70 px-2.5 py-1"
+                  style={{ boxShadow: "0 0 10px rgba(46,255,161,0.18) inset" }}
+                >
+                  <img src={sym.img} alt="" aria-hidden loading="lazy" className="h-5 w-5 object-contain"
+                       style={{ filter: `drop-shadow(0 0 4px rgba(${sym.glow},0.5))` }} />
+                  <div className="leading-tight">
+                    <div className="font-display text-[11px] font-bold neon-green">{w.multiplier.toFixed(2)}x</div>
+                    <div className="text-[9px] font-semibold text-purple-100/80">{formatCOP(w.amount)} COP</div>
                   </div>
-                </div>
-                <div className="text-right">
-                  <div className="font-display text-xs font-bold">
-                    <span className="neon-green mr-0.5">$</span>
-                    <span className="text-white">{formatCOP(w.amount)} COP</span>
-                  </div>
-                  <div className="text-[10px] font-bold text-purple-300">{w.multiplier.toFixed(2)}x</div>
-                </div>
-              </li>
-            ))}
+                  <span className="text-[8px] uppercase tracking-wider text-purple-300/60 ml-1">
+                    {w.user} · {relativeTime(w.ts, now)}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         </section>
-
-        <div className="h-6" />
       </div>
 
       <style>{`
-        @keyframes slot-spin {
-          0%   { transform: translateY(0); }
-          100% { transform: translateY(calc(-${REEL_LEN * 2} * (100% / ${ROWS}))); }
-        }
         @keyframes slot-win-pulse {
           0%, 100% { transform: scale(1); }
-          50%      { transform: scale(1.18); }
+          50%      { transform: scale(1.10); }
         }
       `}</style>
     </div>
   );
 }
 
-function HudCell({ label, value, accent }: { label: string; value: string; accent?: "green" | "purple" | "muted" }) {
+function HudCell({
+  label,
+  value,
+  accent,
+  wide,
+}: {
+  label: string;
+  value: string;
+  accent?: "green" | "purple" | "muted";
+  wide?: boolean;
+}) {
   const cls =
     accent === "green"  ? "neon-green" :
-    accent === "purple" ? "text-purple-200" :
+    accent === "purple" ? "text-purple-300" :
     accent === "muted"  ? "text-purple-300/50" :
     "text-white";
   return (
     <div className="text-center">
-      <div className="text-[9px] uppercase tracking-widest text-purple-200/70">{label}</div>
-      <div className="mt-1 rounded-lg border border-purple-500/30 bg-[#160830]/60 py-1.5">
-        <span className={`font-display text-sm font-bold ${cls}`}>{value}</span>
+      <div className="text-[8px] uppercase tracking-widest text-purple-200/70">{label}</div>
+      <div
+        className="mt-1 rounded-lg border border-purple-500/30 bg-[#160830]/70 py-1.5"
+        style={{ boxShadow: "inset 0 0 8px rgba(168,85,247,0.18)" }}
+      >
+        <span className={`font-display ${wide ? "text-[11px]" : "text-xs"} font-bold ${cls}`}>{value}</span>
       </div>
     </div>
   );
@@ -717,11 +757,11 @@ function seedHistory(): HistoryItem[] {
   const now = Date.now();
   let id = 1;
   return [
-    { id: id++, user: "TommyGun",  symbol: "👑", multiplier: 12.5, amount: 250000, ts: now - 8_000 },
-    { id: id++, user: "VitoC",     symbol: "🚗", multiplier: 4.8,  amount: 96000,  ts: now - 22_000 },
-    { id: id++, user: "AlCapone",  symbol: "💰", multiplier: 3.2,  amount: 64000,  ts: now - 45_000 },
-    { id: id++, user: "PeakyB",    symbol: "🪙", multiplier: 2.1,  amount: 42000,  ts: now - 70_000 },
-    { id: id++, user: "DonLuca",   symbol: "⌚", multiplier: 1.6,  amount: 32000,  ts: now - 110_000 },
-    { id: id++, user: "MissFox",   symbol: "💼", multiplier: 1.2,  amount: 24000,  ts: now - 160_000 },
+    { id: id++, user: "TommyGun",  symbolId: "boss",  multiplier: 12.5, amount: 250000, ts: now - 8_000 },
+    { id: id++, user: "VitoC",     symbolId: "car",   multiplier: 4.8,  amount: 96000,  ts: now - 22_000 },
+    { id: id++, user: "AlCapone",  symbolId: "brief", multiplier: 3.2,  amount: 64000,  ts: now - 45_000 },
+    { id: id++, user: "PeakyB",    symbolId: "gold",  multiplier: 2.1,  amount: 42000,  ts: now - 70_000 },
+    { id: id++, user: "DonLuca",   symbolId: "watch", multiplier: 1.6,  amount: 32000,  ts: now - 110_000 },
+    { id: id++, user: "MissFox",   symbolId: "chip",  multiplier: 1.2,  amount: 24000,  ts: now - 160_000 },
   ];
 }
