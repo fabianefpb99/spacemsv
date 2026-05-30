@@ -1,96 +1,46 @@
-
 ## Objetivo
 
-Rehacer `/slot` para que coincida visualmente con la referencia (estilo BETSPACE: morado oscuro, negro espacial, verde neón) y se sienta como un slot profesional tipo Pragmatic, con temática **Mafia Royale** (Peaky Blinders).
+Reemplazar el marco actual del slot por uno **2D neón morado con esquinas recortadas** (estilo del ejemplo "USAR ESTE MARCO") y mover las etiquetas verticales **"10 LÍNEAS"** completamente fuera del área de carretes para que no pisen los íconos.
 
-## Problemas actuales a corregir
+## Lo que entendí de la imagen
 
-1. Carretes planos, sin profundidad ni marcos luminosos.
-2. Símbolos emoji genéricos → reemplazar por ilustraciones.
-3. Animación "salta": los símbolos desaparecen y reaparecen ordenados en vez de bajar de forma continua.
-4. HUD no replica la referencia (líneas, premio total, tiradas gratis, multiplicador, paytable inferior, controles de apuesta, últimas ganancias).
+- ✅ Marco neón plano con cortes diagonales en las 4 esquinas + glow morado.
+- ✅ Mismo grosor de borde y mismo glow, sin biseles 3D ni profundidad de "caja".
+- ✅ Etiquetas "10 LÍNEAS" verticales **al exterior** del marco (no encima de las celdas).
+- ❌ Quitar: contenedor 3D voluminoso, esquinas gruesas, sensación de bloque.
 
-## Plan
+## Cambios (solo `src/components/SlotGame.tsx`)
 
-### 1. Generar 8 ilustraciones de símbolos (PNG transparentes)
+### 1. Marco con esquinas recortadas (neón 2D)
 
-Usar `imagegen` (premium) en estilo cartoon premium tipo Peaky Blinders, paleta morado/verde neón BETSPACE, fondo transparente:
+Reemplazar el `<section>` actual de "Reels frame" (líneas 535-542) por un marco basado en **`clip-path` poligonal** (cortes de ~14px en cada esquina) + **borde con `filter: drop-shadow`** morado para el glow neón, sobre fondo oscuro plano.
 
-- `boss.png` — Jefe mafioso con sombrero (símbolo top)
-- `hat.png` — Sombrero elegante de mafioso
-- `briefcase.png` — Maletín con dinero
-- `watch.png` — Reloj de oro de bolsillo
-- `gold.png` — Lingote de oro
-- `car.png` — Auto clásico años 20
-- `chip.png` — Ficha premium de casino
-- `card.png` — Carta especial (As)
+Estructura:
+- Capa externa: `clip-path: polygon(...)` con relleno morado neón (gradiente sutil).
+- Capa interna (1.5–2px adentro, mismo clip-path escalado): fondo `#0a041c`.
+- Glow: `filter: drop-shadow(0 0 14px rgba(168,85,247,0.55)) drop-shadow(0 0 28px rgba(168,85,247,0.25))`.
+- Sin `box-shadow inset`, sin gradiente 3D, sin `border-radius` redondo.
 
-Guardar en `src/assets/slot/`.
+Pequeños acentos en esquinas (4 marcas en L cortas) opcionales para reforzar look futurista, en verde tenue, sin volumen.
 
-### 2. Rediseñar `SlotGame.tsx` con HUD tipo referencia
+### 2. Etiquetas "10 LÍNEAS" fuera del marco
 
-Estructura mobile-first replicando la imagen:
-- Barra superior: **LÍNEAS / PREMIO TOTAL / TIRADAS GRATIS / MULTIPLICADOR** en cápsulas con borde morado y números neón verde.
-- Marco del slot con **borde morado glow doble**, esquinas recortadas, label "MAFIA ROYALE" tipo logo neón centrado arriba con destellos.
-- Indicadores laterales "10 LÍNEAS" verticales en verde neón.
-- Paytable horizontal scrollable bajo el slot (5 entradas con triplete de símbolo y multiplicador).
-- Footer: **APUESTA (COP)** con `−` / valor / `+`, fila de quick-bets (`x2 +1.000 +2.000 +5.000 +10.000`), botón **GIRAR** verde neón grande "MANTENER PARA AUTO".
-- Banda inferior fija de **ÚLTIMAS GANANCIAS** con cápsulas (multiplicador + monto COP).
+- Cambiar `-left-1` / `-right-1` (líneas 572, 575) a posiciones **fuera** del marco: `-left-6` / `-right-6` (o usar contenedor padre con `padding-x` adicional y posicionar las etiquetas en ese gutter exterior).
+- Reservar espacio lateral en el contenedor padre con `px-7 sm:px-8` para que las etiquetas no se corten en pantallas pequeñas (390px viewport del usuario).
+- Asegurar `z-index` por encima del fondo pero sin solapar las celdas: ahora estarán literalmente fuera, así que ya no pisan íconos.
+- Mantener color verde neón actual, mismo tamaño tipográfico.
 
-### 3. Animación de carretes continua (sin desaparición)
+### 3. Limpieza menor
 
-Reemplazar implementación actual por **tira vertical larga** (~30 símbolos) por carrete que se traslada con `transform: translateY()` y `transition` con `cubic-bezier`. Cada reel:
-- Tira = `[...buffer aleatorio, ...símbolosFinales]`.
-- Al girar: animar `translateY` desde 0 hasta `-(longitud-3)*tileH` con duración escalonada (2.2s, 2.4s, 2.6s, 2.8s, 3.0s) y easing `cubic-bezier(0.15, 0.85, 0.35, 1)` (acelera y desacelera con micro-bounce).
-- Sin `display:none`, sin reset visible — el símbolo final ya está pre-rendereado en la tira; al terminar la transición se hace snap silencioso a la posición base con los símbolos finales en las 3 filas visibles.
-- Pequeño "kick" hacia arriba al iniciar (overshoot de 1 fila) antes de bajar, para sensación premium.
+- Quitar las dos líneas decorativas top/bottom horizontales (580-581) — redundantes con el nuevo marco recortado.
+- Mantener intacto el badge "MAFIA ROYALE" superior y el resto del HUD/lógica.
 
-### 4. Profundidad y efectos premium
+## Fuera de alcance
 
-- Cada celda con gradiente radial sutil morado, **inset shadow** y **borde con glow** que pulsa en líneas ganadoras.
-- Reflejo superior (gradiente blanco 8% opacity) sobre cada símbolo para sensación 3D.
-- Sombras de viñeta dentro del marco del slot.
-- Partículas flotantes (puntos verde/morado animados con CSS) sobre el marco al iniciar giro y al ganar.
-- Líneas ganadoras: trazar SVG overlay sobre las celdas con `stroke` verde neón animado + glow.
-- Banner de victoria central con "¡GRAN PREMIO!" y monto, escalando con `scale-in`.
+- No tocar la lógica del juego, animación de carretes, sonidos, paytable, controles de apuesta, botón GIRAR/AUTO.
+- No regenerar los íconos PNG.
+- No tocar otras rutas ni componentes.
 
-### 5. Lógica del juego (mantener calidad existente)
+## Resultado esperado
 
-Conservar:
-- 5x3, 10 paylines configurables (LÍNEAS dropdown 1/5/10).
-- Sistema de pesos por símbolo (boss más raro, card más común).
-- Pagos por 3/4/5 en línea, multiplicador aplicado.
-- Historial "Últimas ganancias" (últimos 4-6 spins ganadores).
-- Audio: spin start, reel stop escalonado, win, big win.
-
-### Detalles técnicos
-
-```
-src/assets/slot/
-  boss.png, hat.png, briefcase.png, watch.png,
-  gold.png, car.png, chip.png, card.png
-src/components/SlotGame.tsx  (rewrite)
-src/routes/slot.tsx          (head: title "Mafia Royale | BETSPACE")
-```
-
-Reel component (pseudocódigo):
-```tsx
-const STRIP_LEN = 30;
-// strip = [...randomFillers(27), ...finalThree]
-<div className="reel-window">  // overflow-hidden, height = 3*tileH
-  <div style={{ transform: `translateY(${spinning ? -offset : 0}px)`,
-                transition: spinning ? `transform ${dur}ms cubic-bezier(.15,.85,.35,1)` : 'none' }}>
-    {strip.map(sym => <SymbolTile />)}
-  </div>
-</div>
-```
-Al terminar la transición (onTransitionEnd) → quitar transición + reset a strip con los 3 finales en top sin parpadeo.
-
-### Sobre los iconos
-
-Procedo a **generar yo las ilustraciones** con imagegen premium (estilo Peaky Blinders cartoon). Si no te gustan después, puedes enviarme las tuyas y las reemplazamos 1:1 en `src/assets/slot/`.
-
-### Fuera de alcance
-
-- No tocar Spaceman, Buscaminas, Home, Pay.
-- No cambiar balance/wallet ni rutas de pago.
+Marco idéntico en espíritu al ejemplo "USAR ESTE MARCO" de la referencia: plano, con cortes diagonales en las 4 esquinas, glow morado neón coherente con Spaceman/Buscaminas, y las etiquetas "10 LÍNEAS" respirando en el espacio lateral exterior sin tocar las celdas.
