@@ -448,11 +448,12 @@ function SymbolTile({ sym, highlight }: { sym: SymbolDef; highlight: boolean }) 
 /* ============================================================
    Main game
    ============================================================ */
-const LINES = PAYLINES.length;
+const MAX_LINES = PAYLINES.length;
 
 export function SlotGame() {
   const [balance, setBalance] = useState(100000);
   const [bet, setBet] = useState(2000);
+  const [activeLines, setActiveLines] = useState(10);
   const [muted, setMuted] = useState(false);
   const [online] = useState(263);
 
@@ -490,7 +491,7 @@ export function SlotGame() {
     return () => clearInterval(t);
   }, []);
 
-  const lineBet = useMemo(() => Math.max(1, Math.floor(bet / LINES)), [bet]);
+  const lineBet = useMemo(() => Math.max(1, Math.floor(bet / activeLines)), [bet, activeLines]);
 
   const spin = useCallback(() => {
     if (spinning) return;
@@ -515,7 +516,7 @@ export function SlotGame() {
   useEffect(() => {
     if (!spinning || reelsStopped < REELS) return;
     stopReelLoop();
-    const { wins: w, total } = evaluateGrid(grid, lineBet);
+    const { wins: w, total } = evaluateGrid(grid, lineBet, activeLines);
     setWins(w);
     setLastWin(total);
     setTotalWonRound(total);
