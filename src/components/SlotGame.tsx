@@ -531,18 +531,43 @@ export function SlotGame() {
           <HudCell label="MULTIPLICADOR" value={`x${winMult >= 10 ? winMult.toFixed(1) : winMult.toFixed(2).replace(/\.?0+$/, "")}`} accent="purple" />
         </section>
 
-        {/* Reels frame */}
-        <section
-          className="relative mt-3 rounded-2xl p-2 sm:p-2.5"
-          style={{
-            background: "linear-gradient(160deg,#150728 0%,#0a041c 50%,#0d0522 100%)",
-            border: "2px solid rgba(168,85,247,0.55)",
-            boxShadow:
-              "0 0 0 1px rgba(168,85,247,0.20) inset, 0 0 40px rgba(140,70,220,0.45), 0 12px 30px rgba(0,0,0,0.6)",
-          }}
-        >
+        {/* Reels frame wrapper — leaves side gutters for "10 LÍNEAS" labels */}
+        <section className="relative mt-3 px-6 sm:px-7">
+          {/* Lines side labels — OUTSIDE the frame, in the gutter */}
+          <div className="pointer-events-none absolute left-0 top-1/2 z-20 -translate-y-1/2 -rotate-90">
+            <span className="font-display text-[10px] font-bold tracking-[0.32em] neon-green whitespace-nowrap">
+              {LINES} LÍNEAS
+            </span>
+          </div>
+          <div className="pointer-events-none absolute right-0 top-1/2 z-20 -translate-y-1/2 rotate-90">
+            <span className="font-display text-[10px] font-bold tracking-[0.32em] neon-green whitespace-nowrap">
+              {LINES} LÍNEAS
+            </span>
+          </div>
+
+          {/* Neon 2D frame with clipped (notched) corners */}
+          <div
+            className="relative"
+            style={{
+              clipPath:
+                "polygon(16px 0, calc(100% - 16px) 0, 100% 16px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 16px 100%, 0 calc(100% - 16px), 0 16px)",
+              background:
+                "linear-gradient(135deg, #a855f7 0%, #7c3aed 50%, #c084fc 100%)",
+              padding: "2px",
+              filter:
+                "drop-shadow(0 0 10px rgba(168,85,247,0.55)) drop-shadow(0 0 22px rgba(168,85,247,0.28))",
+            }}
+          >
+            <div
+              className="relative p-2 sm:p-2.5"
+              style={{
+                clipPath:
+                  "polygon(15px 0, calc(100% - 15px) 0, 100% 15px, 100% calc(100% - 15px), calc(100% - 15px) 100%, 15px 100%, 0 calc(100% - 15px), 0 15px)",
+                background: "#0a041c",
+              }}
+            >
           {/* Title badge on frame */}
-          <div className="absolute left-1/2 -top-4 z-20 -translate-x-1/2">
+          <div className="absolute left-1/2 -top-3 z-20 -translate-x-1/2">
             <div
               className="flex items-center gap-2 rounded-full px-4 py-1"
               style={{
@@ -568,18 +593,6 @@ export function SlotGame() {
             </div>
           </div>
 
-          {/* Lines side labels */}
-          <div className="pointer-events-none absolute -left-1 top-1/2 z-20 -translate-y-1/2 -rotate-90">
-            <span className="font-display text-[10px] font-bold tracking-[0.3em] neon-green">{LINES} LÍNEAS</span>
-          </div>
-          <div className="pointer-events-none absolute -right-1 top-1/2 z-20 -translate-y-1/2 rotate-90">
-            <span className="font-display text-[10px] font-bold tracking-[0.3em] neon-green">{LINES} LÍNEAS</span>
-          </div>
-
-          {/* corner accents */}
-          <div className="pointer-events-none absolute -top-px left-3 right-3 h-px bg-gradient-to-r from-transparent via-purple-400/70 to-transparent" />
-          <div className="pointer-events-none absolute -bottom-px left-3 right-3 h-px bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent" />
-
           <div className="grid grid-cols-5 gap-1.5 pt-3">
             {grid.map((reel, ri) => (
               <Reel
@@ -604,6 +617,8 @@ export function SlotGame() {
               </span>
             </div>
           )}
+            </div>
+          </div>
         </section>
 
         {/* Pay table preview (top 5 symbols) */}
