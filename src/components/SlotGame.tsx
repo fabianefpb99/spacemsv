@@ -513,6 +513,8 @@ export function SlotGame() {
   const spin = useCallback(() => {
     if (spinning) return;
     if (bet < MIN_BET || bet > balance) return;
+    playSpinPress();
+    startReelLoop();
     setBalance((b) => b - bet);
     setLastWin(0);
     setTotalWonRound(0);
@@ -531,6 +533,7 @@ export function SlotGame() {
   // When all reels stopped → evaluate
   useEffect(() => {
     if (!spinning || reelsStopped < REELS) return;
+    stopReelLoop();
     const { wins: w, total } = evaluateGrid(grid, lineBet);
     setWins(w);
     setLastWin(total);
