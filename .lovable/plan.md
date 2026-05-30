@@ -1,46 +1,27 @@
-## Objetivo
+## Rediseñar la tabla de premios
 
-Reemplazar el marco actual del slot por uno **2D neón morado con esquinas recortadas** (estilo del ejemplo "USAR ESTE MARCO") y mover las etiquetas verticales **"10 LÍNEAS"** completamente fuera del área de carretes para que no pisen los íconos.
+Actualmente en `src/components/SlotGame.tsx` (líneas 708–731) la sección de "premios" muestra los 5 símbolos top con **3 iconos pequeños repetidos** + el multiplicador. Al ser 3 iconos pegados, cada uno se ve muy chico y poco legible.
 
-## Lo que entendí de la imagen
+### Cambios
 
-- ✅ Marco neón plano con cortes diagonales en las 4 esquinas + glow morado.
-- ✅ Mismo grosor de borde y mismo glow, sin biseles 3D ni profundidad de "caja".
-- ✅ Etiquetas "10 LÍNEAS" verticales **al exterior** del marco (no encima de las celdas).
-- ❌ Quitar: contenedor 3D voluminoso, esquinas gruesas, sensación de bloque.
+1. **Cada tarjeta de premio mostrará:**
+   - 1 solo icono del símbolo, más grande (~h-9 w-9 en vez de h-5 w-5)
+   - Una etiqueta **"x3"** discreta al lado del icono (chip pequeño con borde, estilo neón sutil) indicando que el premio corresponde a 3 en línea
+   - El multiplicador de pago (ej. `750.00x`) debajo, igual que ahora pero un poco más grande para aprovechar el espacio
 
-## Cambios (solo `src/components/SlotGame.tsx`)
+2. **Mostrar más ejemplos de premios:**
+   - Pasar de 5 a **los 8 símbolos** (todos los de `SYMBOLS`)
+   - Cambiar el grid de `grid-cols-5` a `grid-cols-4` con 2 filas (4×2 = 8 tarjetas) para que cada tarjeta tenga más ancho y respire mejor en mobile (390px)
 
-### 1. Marco con esquinas recortadas (neón 2D)
+3. **Estilo visual:**
+   - Mantener el `glass-panel` / borde púrpura existente
+   - Conservar el glow por símbolo (usa `s.glow`)
+   - El chip "x3" usará color verde neón suave para mantener coherencia con el resto de la UI
 
-Reemplazar el `<section>` actual de "Reels frame" (líneas 535-542) por un marco basado en **`clip-path` poligonal** (cortes de ~14px en cada esquina) + **borde con `filter: drop-shadow`** morado para el glow neón, sobre fondo oscuro plano.
+### Archivo afectado
 
-Estructura:
-- Capa externa: `clip-path: polygon(...)` con relleno morado neón (gradiente sutil).
-- Capa interna (1.5–2px adentro, mismo clip-path escalado): fondo `#0a041c`.
-- Glow: `filter: drop-shadow(0 0 14px rgba(168,85,247,0.55)) drop-shadow(0 0 28px rgba(168,85,247,0.25))`.
-- Sin `box-shadow inset`, sin gradiente 3D, sin `border-radius` redondo.
+- `src/components/SlotGame.tsx` — solo la `<section>` de pay table preview (líneas 708–731). Sin cambios a lógica de juego, sonidos ni datos.
 
-Pequeños acentos en esquinas (4 marcas en L cortas) opcionales para reforzar look futurista, en verde tenue, sin volumen.
+### Nota
 
-### 2. Etiquetas "10 LÍNEAS" fuera del marco
-
-- Cambiar `-left-1` / `-right-1` (líneas 572, 575) a posiciones **fuera** del marco: `-left-6` / `-right-6` (o usar contenedor padre con `padding-x` adicional y posicionar las etiquetas en ese gutter exterior).
-- Reservar espacio lateral en el contenedor padre con `px-7 sm:px-8` para que las etiquetas no se corten en pantallas pequeñas (390px viewport del usuario).
-- Asegurar `z-index` por encima del fondo pero sin solapar las celdas: ahora estarán literalmente fuera, así que ya no pisan íconos.
-- Mantener color verde neón actual, mismo tamaño tipográfico.
-
-### 3. Limpieza menor
-
-- Quitar las dos líneas decorativas top/bottom horizontales (580-581) — redundantes con el nuevo marco recortado.
-- Mantener intacto el badge "MAFIA ROYALE" superior y el resto del HUD/lógica.
-
-## Fuera de alcance
-
-- No tocar la lógica del juego, animación de carretes, sonidos, paytable, controles de apuesta, botón GIRAR/AUTO.
-- No regenerar los íconos PNG.
-- No tocar otras rutas ni componentes.
-
-## Resultado esperado
-
-Marco idéntico en espíritu al ejemplo "USAR ESTE MARCO" de la referencia: plano, con cortes diagonales en las 4 esquinas, glow morado neón coherente con Spaceman/Buscaminas, y las etiquetas "10 LÍNEAS" respirando en el espacio lateral exterior sin tocar las celdas.
+Detecté también un error de runtime (`playSpinPress is not defined`) que quedó como referencia huérfana tras quitar el sonido del botón. Lo limpio en el mismo cambio.

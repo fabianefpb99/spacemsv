@@ -705,27 +705,30 @@ export function SlotGame() {
           )}
         </section>
 
-        {/* Pay table preview (top 5 symbols) */}
-        <section className="mt-4 grid grid-cols-5 gap-1.5">
-          {SYMBOLS.slice(0, 5).map((s) => (
+        {/* Pay table preview — all symbols, 1 icon + x3 chip */}
+        <section className="mt-4 grid grid-cols-4 gap-1.5">
+          {SYMBOLS.map((s) => (
             <div
               key={s.id}
-              className="flex flex-col items-center rounded-lg border border-purple-500/25 bg-[#0c0620]/70 px-1 py-1.5"
+              className="flex flex-col items-center rounded-lg border border-purple-500/25 bg-[#0c0620]/70 px-1.5 py-2"
             >
-              <div className="flex items-center gap-0.5">
-                {[0, 1, 2].map((i) => (
-                  <img
-                    key={i}
-                    src={s.img}
-                    alt=""
-                    aria-hidden
-                    loading="lazy"
-                    className="h-5 w-5 object-contain"
-                    style={{ filter: `drop-shadow(0 0 4px rgba(${s.glow},0.45))` }}
-                  />
-                ))}
+              <div className="flex items-center gap-1.5">
+                <img
+                  src={s.img}
+                  alt=""
+                  aria-hidden
+                  loading="lazy"
+                  className="h-9 w-9 object-contain"
+                  style={{ filter: `drop-shadow(0 0 6px rgba(${s.glow},0.55))` }}
+                />
+                <span
+                  className="rounded-md border border-emerald-400/40 bg-emerald-400/10 px-1.5 py-0.5 font-display text-[10px] font-bold leading-none text-emerald-300"
+                  style={{ textShadow: "0 0 6px rgba(46,255,161,0.55)" }}
+                >
+                  x3
+                </span>
               </div>
-              <span className="mt-1 font-display text-[10px] font-bold neon-green">{s.pay[2]}.00x</span>
+              <span className="mt-1.5 font-display text-[11px] font-bold neon-green">{s.pay[2]}.00x</span>
             </div>
           ))}
         </section>
