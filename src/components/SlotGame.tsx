@@ -185,7 +185,7 @@ function playReelStop() {
 /* ============================================================
    Reel component — continuous translateY strip (no flicker)
    ============================================================ */
-const TILE_H = 76; // px per tile (3 rows visible = 228px tall window)
+const TILE_H = 88; // px per tile (3 rows visible = 264px tall window)
 const SPIN_BASE_MS = 1400;
 const SPIN_STAGGER_MS = 220;
 
