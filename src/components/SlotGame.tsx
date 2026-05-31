@@ -365,12 +365,14 @@ function Reel({
   reelIndex,
   onStop,
   winRows,
+  winTier,
 }: {
   finalSyms: string[];
   spinning: boolean;
   reelIndex: number;
   onStop: () => void;
   winRows: Set<number>;
+  winTier: WinTier;
 }) {
   // Strip: [fillers..., finalSyms[0], finalSyms[1], finalSyms[2]]
   // When idle: strip = finalSyms (3 tiles), translateY = 0.
@@ -484,29 +486,60 @@ function Reel({
           // Highlight only when not spinning and tile is in visible row range.
           const isVisibleTile = !spinning && i < ROWS;
           const highlight = isVisibleTile && winRows.has(i);
-          return <SymbolTile key={`${i}-${sid}`} sym={s} highlight={highlight} />;
+          return <SymbolTile key={`${i}-${sid}`} sym={s} highlight={highlight} tier={winTier} />;
         })}
       </div>
     </div>
   );
 }
 
-function SymbolTile({ sym, highlight }: { sym: SymbolDef; highlight: boolean }) {
+function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boolean; tier: WinTier }) {
   const scale = (sym.id === "hat" ? 1.18 : sym.id === "boss" ? 1.12 : 1) * 1.04;
+  // El color del marco lo dicta el tier (no el símbolo) para que el jugador
+  // identifique de un vistazo cuán bueno fue el premio.
+  const glow = highlight ? TIER_GLOW[tier] : sym.glow;
+  const ringWidth = tier === "mega" ? 3 : tier === "fire" ? 2.5 : 2;
+  const outerShadow =
+    tier === "mega"
+      ? `0 0 30px rgba(${glow},0.85), 0 0 60px rgba(${glow},0.55), 0 0 90px rgba(255,255,255,0.35)`
+      : tier === "fire"
+        ? `0 0 22px rgba(${glow},0.85), 0 0 44px rgba(255,60,0,0.55)`
+        : `0 0 20px rgba(${glow},0.55)`;
+  const animName =
+    !highlight ? undefined
+    : tier === "mega" ? "slot-win-mega 0.7s ease-in-out infinite"
+    : tier === "fire" ? "slot-win-fire 0.55s ease-in-out infinite"
+    : "slot-win-pulse 0.9s ease-in-out infinite";
   return (
     <div
       className="relative flex items-center justify-center"
       style={{
         height: TILE_H,
         background: highlight
-          ? `radial-gradient(70% 60% at 50% 50%, rgba(${sym.glow},0.30) 0%, rgba(${sym.glow},0.08) 60%, transparent 100%)`
+          ? `radial-gradient(70% 60% at 50% 50%, rgba(${glow},0.38) 0%, rgba(${glow},0.10) 60%, transparent 100%)`
           : "transparent",
         boxShadow: highlight
-          ? `inset 0 0 0 2px rgba(${sym.glow},0.85), 0 0 20px rgba(${sym.glow},0.55)`
+          ? `inset 0 0 0 ${ringWidth}px rgba(${glow},0.95), ${outerShadow}`
           : undefined,
         transition: "box-shadow 200ms ease, background 200ms ease",
       }}
     >
+      {/* Llamitas decorativas para tier fuego */}
+      {highlight && tier === "fire" && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -top-1 left-1/2 -translate-x-1/2 text-[14px] leading-none"
+          style={{ filter: "drop-shadow(0 0 6px rgba(255,140,30,0.9))", animation: "flame 0.5s ease-in-out infinite alternate" }}
+        >🔥</span>
+      )}
+      {/* Estrella para mega */}
+      {highlight && tier === "mega" && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -top-1 left-1/2 -translate-x-1/2 text-[14px] leading-none"
+          style={{ filter: "drop-shadow(0 0 8px rgba(255,215,0,1))", animation: "slot-win-mega 0.7s ease-in-out infinite" }}
+        >⭐</span>
+      )}
       <img
         src={sym.img}
         alt={sym.label}
@@ -519,9 +552,9 @@ function SymbolTile({ sym, highlight }: { sym: SymbolDef; highlight: boolean }) 
           objectFit: "contain",
           transform: scale !== 1 ? `scale(${scale})` : undefined,
           filter: highlight
-            ? `drop-shadow(0 0 10px rgba(${sym.glow},0.95)) drop-shadow(0 0 20px rgba(${sym.glow},0.6))`
+            ? `drop-shadow(0 0 10px rgba(${glow},0.95)) drop-shadow(0 0 20px rgba(${glow},0.7))`
             : `drop-shadow(0 4px 6px rgba(0,0,0,0.55)) drop-shadow(0 0 8px rgba(${sym.glow},0.25))`,
-          animation: highlight ? "slot-win-pulse 0.9s ease-in-out infinite" : undefined,
+          animation: animName,
         }}
       />
     </div>
