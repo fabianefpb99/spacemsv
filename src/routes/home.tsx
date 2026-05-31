@@ -278,8 +278,15 @@ function HomePage() {
 
         {/* Invita y gana */}
         <section className="mt-4 flex items-center gap-3 rounded-xl border border-purple-500/30 bg-gradient-to-r from-[#1a0b3a]/80 to-[#0c0620] p-3 sm:p-4">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-pink-500/15 ring-1 ring-pink-400/30">
-            <Gift className="h-6 w-6 text-pink-400" strokeWidth={2.5} />
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center">
+            <img
+              src={gift3d}
+              alt="Regalo"
+              loading="lazy"
+              width={96}
+              height={96}
+              className="h-12 w-12 object-contain drop-shadow-[0_0_10px_rgba(168,85,247,0.55)]"
+            />
           </div>
           <div className="min-w-0 flex-1">
             <div className="font-display text-sm font-bold uppercase tracking-wider text-white">
