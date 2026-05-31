@@ -516,14 +516,13 @@ function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boole
     : tier === "fire" ? "slot-win-fire 0.55s ease-in-out infinite"
     : "slot-win-pulse 0.9s ease-in-out infinite";
   const showFlames = highlight && (tier === "fire" || tier === "mega");
+  const showGreenAura = highlight && tier === "normal";
   return (
     <div
       className="relative flex items-center justify-center"
       style={{
         height: TILE_H,
-        background: highlight && tier === "normal"
-          ? `radial-gradient(70% 60% at 50% 50%, rgba(${glow},0.38) 0%, rgba(${glow},0.10) 60%, transparent 100%)`
-          : "transparent",
+        background: "transparent",
         boxShadow: highlight
           ? `inset 0 0 0 ${ringWidth}px rgba(${glow},0.95), ${outerShadow}`
           : undefined,
@@ -533,6 +532,8 @@ function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boole
     >
       {/* Llamas realistas detrás del símbolo */}
       {showFlames && <FlameBackdrop tier={tier} />}
+      {/* Aura/humo verde luminoso emanando del icono */}
+      {showGreenAura && <GreenAuraBackdrop />}
       {/* Marco decorativo */}
       {highlight && tier === "fire" && <FireOrnament />}
       {highlight && tier === "mega" && <MegaOrnament />}
