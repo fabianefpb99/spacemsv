@@ -111,31 +111,36 @@ function HomePage() {
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4">
         {/* Header — must match SpacemanGame header exactly, sin icono de sonido */}
         <header
-          className="flex items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
-          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.75rem)" }}
+          className="flex flex-col items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
+          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
-          <div className="flex items-center gap-1">
-            <button className="rounded-md p-2 text-white hover:bg-white/10">
-              <Menu className="h-7 w-7" strokeWidth={3} />
-            </button>
-            <Link to="/home">
-              <img
-                src={betspaceLogo}
-                alt="BETSPACE"
-                className="h-6 w-auto sm:h-7"
-              />
-            </Link>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="text-right">
-              <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
-              <div className="font-display text-xs font-bold sm:text-sm text-white">
-                <span className="neon-green mr-0.5">$</span>{formatCOP(balance)} COP
-              </div>
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-1">
+              <button className="rounded-md p-2 text-white hover:bg-white/10">
+                <Menu className="h-7 w-7" strokeWidth={3} />
+              </button>
+              <Link to="/home">
+                <img
+                  src={betspaceLogo}
+                  alt="BETSPACE"
+                  className="h-6 w-auto sm:h-7"
+                />
+              </Link>
             </div>
-            <button className="rounded-md p-1.5 text-purple-200/80 hover:bg-white/5">
-              <Settings className="h-5 w-5 sm:h-6 sm:w-6" />
-            </button>
+            <div className="flex items-center gap-2">
+              <div className="text-right">
+                <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
+                <div className="font-display text-xs font-bold sm:text-sm text-white">
+                  <span className="neon-green mr-0.5">$</span>{formatCOP(balance)} COP
+                </div>
+              </div>
+              <button className="rounded-md p-1.5 text-purple-200/80 hover:bg-white/5">
+                <Settings className="h-5 w-5 sm:h-6 sm:w-6" />
+              </button>
+            </div>
+          </div>
+          <div className="mt-0.5 font-display text-[9px] font-bold tracking-[0.25em] text-purple-300/80 uppercase">
+            APUESTA Y GANA
           </div>
         </header>
 
