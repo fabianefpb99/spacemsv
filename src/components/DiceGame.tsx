@@ -7,7 +7,10 @@ import { setMuted as setAudioMuted, playCashoutSound, playCrashSound, isMuted } 
 type Phase = "betting" | "rolling" | "won" | "lost";
 type Side = "low" | "high";
 
-const MULTS = [1.1, 1.3, 1.5, 2, 3, 5, 10];
+// House edge del 5% — payout = 0.95 × (6/k) donde k = caras ganadoras "equivalentes".
+// prob_real_de_ganar = 0.95 / multiplicador  ⇒  EV jugador = 0.95 en todas las variantes.
+const HOUSE_EDGE = 0.05;
+const MULTS = [1.14, 1.42, 1.9, 2.85, 4.75, 9.5];
 const MIN_BET = 500;
 const MAX_BET = 100000;
 const BET_STEP = 500;
@@ -48,10 +51,13 @@ function seedHistory(): HistoryItem[] {
   ];
 }
 
+function winProbFor(mult: number) {
+  // 5% de ventaja para la casa, independiente del multiplicador.
+  return (1 - HOUSE_EDGE) / mult;
+}
+
 function rollDice(side: Side, mult: number): { roll: number; won: boolean } {
-  // Base win prob is 0.495 (slight house edge at 2x). Scale by 2/mult so higher
-  // multipliers are rarer. Visual roll lands in the picked half on win.
-  const winProb = Math.min(0.495, 0.495 * (2 / mult));
+  const winProb = winProbFor(mult);
   const won = Math.random() < winProb;
   const inRange = (lo: number, hi: number) => lo + Math.floor(Math.random() * (hi - lo + 1));
   let roll: number;
@@ -95,7 +101,7 @@ export function DiceGame() {
 
   const canRoll = phase === "betting" && bet >= MIN_BET && bet <= balance;
   const potentialWin = Math.floor(bet * mult);
-  const winProbPct = Math.min(49.5, 49.5 * (2 / mult));
+  const winProbPct = winProbFor(mult) * 100;
 
   const handleRoll = useCallback(() => {
     if (!canRoll) return;
