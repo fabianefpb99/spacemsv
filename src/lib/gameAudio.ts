@@ -384,7 +384,11 @@ export function playDiceRollSound(_durationMs = 2000) {
   try {
     const audio = new Audio("/sounds/dice-roll.mp3");
     audio.volume = 0.9;
-    void audio.play().catch(() => {});
+    // Animation lasts ~2100ms but trimmed audio is ~1840ms.
+    // Delay so the dice "impact" lands near the end of the animation.
+    window.setTimeout(() => {
+      void audio.play().catch(() => {});
+    }, 260);
   } catch {
     /* ignore */
   }
