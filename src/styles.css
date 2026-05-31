@@ -576,6 +576,29 @@ html, body {
   }
 }
 
+/* Ornamentos profesionales — fuego y mega */
+@keyframes slot-fire-flicker {
+  0%   { opacity: 0.92; filter: hue-rotate(-4deg) brightness(1); }
+  100% { opacity: 1;    filter: hue-rotate(6deg)  brightness(1.12); }
+}
+@keyframes slot-flame-sway {
+  0%   { transform: scaleY(1)    scaleX(1)    skewX(-3deg); }
+  100% { transform: scaleY(1.12) scaleX(0.92) skewX(4deg); }
+}
+@keyframes slot-ember {
+  0%   { transform: translateY(0)    scale(1);   opacity: 0; }
+  20%  { opacity: 1; }
+  100% { transform: translateY(-16px) scale(0.4); opacity: 0; }
+}
+@keyframes slot-mega-rays {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes slot-mega-pulse {
+  0%,100% { transform: scale(1)    rotate(-2deg); }
+  50%     { transform: scale(1.15) rotate(2deg); }
+}
+
 .mines-tile {
   position: relative;
   border-radius: 10px;
