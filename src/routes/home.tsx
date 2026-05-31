@@ -212,7 +212,7 @@ function HomePage() {
 
         {/* Jackpot */}
         <section className="mt-5 flex items-center gap-3 rounded-xl border border-purple-500/30 bg-gradient-to-r from-[#1a0b3a]/80 to-[#0c0620] p-3 sm:p-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-amber-500/20 sm:h-14 sm:w-14">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-amber-400/60 shadow-[0_0_12px_rgba(251,191,36,0.45),inset_0_0_8px_rgba(251,191,36,0.25)] sm:h-14 sm:w-14">
             <img
               src={trophy3d}
               alt="Trofeo"
