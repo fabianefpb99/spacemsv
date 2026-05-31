@@ -7,10 +7,23 @@ import { setMuted as setAudioMuted, playCashoutSound, playCrashSound, isMuted } 
 type Phase = "betting" | "rolling" | "won" | "lost";
 type Side = "low" | "high";
 
-// House edge del 5% — payout = 0.95 × (6/k) donde k = caras ganadoras "equivalentes".
-// prob_real_de_ganar = 0.95 / multiplicador  ⇒  EV jugador = 0.95 en todas las variantes.
-const HOUSE_EDGE = 0.05;
-const MULTS = [1.14, 1.42, 1.9, 2.85, 4.75, 9.5];
+// Tabla de probabilidades ajustada con fuerte ventaja de la casa.
+// Inspirada en el modelo de Spaceman: multiplicadores altos son lotería.
+//   1.14x → 45%   (EV 0.513)
+//   1.42x → 30%   (EV 0.426)
+//   1.90x → 18%   (EV 0.342)
+//   2.85x →  8%   (EV 0.228)
+//   4.75x →  3%   (EV 0.1425)
+//   9.50x →  0.8% (EV 0.076)
+const MULTS = [1.14, 1.42, 1.9, 2.85, 4.75, 9.5] as const;
+const WIN_PROB: Record<number, number> = {
+  1.14: 0.45,
+  1.42: 0.30,
+  1.9: 0.18,
+  2.85: 0.08,
+  4.75: 0.03,
+  9.5: 0.008,
+};
 const MIN_BET = 500;
 const MAX_BET = 100000;
 const BET_STEP = 500;
@@ -52,8 +65,7 @@ function seedHistory(): HistoryItem[] {
 }
 
 function winProbFor(mult: number) {
-  // 5% de ventaja para la casa, independiente del multiplicador.
-  return (1 - HOUSE_EDGE) / mult;
+  return WIN_PROB[mult] ?? 0.01;
 }
 
 function rollDice(side: Side, mult: number): { roll: number; won: boolean } {
