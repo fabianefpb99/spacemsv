@@ -127,8 +127,8 @@ function HomePage() {
                     className="h-6 w-auto sm:h-7"
                   />
                   <div
-                    className="font-display text-[6.5px] font-bold uppercase text-white leading-none -mt-0.5 w-full"
-                    style={{ letterSpacing: '0.08em', textAlign: 'justify', textAlignLast: 'justify' }}
+                    className="font-display text-[6.5px] font-bold uppercase text-white leading-none -mt-[1px]"
+                    style={{ letterSpacing: '0.08em', width: '94%', textAlign: 'justify', textAlignLast: 'justify' }}
                   >
                     APUESTA Y GANA
                   </div>
