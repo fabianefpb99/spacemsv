@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
+import pageBg from "@/assets/mines-page-bg.png";
 import { Menu, Settings, Minus, Plus, Volume2, VolumeX, TrendingUp } from "lucide-react";
 import { setMuted as setAudioMuted, playCashoutSound, playCrashSound, playDiceRollSound, isMuted } from "@/lib/gameAudio";
 
@@ -148,7 +149,17 @@ export function DiceGame() {
   const recent = useMemo(() => history.slice(0, 10), [history]);
 
   return (
-    <div className="min-h-screen bg-[#060210] text-white">
+    <div
+      className="min-h-screen text-white"
+      style={{
+        backgroundColor: "#060210",
+        backgroundImage: `url(${pageBg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center top",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+      }}
+    >
       <div
         className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-2 pt-3 sm:max-w-lg sm:px-4"
         style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 0.5rem)" }}
