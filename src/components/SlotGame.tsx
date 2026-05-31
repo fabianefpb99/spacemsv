@@ -97,6 +97,11 @@ const PAYLINES: number[][] = [
   [3, 2, 1, 0, 0], // staircase up
   [1, 1, 2, 3, 3], // step down
   [2, 2, 1, 0, 0], // step up
+  [0, 2, 0, 2, 0], // big zigzag top
+  [3, 1, 3, 1, 3], // big zigzag bottom
+  [1, 0, 1, 0, 1], // zigzag upper
+  [2, 3, 2, 3, 2], // zigzag lower
+  [0, 3, 0, 3, 0], // deep zigzag
 ];
 
 const MIN_BET = 500;
