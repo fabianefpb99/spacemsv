@@ -10,6 +10,7 @@ import gameSpaceman from "@/assets/game-spaceman.jpg";
 import gameSlotMafia from "@/assets/game-slot-mafia.jpg";
 import gameMines from "@/assets/game-mines.jpg";
 import gameDice from "@/assets/game-dice.jpg";
+import gift3d from "@/assets/gift-3d.png";
 
 const LAST_WINS = [
   { user: "Usuario123", game: "Spaceman", amount: 252413, mult: 1.85 },
