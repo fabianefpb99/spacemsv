@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Menu, Settings, Minus, Plus, Volume2, VolumeX, TrendingUp } from "lucide-react";
-import { setMuted as setAudioMuted, playCashoutSound, playCrashSound, isMuted } from "@/lib/gameAudio";
+import { setMuted as setAudioMuted, playCashoutSound, playCrashSound, playDiceRollSound, isMuted } from "@/lib/gameAudio";
 
 type Phase = "betting" | "rolling" | "won" | "lost";
 type Side = "low" | "high";
@@ -122,6 +122,7 @@ export function DiceGame() {
     const { roll, won } = rollDice(side, mult);
     setTargetFace(roll);
     setRolling(true);
+    playDiceRollSound(2100);
     const win = won ? Math.floor(bet * mult) : 0;
     // Settle after the rolling animation
     setTimeout(() => {
