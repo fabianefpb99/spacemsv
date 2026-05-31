@@ -159,6 +159,21 @@ function HomePage() {
                 className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${i === slide ? "opacity-100" : "opacity-0"}`}
               />
             ))}
+            {/* Flechas de navegación */}
+            <button
+              onClick={() => setSlide((s) => (s - 1 + SLIDES.length) % SLIDES.length)}
+              aria-label="Anterior"
+              className="absolute left-2 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white/80 backdrop-blur-sm transition hover:bg-black/50 hover:text-white"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setSlide((s) => (s + 1) % SLIDES.length)}
+              aria-label="Siguiente"
+              className="absolute right-2 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white/80 backdrop-blur-sm transition hover:bg-black/50 hover:text-white"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
             {/* overlay removed to show full slider image */}
             <div key={slide} className="absolute inset-0 flex flex-col justify-center gap-2 p-4 sm:p-5">
               <p className="font-display text-xs tracking-widest text-purple-100/80">{current.eyebrow}</p>
