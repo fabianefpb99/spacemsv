@@ -82,7 +82,7 @@ export function DiceGame() {
   const [balance, setBalance] = useState(100000);
   const [bet, setBet] = useState(2000);
   const [side, setSide] = useState<Side>("low");
-  const [mult, setMult] = useState<number>(2);
+  const [mult, setMult] = useState<number>(MULTS[0]);
   const [phase, setPhase] = useState<Phase>("betting");
   const [face, setFace] = useState<number>(1); // currently displayed face when settled
   const [targetFace, setTargetFace] = useState<number>(1); // face we'll land on during a roll
