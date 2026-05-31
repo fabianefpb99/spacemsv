@@ -743,9 +743,9 @@ html, body {
 
 .dice-stage {
   position: relative;
-  width: 140px;
-  height: 140px;
-  perspective: 900px;
+  width: 168px;
+  height: 168px;
+  perspective: 1100px;
   transform-style: preserve-3d;
   animation: dice-float 4s ease-in-out infinite;
 }
@@ -846,13 +846,13 @@ html, body {
 }
 .dice-pip-off { width: 22px; height: 22px; }
 
-/* Cube face transforms (translateZ = half cube size = 70px) */
-.dice-front  { transform: translateZ(70px); }
-.dice-back   { transform: rotateY(180deg) translateZ(70px); }
-.dice-right  { transform: rotateY(90deg)  translateZ(70px); }
-.dice-left   { transform: rotateY(-90deg) translateZ(70px); }
-.dice-top    { transform: rotateX(90deg)  translateZ(70px); }
-.dice-bottom { transform: rotateX(-90deg) translateZ(70px); }
+/* Cube face transforms (translateZ = half cube size = 84px) */
+.dice-front  { transform: translateZ(84px); }
+.dice-back   { transform: rotateY(180deg) translateZ(84px); }
+.dice-right  { transform: rotateY(90deg)  translateZ(84px); }
+.dice-left   { transform: rotateY(-90deg) translateZ(84px); }
+.dice-top    { transform: rotateX(90deg)  translateZ(84px); }
+.dice-bottom { transform: rotateX(-90deg) translateZ(84px); }
 
 @keyframes dice-float {
   0%, 100% { transform: translateY(0); }
