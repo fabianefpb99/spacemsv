@@ -15,6 +15,7 @@ import { Route as SlotRouteImport } from './routes/slot'
 import { Route as PayRouteImport } from './routes/pay'
 import { Route as MinesRouteImport } from './routes/mines'
 import { Route as HomeRouteImport } from './routes/home'
+import { Route as DadosRouteImport } from './routes/dados'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PayBrebRouteImport } from './routes/pay_.breb'
 
@@ -48,6 +49,11 @@ const HomeRoute = HomeRouteImport.update({
   path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DadosRoute = DadosRouteImport.update({
+  id: '/dados',
+  path: '/dados',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -61,6 +67,7 @@ const PayBrebRoute = PayBrebRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dados': typeof DadosRoute
   '/home': typeof HomeRoute
   '/mines': typeof MinesRoute
   '/pay': typeof PayRoute
@@ -71,6 +78,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dados': typeof DadosRoute
   '/home': typeof HomeRoute
   '/mines': typeof MinesRoute
   '/pay': typeof PayRoute
@@ -82,6 +90,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dados': typeof DadosRoute
   '/home': typeof HomeRoute
   '/mines': typeof MinesRoute
   '/pay': typeof PayRoute
@@ -94,6 +103,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/dados'
     | '/home'
     | '/mines'
     | '/pay'
@@ -104,6 +114,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/dados'
     | '/home'
     | '/mines'
     | '/pay'
@@ -114,6 +125,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/dados'
     | '/home'
     | '/mines'
     | '/pay'
@@ -125,6 +137,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DadosRoute: typeof DadosRoute
   HomeRoute: typeof HomeRoute
   MinesRoute: typeof MinesRoute
   PayRoute: typeof PayRoute
@@ -178,6 +191,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dados': {
+      id: '/dados'
+      path: '/dados'
+      fullPath: '/dados'
+      preLoaderRoute: typeof DadosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -197,6 +217,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DadosRoute: DadosRoute,
   HomeRoute: HomeRoute,
   MinesRoute: MinesRoute,
   PayRoute: PayRoute,
