@@ -371,6 +371,64 @@ export function playCashoutSound() {
 // Bright ascending bell-like ping with a soft sparkle tail. Pitch rises
 // slightly with each pick to reward the player and push them to continue.
 let revealStreak = 0;
+
+// ---- Dice roll sound (subtle tumbling) ----
+// Soft filtered-noise "shake" plus a handful of low wood-like clicks that
+// taper off, evoking a die tumbling across felt. Duration ~2s by default.
+export function playDiceRollSound(durationMs = 2000) {
+  const c = getCtx();
+  if (!c || muted || !masterGain) return;
+  const now = c.currentTime;
+  const dur = durationMs / 1000;
+
+  // Tumbling noise bed
+  const noiseBuf = makeNoiseBuffer(c);
+  const noise = c.createBufferSource();
+  noise.buffer = noiseBuf;
+  noise.loop = true;
+  const nf = c.createBiquadFilter();
+  nf.type = "bandpass";
+  nf.frequency.value = 900;
+  nf.Q.value = 0.8;
+  const ng = c.createGain();
+  ng.gain.setValueAtTime(0, now);
+  ng.gain.linearRampToValueAtTime(0.045, now + 0.05);
+  ng.gain.setValueAtTime(0.045, now + dur - 0.25);
+  ng.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+  // Subtle filter wobble for "rolling" motion
+  const lfo = c.createOscillator();
+  lfo.frequency.value = 7;
+  const lfoG = c.createGain();
+  lfoG.gain.value = 350;
+  lfo.connect(lfoG).connect(nf.frequency);
+  noise.connect(nf).connect(ng).connect(masterGain);
+  noise.start(now);
+  lfo.start(now);
+  noise.stop(now + dur + 0.05);
+  lfo.stop(now + dur + 0.05);
+
+  // Sparse wood-like clicks (die hitting surface), tapering off
+  const clickCount = 7;
+  for (let i = 0; i < clickCount; i++) {
+    const progress = i / clickCount;
+    const t = now + 0.05 + progress * (dur - 0.2) + Math.random() * 0.08;
+    const amp = 0.06 * (1 - progress * 0.7);
+    const o = c.createOscillator();
+    o.type = "square";
+    o.frequency.setValueAtTime(180 + Math.random() * 120, t);
+    const cf = c.createBiquadFilter();
+    cf.type = "lowpass";
+    cf.frequency.value = 1200;
+    const cg = c.createGain();
+    cg.gain.setValueAtTime(0, t);
+    cg.gain.linearRampToValueAtTime(amp, t + 0.004);
+    cg.gain.exponentialRampToValueAtTime(0.0001, t + 0.06);
+    o.connect(cf).connect(cg).connect(masterGain);
+    o.start(t);
+    o.stop(t + 0.08);
+  }
+}
+
 export function resetRevealStreak() {
   revealStreak = 0;
 }
