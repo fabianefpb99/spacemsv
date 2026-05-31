@@ -550,6 +550,32 @@ html, body {
   50%     { filter: drop-shadow(0 0 14px rgba(255,80,80,0.95)) drop-shadow(0 0 28px rgba(255,40,40,0.65)); }
 }
 
+/* Slot win highlights — 3 niveles */
+@keyframes slot-win-pulse {
+  0%,100% { transform: scale(1); opacity: 1; }
+  50%     { transform: scale(1.06); opacity: 0.92; }
+}
+@keyframes slot-win-fire {
+  0%,100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 10px rgba(255,140,30,0.95)) drop-shadow(0 0 22px rgba(255,60,0,0.7));
+  }
+  50% {
+    transform: scale(1.09);
+    filter: drop-shadow(0 0 18px rgba(255,180,60,1)) drop-shadow(0 0 34px rgba(255,80,0,0.85));
+  }
+}
+@keyframes slot-win-mega {
+  0%,100% {
+    transform: scale(1) rotate(-1deg);
+    filter: drop-shadow(0 0 14px rgba(255,215,0,1)) drop-shadow(0 0 28px rgba(255,180,0,0.8)) drop-shadow(0 0 48px rgba(255,255,255,0.5));
+  }
+  50% {
+    transform: scale(1.14) rotate(1deg);
+    filter: drop-shadow(0 0 22px rgba(255,235,120,1)) drop-shadow(0 0 44px rgba(255,200,40,0.95)) drop-shadow(0 0 72px rgba(255,255,255,0.7));
+  }
+}
+
 .mines-tile {
   position: relative;
   border-radius: 10px;
