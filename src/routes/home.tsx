@@ -120,11 +120,16 @@ function HomePage() {
                 <Menu className="h-7 w-7" strokeWidth={3} />
               </button>
               <Link to="/home">
-                <img
-                  src={betspaceLogo}
-                  alt="BETSPACE"
-                  className="h-6 w-auto sm:h-7"
-                />
+                <div className="flex flex-col items-stretch">
+                  <img
+                    src={betspaceLogo}
+                    alt="BETSPACE"
+                    className="h-6 w-auto sm:h-7"
+                  />
+                  <div className="font-display text-[7px] font-bold uppercase text-white text-center leading-none mt-0.5 whitespace-nowrap" style={{ letterSpacing: '0.05em' }}>
+                    Apuesta y Gana
+                  </div>
+                </div>
               </Link>
             </div>
             <div className="flex items-center gap-2">
@@ -138,9 +143,6 @@ function HomePage() {
                 <Settings className="h-5 w-5 sm:h-6 sm:w-6" />
               </button>
             </div>
-          </div>
-          <div className="mt-0.5 font-display text-[9px] font-bold tracking-[0.25em] text-purple-300/80 uppercase">
-            APUESTA Y GANA
           </div>
         </header>
 
