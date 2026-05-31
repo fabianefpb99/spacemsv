@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import { Menu, Settings, Minus, Plus, Volume2, VolumeX, TrendingUp, Crown } from "lucide-react";
+import { Menu, Settings, Minus, Plus, Volume2, VolumeX, TrendingUp } from "lucide-react";
 import { setMuted as setAudioMuted, playCashoutSound, playCrashSound, isMuted } from "@/lib/gameAudio";
 
 type Phase = "betting" | "rolling" | "won" | "lost";
@@ -129,13 +129,13 @@ export function DiceGame() {
   return (
     <div className="min-h-screen bg-[#060210] text-white">
       <div
-        className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-4 pt-4 sm:max-w-lg sm:px-4"
-        style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 1rem)" }}
+        className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-2 pt-3 sm:max-w-lg sm:px-4"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 0.5rem)" }}
       >
         {/* Header */}
         <header
-          className="flex items-center justify-between bg-[#060210]/80 backdrop-blur-sm border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
-          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.75rem)" }}
+          className="flex items-center justify-between bg-[#060210]/80 backdrop-blur-sm border-b border-purple-500/20 pb-2 px-3 -mx-3 -mt-3"
+          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.5rem)" }}
         >
           <div className="flex items-center gap-1">
             <button className="rounded-md p-2 text-white hover:bg-white/10">
@@ -159,7 +159,7 @@ export function DiceGame() {
         </header>
 
         {/* Online / mute */}
-        <div className="mt-2 flex items-center justify-between">
+        <div className="mt-1.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="relative inline-flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
@@ -177,7 +177,7 @@ export function DiceGame() {
         </div>
 
         {/* Stats HUD */}
-        <section className="mt-2 grid grid-cols-4 gap-2 rounded-2xl border border-purple-500/30 glass-panel p-2">
+        <section className="mt-1.5 grid grid-cols-4 gap-1.5 rounded-xl border border-purple-500/30 glass-panel p-1.5">
           <Stat label="Límite Mín" value={`${formatCOP(MIN_BET)}`} />
           <Stat label="Límite Máx" value={`${formatCOP(MAX_BET)}`} />
           <Stat label="Multiplicador" value={`X${mult.toFixed(2)}`} accent />
@@ -185,12 +185,12 @@ export function DiceGame() {
         </section>
 
         {/* Main dice panel */}
-        <section className="relative mt-2 overflow-hidden rounded-2xl border border-purple-500/30 glass-panel p-3">
-          <div className="mx-auto mb-2 w-fit rounded-full border border-purple-500/40 bg-[#160830]/70 px-6 py-1.5">
-            <span className="font-display text-base font-black uppercase tracking-[0.3em] neon-purple">DICE</span>
+        <section className="relative mt-1.5 overflow-hidden rounded-2xl border border-purple-500/30 glass-panel p-2">
+          <div className="mx-auto mb-1 w-fit rounded-full border border-purple-500/40 bg-[#160830]/70 px-5 py-1">
+            <span className="font-display text-xs font-black uppercase tracking-[0.3em] neon-purple">DICE</span>
           </div>
 
-          <div className="relative mx-auto flex h-56 w-full items-center justify-center sm:h-64">
+          <div className="relative mx-auto flex h-40 w-full items-center justify-center sm:h-44">
             {/* energy halo */}
             <div className="dice-halo" />
             <div className="dice-rings" />
@@ -219,13 +219,13 @@ export function DiceGame() {
           </div>
 
           {/* Multiplier picker */}
-          <div className="mt-2 flex items-center justify-between gap-1 overflow-x-auto hide-scrollbar">
+          <div className="mt-1.5 flex items-center justify-between gap-1 overflow-x-auto hide-scrollbar">
             {MULTS.map((m) => (
               <button
                 key={m}
                 disabled={phase !== "betting"}
                 onClick={() => setMult(m)}
-                className={`shrink-0 rounded-md px-2.5 py-1 font-display text-[11px] font-bold transition disabled:opacity-50 ${
+                className={`shrink-0 rounded-md px-2 py-0.5 font-display text-[10px] font-bold transition disabled:opacity-50 ${
                   m === mult
                     ? "border border-emerald-400/70 bg-emerald-500/15 text-emerald-200 shadow-[0_0_10px_rgba(16,185,129,0.45)]"
                     : "border border-purple-500/30 bg-[#160830]/50 text-purple-100 hover:border-purple-400/60"
@@ -238,47 +238,47 @@ export function DiceGame() {
         </section>
 
         {/* BAJO / ALTO */}
-        <section className="mt-2 grid grid-cols-2 gap-2">
+        <section className="mt-1.5 grid grid-cols-2 gap-2">
           <button
             disabled={phase !== "betting"}
             onClick={() => setSide("low")}
-            className={`flex flex-col items-center justify-center rounded-2xl border py-3 transition disabled:opacity-60 ${
+            className={`flex flex-col items-center justify-center rounded-xl border py-2 transition disabled:opacity-60 ${
               side === "low"
                 ? "border-emerald-400/70 bg-emerald-500/10 shadow-[0_0_18px_rgba(16,185,129,0.35)]"
                 : "border-purple-500/30 bg-[#160830]/60 hover:border-purple-400/60"
             }`}
           >
-            <span className="font-display text-xl font-black tracking-widest text-white">BAJO</span>
-            <span className="text-[11px] font-bold text-purple-200/80">1 — 3</span>
+            <span className="font-display text-base font-black tracking-widest text-white">BAJO</span>
+            <span className="text-[10px] font-bold text-purple-200/80">1 — 3</span>
           </button>
           <button
             disabled={phase !== "betting"}
             onClick={() => setSide("high")}
-            className={`flex flex-col items-center justify-center rounded-2xl border py-3 transition disabled:opacity-60 ${
+            className={`flex flex-col items-center justify-center rounded-xl border py-2 transition disabled:opacity-60 ${
               side === "high"
                 ? "border-emerald-400/70 bg-emerald-500/10 shadow-[0_0_18px_rgba(16,185,129,0.35)]"
                 : "border-purple-500/30 bg-[#160830]/60 hover:border-purple-400/60"
             }`}
           >
-            <span className="font-display text-xl font-black tracking-widest text-white">ALTO</span>
-            <span className="text-[11px] font-bold text-purple-200/80">4 — 6</span>
+            <span className="font-display text-base font-black tracking-widest text-white">ALTO</span>
+            <span className="text-[10px] font-bold text-purple-200/80">4 — 6</span>
           </button>
         </section>
 
         {/* Recent dice */}
-        <section className="mt-2 rounded-xl border border-purple-500/30 glass-panel px-2 py-2">
-          <div className="flex items-center gap-2 mb-1.5">
+        <section className="mt-1.5 rounded-xl border border-purple-500/30 glass-panel px-2 py-1.5">
+          <div className="flex items-center gap-2 mb-1">
             <TrendingUp className="h-3 w-3 text-emerald-400" />
             <span className="font-display text-[9px] font-bold uppercase tracking-widest text-white/80">
               Últimos resultados
             </span>
           </div>
-          <div className="flex gap-1.5 overflow-x-auto hide-scrollbar">
+          <div className="flex gap-1 overflow-x-auto hide-scrollbar">
             {recent.map((h) => (
               <div
                 key={h.id}
                 title={`${h.user} · ${h.roll} · ${h.won ? formatCOP(h.amount) + " COP" : "Perdió"}`}
-                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md border ${
+                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md border ${
                   h.won
                     ? "border-emerald-500/40 bg-emerald-950/30 text-emerald-300"
                     : "border-purple-500/30 bg-[#160830]/60 text-purple-200"
@@ -291,13 +291,13 @@ export function DiceGame() {
         </section>
 
         {/* Bet panel */}
-        <section className="mt-2 rounded-2xl border border-purple-500/30 glass-panel p-2.5">
-          <div className="text-center text-[10px] uppercase tracking-widest text-purple-200/70">Apuesta (COP)</div>
-          <div className="mt-1.5 flex items-center gap-2">
+        <section className="mt-1.5 rounded-2xl border border-purple-500/30 glass-panel p-2">
+          <div className="text-center text-[9px] uppercase tracking-widest text-purple-200/70">Apuesta (COP)</div>
+          <div className="mt-1 flex items-center gap-2">
             <button
               onClick={() => setBet((b) => Math.max(MIN_BET, b - BET_STEP))}
               disabled={phase !== "betting"}
-              className="btn-bet flex h-11 w-12 items-center justify-center rounded-lg disabled:opacity-50"
+              className="btn-bet flex h-10 w-11 items-center justify-center rounded-lg disabled:opacity-50"
               aria-label="Disminuir apuesta"
             >
               <Minus className="h-5 w-5" />
@@ -305,23 +305,23 @@ export function DiceGame() {
             <input
               readOnly
               value={formatCOP(bet)}
-              className="no-spinner h-11 w-full cursor-default rounded-lg border border-purple-500/30 bg-[#160830]/60 text-center font-display text-xl font-bold text-white outline-none"
+              className="no-spinner h-10 w-full cursor-default rounded-lg border border-purple-500/30 bg-[#160830]/60 text-center font-display text-lg font-bold text-white outline-none"
             />
             <button
               onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b + BET_STEP))}
               disabled={phase !== "betting"}
-              className="btn-bet flex h-11 w-12 items-center justify-center rounded-lg disabled:opacity-50"
+              className="btn-bet flex h-10 w-11 items-center justify-center rounded-lg disabled:opacity-50"
               aria-label="Aumentar apuesta"
             >
               <Plus className="h-5 w-5" />
             </button>
           </div>
 
-          <div className="mt-2 flex items-center gap-1.5">
+          <div className="mt-1.5 flex items-center gap-1.5">
             <button
               onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b * 2))}
               disabled={phase !== "betting"}
-              className="btn-bet flex h-8 flex-1 items-center justify-center rounded-md text-xs font-bold disabled:opacity-50"
+              className="btn-bet flex h-7 flex-1 items-center justify-center rounded-md text-[11px] font-bold disabled:opacity-50"
             >
               X2
             </button>
@@ -330,52 +330,26 @@ export function DiceGame() {
                 key={amt}
                 onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b + amt))}
                 disabled={phase !== "betting"}
-                className="btn-bet flex h-8 flex-1 items-center justify-center rounded-md text-xs font-bold disabled:opacity-50"
+                className="btn-bet flex h-7 flex-1 items-center justify-center rounded-md text-[11px] font-bold disabled:opacity-50"
               >
                 +{amt >= 1000 ? `${amt / 1000}K` : amt}
               </button>
             ))}
           </div>
 
-          <div className="mt-1 text-center text-[10px] text-purple-300/70">
-            MÍNIMO: {formatCOP(MIN_BET)} COP · MÁXIMO: {formatCOP(MAX_BET)} COP
-          </div>
-
-          <div className="mt-3">
+          <div className="mt-2">
             <button
               onClick={handleRoll}
               disabled={!canRoll}
-              className="btn-primary-green btn-primary-action flex h-12 w-full flex-col items-center justify-center rounded-xl font-display font-black uppercase tracking-widest disabled:opacity-50"
+              className="btn-primary-green btn-primary-action flex h-11 w-full flex-col items-center justify-center rounded-xl font-display font-black uppercase tracking-widest disabled:opacity-50"
             >
-              <span className="text-base leading-none">TIRAR DADOS</span>
+              <span className="text-sm leading-none">TIRAR DADOS</span>
               <span className="text-[10px] leading-tight opacity-90">Ganarías {formatCOP(potentialWin)} COP</span>
             </button>
           </div>
         </section>
 
-        {/* Top wins */}
-        <section className="mt-2 rounded-2xl border border-purple-500/30 glass-panel p-2.5">
-          <div className="mb-1.5 flex items-center gap-2">
-            <Crown className="h-3.5 w-3.5 text-amber-300" />
-            <span className="font-display text-[10px] font-bold uppercase tracking-widest text-white/80">
-              Top tiradas
-            </span>
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            {history.filter((h) => h.won).slice(0, 3).map((h) => (
-              <div
-                key={h.id}
-                className="flex flex-col items-center gap-0.5 rounded-lg border border-purple-500/30 bg-[#160830]/60 p-1.5"
-              >
-                <div className="truncate text-[10px] font-semibold text-white/90">{h.user}</div>
-                <div className="font-display text-sm font-black neon-green">{h.multiplier.toFixed(2)}x</div>
-                <div className="text-[9px] text-purple-200/70">{formatCOP(h.amount)} COP</div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <div className="h-3" />
+        <div className="h-1" />
       </div>
 
       {/* Win popup */}
