@@ -893,34 +893,28 @@ html, body {
    so when rolling ends and the idle animation takes over the rendered face
    matches exactly what the user saw at the end of the tumble. */
 @keyframes dice-spin-roll-1 {
-  0%   { transform: rotateX(0deg)    rotateY(0deg)    rotateZ(0deg); }
-  50%  { transform: rotateX(900deg)  rotateY(720deg)  rotateZ(360deg); }
-  100% { transform: rotateX(1425deg) rotateY(1440deg) rotateZ(720deg); } /* -15 + 1440 */
+  from { transform: rotateX(0deg)    rotateY(0deg)    rotateZ(0deg); }
+  to   { transform: rotateX(1425deg) rotateY(1440deg) rotateZ(720deg); }
 }
 @keyframes dice-spin-roll-2 {
-  0%   { transform: rotateX(0deg)    rotateY(0deg)    rotateZ(0deg); }
-  50%  { transform: rotateX(900deg)  rotateY(720deg)  rotateZ(360deg); }
-  100% { transform: rotateX(1515deg) rotateY(1440deg) rotateZ(720deg); } /* 75 + 1440 */
+  from { transform: rotateX(0deg)    rotateY(0deg)    rotateZ(0deg); }
+  to   { transform: rotateX(1515deg) rotateY(1440deg) rotateZ(720deg); }
 }
 @keyframes dice-spin-roll-3 {
-  0%   { transform: rotateX(0deg)    rotateY(0deg)    rotateZ(0deg); }
-  50%  { transform: rotateX(720deg)  rotateY(900deg)  rotateZ(360deg); }
-  100% { transform: rotateX(1440deg) rotateY(1365deg) rotateZ(720deg); } /* -75 + 1440 */
+  from { transform: rotateX(0deg)    rotateY(0deg)    rotateZ(0deg); }
+  to   { transform: rotateX(1440deg) rotateY(1365deg) rotateZ(720deg); }
 }
 @keyframes dice-spin-roll-4 {
-  0%   { transform: rotateX(0deg)    rotateY(0deg)    rotateZ(0deg); }
-  50%  { transform: rotateX(720deg)  rotateY(900deg)  rotateZ(360deg); }
-  100% { transform: rotateX(1440deg) rotateY(1515deg) rotateZ(720deg); } /* 75 + 1440 */
+  from { transform: rotateX(0deg)    rotateY(0deg)    rotateZ(0deg); }
+  to   { transform: rotateX(1440deg) rotateY(1515deg) rotateZ(720deg); }
 }
 @keyframes dice-spin-roll-5 {
-  0%   { transform: rotateX(0deg)    rotateY(0deg)    rotateZ(0deg); }
-  50%  { transform: rotateX(900deg)  rotateY(720deg)  rotateZ(360deg); }
-  100% { transform: rotateX(1335deg) rotateY(1440deg) rotateZ(720deg); } /* -105 + 1440 */
+  from { transform: rotateX(0deg)    rotateY(0deg)    rotateZ(0deg); }
+  to   { transform: rotateX(1335deg) rotateY(1440deg) rotateZ(720deg); }
 }
 @keyframes dice-spin-roll-6 {
-  0%   { transform: rotateX(0deg)    rotateY(0deg)    rotateZ(0deg); }
-  50%  { transform: rotateX(720deg)  rotateY(900deg)  rotateZ(360deg); }
-  100% { transform: rotateX(1440deg) rotateY(1635deg) rotateZ(720deg); } /* 195 + 1440 */
+  from { transform: rotateX(0deg)    rotateY(0deg)    rotateZ(0deg); }
+  to   { transform: rotateX(1440deg) rotateY(1635deg) rotateZ(720deg); }
 }
 
 /* Energy halo below dice */
