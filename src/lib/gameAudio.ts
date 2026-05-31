@@ -379,91 +379,16 @@ let revealStreak = 0;
 //   - Bounce phase: a few stronger clicks with low-end body (hitting surface).
 //   - Settle: a final quiet tick.
 export function playDiceRollSound(durationMs = 2000) {
-  const c = getCtx();
-  if (!c || muted || !masterGain) return;
-  const now = c.currentTime;
-  const dur = durationMs / 1000;
-
-  // Pre-build a reusable short white-noise buffer for crisp transients
-  const sr = c.sampleRate;
-  const burstLen = Math.floor(sr * 0.05); // 50ms
-  const burstBuf = c.createBuffer(1, burstLen, sr);
-  const bd = burstBuf.getChannelData(0);
-  for (let i = 0; i < burstLen; i++) bd[i] = Math.random() * 2 - 1;
-
-  // A "click" = short noise burst through bandpass (bright = plastic crack)
-  // with an optional low sine "thump" for table-bounce body.
-  const click = (
-    t: number,
-    amp: number,
-    bp: number, // bandpass center for plastic crack
-    decay: number,
-    body = 0,
-  ) => {
-    const src = c.createBufferSource();
-    src.buffer = burstBuf;
-    const f = c.createBiquadFilter();
-    f.type = "bandpass";
-    f.frequency.value = bp;
-    f.Q.value = 3;
-    const g = c.createGain();
-    g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(amp, t + 0.002);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + decay);
-    src.connect(f).connect(g).connect(masterGain!);
-    src.start(t);
-    src.stop(t + decay + 0.02);
-
-    if (body > 0) {
-      // Low-frequency thump for "lands on table" body
-      const o = c.createOscillator();
-      o.type = "sine";
-      o.frequency.setValueAtTime(140 + Math.random() * 40, t);
-      o.frequency.exponentialRampToValueAtTime(60, t + 0.12);
-      const og = c.createGain();
-      og.gain.setValueAtTime(0, t);
-      og.gain.linearRampToValueAtTime(body, t + 0.005);
-      og.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
-      o.connect(og).connect(masterGain!);
-      o.start(t);
-      o.stop(t + 0.22);
-    }
-  };
-
-  // --- Phase 1: shake in hand (first ~65% of duration) ---
-  // Dense bursts of bright clicks at ~35-50ms spacing with jitter
-  const shakeEnd = dur * 0.65;
-  let t = 0.01;
-  while (t < shakeEnd) {
-    const amp = 0.09 + Math.random() * 0.07;
-    const bp = 2800 + Math.random() * 2200; // 2.8–5kHz: crisp plastic
-    click(now + t, amp, bp, 0.04 + Math.random() * 0.03);
-    // Occasional doubled click (two dice colliding tightly)
-    if (Math.random() < 0.35) {
-      click(now + t + 0.012, amp * 0.8, bp * 0.9, 0.035);
-    }
-    t += 0.028 + Math.random() * 0.035;
+export function playDiceRollSound(_durationMs = 2000) {
+  if (muted) return;
+  if (typeof window === "undefined") return;
+  try {
+    const audio = new Audio("/sounds/dice-roll.mp3");
+    audio.volume = 0.9;
+    void audio.play().catch(() => {});
+  } catch {
+    /* ignore */
   }
-
-  // Brief gap = dice leaving the hand
-  const gap = 0.08;
-
-  // --- Phase 2: table bounces (3-4 hits, decreasing energy) ---
-  const bounceStart = shakeEnd + gap;
-  const bounceTimes = [0, 0.13, 0.24, 0.33];
-  const bounceAmps = [0.22, 0.16, 0.10, 0.06];
-  const bounceBodies = [0.18, 0.12, 0.07, 0.03];
-  for (let i = 0; i < bounceTimes.length; i++) {
-    const bt = now + bounceStart + bounceTimes[i];
-    if (bt - now > dur) break;
-    // Two near-simultaneous clicks (two dice hit ~together)
-    click(bt, bounceAmps[i], 2200 + Math.random() * 1500, 0.07, bounceBodies[i]);
-    click(bt + 0.008 + Math.random() * 0.01, bounceAmps[i] * 0.7, 2600 + Math.random() * 1400, 0.06);
-  }
-
-  // --- Phase 3: tiny final settle tick ---
-  const settleT = now + Math.min(dur - 0.05, bounceStart + 0.45);
-  click(settleT, 0.04, 3200, 0.05);
 }
 
 export function resetRevealStreak() {
