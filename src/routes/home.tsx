@@ -351,7 +351,7 @@ function BottomItem({ icon, label, active, to }: { icon: React.ReactNode; label:
 function BottomCenter() {
   return (
     <Link to="/spaceman" className="-mt-7 flex w-16 flex-col items-center gap-1">
-      <span className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-4 border-white shadow-lg shadow-purple-900/60">
+      <span className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-[3px] border-white shadow-lg shadow-purple-900/60">
         <img src={gameSpaceman} alt="" className="h-full w-full object-cover" />
       </span>
       <span className="text-[9px] font-bold tracking-wider text-purple-200">SPACEMAN</span>
