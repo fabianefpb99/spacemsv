@@ -301,6 +301,57 @@ function stopReelLoop() {
   reelLoopNodes = null;
 }
 
+/* ---- Sonidos por tier de premio ---- */
+function playFireWinSound() {
+  if (isMuted()) return;
+  const c = ctx(); if (!c) return;
+  const t0 = c.currentTime;
+  // Triple campana ascendente naranja
+  [880, 1175, 1568].forEach((f, i) => {
+    const o = c.createOscillator();
+    o.type = "triangle";
+    o.frequency.setValueAtTime(f, t0 + i * 0.08);
+    const g = c.createGain();
+    g.gain.setValueAtTime(0, t0 + i * 0.08);
+    g.gain.linearRampToValueAtTime(0.12, t0 + i * 0.08 + 0.015);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + i * 0.08 + 0.45);
+    o.connect(g).connect(c.destination);
+    o.start(t0 + i * 0.08); o.stop(t0 + i * 0.08 + 0.5);
+  });
+}
+function playMegaWinSound() {
+  if (isMuted()) return;
+  const c = ctx(); if (!c) return;
+  const t0 = c.currentTime;
+  // Fanfarria dorada: acorde + arpeggio brillante
+  const chord = [523.25, 659.25, 783.99, 1046.5];
+  chord.forEach((f) => {
+    const o = c.createOscillator();
+    o.type = "sawtooth";
+    o.frequency.setValueAtTime(f, t0);
+    const g = c.createGain();
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(0.06, t0 + 0.03);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.1);
+    const lp = c.createBiquadFilter();
+    lp.type = "lowpass"; lp.frequency.value = 3500;
+    o.connect(lp).connect(g).connect(c.destination);
+    o.start(t0); o.stop(t0 + 1.15);
+  });
+  // Sparkle arpeggio
+  [1318, 1568, 1976, 2349, 2637].forEach((f, i) => {
+    const o = c.createOscillator();
+    o.type = "sine";
+    o.frequency.setValueAtTime(f, t0 + 0.1 + i * 0.07);
+    const g = c.createGain();
+    g.gain.setValueAtTime(0, t0 + 0.1 + i * 0.07);
+    g.gain.linearRampToValueAtTime(0.08, t0 + 0.1 + i * 0.07 + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.1 + i * 0.07 + 0.35);
+    o.connect(g).connect(c.destination);
+    o.start(t0 + 0.1 + i * 0.07); o.stop(t0 + 0.1 + i * 0.07 + 0.4);
+  });
+}
+
 /* ============================================================
    Reel component — continuous translateY strip (no flicker)
    ============================================================ */
