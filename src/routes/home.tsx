@@ -213,7 +213,14 @@ function HomePage() {
         {/* Jackpot */}
         <section className="mt-5 flex items-center gap-3 rounded-xl border border-purple-500/30 bg-gradient-to-r from-[#1a0b3a]/80 to-[#0c0620] p-3 sm:p-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-amber-500/20 sm:h-14 sm:w-14">
-            <Trophy className="h-7 w-7 text-amber-400 sm:h-8 sm:w-8" strokeWidth={2.5} />
+            <img
+              src={trophy3d}
+              alt="Trofeo"
+              loading="lazy"
+              width={128}
+              height={128}
+              className="h-9 w-9 object-contain drop-shadow-[0_0_10px_rgba(251,191,36,0.5)] sm:h-11 sm:w-11"
+            />
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-[10px] uppercase tracking-widest text-purple-200/70">
