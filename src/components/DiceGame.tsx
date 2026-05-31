@@ -188,8 +188,8 @@ export function DiceGame() {
 
         {/* Main dice panel */}
         <section className="relative mt-1.5 overflow-hidden rounded-2xl border border-purple-500/30 glass-panel p-2">
-          <div className="relative z-20 mx-auto mb-1 w-fit rounded-full border border-purple-500/40 bg-[#160830]/90 px-5 py-1 shadow-[0_0_12px_rgba(168,85,247,0.35)]">
-            <span className="font-display text-xs font-black uppercase tracking-[0.3em] neon-purple">DICE</span>
+          <div className="relative z-20 mb-1 w-fit rounded-full border border-purple-500/40 bg-[#160830]/90 px-5 py-1 shadow-[0_0_12px_rgba(168,85,247,0.35)]">
+            <span className="font-display text-xs font-black uppercase tracking-[0.3em] neon-purple">DADOS</span>
           </div>
 
           <div className="relative z-0 mx-auto flex h-56 w-full items-center justify-center sm:h-60">
