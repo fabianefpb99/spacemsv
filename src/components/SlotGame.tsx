@@ -637,7 +637,11 @@ export function SlotGame() {
     setTotalWonRound(total);
     if (total > 0) {
       setBalance((b) => b + total);
-      playCashoutSound();
+      const bestPayout = Math.max(...w.map((x) => x.payout));
+      const tier = getWinTier(bestPayout, bet);
+      if (tier === "mega") playMegaWinSound();
+      else if (tier === "fire") playFireWinSound();
+      else playCashoutSound();
       const best = [...w].sort((a, b) => b.payout - a.payout)[0];
       setHistory((h) =>
         [{ id: ++historyId.current, user: "Tú", symbolId: best.symbolId, multiplier: total / bet, amount: total, ts: Date.now() }, ...h].slice(0, 30)
@@ -667,6 +671,7 @@ export function SlotGame() {
 
   // Compute which cells are currently highlighted
   const activeWin = wins.length > 0 ? wins[highlightTick % wins.length] : null;
+  const activeTier: WinTier = activeWin ? getWinTier(activeWin.payout, bet) : "normal";
   const highlightedCells = useMemo(() => {
     const map = new Map<number, Set<number>>();
     for (let r = 0; r < REELS; r++) map.set(r, new Set());
@@ -823,6 +828,7 @@ export function SlotGame() {
                   reelIndex={ri}
                   onStop={handleReelStop}
                   winRows={highlightedCells.get(ri) ?? new Set()}
+                  winTier={activeTier}
                 />
               ))}
               {/* Single neon vertical dividers between reels */}
