@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SpacemanRouteImport } from './routes/spaceman'
+import { Route as SlotpruebasRouteImport } from './routes/slotpruebas'
 import { Route as SlotRouteImport } from './routes/slot'
 import { Route as PayRouteImport } from './routes/pay'
 import { Route as MinesRouteImport } from './routes/mines'
@@ -20,6 +21,11 @@ import { Route as PayBrebRouteImport } from './routes/pay_.breb'
 const SpacemanRoute = SpacemanRouteImport.update({
   id: '/spaceman',
   path: '/spaceman',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SlotpruebasRoute = SlotpruebasRouteImport.update({
+  id: '/slotpruebas',
+  path: '/slotpruebas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SlotRoute = SlotRouteImport.update({
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/mines': typeof MinesRoute
   '/pay': typeof PayRoute
   '/slot': typeof SlotRoute
+  '/slotpruebas': typeof SlotpruebasRoute
   '/spaceman': typeof SpacemanRoute
   '/pay/breb': typeof PayBrebRoute
 }
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/mines': typeof MinesRoute
   '/pay': typeof PayRoute
   '/slot': typeof SlotRoute
+  '/slotpruebas': typeof SlotpruebasRoute
   '/spaceman': typeof SpacemanRoute
   '/pay/breb': typeof PayBrebRoute
 }
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/mines': typeof MinesRoute
   '/pay': typeof PayRoute
   '/slot': typeof SlotRoute
+  '/slotpruebas': typeof SlotpruebasRoute
   '/spaceman': typeof SpacemanRoute
   '/pay_/breb': typeof PayBrebRoute
 }
@@ -89,10 +98,19 @@ export interface FileRouteTypes {
     | '/mines'
     | '/pay'
     | '/slot'
+    | '/slotpruebas'
     | '/spaceman'
     | '/pay/breb'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/home' | '/mines' | '/pay' | '/slot' | '/spaceman' | '/pay/breb'
+  to:
+    | '/'
+    | '/home'
+    | '/mines'
+    | '/pay'
+    | '/slot'
+    | '/slotpruebas'
+    | '/spaceman'
+    | '/pay/breb'
   id:
     | '__root__'
     | '/'
@@ -100,6 +118,7 @@ export interface FileRouteTypes {
     | '/mines'
     | '/pay'
     | '/slot'
+    | '/slotpruebas'
     | '/spaceman'
     | '/pay_/breb'
   fileRoutesById: FileRoutesById
@@ -110,6 +129,7 @@ export interface RootRouteChildren {
   MinesRoute: typeof MinesRoute
   PayRoute: typeof PayRoute
   SlotRoute: typeof SlotRoute
+  SlotpruebasRoute: typeof SlotpruebasRoute
   SpacemanRoute: typeof SpacemanRoute
   PayBrebRoute: typeof PayBrebRoute
 }
@@ -121,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/spaceman'
       fullPath: '/spaceman'
       preLoaderRoute: typeof SpacemanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/slotpruebas': {
+      id: '/slotpruebas'
+      path: '/slotpruebas'
+      fullPath: '/slotpruebas'
+      preLoaderRoute: typeof SlotpruebasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/slot': {
@@ -174,6 +201,7 @@ const rootRouteChildren: RootRouteChildren = {
   MinesRoute: MinesRoute,
   PayRoute: PayRoute,
   SlotRoute: SlotRoute,
+  SlotpruebasRoute: SlotpruebasRoute,
   SpacemanRoute: SpacemanRoute,
   PayBrebRoute: PayBrebRoute,
 }
