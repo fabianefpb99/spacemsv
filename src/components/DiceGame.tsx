@@ -15,9 +15,9 @@ type Side = "low" | "high";
 //   2.85x → 12%   (EV 0.342)
 //   4.75x →  6%   (EV 0.285)
 //   9.50x →  3%   (EV 0.285)
-const MULTS = [1.14, 1.42, 1.9, 2.85, 4.75, 9.5] as const;
+const MULTS = [1.15, 1.42, 1.9, 2.85, 4.75, 9.5] as const;
 const WIN_PROB: Record<number, number> = {
-  1.14: 0.495,
+  1.15: 0.495,
   1.42: 0.39,
   1.9: 0.22,
   2.85: 0.12,
