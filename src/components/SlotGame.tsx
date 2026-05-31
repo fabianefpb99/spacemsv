@@ -40,6 +40,23 @@ const SYMBOLS: SymbolDef[] = [
 
 const SYMBOL_INDEX = new Map(SYMBOLS.map((s, i) => [s.id, i]));
 
+/* Win tiers — visual + sonoro según qué tan grande es la victoria de cada línea */
+export type WinTier = "normal" | "fire" | "mega";
+function getWinTier(payout: number, totalBet: number): WinTier {
+  if (totalBet <= 0) return "normal";
+  const mult = payout / totalBet;
+  if (mult >= 10) return "mega";
+  if (mult >= 1) return "fire";
+  return "normal";
+}
+
+/* Colores de marco por tier (rgb sin alpha para inyectar en gradients) */
+const TIER_GLOW: Record<WinTier, string> = {
+  normal: "46,255,161", // verde neón (el actual)
+  fire:   "255,120,30",  // naranja-rojo fuego
+  mega:   "255,215,0",   // dorado mega
+};
+
 /* Weighted random fillers for the spinning strip */
 const SPIN_FILLER_COUNT = 18; // tiles above the final 3
 function pickRandomFillers(n: number): string[] {
@@ -284,6 +301,57 @@ function stopReelLoop() {
   reelLoopNodes = null;
 }
 
+/* ---- Sonidos por tier de premio ---- */
+function playFireWinSound() {
+  if (isMuted()) return;
+  const c = ctx(); if (!c) return;
+  const t0 = c.currentTime;
+  // Triple campana ascendente naranja
+  [880, 1175, 1568].forEach((f, i) => {
+    const o = c.createOscillator();
+    o.type = "triangle";
+    o.frequency.setValueAtTime(f, t0 + i * 0.08);
+    const g = c.createGain();
+    g.gain.setValueAtTime(0, t0 + i * 0.08);
+    g.gain.linearRampToValueAtTime(0.12, t0 + i * 0.08 + 0.015);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + i * 0.08 + 0.45);
+    o.connect(g).connect(c.destination);
+    o.start(t0 + i * 0.08); o.stop(t0 + i * 0.08 + 0.5);
+  });
+}
+function playMegaWinSound() {
+  if (isMuted()) return;
+  const c = ctx(); if (!c) return;
+  const t0 = c.currentTime;
+  // Fanfarria dorada: acorde + arpeggio brillante
+  const chord = [523.25, 659.25, 783.99, 1046.5];
+  chord.forEach((f) => {
+    const o = c.createOscillator();
+    o.type = "sawtooth";
+    o.frequency.setValueAtTime(f, t0);
+    const g = c.createGain();
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(0.06, t0 + 0.03);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.1);
+    const lp = c.createBiquadFilter();
+    lp.type = "lowpass"; lp.frequency.value = 3500;
+    o.connect(lp).connect(g).connect(c.destination);
+    o.start(t0); o.stop(t0 + 1.15);
+  });
+  // Sparkle arpeggio
+  [1318, 1568, 1976, 2349, 2637].forEach((f, i) => {
+    const o = c.createOscillator();
+    o.type = "sine";
+    o.frequency.setValueAtTime(f, t0 + 0.1 + i * 0.07);
+    const g = c.createGain();
+    g.gain.setValueAtTime(0, t0 + 0.1 + i * 0.07);
+    g.gain.linearRampToValueAtTime(0.08, t0 + 0.1 + i * 0.07 + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.1 + i * 0.07 + 0.35);
+    o.connect(g).connect(c.destination);
+    o.start(t0 + 0.1 + i * 0.07); o.stop(t0 + 0.1 + i * 0.07 + 0.4);
+  });
+}
+
 /* ============================================================
    Reel component — continuous translateY strip (no flicker)
    ============================================================ */
@@ -297,12 +365,14 @@ function Reel({
   reelIndex,
   onStop,
   winRows,
+  winTier,
 }: {
   finalSyms: string[];
   spinning: boolean;
   reelIndex: number;
   onStop: () => void;
   winRows: Set<number>;
+  winTier: WinTier;
 }) {
   // Strip: [fillers..., finalSyms[0], finalSyms[1], finalSyms[2]]
   // When idle: strip = finalSyms (3 tiles), translateY = 0.
@@ -416,29 +486,60 @@ function Reel({
           // Highlight only when not spinning and tile is in visible row range.
           const isVisibleTile = !spinning && i < ROWS;
           const highlight = isVisibleTile && winRows.has(i);
-          return <SymbolTile key={`${i}-${sid}`} sym={s} highlight={highlight} />;
+          return <SymbolTile key={`${i}-${sid}`} sym={s} highlight={highlight} tier={winTier} />;
         })}
       </div>
     </div>
   );
 }
 
-function SymbolTile({ sym, highlight }: { sym: SymbolDef; highlight: boolean }) {
+function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boolean; tier: WinTier }) {
   const scale = (sym.id === "hat" ? 1.18 : sym.id === "boss" ? 1.12 : 1) * 1.04;
+  // El color del marco lo dicta el tier (no el símbolo) para que el jugador
+  // identifique de un vistazo cuán bueno fue el premio.
+  const glow = highlight ? TIER_GLOW[tier] : sym.glow;
+  const ringWidth = tier === "mega" ? 3 : tier === "fire" ? 2.5 : 2;
+  const outerShadow =
+    tier === "mega"
+      ? `0 0 30px rgba(${glow},0.85), 0 0 60px rgba(${glow},0.55), 0 0 90px rgba(255,255,255,0.35)`
+      : tier === "fire"
+        ? `0 0 22px rgba(${glow},0.85), 0 0 44px rgba(255,60,0,0.55)`
+        : `0 0 20px rgba(${glow},0.55)`;
+  const animName =
+    !highlight ? undefined
+    : tier === "mega" ? "slot-win-mega 0.7s ease-in-out infinite"
+    : tier === "fire" ? "slot-win-fire 0.55s ease-in-out infinite"
+    : "slot-win-pulse 0.9s ease-in-out infinite";
   return (
     <div
       className="relative flex items-center justify-center"
       style={{
         height: TILE_H,
         background: highlight
-          ? `radial-gradient(70% 60% at 50% 50%, rgba(${sym.glow},0.30) 0%, rgba(${sym.glow},0.08) 60%, transparent 100%)`
+          ? `radial-gradient(70% 60% at 50% 50%, rgba(${glow},0.38) 0%, rgba(${glow},0.10) 60%, transparent 100%)`
           : "transparent",
         boxShadow: highlight
-          ? `inset 0 0 0 2px rgba(${sym.glow},0.85), 0 0 20px rgba(${sym.glow},0.55)`
+          ? `inset 0 0 0 ${ringWidth}px rgba(${glow},0.95), ${outerShadow}`
           : undefined,
         transition: "box-shadow 200ms ease, background 200ms ease",
       }}
     >
+      {/* Llamitas decorativas para tier fuego */}
+      {highlight && tier === "fire" && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -top-1 left-1/2 -translate-x-1/2 text-[14px] leading-none"
+          style={{ filter: "drop-shadow(0 0 6px rgba(255,140,30,0.9))", animation: "flame 0.5s ease-in-out infinite alternate" }}
+        >🔥</span>
+      )}
+      {/* Estrella para mega */}
+      {highlight && tier === "mega" && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -top-1 left-1/2 -translate-x-1/2 text-[14px] leading-none"
+          style={{ filter: "drop-shadow(0 0 8px rgba(255,215,0,1))", animation: "slot-win-mega 0.7s ease-in-out infinite" }}
+        >⭐</span>
+      )}
       <img
         src={sym.img}
         alt={sym.label}
@@ -451,9 +552,9 @@ function SymbolTile({ sym, highlight }: { sym: SymbolDef; highlight: boolean }) 
           objectFit: "contain",
           transform: scale !== 1 ? `scale(${scale})` : undefined,
           filter: highlight
-            ? `drop-shadow(0 0 10px rgba(${sym.glow},0.95)) drop-shadow(0 0 20px rgba(${sym.glow},0.6))`
+            ? `drop-shadow(0 0 10px rgba(${glow},0.95)) drop-shadow(0 0 20px rgba(${glow},0.7))`
             : `drop-shadow(0 4px 6px rgba(0,0,0,0.55)) drop-shadow(0 0 8px rgba(${sym.glow},0.25))`,
-          animation: highlight ? "slot-win-pulse 0.9s ease-in-out infinite" : undefined,
+          animation: animName,
         }}
       />
     </div>
@@ -536,7 +637,11 @@ export function SlotGame() {
     setTotalWonRound(total);
     if (total > 0) {
       setBalance((b) => b + total);
-      playCashoutSound();
+      const bestPayout = Math.max(...w.map((x) => x.payout));
+      const tier = getWinTier(bestPayout, bet);
+      if (tier === "mega") playMegaWinSound();
+      else if (tier === "fire") playFireWinSound();
+      else playCashoutSound();
       const best = [...w].sort((a, b) => b.payout - a.payout)[0];
       setHistory((h) =>
         [{ id: ++historyId.current, user: "Tú", symbolId: best.symbolId, multiplier: total / bet, amount: total, ts: Date.now() }, ...h].slice(0, 30)
@@ -566,6 +671,7 @@ export function SlotGame() {
 
   // Compute which cells are currently highlighted
   const activeWin = wins.length > 0 ? wins[highlightTick % wins.length] : null;
+  const activeTier: WinTier = activeWin ? getWinTier(activeWin.payout, bet) : "normal";
   const highlightedCells = useMemo(() => {
     const map = new Map<number, Set<number>>();
     for (let r = 0; r < REELS; r++) map.set(r, new Set());
@@ -722,6 +828,7 @@ export function SlotGame() {
                   reelIndex={ri}
                   onStop={handleReelStop}
                   winRows={highlightedCells.get(ri) ?? new Set()}
+                  winTier={activeTier}
                 />
               ))}
               {/* Single neon vertical dividers between reels */}
