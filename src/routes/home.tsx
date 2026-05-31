@@ -126,8 +126,11 @@ function HomePage() {
                     alt="BETSPACE"
                     className="h-6 w-auto sm:h-7"
                   />
-                  <div className="font-display text-[7px] font-bold uppercase text-white text-center leading-none mt-0.5 whitespace-nowrap" style={{ letterSpacing: '0.05em' }}>
-                    Apuesta y Gana
+                  <div
+                    className="font-display text-[6.5px] font-bold uppercase text-white leading-none mt-0 w-full"
+                    style={{ letterSpacing: '0.08em', textAlign: 'justify', textAlignLast: 'justify' }}
+                  >
+                    APUESTA Y GANA
                   </div>
                 </div>
               </Link>
