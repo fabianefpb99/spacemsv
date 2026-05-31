@@ -8,22 +8,21 @@ import { setMuted as setAudioMuted, playCashoutSound, playCrashSound, playDiceRo
 type Phase = "betting" | "rolling" | "won" | "lost";
 type Side = "low" | "high";
 
-// Tabla de probabilidades ajustada con fuerte ventaja de la casa.
-// Inspirada en el modelo de Spaceman: multiplicadores altos son lotería.
-//   1.14x → 45%   (EV 0.513)
-//   1.42x → 30%   (EV 0.426)
-//   1.90x → 18%   (EV 0.342)
-//   2.85x →  8%   (EV 0.228)
-//   4.75x →  3%   (EV 0.1425)
-//   9.50x →  0.8% (EV 0.076)
+// Tabla de probabilidades — bajos más amigables, altos más castigados.
+//   1.14x → 49.5% (EV 0.564)
+//   1.42x → 47%   (EV 0.667)
+//   1.90x → 15%   (EV 0.285)
+//   2.85x →  6%   (EV 0.171)
+//   4.75x →  2%   (EV 0.095)
+//   9.50x →  0.5% (EV 0.0475)
 const MULTS = [1.14, 1.42, 1.9, 2.85, 4.75, 9.5] as const;
 const WIN_PROB: Record<number, number> = {
-  1.14: 0.45,
-  1.42: 0.30,
-  1.9: 0.18,
-  2.85: 0.08,
-  4.75: 0.03,
-  9.5: 0.008,
+  1.14: 0.495,
+  1.42: 0.47,
+  1.9: 0.15,
+  2.85: 0.06,
+  4.75: 0.02,
+  9.5: 0.005,
 };
 const MIN_BET = 500;
 const MAX_BET = 100000;
