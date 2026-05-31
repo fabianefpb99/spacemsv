@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import { Menu, Settings, Trophy, ChevronRight, Gift, Home, Gamepad2, Wallet, User } from "lucide-react";
+import { Menu, Settings, ChevronRight, Gift, Home, Gamepad2, Wallet, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PromoPopup } from "@/components/PromoPopup";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
@@ -11,6 +11,7 @@ import gameSlotMafia from "@/assets/game-slot-mafia.jpg";
 import gameMines from "@/assets/game-mines.jpg";
 import gameDice from "@/assets/game-dice.jpg";
 import gift3d from "@/assets/gift-3d.png";
+import trophy3d from "@/assets/trophy-3d.png";
 
 const LAST_WINS = [
   { user: "Usuario123", game: "Spaceman", amount: 252413, mult: 1.85 },
@@ -212,7 +213,14 @@ function HomePage() {
         {/* Jackpot */}
         <section className="mt-5 flex items-center gap-3 rounded-xl border border-purple-500/30 bg-gradient-to-r from-[#1a0b3a]/80 to-[#0c0620] p-3 sm:p-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-amber-500/20 sm:h-14 sm:w-14">
-            <Trophy className="h-7 w-7 text-amber-400 sm:h-8 sm:w-8" strokeWidth={2.5} />
+            <img
+              src={trophy3d}
+              alt="Trofeo"
+              loading="lazy"
+              width={128}
+              height={128}
+              className="h-9 w-9 object-contain drop-shadow-[0_0_10px_rgba(251,191,36,0.5)] sm:h-11 sm:w-11"
+            />
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-[10px] uppercase tracking-widest text-purple-200/70">
@@ -278,14 +286,14 @@ function HomePage() {
 
         {/* Invita y gana */}
         <section className="mt-4 flex items-center gap-3 rounded-xl border border-purple-500/30 bg-gradient-to-r from-[#1a0b3a]/80 to-[#0c0620] p-3 sm:p-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center sm:h-16 sm:w-16">
             <img
               src={gift3d}
               alt="Regalo"
               loading="lazy"
-              width={96}
-              height={96}
-              className="h-12 w-12 object-contain drop-shadow-[0_0_10px_rgba(168,85,247,0.55)]"
+              width={128}
+              height={128}
+              className="h-14 w-14 object-contain drop-shadow-[0_0_12px_rgba(168,85,247,0.6)] sm:h-16 sm:w-16"
             />
           </div>
           <div className="min-w-0 flex-1">
