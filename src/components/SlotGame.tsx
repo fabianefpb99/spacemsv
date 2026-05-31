@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Menu, Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "lucide-react";
@@ -408,7 +409,12 @@ function Reel({
     // then fillers, then the new landing symbols.
     const startSyms = displayedRef.current;
     const longStrip = [...startSyms, ...fillers, ...finalSyms];
-    setStrip(longStrip);
+    // CRITICAL: flushSync forces React to commit the new (longer) strip to the
+    // DOM synchronously BEFORE we touch transforms. Without this, iOS Safari's
+    // requestAnimationFrame can fire before React commits the new tree, so the
+    // transition starts on the old 3-tile DOM and the new tiles "pop in" mid
+    // animation, giving the impression that icons disappear at spin start.
+    flushSync(() => setStrip(longStrip));
 
     const el = innerRef.current;
     if (!el) return;
@@ -541,7 +547,8 @@ function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boole
         src={sym.img}
         alt={sym.label}
         draggable={false}
-        loading="lazy"
+        loading="eager"
+        decoding="sync"
         className="select-none pointer-events-none relative z-10"
         style={{
           width: "96%",
@@ -847,6 +854,18 @@ export function SlotGame() {
   const historyId = useRef(1000);
 
   useEffect(() => { setAudioMuted(muted); }, [muted]);
+  // Pre-decode todas las imágenes de símbolos al montar para evitar
+  // "icono fantasma" durante el primer giro en iOS/Android. Una vez
+  // decodificadas, Safari las mantiene en la caché de texturas GPU.
+  useEffect(() => {
+    SYMBOLS.forEach((s) => {
+      const img = new Image();
+      img.src = s.img;
+      if ("decode" in img) {
+        img.decode().catch(() => { /* ignore */ });
+      }
+    });
+  }, []);
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(t);
