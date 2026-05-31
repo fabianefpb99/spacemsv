@@ -422,8 +422,9 @@ export function DiceGame() {
                 className="btn-primary-green btn-primary-action flex flex-1 flex-col items-center justify-center rounded-2xl font-display font-black uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span className="text-sm leading-none">TIRAR DADOS</span>
-                <span className="text-[10px] leading-tight opacity-90">
-                  Ganarías {formatCOP(potentialWin)} COP
+                <span className="mt-0.5 flex flex-col items-center text-[9px] leading-tight opacity-90">
+                  <span>Ganarías</span>
+                  <span>{formatCOP(potentialWin)} COP</span>
                 </span>
               </button>
             </div>
