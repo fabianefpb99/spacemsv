@@ -409,7 +409,12 @@ function Reel({
     // then fillers, then the new landing symbols.
     const startSyms = displayedRef.current;
     const longStrip = [...startSyms, ...fillers, ...finalSyms];
-    setStrip(longStrip);
+    // CRITICAL: flushSync forces React to commit the new (longer) strip to the
+    // DOM synchronously BEFORE we touch transforms. Without this, iOS Safari's
+    // requestAnimationFrame can fire before React commits the new tree, so the
+    // transition starts on the old 3-tile DOM and the new tiles "pop in" mid
+    // animation, giving the impression that icons disappear at spin start.
+    flushSync(() => setStrip(longStrip));
 
     const el = innerRef.current;
     if (!el) return;
