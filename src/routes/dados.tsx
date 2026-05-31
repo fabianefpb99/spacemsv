@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DiceGame } from "@/components/DiceGame";
+import { LoadingScreen } from "@/components/LoadingScreen";
 
 export const Route = createFileRoute("/dados")({
   head: () => ({
@@ -14,5 +15,9 @@ export const Route = createFileRoute("/dados")({
 });
 
 function Page() {
-  return <DiceGame />;
+  return (
+    <LoadingScreen variant="dice">
+      <DiceGame />
+    </LoadingScreen>
+  );
 }
