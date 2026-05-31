@@ -611,6 +611,22 @@ html, body {
   100% { opacity: 1;    transform: scale(1.04); }
 }
 
+/* Aura verde — humo luminoso emanando del icono (tier normal) */
+@keyframes slot-aura-rise {
+  0%   { opacity: 0;    transform: translate(-50%, 0)     scale(0.5); }
+  25%  { opacity: 0.95; }
+  100% { opacity: 0;    transform: translate(calc(-50% + var(--aura-drift, 0px)), -120%) scale(1.7); }
+}
+@keyframes slot-aura-breathe {
+  0%,100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+  50%     { opacity: 1;   transform: translate(-50%, -50%) scale(1.12); }
+}
+@keyframes slot-aura-spark {
+  0%   { opacity: 0; transform: translateY(0)    scale(0.6); }
+  30%  { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-22px) scale(0.3); }
+}
+
 .mines-tile {
   position: relative;
   border-radius: 10px;
