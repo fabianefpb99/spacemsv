@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import { Menu, Settings, Minus, Plus, Volume2, VolumeX, TrendingUp, Crown } from "lucide-react";
+import { Menu, Settings, Minus, Plus, Volume2, VolumeX, TrendingUp } from "lucide-react";
 import { setMuted as setAudioMuted, playCashoutSound, playCrashSound, isMuted } from "@/lib/gameAudio";
 
 type Phase = "betting" | "rolling" | "won" | "lost";
