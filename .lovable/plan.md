@@ -1,34 +1,41 @@
-## Cambiar el grid del slot de 5×3 a 5×4
+## Problemas actuales
 
-### Respuesta corta a tu pregunta
-**Sí, afecta el algoritmo**, pero de forma controlada. Te explico abajo y propongo cómo manejarlo.
+1. **Pips planos**: hoy son esferas brillantes (glow + highlight superior) que parecen botones pegados encima, no agujeros perforados en la cara.
+2. **Esquinas huecas**: cada cara tiene `border-radius: 22px`, pero las caras se unen en un cubo de aristas rectas. El radio recorta cada cara individualmente y deja triángulos transparentes en las esquinas, por eso "se ven huecas".
+3. **Material de lámina**: gradiente y bordes muy contrastados (borde lila claro + glow morado fuerte) hacen que parezca chapa pintada, no un dado sólido tipo resina/cristal.
 
-### Cambios visuales (sin alterar altura)
+## Plan
 
-En `src/components/SlotGame.tsx`:
-- `ROWS = 3` → `ROWS = 4`
-- `TILE_H = 88` → `TILE_H = 66` (66 × 4 = 264 px, exactamente la misma altura que hoy: 88 × 3 = 264 px). **Cero cambio en alto del slot, cero scroll nuevo.**
-- Los iconos dentro de cada tile se reescalan proporcionalmente para verse bien en el nuevo tamaño (ajuste de `h-*` / `w-*` en el componente Tile).
+Cambios en `src/styles.css` (sección "Dice game"), sin tocar lógica de juego.
 
-Resultado: mismo bloque vertical, pero con 4 filas en vez de 3 → desaparece el "aire" horizontal entre filas y se ve más denso y profesional, como un slot real.
+### 1. Pips como huecos perforados
+Reemplazar el estilo de `.dice-pip` para que se vean hundidos:
+- Fondo oscuro casi negro con un leve gradiente que simule el fondo del hueco.
+- `box-shadow` con `inset` fuerte arriba (sombra interna) + reflejo `inset` abajo claro → da la ilusión de profundidad cóncava.
+- Eliminar el highlight superior brillante (`::after`) y reemplazarlo por un punto de luz minúsculo en el fondo del hueco (acento fucsia/violeta muy tenue).
+- Mantener tamaño actual para no romper el layout del grid 3×3.
 
-### Impacto en el algoritmo (lo importante)
+### 2. Cubo con esquinas realmente redondeadas
+Dos ajustes combinados:
+- **Bajar el `border-radius` de las caras** de `22px` a `~10px` para que las aristas del cubo coincidan mejor.
+- **Añadir bisel de arista** mediante un segundo `box-shadow` exterior oscuro muy ajustado + un `inset` claro en el borde de cada cara, simulando el chaflán de un dado real. Las esquinas dejan de verse como agujeros porque el bisel oscuro las cierra visualmente.
+- Opcional: añadir una sombra proyectada bajo el cubo (en `.dice-stage`) para anclarlo y reforzar la sensación 3D.
 
-El motor de cálculo de premios recorre **PAYLINES** (líneas de pago). Hoy hay 10 líneas, todas definidas sobre filas 0–2. Hay dos caminos:
+### 3. Material tipo resina/cristal en vez de lámina
+Reescribir el `background` y `box-shadow` de `.dice-face`:
+- Gradiente radial más suave (centro violeta translúcido → bordes morado profundo) sin la franja blanca tan marcada arriba.
+- Reflejo especular (`::after`) más sutil y desplazado, tipo brillo de canto de cristal.
+- Reducir el glow exterior morado para que el dado no parezca un letrero de neón; mantener un halo discreto que ya cubre `.dice-halo` aparte.
+- Ajustar el borde de la cara a un tono más oscuro y fino para reforzar la lectura de "cuerpo sólido".
 
-**Opción A — Solo visual, mismas 10 líneas (recomendado)**
-- La fila 4 se muestra pero **no participa** en líneas de pago.
-- Cero cambio matemático: misma probabilidad de ganar, mismo RTP, mismos premios. El algoritmo queda intacto.
-- Contra: la fila extra es "decorativa", aunque visualmente queda igual de buena.
+### 4. QA visual
+Tras los cambios, revisar las 6 caras (idle gira lento por las 6) y la animación de tirada en `/dados` para confirmar:
+- Los pips se ven como agujeros, no como esferas.
+- Las esquinas del cubo se ven cerradas y redondeadas, sin triángulos transparentes.
+- El cubo se siente como un objeto sólido, no como una placa morada.
 
-**Opción B — Extender a ~15 líneas usando las 4 filas**
-- Se añaden 5 líneas nuevas que usan la fila 3 (ej.: línea inferior nueva, zig-zags entre filas 1–3, etc.).
-- Más líneas = más probabilidad de combinaciones ganadoras → el RTP sube si no compensamos.
-- Para mantener el RTP actual habría que: o bajar pagos por símbolo, o subir pesos de los símbolos "blanco" (menos premios), o aumentar la apuesta mínima por línea. Es un re-balanceo que toma su tiempo.
+## Fuera de alcance
 
-### Mi recomendación
-
-Ir con **Opción A**: cambiar a 5×4 visualmente, mantener las 10 líneas actuales sobre las filas 0–2. Algoritmo intacto, look más profesional, sin riesgo de romper el balance económico del juego. Si más adelante quieres una versión con más líneas, lo hacemos como cambio separado y re-balanceamos con cuidado.
-
-### Archivo afectado
-- `src/components/SlotGame.tsx` (constantes ROWS, TILE_H y tamaño de iconos en el componente Tile).
+- No se cambia la lógica de tirada ni la animación de giros.
+- No se mueve la sección "Últimos resultados" ni los multiplicadores.
+- No se cambian colores globales del tema.
