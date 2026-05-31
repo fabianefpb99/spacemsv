@@ -6,6 +6,8 @@ import { PromoPopup } from "@/components/PromoPopup";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
 import heroImg from "@/assets/home-hero.jpg";
 import heroMinesImg from "@/assets/home-hero-mines.jpg";
+import heroSlotImg from "@/assets/home-hero-slot.jpg";
+import heroDiceImg from "@/assets/home-hero-dice.jpg";
 import gameSpaceman from "@/assets/game-spaceman.jpg";
 import gameSlotMafia from "@/assets/game-slot-mafia.jpg";
 import gameMines from "@/assets/game-mines.jpg";
@@ -71,6 +73,22 @@ const SLIDES = [
     desc: "Esquiva minas,\nrevela gemas y gana.",
     cta: "Jugar Minas",
     to: "/mines" as const,
+  },
+  {
+    img: heroSlotImg,
+    eyebrow: "GIRA EN",
+    title: "SLOT MAFIA",
+    desc: "Alinea los 777\ny llévate el botín.",
+    cta: "Jugar Slot",
+    to: "/slot" as const,
+  },
+  {
+    img: heroDiceImg,
+    eyebrow: "LANZA LOS",
+    title: "DADOS",
+    desc: "Predice, apuesta\ny multiplica tu suerte.",
+    cta: "Jugar Dados",
+    to: "/dados" as const,
   },
 ];
 
