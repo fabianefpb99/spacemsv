@@ -552,6 +552,167 @@ function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boole
 /* ============================================================
    Main game
    ============================================================ */
+/* ----- Ornamentos de premio (SVG profesionales) ----- */
+function FireOrnament() {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-0 z-10"
+      style={{ animation: "slot-fire-flicker 280ms ease-in-out infinite alternate" }}
+    >
+      {/* Marco de brasas en las esquinas */}
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 w-full h-full">
+        <defs>
+          <linearGradient id="fireFrame" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#ffd86b" />
+            <stop offset="45%" stopColor="#ff7a1a" />
+            <stop offset="100%" stopColor="#c11d00" />
+          </linearGradient>
+          <radialGradient id="fireCore" cx="50%" cy="100%" r="80%">
+            <stop offset="0%" stopColor="#fff7c2" stopOpacity="1" />
+            <stop offset="35%" stopColor="#ffb347" stopOpacity="0.9" />
+            <stop offset="100%" stopColor="#ff3c00" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        {/* Esquinas en L ardientes */}
+        <path d="M2,18 L2,2 L18,2" fill="none" stroke="url(#fireFrame)" strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M98,18 L98,2 L82,2" fill="none" stroke="url(#fireFrame)" strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M2,82 L2,98 L18,98" fill="none" stroke="url(#fireFrame)" strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M98,82 L98,98 L82,98" fill="none" stroke="url(#fireFrame)" strokeWidth="2.5" strokeLinecap="round" />
+      </svg>
+      {/* Llama central superior — SVG detallado con 3 capas */}
+      <svg
+        viewBox="0 0 32 40"
+        className="absolute left-1/2 -translate-x-1/2 -top-[14px]"
+        style={{
+          width: 26,
+          height: 32,
+          filter:
+            "drop-shadow(0 0 6px rgba(255,140,30,0.95)) drop-shadow(0 0 14px rgba(255,60,0,0.7))",
+        }}
+      >
+        <defs>
+          <linearGradient id="flameOuter" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stopColor="#c41200" />
+            <stop offset="55%" stopColor="#ff6a00" />
+            <stop offset="100%" stopColor="#ffd86b" />
+          </linearGradient>
+          <linearGradient id="flameInner" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stopColor="#ff9a1f" />
+            <stop offset="60%" stopColor="#ffd84a" />
+            <stop offset="100%" stopColor="#fff6cc" />
+          </linearGradient>
+        </defs>
+        {/* Capa externa */}
+        <path
+          d="M16 2 C 22 10, 28 16, 26 26 C 24 34, 18 38, 16 38 C 14 38, 8 34, 6 26 C 4 16, 10 10, 16 2 Z"
+          fill="url(#flameOuter)"
+          style={{ transformOrigin: "16px 38px", animation: "slot-flame-sway 700ms ease-in-out infinite alternate" }}
+        />
+        {/* Capa interna */}
+        <path
+          d="M16 10 C 20 16, 23 21, 22 28 C 21 33, 18 36, 16 36 C 14 36, 11 33, 10 28 C 9 21, 12 16, 16 10 Z"
+          fill="url(#flameInner)"
+          style={{ transformOrigin: "16px 36px", animation: "slot-flame-sway 500ms ease-in-out infinite alternate-reverse" }}
+        />
+        {/* Núcleo */}
+        <ellipse cx="16" cy="30" rx="3" ry="6" fill="#fff7d6" opacity="0.95" />
+      </svg>
+      {/* Brasas / chispas */}
+      <span className="absolute left-[20%] top-[10%]" style={{ width: 3, height: 3, borderRadius: 9999, background: "#ffd86b", boxShadow: "0 0 6px #ff7a1a", animation: "slot-ember 1.4s ease-out infinite" }} />
+      <span className="absolute right-[18%] top-[14%]" style={{ width: 2.5, height: 2.5, borderRadius: 9999, background: "#ff7a1a", boxShadow: "0 0 6px #ff3c00", animation: "slot-ember 1.6s ease-out 0.4s infinite" }} />
+      <span className="absolute left-[50%] top-[6%]" style={{ width: 2, height: 2, borderRadius: 9999, background: "#fff7c2", boxShadow: "0 0 5px #ffd86b", animation: "slot-ember 1.2s ease-out 0.2s infinite" }} />
+    </div>
+  );
+}
+
+function MegaOrnament() {
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 z-10">
+      {/* Rayos rotando */}
+      <svg
+        viewBox="0 0 100 100"
+        className="absolute inset-0 w-full h-full"
+        style={{ animation: "slot-mega-rays 6s linear infinite", opacity: 0.55 }}
+      >
+        <defs>
+          <radialGradient id="rayGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#fff7c2" stopOpacity="0.9" />
+            <stop offset="60%" stopColor="#ffd84a" stopOpacity="0.4" />
+            <stop offset="100%" stopColor="#ffd84a" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        {Array.from({ length: 12 }).map((_, i) => (
+          <polygon
+            key={i}
+            points="50,50 48,5 52,5"
+            fill="url(#rayGrad)"
+            transform={`rotate(${i * 30} 50 50)`}
+          />
+        ))}
+      </svg>
+      {/* Marco ornamentado dorado */}
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 w-full h-full">
+        <defs>
+          <linearGradient id="goldFrame" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#fff3a8" />
+            <stop offset="40%" stopColor="#f5c542" />
+            <stop offset="70%" stopColor="#b8860b" />
+            <stop offset="100%" stopColor="#fde68a" />
+          </linearGradient>
+        </defs>
+        {/* esquinas barrocas */}
+        {[
+          { d: "M2,16 L2,2 L16,2", tx: 0, ty: 0 },
+          { d: "M98,16 L98,2 L84,2", tx: 0, ty: 0 },
+          { d: "M2,84 L2,98 L16,98", tx: 0, ty: 0 },
+          { d: "M98,84 L98,98 L84,98", tx: 0, ty: 0 },
+        ].map((p, i) => (
+          <path key={i} d={p.d} fill="none" stroke="url(#goldFrame)" strokeWidth="3" strokeLinecap="round" />
+        ))}
+        {/* florones diamante en cada esquina */}
+        {[
+          [8, 8], [92, 8], [8, 92], [92, 92],
+        ].map(([cx, cy], i) => (
+          <g key={i} transform={`translate(${cx} ${cy}) rotate(45)`}>
+            <rect x="-2.2" y="-2.2" width="4.4" height="4.4" fill="url(#goldFrame)" stroke="#7a4a00" strokeWidth="0.4" />
+          </g>
+        ))}
+      </svg>
+      {/* Diamante / gema central arriba */}
+      <svg
+        viewBox="0 0 40 36"
+        className="absolute left-1/2 -translate-x-1/2 -top-[14px]"
+        style={{
+          width: 30,
+          height: 26,
+          filter:
+            "drop-shadow(0 0 8px rgba(255,215,0,1)) drop-shadow(0 0 18px rgba(255,180,0,0.85)) drop-shadow(0 0 30px rgba(255,255,255,0.5))",
+          animation: "slot-mega-pulse 1.1s ease-in-out infinite",
+        }}
+      >
+        <defs>
+          <linearGradient id="gemTop" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#fff8d0" />
+            <stop offset="100%" stopColor="#f5c542" />
+          </linearGradient>
+          <linearGradient id="gemBot" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#e0a800" />
+            <stop offset="100%" stopColor="#7a4a00" />
+          </linearGradient>
+        </defs>
+        <polygon points="6,12 20,2 34,12 20,34" fill="url(#gemBot)" stroke="#7a4a00" strokeWidth="0.6" />
+        <polygon points="6,12 20,2 34,12 28,12 20,8 12,12" fill="url(#gemTop)" />
+        <polygon points="12,12 20,8 28,12 20,18" fill="#fff8d0" opacity="0.9" />
+        <polygon points="12,12 20,18 6,12" fill="#fde68a" opacity="0.6" />
+        <polygon points="28,12 20,18 34,12" fill="#b8860b" opacity="0.6" />
+        {/* destello blanco */}
+        <circle cx="17" cy="10" r="1.2" fill="#ffffff" />
+      </svg>
+    </div>
+  );
+}
+
 const LINES = PAYLINES.length;
 
 export function SlotGame() {
