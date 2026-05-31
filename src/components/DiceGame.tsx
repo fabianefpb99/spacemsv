@@ -363,60 +363,70 @@ export function DiceGame() {
 
         {/* Bet panel */}
         <section className="mt-1.5 rounded-2xl border border-purple-500/30 glass-panel p-2">
-          <div className="text-center text-[9px] uppercase tracking-widest text-purple-200/70">Apuesta (COP)</div>
-          <div className="mt-1 flex items-center gap-2">
-            <button
-              onClick={() => setBet((b) => Math.max(MIN_BET, b - BET_STEP))}
-              disabled={phase !== "betting"}
-              className="btn-bet flex h-10 w-11 items-center justify-center rounded-lg disabled:opacity-50"
-              aria-label="Disminuir apuesta"
-            >
-              <Minus className="h-5 w-5" />
-            </button>
-            <input
-              readOnly
-              value={formatCOP(bet)}
-              className="no-spinner h-10 w-full cursor-default rounded-lg border border-purple-500/30 bg-[#160830]/60 text-center font-display text-lg font-bold text-white outline-none"
-            />
-            <button
-              onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b + BET_STEP))}
-              disabled={phase !== "betting"}
-              className="btn-bet flex h-10 w-11 items-center justify-center rounded-lg disabled:opacity-50"
-              aria-label="Aumentar apuesta"
-            >
-              <Plus className="h-5 w-5" />
-            </button>
-          </div>
+          <div className="flex gap-2.5">
+            {/* Left: bet controls */}
+            <div className="flex-1">
+              <div className="text-center text-[9px] uppercase tracking-widest text-purple-200/70">
+                Apuesta (COP)
+              </div>
+              <div className="mt-1 flex items-center gap-2">
+                <button
+                  onClick={() => setBet((b) => Math.max(MIN_BET, b - BET_STEP))}
+                  disabled={phase !== "betting"}
+                  className="btn-bet flex h-10 w-11 items-center justify-center rounded-lg disabled:opacity-50"
+                  aria-label="Disminuir apuesta"
+                >
+                  <Minus className="h-5 w-5" />
+                </button>
+                <input
+                  readOnly
+                  value={formatCOP(bet)}
+                  className="no-spinner h-10 w-full cursor-default rounded-lg border border-purple-500/30 bg-[#160830]/60 text-center font-display text-lg font-bold text-white outline-none"
+                />
+                <button
+                  onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b + BET_STEP))}
+                  disabled={phase !== "betting"}
+                  className="btn-bet flex h-10 w-11 items-center justify-center rounded-lg disabled:opacity-50"
+                  aria-label="Aumentar apuesta"
+                >
+                  <Plus className="h-5 w-5" />
+                </button>
+              </div>
 
-          <div className="mt-1.5 flex items-center gap-1.5">
-            <button
-              onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b * 2))}
-              disabled={phase !== "betting"}
-              className="btn-bet flex h-7 flex-1 items-center justify-center rounded-md text-[11px] font-bold disabled:opacity-50"
-            >
-              X2
-            </button>
-            {QUICK_ADDS.map((amt) => (
+              <div className="mt-1.5 flex items-center gap-1.5">
+                <button
+                  onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b * 2))}
+                  disabled={phase !== "betting"}
+                  className="btn-bet flex h-7 flex-1 items-center justify-center rounded-md text-[11px] font-bold disabled:opacity-50"
+                >
+                  X2
+                </button>
+                {QUICK_ADDS.map((amt) => (
+                  <button
+                    key={amt}
+                    onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b + amt))}
+                    disabled={phase !== "betting"}
+                    className="btn-bet flex h-7 flex-1 items-center justify-center rounded-md text-[11px] font-bold disabled:opacity-50"
+                  >
+                    +{amt >= 1000 ? `${amt / 1000}K` : amt}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: TIRAR DADOS */}
+            <div className="flex w-[42%] flex-col" style={{ minHeight: 90 }}>
               <button
-                key={amt}
-                onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b + amt))}
-                disabled={phase !== "betting"}
-                className="btn-bet flex h-7 flex-1 items-center justify-center rounded-md text-[11px] font-bold disabled:opacity-50"
+                onClick={handleRoll}
+                disabled={!canRoll}
+                className="btn-primary-green btn-primary-action flex flex-1 flex-col items-center justify-center rounded-2xl font-display font-black uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                +{amt >= 1000 ? `${amt / 1000}K` : amt}
+                <span className="text-sm leading-none">TIRAR DADOS</span>
+                <span className="text-[10px] leading-tight opacity-90">
+                  Ganarías {formatCOP(potentialWin)} COP
+                </span>
               </button>
-            ))}
-          </div>
-
-          <div className="mt-2">
-            <button
-              onClick={handleRoll}
-              disabled={!canRoll}
-              className="btn-primary-green btn-primary-action flex h-11 w-full flex-col items-center justify-center rounded-xl font-display font-black uppercase tracking-widest disabled:opacity-50"
-            >
-              <span className="text-sm leading-none">TIRAR DADOS</span>
-              <span className="text-[10px] leading-tight opacity-90">Ganarías {formatCOP(potentialWin)} COP</span>
-            </button>
+            </div>
           </div>
         </section>
 
