@@ -749,6 +749,19 @@ html, body {
   transform-style: preserve-3d;
   animation: dice-float 4s ease-in-out infinite;
 }
+.dice-stage::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: -22px;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.55), rgba(0,0,0,0) 70%);
+  filter: blur(4px);
+  z-index: -1;
+  pointer-events: none;
+}
 .dice-stage-rolling { animation: dice-float-fast 1.2s ease-in-out infinite; }
 
 .dice-cube {
