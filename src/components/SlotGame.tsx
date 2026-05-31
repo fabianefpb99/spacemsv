@@ -516,14 +516,13 @@ function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boole
     : tier === "fire" ? "slot-win-fire 0.55s ease-in-out infinite"
     : "slot-win-pulse 0.9s ease-in-out infinite";
   const showFlames = highlight && (tier === "fire" || tier === "mega");
+  const showGreenAura = highlight && tier === "normal";
   return (
     <div
       className="relative flex items-center justify-center"
       style={{
         height: TILE_H,
-        background: highlight && tier === "normal"
-          ? `radial-gradient(70% 60% at 50% 50%, rgba(${glow},0.38) 0%, rgba(${glow},0.10) 60%, transparent 100%)`
-          : "transparent",
+        background: "transparent",
         boxShadow: highlight
           ? `inset 0 0 0 ${ringWidth}px rgba(${glow},0.95), ${outerShadow}`
           : undefined,
@@ -533,6 +532,8 @@ function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boole
     >
       {/* Llamas realistas detrás del símbolo */}
       {showFlames && <FlameBackdrop tier={tier} />}
+      {/* Aura/humo verde luminoso emanando del icono */}
+      {showGreenAura && <GreenAuraBackdrop />}
       {/* Marco decorativo */}
       {highlight && tier === "fire" && <FireOrnament />}
       {highlight && tier === "mega" && <MegaOrnament />}
@@ -561,6 +562,85 @@ function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boole
    Main game
    ============================================================ */
 /* ----- Ornamentos de premio (SVG profesionales) ----- */
+/* Aura verde luminosa que emana del icono — varias volutas de "humo" verde
+   neón que ascienden desde el centro del símbolo, no del marco. */
+function GreenAuraBackdrop() {
+  // Volutas dispersas alrededor del icono. Cada una sube, se expande y desvanece.
+  const wisps = [
+    { left: "50%", size: 70, delay: "0ms",    dur: "2.4s", drift: "-6px" },
+    { left: "32%", size: 50, delay: "350ms",  dur: "2.1s", drift: "-14px" },
+    { left: "68%", size: 50, delay: "600ms",  dur: "2.3s", drift: "10px" },
+    { left: "42%", size: 38, delay: "1100ms", dur: "1.9s", drift: "-4px" },
+    { left: "60%", size: 42, delay: "850ms",  dur: "2.0s", drift: "6px" },
+  ];
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+      {/* Halo base suave detrás del icono */}
+      <div
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+        style={{
+          width: "85%",
+          height: "85%",
+          background:
+            "radial-gradient(circle at 50% 55%, rgba(46,255,161,0.55) 0%, rgba(46,255,161,0.18) 45%, transparent 75%)",
+          filter: "blur(6px)",
+          animation: "slot-aura-breathe 1.6s ease-in-out infinite",
+        }}
+      />
+      {/* Volutas / humo verde ascendente */}
+      {wisps.map((w, i) => (
+        <span
+          key={i}
+          className="absolute -translate-x-1/2"
+          style={{
+            left: w.left,
+            top: "55%",
+            width: w.size,
+            height: w.size,
+            borderRadius: "9999px",
+            background:
+              "radial-gradient(circle at 50% 50%, rgba(180,255,210,0.85) 0%, rgba(46,255,161,0.55) 35%, rgba(20,180,120,0.25) 70%, transparent 100%)",
+            filter: "blur(7px)",
+            opacity: 0,
+            // @ts-ignore -- CSS custom property
+            "--aura-drift": w.drift,
+            animation: `slot-aura-rise ${w.dur} cubic-bezier(.4,.0,.6,1) ${w.delay} infinite`,
+            mixBlendMode: "screen",
+          }}
+        />
+      ))}
+      {/* Destellos / partículas pequeñas */}
+      <span
+        className="absolute"
+        style={{
+          left: "40%", top: "40%", width: 3, height: 3, borderRadius: 9999,
+          background: "#d8ffe9",
+          boxShadow: "0 0 8px rgba(46,255,161,0.95)",
+          animation: "slot-aura-spark 1.4s ease-out infinite",
+        }}
+      />
+      <span
+        className="absolute"
+        style={{
+          right: "30%", top: "50%", width: 2.5, height: 2.5, borderRadius: 9999,
+          background: "#b8ffd6",
+          boxShadow: "0 0 6px rgba(46,255,161,0.9)",
+          animation: "slot-aura-spark 1.7s ease-out 0.5s infinite",
+        }}
+      />
+      <span
+        className="absolute"
+        style={{
+          left: "55%", top: "30%", width: 2, height: 2, borderRadius: 9999,
+          background: "#ffffff",
+          boxShadow: "0 0 7px rgba(46,255,161,1)",
+          animation: "slot-aura-spark 1.2s ease-out 0.3s infinite",
+        }}
+      />
+    </div>
+  );
+}
+
 /* Llamas reales detrás del símbolo ganador. Varias lenguas de fuego
    independientes que oscilan con timings desfasados para sentirse vivas. */
 function FlameBackdrop({ tier }: { tier: "fire" | "mega" }) {
