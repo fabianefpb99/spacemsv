@@ -40,6 +40,23 @@ const SYMBOLS: SymbolDef[] = [
 
 const SYMBOL_INDEX = new Map(SYMBOLS.map((s, i) => [s.id, i]));
 
+/* Win tiers — visual + sonoro según qué tan grande es la victoria de cada línea */
+export type WinTier = "normal" | "fire" | "mega";
+function getWinTier(payout: number, totalBet: number): WinTier {
+  if (totalBet <= 0) return "normal";
+  const mult = payout / totalBet;
+  if (mult >= 10) return "mega";
+  if (mult >= 1) return "fire";
+  return "normal";
+}
+
+/* Colores de marco por tier (rgb sin alpha para inyectar en gradients) */
+const TIER_GLOW: Record<WinTier, string> = {
+  normal: "46,255,161", // verde neón (el actual)
+  fire:   "255,120,30",  // naranja-rojo fuego
+  mega:   "255,215,0",   // dorado mega
+};
+
 /* Weighted random fillers for the spinning strip */
 const SPIN_FILLER_COUNT = 18; // tiles above the final 3
 function pickRandomFillers(n: number): string[] {
