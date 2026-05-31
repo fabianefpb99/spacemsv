@@ -11,18 +11,18 @@ type Side = "low" | "high";
 // Tabla de probabilidades — bajos más amigables, altos más castigados.
 //   1.14x → 49.5% (EV 0.564)
 //   1.42x → 39%   (EV 0.554)
-//   1.90x → 15%   (EV 0.285)
-//   2.85x →  6%   (EV 0.171)
-//   4.75x →  2%   (EV 0.095)
-//   9.50x →  0.5% (EV 0.0475)
+//   1.90x → 22%   (EV 0.418)
+//   2.85x → 12%   (EV 0.342)
+//   4.75x →  6%   (EV 0.285)
+//   9.50x →  3%   (EV 0.285)
 const MULTS = [1.14, 1.42, 1.9, 2.85, 4.75, 9.5] as const;
 const WIN_PROB: Record<number, number> = {
   1.14: 0.495,
   1.42: 0.39,
-  1.9: 0.15,
-  2.85: 0.06,
-  4.75: 0.02,
-  9.5: 0.005,
+  1.9: 0.22,
+  2.85: 0.12,
+  4.75: 0.06,
+  9.5: 0.03,
 };
 const MIN_BET = 500;
 const MAX_BET = 100000;
