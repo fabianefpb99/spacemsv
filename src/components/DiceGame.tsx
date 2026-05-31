@@ -9,7 +9,7 @@ type Phase = "betting" | "rolling" | "won" | "lost";
 type Side = "low" | "high";
 
 // Tabla de probabilidades — bajos más amigables, altos más castigados.
-//   1.14x → 49.5% (EV 0.564)
+//   1.15x → 49.5% (EV 0.569)
 //   1.42x → 39%   (EV 0.554)
 //   1.90x → 22%   (EV 0.418)
 //   2.85x → 12%   (EV 0.342)
