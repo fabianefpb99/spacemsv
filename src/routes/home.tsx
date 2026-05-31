@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import { Menu, Settings, Trophy, ChevronRight, Gift, Home, Gamepad2, Wallet, User } from "lucide-react";
+import { Menu, Settings, ChevronRight, Gift, Home, Gamepad2, Wallet, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PromoPopup } from "@/components/PromoPopup";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
@@ -11,6 +11,7 @@ import gameSlotMafia from "@/assets/game-slot-mafia.jpg";
 import gameMines from "@/assets/game-mines.jpg";
 import gameDice from "@/assets/game-dice.jpg";
 import gift3d from "@/assets/gift-3d.png";
+import trophy3d from "@/assets/trophy-3d.png";
 
 const LAST_WINS = [
   { user: "Usuario123", game: "Spaceman", amount: 252413, mult: 1.85 },
