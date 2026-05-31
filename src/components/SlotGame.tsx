@@ -524,22 +524,10 @@ function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boole
         transition: "box-shadow 200ms ease, background 200ms ease",
       }}
     >
-      {/* Llamitas decorativas para tier fuego */}
-      {highlight && tier === "fire" && (
-        <span
-          aria-hidden
-          className="pointer-events-none absolute -top-1 left-1/2 -translate-x-1/2 text-[14px] leading-none"
-          style={{ filter: "drop-shadow(0 0 6px rgba(255,140,30,0.9))", animation: "flame 0.5s ease-in-out infinite alternate" }}
-        >🔥</span>
-      )}
-      {/* Estrella para mega */}
-      {highlight && tier === "mega" && (
-        <span
-          aria-hidden
-          className="pointer-events-none absolute -top-1 left-1/2 -translate-x-1/2 text-[14px] leading-none"
-          style={{ filter: "drop-shadow(0 0 8px rgba(255,215,0,1))", animation: "slot-win-mega 0.7s ease-in-out infinite" }}
-        >⭐</span>
-      )}
+      {/* Ornamento profesional — tier fuego */}
+      {highlight && tier === "fire" && <FireOrnament />}
+      {/* Ornamento profesional — tier mega */}
+      {highlight && tier === "mega" && <MegaOrnament />}
       <img
         src={sym.img}
         alt={sym.label}
