@@ -547,7 +547,8 @@ function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boole
         src={sym.img}
         alt={sym.label}
         draggable={false}
-        loading="lazy"
+        loading="eager"
+        decoding="sync"
         className="select-none pointer-events-none relative z-10"
         style={{
           width: "96%",
