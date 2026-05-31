@@ -67,6 +67,7 @@ export function DiceGame() {
   const [mult, setMult] = useState<number>(2);
   const [phase, setPhase] = useState<Phase>("betting");
   const [face, setFace] = useState<number>(1); // currently displayed face when settled
+  const [targetFace, setTargetFace] = useState<number>(1); // face we'll land on during a roll
   const [rolling, setRolling] = useState(false);
   const [resultAmount, setResultAmount] = useState(0);
   const [muted, setMuted] = useState(false);
@@ -100,8 +101,9 @@ export function DiceGame() {
     if (!canRoll) return;
     setBalance((b) => b - bet);
     setPhase("rolling");
-    setRolling(true);
     const { roll, won } = rollDice(side, mult);
+    setTargetFace(roll);
+    setRolling(true);
     const win = won ? Math.floor(bet * mult) : 0;
     // Settle after the rolling animation
     setTimeout(() => {
@@ -198,7 +200,7 @@ export function DiceGame() {
             {/* 3D dice */}
             <div className={`dice-stage ${rolling ? "dice-stage-rolling" : ""}`}>
               <div
-                className={`dice-cube ${rolling ? "dice-cube-rolling" : "dice-cube-idle"} dice-face-${face}`}
+                className={`dice-cube ${rolling ? "dice-cube-rolling" : "dice-cube-idle"} dice-face-${rolling ? targetFace : face}`}
               >
                 <DiceFace n={1} className="dice-front" />
                 <DiceFace n={6} className="dice-back" />
