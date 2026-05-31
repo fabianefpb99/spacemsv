@@ -378,7 +378,6 @@ let revealStreak = 0;
 //   - Shake phase: dense, rapid bright clicks (plastic-on-plastic).
 //   - Bounce phase: a few stronger clicks with low-end body (hitting surface).
 //   - Settle: a final quiet tick.
-export function playDiceRollSound(durationMs = 2000) {
 export function playDiceRollSound(_durationMs = 2000) {
   if (muted) return;
   if (typeof window === "undefined") return;
