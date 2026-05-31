@@ -758,7 +758,13 @@ html, body {
   will-change: transform;
 }
 .dice-cube-idle { animation: dice-spin-idle 9s linear infinite; }
-.dice-cube-rolling { animation: dice-spin-roll 2.2s cubic-bezier(.22,.61,.36,1) forwards; }
+/* Rolling uses per-face animations that LAND on the idle resting orientation */
+.dice-cube-rolling.dice-face-1 { animation: dice-spin-roll-1 2.2s cubic-bezier(.22,.61,.36,1) forwards; }
+.dice-cube-rolling.dice-face-2 { animation: dice-spin-roll-2 2.2s cubic-bezier(.22,.61,.36,1) forwards; }
+.dice-cube-rolling.dice-face-3 { animation: dice-spin-roll-3 2.2s cubic-bezier(.22,.61,.36,1) forwards; }
+.dice-cube-rolling.dice-face-4 { animation: dice-spin-roll-4 2.2s cubic-bezier(.22,.61,.36,1) forwards; }
+.dice-cube-rolling.dice-face-5 { animation: dice-spin-roll-5 2.2s cubic-bezier(.22,.61,.36,1) forwards; }
+.dice-cube-rolling.dice-face-6 { animation: dice-spin-roll-6 2.2s cubic-bezier(.22,.61,.36,1) forwards; }
 
 /* When NOT rolling, dice-face-N classes lock the cube to show face N */
 .dice-cube.dice-face-1.dice-cube-idle { animation-name: dice-spin-idle; }
@@ -871,13 +877,38 @@ html, body {
 @keyframes dice-spin-idle-5  { from { transform: rotateX(-105deg) rotateZ(0deg); } to { transform: rotateX(-105deg) rotateZ(360deg); } }
 @keyframes dice-spin-idle-6  { from { transform: rotateY(195deg) rotateX(0deg); } to { transform: rotateY(195deg) rotateX(360deg); } }
 
-/* Rolling animation: many tumbles */
-@keyframes dice-spin-roll {
+/* Rolling animations — each lands on the idle resting transform of its face,
+   so when rolling ends and the idle animation takes over the rendered face
+   matches exactly what the user saw at the end of the tumble. */
+@keyframes dice-spin-roll-1 {
   0%   { transform: rotateX(0deg)    rotateY(0deg)    rotateZ(0deg); }
-  20%  { transform: rotateX(540deg)  rotateY(360deg)  rotateZ(180deg); }
-  50%  { transform: rotateX(1080deg) rotateY(720deg)  rotateZ(360deg); }
-  80%  { transform: rotateX(1440deg) rotateY(1080deg) rotateZ(540deg); }
-  100% { transform: rotateX(1620deg) rotateY(1260deg) rotateZ(720deg); }
+  50%  { transform: rotateX(900deg)  rotateY(720deg)  rotateZ(360deg); }
+  100% { transform: rotateX(1425deg) rotateY(1440deg) rotateZ(720deg); } /* -15 + 1440 */
+}
+@keyframes dice-spin-roll-2 {
+  0%   { transform: rotateX(0deg)    rotateY(0deg)    rotateZ(0deg); }
+  50%  { transform: rotateX(900deg)  rotateY(720deg)  rotateZ(360deg); }
+  100% { transform: rotateX(1515deg) rotateY(1440deg) rotateZ(720deg); } /* 75 + 1440 */
+}
+@keyframes dice-spin-roll-3 {
+  0%   { transform: rotateX(0deg)    rotateY(0deg)    rotateZ(0deg); }
+  50%  { transform: rotateX(720deg)  rotateY(900deg)  rotateZ(360deg); }
+  100% { transform: rotateX(1440deg) rotateY(1365deg) rotateZ(720deg); } /* -75 + 1440 */
+}
+@keyframes dice-spin-roll-4 {
+  0%   { transform: rotateX(0deg)    rotateY(0deg)    rotateZ(0deg); }
+  50%  { transform: rotateX(720deg)  rotateY(900deg)  rotateZ(360deg); }
+  100% { transform: rotateX(1440deg) rotateY(1515deg) rotateZ(720deg); } /* 75 + 1440 */
+}
+@keyframes dice-spin-roll-5 {
+  0%   { transform: rotateX(0deg)    rotateY(0deg)    rotateZ(0deg); }
+  50%  { transform: rotateX(900deg)  rotateY(720deg)  rotateZ(360deg); }
+  100% { transform: rotateX(1335deg) rotateY(1440deg) rotateZ(720deg); } /* -105 + 1440 */
+}
+@keyframes dice-spin-roll-6 {
+  0%   { transform: rotateX(0deg)    rotateY(0deg)    rotateZ(0deg); }
+  50%  { transform: rotateX(720deg)  rotateY(900deg)  rotateZ(360deg); }
+  100% { transform: rotateX(1440deg) rotateY(1635deg) rotateZ(720deg); } /* 195 + 1440 */
 }
 
 /* Energy halo below dice */
