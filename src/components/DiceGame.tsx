@@ -204,11 +204,49 @@ export function DiceGame() {
           <Stat label="Probabilidad" value={`${winProbPct.toFixed(2)}%`} accent />
         </section>
 
-        {/* Main dice panel */}
-        <section className="relative mt-1.5 overflow-hidden rounded-2xl border border-purple-500/30 glass-panel p-2">
-          <div className="relative z-20 mb-1 w-fit rounded-full border border-purple-500/40 bg-[#160830]/90 px-5 py-1 shadow-[0_0_12px_rgba(168,85,247,0.35)]">
-            <span className="font-display text-xs font-black uppercase tracking-[0.3em] neon-purple">DADOS</span>
+        {/* Main dice panel — neon frame igual al de Slot */}
+        <section
+          className="relative mt-3"
+        >
+          <div className="absolute left-5 -top-3 z-30">
+            <div
+              className="flex items-center gap-2 rounded-full px-4 py-1"
+              style={{
+                background: "linear-gradient(180deg, rgba(20,8,42,0.95), rgba(8,2,18,0.95))",
+                border: "1px solid rgba(168,85,247,0.65)",
+                boxShadow: "0 0 18px rgba(168,85,247,0.55), inset 0 0 8px rgba(168,85,247,0.25)",
+              }}
+            >
+              <span
+                className="font-display text-sm font-black tracking-[0.18em]"
+                style={{
+                  background: "linear-gradient(180deg,#c084fc 0%,#7c3aed 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  filter: "drop-shadow(0 0 8px rgba(168,85,247,0.7))",
+                }}
+              >DADOS</span>
+            </div>
           </div>
+          <div
+            className="relative"
+            style={{
+              clipPath:
+                "polygon(16px 0, calc(100% - 16px) 0, 100% 16px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 16px 100%, 0 calc(100% - 16px), 0 16px)",
+              background: "linear-gradient(135deg, #a855f7 0%, #7c3aed 50%, #c084fc 100%)",
+              padding: "2px",
+              filter:
+                "drop-shadow(0 0 10px rgba(168,85,247,0.55)) drop-shadow(0 0 22px rgba(168,85,247,0.28))",
+            }}
+          >
+            <div
+              className="relative overflow-hidden p-2"
+              style={{
+                clipPath:
+                  "polygon(15px 0, calc(100% - 15px) 0, 100% 15px, 100% calc(100% - 15px), calc(100% - 15px) 100%, 15px 100%, 0 calc(100% - 15px), 0 15px)",
+                background: "#0a041c",
+              }}
+            >
 
           <div className="relative z-0 mx-auto flex h-56 w-full items-center justify-center sm:h-60">
             {/* energy halo */}
@@ -254,6 +292,8 @@ export function DiceGame() {
                 {m.toFixed(2)}X
               </button>
             ))}
+          </div>
+            </div>
           </div>
         </section>
 
