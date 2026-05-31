@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-import astronautRocket from "@/assets/astronaut-rocket.svg";
 import bgImage from "@/assets/space-bg-full.png";
 import astronautIdle from "@/assets/astronaut-idle.svg";
 import astronautFlying from "@/assets/astronaut-flying.png";
 import meteor from "@/assets/asteroid.svg";
 import bgMusic from "@/assets/bg-music.mp3";
-import mineLogo from "@/assets/mine-logo.png";
-import slotBoss from "@/assets/slot/boss.png";
-import diceLogo from "@/assets/game-dice.jpg";
+import astronautRocket from "@/assets/astronaut-rocket.svg";
+import gameSpaceman from "@/assets/game-spaceman.jpg";
+import gameSlotMafia from "@/assets/game-slot-mafia.jpg";
+import gameMines from "@/assets/game-mines.jpg";
+import gameDice from "@/assets/game-dice.jpg";
 
 const ASSETS: { src: string; type: "image" | "audio" }[] = [
   { src: bgImage, type: "image" },
@@ -130,13 +131,14 @@ export function LoadingScreen({ children, variant = "rocket" }: { children: Reac
         >
           <img
             src={
-              variant === "mine" ? mineLogo
-              : variant === "slot" ? slotBoss
-              : variant === "dice" ? diceLogo
+              variant === "mine" ? gameMines
+              : variant === "slot" ? gameSlotMafia
+              : variant === "dice" ? gameDice
+              : variant === "rocket" ? gameSpaceman
               : astronautRocket
             }
             alt=""
-            className={`w-40 h-40 object-contain animate-pulse ${variant === "dice" ? "rounded-2xl drop-shadow-[0_0_25px_rgba(168,85,247,0.55)]" : "drop-shadow-[0_0_25px_rgba(244,63,94,0.45)]"}`}
+            className="w-40 h-40 object-cover animate-pulse rounded-2xl border border-fuchsia-500/70 shadow-[0_0_8px_rgba(217,70,239,0.25)] drop-shadow-[0_0_25px_rgba(168,85,247,0.55)]"
             draggable={false}
           />
           <p className="mt-4 text-white text-lg font-medium tracking-wide">Loading...</p>
