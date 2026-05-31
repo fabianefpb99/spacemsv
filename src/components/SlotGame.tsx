@@ -854,6 +854,18 @@ export function SlotGame() {
   const historyId = useRef(1000);
 
   useEffect(() => { setAudioMuted(muted); }, [muted]);
+  // Pre-decode todas las imágenes de símbolos al montar para evitar
+  // "icono fantasma" durante el primer giro en iOS/Android. Una vez
+  // decodificadas, Safari las mantiene en la caché de texturas GPU.
+  useEffect(() => {
+    SYMBOLS.forEach((s) => {
+      const img = new Image();
+      img.src = s.img;
+      if ("decode" in img) {
+        img.decode().catch(() => { /* ignore */ });
+      }
+    });
+  }, []);
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(t);
