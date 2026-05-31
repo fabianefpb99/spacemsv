@@ -1094,7 +1094,7 @@ export function SpacemanGame() {
               aria-label="Doblar apuesta"
               title="Doblar apuesta"
             >
-              x2
+              X2
             </button>
             {QUICK_ADDS.map((amt) => (
               <button

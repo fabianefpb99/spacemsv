@@ -527,7 +527,7 @@ export function MinesGame() {
               disabled={phase !== "betting"}
               className="btn-bet flex h-8 flex-1 items-center justify-center rounded-md text-xs font-bold disabled:opacity-50"
             >
-              x2
+              X2
             </button>
             {QUICK_ADDS.map((amt) => (
               <button

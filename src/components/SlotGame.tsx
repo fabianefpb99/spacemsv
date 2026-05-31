@@ -1206,14 +1206,14 @@ export function SlotGame() {
                   onClick={() => setBet((b) => Math.min(MAX_BET, Math.max(MIN_BET, b * 2)))}
                   disabled={spinning}
                   className="rounded-md btn-bet py-1 text-[11px] font-bold disabled:opacity-40"
-                >x2</button>
+                >X2</button>
                 {QUICK_BETS.map((q) => (
                   <button
                     key={q}
                     onClick={() => setBet((b) => Math.min(MAX_BET, b + q))}
                     disabled={spinning}
                     className="rounded-md btn-bet py-1 text-[10px] font-bold disabled:opacity-40"
-                  >+{q >= 1000 ? `${q / 1000}k` : q}</button>
+                  >+{q >= 1000 ? `${q / 1000}K` : q}</button>
                 ))}
               </div>
             </div>
