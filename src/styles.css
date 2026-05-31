@@ -599,6 +599,18 @@ html, body {
   50%     { transform: scale(1.15) rotate(2deg); }
 }
 
+/* Llamas de fondo detrás de los iconos ganadores */
+@keyframes slot-flame-tongue {
+  0%   { transform: scaleY(0.85) scaleX(1.05) translateY(2px); opacity: 0.85; }
+  35%  { transform: scaleY(1.12) scaleX(0.92) translateY(-1px); opacity: 1; }
+  60%  { transform: scaleY(0.95) scaleX(1.04) translateY(1px);  opacity: 0.95; }
+  100% { transform: scaleY(1.18) scaleX(0.88) translateY(-2px); opacity: 1; }
+}
+@keyframes slot-flame-heat {
+  0%   { opacity: 0.75; transform: scale(1); }
+  100% { opacity: 1;    transform: scale(1.04); }
+}
+
 .mines-tile {
   position: relative;
   border-radius: 10px;
