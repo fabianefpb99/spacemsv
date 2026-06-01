@@ -8,7 +8,7 @@ type Phase = "betting" | "dealing" | "playing" | "dealerTurn" | "result";
 type Suit = "♠" | "♥" | "♦" | "♣";
 type Card = { suit: Suit; rank: string; value: number; hidden?: boolean };
 type Outcome = "win" | "lose" | "push" | "blackjack" | "bust";
-type Winner = { id: number; name: string; amount: number; game: string; delayMs: number };
+type Winner = { id: number; name: string; amount: number; game: string };
 
 const SUITS: Suit[] = ["♠", "♥", "♦", "♣"];
 const RANKS = [
@@ -22,16 +22,22 @@ const MIN_BET = 500;
 const MAX_BET = 100000;
 const BET_STEP = 500;
 const QUICK = [500, 1000, 2000, 5000];
-const TICKER_INTERVAL_MS = 2800;
-const TICKER_DURATION_MS = 12000;
+const TICKER_SPEED_PX_PER_MS = 0.06; // ~60 px/s
 const NAMES = ["Carlos_07", "Maria.V", "Andrés", "Lucia91", "JuanK", "Sofi", "ElCapo", "Nico", "Daniela", "PipeR", "ValeM", "MateoG", "Camila", "RoyalK", "MissL", "JoseF", "Karen", "Sebas", "TaniaP", "BrayanX"];
 const GAMES = ["Blackjack", "Spaceman", "Minas", "Slot", "Dados"];
 const INITIAL_WINNERS: Winner[] = [
-  { id: 1, name: "Andrés", amount: 185000, game: "Spaceman", delayMs: -11200 },
-  { id: 2, name: "Camila", amount: 92000, game: "Minas", delayMs: -8400 },
-  { id: 3, name: "JoseF", amount: 241000, game: "Blackjack", delayMs: -5600 },
-  { id: 4, name: "Karen", amount: 158000, game: "Dados", delayMs: -2800 },
-  { id: 5, name: "Lucia91", amount: 214000, game: "Spaceman", delayMs: 0 },
+  { id: 1, name: "Andrés", amount: 185000, game: "Spaceman" },
+  { id: 2, name: "Camila", amount: 92000, game: "Minas" },
+  { id: 3, name: "JoseF", amount: 241000, game: "Blackjack" },
+  { id: 4, name: "Karen", amount: 158000, game: "Dados" },
+  { id: 5, name: "Lucia91", amount: 214000, game: "Spaceman" },
+  { id: 6, name: "MateoG", amount: 126000, game: "Blackjack" },
+  { id: 7, name: "ValeM", amount: 67000, game: "Slot" },
+  { id: 8, name: "Sofi", amount: 154000, game: "Minas" },
+  { id: 9, name: "ElCapo", amount: 312000, game: "Spaceman" },
+  { id: 10, name: "Nico", amount: 88000, game: "Dados" },
+  { id: 11, name: "Daniela", amount: 173000, game: "Blackjack" },
+  { id: 12, name: "PipeR", amount: 96000, game: "Slot" },
 ];
 
 function pickDifferent(options: string[], blocked: string[]) {
@@ -46,7 +52,6 @@ function makeLiveWinner(id: number, current: Winner[]): Winner {
     name: pickDifferent(NAMES, current.slice(-4).map((winner) => winner.name)),
     amount: (Math.floor(Math.random() * 195) + 5) * 1000,
     game: pickDifferent(GAMES, current.slice(-3).map((winner) => winner.game)),
-    delayMs: 0,
   };
 }
 
@@ -138,15 +143,37 @@ export function BlackjackGame() {
   // Live "last winners" ticker
   const seedRef = useRef(INITIAL_WINNERS.length);
   const [winners, setWinners] = useState<Winner[]>(INITIAL_WINNERS);
-  const removeWinner = useCallback((id: number) => {
-    setWinners((current) => current.filter((winner) => winner.id !== id));
-  }, []);
+  const stripRef = useRef<HTMLDivElement>(null);
+  const offsetRef = useRef(0);
 
   useEffect(() => {
-    const t = setInterval(() => {
-      setWinners((current) => [...current, makeLiveWinner(++seedRef.current, current)]);
-    }, TICKER_INTERVAL_MS);
-    return () => clearInterval(t);
+    let raf = 0;
+    let last = performance.now();
+    const tick = (now: number) => {
+      const dt = now - last;
+      last = now;
+      offsetRef.current -= dt * TICKER_SPEED_PX_PER_MS;
+      const strip = stripRef.current;
+      if (strip) {
+        const first = strip.firstElementChild as HTMLElement | null;
+        if (first) {
+          const gap = 12;
+          const w = first.offsetWidth + gap;
+          if (-offsetRef.current >= w) {
+            offsetRef.current += w;
+            setWinners((curr) => {
+              const next = curr.slice(1);
+              next.push(makeLiveWinner(++seedRef.current, next));
+              return next;
+            });
+          }
+        }
+        strip.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   const draw = useCallback((): Card => {
@@ -502,16 +529,15 @@ export function BlackjackGame() {
                   "linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%)",
               }}
             >
-              <div className="relative h-full w-full">
+              <div
+                ref={stripRef}
+                className="flex h-full items-center gap-3 will-change-transform"
+                style={{ width: "max-content" }}
+              >
                 {winners.map((w) => (
                   <div
                     key={w.id}
-                    className="absolute left-full top-1/2 flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-[#1a0b3a]/70 px-2.5 py-1 text-[11px] whitespace-nowrap will-change-transform"
-                    style={{
-                      animation: `bj-marquee ${TICKER_DURATION_MS}ms linear forwards`,
-                      animationDelay: `${w.delayMs}ms`,
-                    }}
-                    onAnimationEnd={() => removeWinner(w.id)}
+                    className="flex shrink-0 items-center gap-1.5 rounded-full border border-purple-500/30 bg-[#1a0b3a]/70 px-2.5 py-1 text-[11px] whitespace-nowrap"
                   >
                     <span className="font-bold text-white">{w.name}</span>
                     <span className="text-[9px] uppercase tracking-wider text-purple-300/70">
