@@ -194,6 +194,12 @@ export function MinesGame() {
   const [shake, setShake] = useState(false);
   const historyId = useRef(1000);
 
+  // Cierra cualquier audio de otro juego al entrar, y para SFX propios al salir.
+  useEffect(() => {
+    stopAllGameAudio();
+    return () => { stopAllMinesSfx(); };
+  }, []);
+
   // tick for relative times + auto fake wins
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000);
