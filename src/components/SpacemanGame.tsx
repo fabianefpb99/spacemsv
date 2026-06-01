@@ -276,9 +276,28 @@ export function SpacemanGame() {
     };
     window.addEventListener("pointerdown", onFirst);
     window.addEventListener("keydown", onFirst);
+    // Pausar al minimizar la app o cambiar de pestaña.
+    const onVis = () => {
+      if (document.hidden) {
+        audio.pause();
+      } else {
+        audio.play().catch(() => {});
+      }
+    };
+    document.addEventListener("visibilitychange", onVis);
+    const onPageHide = () => audio.pause();
+    const onBlur = () => audio.pause();
+    const onFocus = () => { if (!document.hidden) audio.play().catch(() => {}); };
+    window.addEventListener("pagehide", onPageHide);
+    window.addEventListener("blur", onBlur);
+    window.addEventListener("focus", onFocus);
     return () => {
       window.removeEventListener("pointerdown", onFirst);
       window.removeEventListener("keydown", onFirst);
+      document.removeEventListener("visibilitychange", onVis);
+      window.removeEventListener("pagehide", onPageHide);
+      window.removeEventListener("blur", onBlur);
+      window.removeEventListener("focus", onFocus);
       audio.pause();
       bgAudioRef.current = null;
     };
