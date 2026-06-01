@@ -323,10 +323,7 @@ export function BlackjackGame() {
   const showDealerScore = phase !== "betting" && phase !== "dealing" && phase !== "playing";
 
   return (
-    <div
-      className="relative min-h-[100dvh] w-full overflow-hidden bg-[#060210] text-white"
-      style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
-    >
+    <div className="relative min-h-[100dvh] w-full overflow-hidden bg-[#060210] text-white">
       <style>{`
         @keyframes bj-deal {
           0% { transform: translate(calc(-50% + 0px), -120px) rotate(0deg); opacity: 0; }
