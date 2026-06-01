@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Menu, Settings, Minus, Plus } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import bgAsset from "@/assets/blackjack-bg.png.asset.json";
+import { playCardDealSound } from "@/lib/gameAudio";
 
 type Phase = "betting" | "dealing" | "playing" | "dealerTurn" | "result";
 type Suit = "♠" | "♥" | "♦" | "♣";
@@ -246,6 +247,7 @@ export function BlackjackGame() {
     // Reveal hidden
     const revealed: Card[] = d.map((c) => ({ ...c, hidden: false }));
     setDealer(revealed);
+    playCardDealSound();
     setPhase("dealerTurn");
     let current: Card[] = [...revealed];
     const step = () => {
@@ -254,6 +256,7 @@ export function BlackjackGame() {
         const c = draw();
         current = [...current, c];
         setDealer([...current]);
+        playCardDealSound();
         setTimeout(step, 600);
       } else {
         setTimeout(() => resolve(p, current, betAmount), 500);
@@ -274,6 +277,11 @@ export function BlackjackGame() {
     setPlayer(p);
     setDealer(d);
     setPhase("dealing");
+    // Sequence of 4 deals: player, dealer, player, dealer
+    playCardDealSound();
+    setTimeout(() => playCardDealSound(), 220);
+    setTimeout(() => playCardDealSound(), 440);
+    setTimeout(() => playCardDealSound(), 660);
     setTimeout(() => {
       if (isBlackjack(p)) {
         dealerPlay(p, d, bet);
@@ -288,6 +296,7 @@ export function BlackjackGame() {
     const c = draw();
     const np = [...player, c];
     setPlayer(np);
+    playCardDealSound();
     if (handScore(np) >= 21) {
       setTimeout(() => dealerPlay(np, dealer, doubled ? bet * 2 : bet), 600);
     }
@@ -305,6 +314,7 @@ export function BlackjackGame() {
     const c = draw();
     const np = [...player, c];
     setPlayer(np);
+    playCardDealSound();
     setTimeout(() => dealerPlay(np, dealer, bet * 2), 700);
   };
 
