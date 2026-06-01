@@ -811,7 +811,7 @@ export function SpacemanGame() {
               <img
                 src={betspaceLogo}
                 alt="BETSPACE"
-                className="h-5 w-auto sm:h-6 cursor-pointer"
+                className="h-6 w-auto sm:h-7 cursor-pointer"
               />
             </Link>
           </div>

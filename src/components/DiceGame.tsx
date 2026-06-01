@@ -173,7 +173,7 @@ export function DiceGame() {
               <Menu className="h-7 w-7" strokeWidth={3} />
             </button>
             <Link to="/home">
-              <img src={betspaceLogo} alt="BETSPACE" className="h-5 w-auto sm:h-6" />
+              <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7" />
             </Link>
           </div>
           <div className="flex items-center gap-2">
