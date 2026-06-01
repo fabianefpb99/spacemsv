@@ -529,16 +529,15 @@ export function BlackjackGame() {
                   "linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%)",
               }}
             >
-              <div className="relative h-full w-full">
+              <div
+                ref={stripRef}
+                className="flex h-full items-center gap-3 will-change-transform"
+                style={{ width: "max-content" }}
+              >
                 {winners.map((w) => (
                   <div
                     key={w.id}
-                    className="absolute left-full top-1/2 flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-[#1a0b3a]/70 px-2.5 py-1 text-[11px] whitespace-nowrap will-change-transform"
-                    style={{
-                      animation: `bj-marquee ${TICKER_DURATION_MS}ms linear forwards`,
-                      animationDelay: `${w.delayMs}ms`,
-                    }}
-                    onAnimationEnd={() => removeWinner(w.id)}
+                    className="flex shrink-0 items-center gap-1.5 rounded-full border border-purple-500/30 bg-[#1a0b3a]/70 px-2.5 py-1 text-[11px] whitespace-nowrap"
                   >
                     <span className="font-bold text-white">{w.name}</span>
                     <span className="text-[9px] uppercase tracking-wider text-purple-300/70">
