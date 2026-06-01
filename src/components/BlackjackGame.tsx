@@ -1,9 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, Settings, Minus, Plus } from "lucide-react";
+import { Menu, Settings, Minus, Plus, Volume2, VolumeX } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import bgAsset from "@/assets/blackjack-bg.png.asset.json";
-import { playCardDealSound } from "@/lib/gameAudio";
+import {
+  playCardDealSound,
+  startBlackjackAmbient,
+  stopBlackjackAmbient,
+  setMuted as setAudioMuted,
+  isMuted as getAudioMuted,
+} from "@/lib/gameAudio";
 
 type Phase = "betting" | "dealing" | "playing" | "dealerTurn" | "result";
 type Suit = "♠" | "♥" | "♦" | "♣";
@@ -143,6 +149,20 @@ export function BlackjackGame() {
   const [payout, setPayout] = useState(0);
   const [doubled, setDoubled] = useState(false);
   const shoeRef = useRef<Card[]>(makeShoe());
+  const [muted, setMuted] = useState<boolean>(() => (typeof window === "undefined" ? false : getAudioMuted()));
+
+  // Start lounge ambient on mount, stop on unmount
+  useEffect(() => {
+    if (!muted) startBlackjackAmbient();
+    return () => { stopBlackjackAmbient(); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    setAudioMuted(muted);
+    if (muted) stopBlackjackAmbient();
+    else startBlackjackAmbient();
+  }, [muted]);
 
   // Live "last winners" ticker
   const seedRef = useRef(INITIAL_WINNERS.length);
@@ -384,6 +404,13 @@ export function BlackjackGame() {
                 <span className="neon-green mr-0.5">$</span>{formatCOP(balance)} COP
               </div>
             </div>
+            <button
+              onClick={() => setMuted((m) => !m)}
+              className="rounded-md p-1.5 text-purple-200/80 hover:bg-white/5"
+              aria-label={muted ? "Activar sonido" : "Silenciar"}
+            >
+              {muted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+            </button>
             <button className="rounded-md p-1.5 text-purple-200/80 hover:bg-white/5">
               <Settings className="h-5 w-5 sm:h-6 sm:w-6" />
             </button>
