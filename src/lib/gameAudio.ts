@@ -13,6 +13,11 @@ let ambientGain: GainNode | null = null;
 let ambientTimer: number | null = null;
 let ambientStep = 0;
 
+// Blackjack lounge ambient
+let bjGain: GainNode | null = null;
+let bjTimer: number | null = null;
+let bjStep = 0;
+
 // Flight nodes
 let flightSource: AudioBufferSourceNode | null = null;
 let flightGain: GainNode | null = null;
