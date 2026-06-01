@@ -347,7 +347,7 @@ export function MinesGame() {
               <img
                 src={betspaceLogo}
                 alt="BETSPACE"
-                className="h-6 w-auto sm:h-7"
+                className="h-5 w-auto sm:h-6"
               />
             </Link>
           </div>
