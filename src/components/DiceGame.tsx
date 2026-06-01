@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import pageBg from "@/assets/mines-page-bg.png";
 import { Menu, Settings, Minus, Plus, Volume2, VolumeX, TrendingUp } from "lucide-react";
-import { setMuted as setAudioMuted, playCashoutSound, playCrashSound, playDiceRollSound, isMuted } from "@/lib/gameAudio";
+import { setMuted as setAudioMuted, playCashoutSound, playCrashSound, playDiceRollSound, isMuted, stopAllGameAudio } from "@/lib/gameAudio";
 
 type Phase = "betting" | "rolling" | "won" | "lost";
 type Side = "low" | "high";
@@ -94,6 +94,9 @@ export function DiceGame() {
   const historyId = useRef(1000);
 
   useEffect(() => { setAudioMuted(muted); }, [muted]);
+
+  // Cierra cualquier audio de un juego previo al entrar.
+  useEffect(() => { stopAllGameAudio(); }, []);
 
   // Ambient fake history
   useEffect(() => {

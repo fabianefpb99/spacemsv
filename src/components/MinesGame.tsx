@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Link } from "@tanstack/react-router";
 import { Menu, Settings, Minus, Plus, Volume2, VolumeX, ChevronDown, Bomb, Gem, TrendingUp, User } from "lucide-react";
-import { setMuted as setAudioMuted, playCrashSound, playCashoutSound, isMuted } from "@/lib/gameAudio";
+import { setMuted as setAudioMuted, playCrashSound, playCashoutSound, isMuted, stopAllGameAudio, AUDIO_STOP_ALL_EVENT } from "@/lib/gameAudio";
 import coinRevealSfx from "@/assets/sfx/coin-reveal.mp3";
 import victorySfx from "@/assets/sfx/victory.mp3";
 import gameOverSfx from "@/assets/sfx/game-over.mp3";
@@ -67,6 +67,21 @@ function resetRevealStreak() { revealStreak = 0; }
 
 let victoryAudio: HTMLAudioElement | null = null;
 let gameOverAudio: HTMLAudioElement | null = null;
+
+function stopAllMinesSfx() {
+  if (revealPool) {
+    revealPool.forEach((a) => {
+      try { a.pause(); a.currentTime = 0; } catch {}
+    });
+  }
+  revealStreak = 0;
+  if (victoryAudio) { try { victoryAudio.pause(); victoryAudio.currentTime = 0; } catch {} }
+  if (gameOverAudio) { try { gameOverAudio.pause(); gameOverAudio.currentTime = 0; } catch {} }
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener(AUDIO_STOP_ALL_EVENT, stopAllMinesSfx);
+}
 function playVictory() {
   if (isMuted() || typeof window === "undefined") return;
   if (!victoryAudio) { victoryAudio = new Audio(victorySfx); victoryAudio.volume = 0.7; }
@@ -178,6 +193,12 @@ export function MinesGame() {
   const [now, setNow] = useState(() => Date.now());
   const [shake, setShake] = useState(false);
   const historyId = useRef(1000);
+
+  // Cierra cualquier audio de otro juego al entrar, y para SFX propios al salir.
+  useEffect(() => {
+    stopAllGameAudio();
+    return () => { stopAllMinesSfx(); };
+  }, []);
 
   // tick for relative times + auto fake wins
   useEffect(() => {

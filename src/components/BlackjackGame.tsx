@@ -9,6 +9,7 @@ import {
   stopBlackjackAmbient,
   setMuted as setAudioMuted,
   isMuted as getAudioMuted,
+  stopAllGameAudio,
 } from "@/lib/gameAudio";
 
 type Phase = "betting" | "dealing" | "playing" | "dealerTurn" | "result";
@@ -153,6 +154,7 @@ export function BlackjackGame() {
 
   // Start lounge ambient on mount, stop on unmount
   useEffect(() => {
+    stopAllGameAudio();
     if (!muted) startBlackjackAmbient();
     return () => { stopBlackjackAmbient(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -4,6 +4,7 @@ import { Menu, Settings, ChevronRight, ChevronLeft, Gift, Home, Gamepad2, Wallet
 import { useEffect, useRef, useState } from "react";
 import { PromoPopup } from "@/components/PromoPopup";
 import { SkeletonImage } from "@/components/SkeletonImage";
+import { stopAllGameAudio } from "@/lib/gameAudio";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
 import heroImg from "@/assets/home-hero.jpg";
 import heroMinesImg from "@/assets/home-hero-mines.jpg";
@@ -111,6 +112,9 @@ function HomePage() {
   const slides = SLIDES.length;
   const [arrowsVisible, setArrowsVisible] = useState(true);
   const arrowsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Al entrar al home, cualquier juego previo queda completamente cerrado.
+  useEffect(() => { stopAllGameAudio(); }, []);
 
   const showArrows = () => {
     setArrowsVisible(true);
