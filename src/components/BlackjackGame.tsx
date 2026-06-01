@@ -450,7 +450,7 @@ export function BlackjackGame() {
           <div className="flex items-center gap-2">
             <div className="text-right">
               <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
-              <div className="font-display text-xs font-bold text-white sm:text-sm">
+              <div className="font-display text-[11px] font-bold text-white sm:text-xs">
                 <span className="neon-green mr-0.5">$</span>{formatCOP(balance)} COP
               </div>
             </div>
