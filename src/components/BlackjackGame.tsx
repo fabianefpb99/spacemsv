@@ -8,7 +8,7 @@ type Phase = "betting" | "dealing" | "playing" | "dealerTurn" | "result";
 type Suit = "♠" | "♥" | "♦" | "♣";
 type Card = { suit: Suit; rank: string; value: number; hidden?: boolean };
 type Outcome = "win" | "lose" | "push" | "blackjack" | "bust";
-type Winner = { id: number; name: string; amount: number; game: string; delayMs: number };
+type Winner = { id: number; name: string; amount: number; game: string };
 
 const SUITS: Suit[] = ["♠", "♥", "♦", "♣"];
 const RANKS = [
@@ -22,16 +22,22 @@ const MIN_BET = 500;
 const MAX_BET = 100000;
 const BET_STEP = 500;
 const QUICK = [500, 1000, 2000, 5000];
-const TICKER_INTERVAL_MS = 2800;
-const TICKER_DURATION_MS = 12000;
+const TICKER_SPEED_PX_PER_MS = 0.06; // ~60 px/s
 const NAMES = ["Carlos_07", "Maria.V", "Andrés", "Lucia91", "JuanK", "Sofi", "ElCapo", "Nico", "Daniela", "PipeR", "ValeM", "MateoG", "Camila", "RoyalK", "MissL", "JoseF", "Karen", "Sebas", "TaniaP", "BrayanX"];
 const GAMES = ["Blackjack", "Spaceman", "Minas", "Slot", "Dados"];
 const INITIAL_WINNERS: Winner[] = [
-  { id: 1, name: "Andrés", amount: 185000, game: "Spaceman", delayMs: -11200 },
-  { id: 2, name: "Camila", amount: 92000, game: "Minas", delayMs: -8400 },
-  { id: 3, name: "JoseF", amount: 241000, game: "Blackjack", delayMs: -5600 },
-  { id: 4, name: "Karen", amount: 158000, game: "Dados", delayMs: -2800 },
-  { id: 5, name: "Lucia91", amount: 214000, game: "Spaceman", delayMs: 0 },
+  { id: 1, name: "Andrés", amount: 185000, game: "Spaceman" },
+  { id: 2, name: "Camila", amount: 92000, game: "Minas" },
+  { id: 3, name: "JoseF", amount: 241000, game: "Blackjack" },
+  { id: 4, name: "Karen", amount: 158000, game: "Dados" },
+  { id: 5, name: "Lucia91", amount: 214000, game: "Spaceman" },
+  { id: 6, name: "MateoG", amount: 126000, game: "Blackjack" },
+  { id: 7, name: "ValeM", amount: 67000, game: "Slot" },
+  { id: 8, name: "Sofi", amount: 154000, game: "Minas" },
+  { id: 9, name: "ElCapo", amount: 312000, game: "Spaceman" },
+  { id: 10, name: "Nico", amount: 88000, game: "Dados" },
+  { id: 11, name: "Daniela", amount: 173000, game: "Blackjack" },
+  { id: 12, name: "PipeR", amount: 96000, game: "Slot" },
 ];
 
 function pickDifferent(options: string[], blocked: string[]) {
@@ -46,7 +52,6 @@ function makeLiveWinner(id: number, current: Winner[]): Winner {
     name: pickDifferent(NAMES, current.slice(-4).map((winner) => winner.name)),
     amount: (Math.floor(Math.random() * 195) + 5) * 1000,
     game: pickDifferent(GAMES, current.slice(-3).map((winner) => winner.game)),
-    delayMs: 0,
   };
 }
 
