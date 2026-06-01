@@ -161,7 +161,8 @@ export function BlackjackGame() {
     setPayout(0);
     setDoubled(false);
     const p: Card[] = [draw(), draw()];
-    const d: Card[] = [draw(), { ...draw(), hidden: true }];
+    const hole: Card = { ...draw(), hidden: true };
+    const d: Card[] = [draw(), hole];
     setPlayer(p);
     setDealer(d);
     setPhase("dealing");
