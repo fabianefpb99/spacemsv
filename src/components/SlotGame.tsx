@@ -953,6 +953,29 @@ export function SlotGame() {
     return () => clearInterval(t);
   }, [wins.length]);
 
+  // Count-up animation for the win amount (with coin cascade sound).
+  useEffect(() => {
+    if (lastWin <= 0) {
+      setDisplayedWin(0);
+      return;
+    }
+    // Duration scales gently with the size of the win, capped so it never drags.
+    const duration = Math.min(1400, Math.max(500, 350 + Math.log10(lastWin + 1) * 220));
+    playCoinsSound(duration);
+    const start = performance.now();
+    let raf = 0;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      // easeOutCubic for a quick start that settles softly
+      const eased = 1 - Math.pow(1 - t, 3);
+      setDisplayedWin(Math.round(lastWin * eased));
+      if (t < 1) raf = requestAnimationFrame(tick);
+      else setDisplayedWin(lastWin);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [lastWin]);
+
   // Compute which cells are currently highlighted
   const activeWin = wins.length > 0 ? wins[highlightTick % wins.length] : null;
   const activeTier: WinTier = activeWin ? getWinTier(activeWin.payout, bet) : "normal";
