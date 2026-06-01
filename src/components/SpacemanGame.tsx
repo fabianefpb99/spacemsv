@@ -404,7 +404,8 @@ export function SpacemanGame() {
     setMuted((m) => {
       const next = !m;
       setAudioMuted(next);
-      if (bgAudioRef.current) bgAudioRef.current.muted = next;
+      const bg = getBackgroundTrack();
+      if (bg) bg.muted = next;
       return next;
     });
   };
@@ -564,20 +565,21 @@ export function SpacemanGame() {
     setHistory((h) => [{ id: Date.now(), value: crashPointRef.current }, ...h].slice(0, 50));
     playCrashSound();
     // Duck background music during crash
-    const bg = bgAudioRef.current;
+    const bg = getBackgroundTrack();
     if (bg && !muted) {
-      const startVol = bg.volume;
       bg.volume = 0.04;
       window.setTimeout(() => {
-        if (!bgAudioRef.current) return;
+        const cur = getBackgroundTrack();
+        if (!cur) return;
         const target = 0.18;
         const steps = 20;
         let i = 0;
-        const from = bgAudioRef.current.volume;
+        const from = cur.volume;
         const iv = window.setInterval(() => {
           i++;
-          if (!bgAudioRef.current) { window.clearInterval(iv); return; }
-          bgAudioRef.current.volume = from + (target - from) * (i / steps);
+          const c = getBackgroundTrack();
+          if (!c) { window.clearInterval(iv); return; }
+          c.volume = from + (target - from) * (i / steps);
           if (i >= steps) window.clearInterval(iv);
         }, 60);
       }, 1800);
