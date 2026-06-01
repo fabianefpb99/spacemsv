@@ -866,7 +866,7 @@ export function SlotGame() {
   useEffect(() => {
     const audio = new Audio(mafiaJazzUrl);
     audio.loop = true;
-    audio.volume = 0.03;
+    audio.volume = 0.05;
     bgAudioRef.current = audio;
     const onFirst = () => {
       audio.play().catch(() => {});
