@@ -136,10 +136,10 @@ export function BlackjackGame() {
 
   const dealerPlay = useCallback((p: Card[], d: Card[], betAmount: number) => {
     // Reveal hidden
-    const revealed = d.map((c) => ({ ...c, hidden: false }));
+    const revealed: Card[] = d.map((c) => ({ ...c, hidden: false }));
     setDealer(revealed);
     setPhase("dealerTurn");
-    let current = [...revealed];
+    let current: Card[] = [...revealed];
     const step = () => {
       const score = handScore(current);
       if (score < 17) {
