@@ -799,7 +799,7 @@ export function SpacemanGame() {
           <div className="flex items-center gap-2">
             <div className="text-right">
               <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
-              <div className="font-display text-xs font-bold sm:text-sm text-white">
+              <div className="font-display text-[11px] font-bold sm:text-xs text-white">
                 <span className="neon-green mr-0.5">$</span>{formatCOP(balance)} COP
               </div>
             </div>
