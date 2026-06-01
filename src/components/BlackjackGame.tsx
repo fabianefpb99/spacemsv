@@ -253,9 +253,9 @@ export function BlackjackGame() {
           0% { transform: scale(0.85); opacity: 0; }
           100% { transform: scale(1); opacity: 1; }
         }
-        @keyframes bj-winner-in {
-          0% { transform: translateY(-10px); opacity: 0; }
-          100% { transform: translateY(0); opacity: 1; }
+        @keyframes bj-marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
         }
       `}</style>
 
@@ -464,29 +464,34 @@ export function BlackjackGame() {
           className="relative z-10 mx-auto mt-2 w-full max-w-md px-1"
           style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 0.5rem)" }}
         >
-          <div className="rounded-xl border border-purple-500/30 bg-[#0c0620]/80 px-2 py-1.5 backdrop-blur-md">
-            <div className="mb-1 flex items-center gap-1.5">
+          <div className="rounded-xl border border-purple-500/30 bg-[#0c0620]/80 py-1.5 backdrop-blur-md">
+            <div className="mb-1 flex items-center gap-1.5 px-2">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
               <span className="text-[9px] font-bold uppercase tracking-widest text-purple-200/80">
                 Últimos ganadores
               </span>
             </div>
-            <div className="relative h-[26px] overflow-hidden">
-              <div className="flex flex-col gap-1">
-                {winners.slice(0, 4).map((w, i) => (
+            <div
+              className="relative overflow-hidden"
+              style={{
+                maskImage:
+                  "linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%)",
+                WebkitMaskImage:
+                  "linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%)",
+              }}
+            >
+              <div
+                className="flex w-max items-center gap-3 whitespace-nowrap"
+                style={{ animation: "bj-marquee 40s linear infinite" }}
+              >
+                {[...winners, ...winners].map((w, i) => (
                   <div
-                    key={w.id}
-                    className="flex items-center justify-between text-[11px]"
-                    style={{
-                      animation: i === 0 ? "bj-winner-in 0.5s ease-out both" : undefined,
-                      opacity: i === 0 ? 1 : 0.55 - i * 0.12,
-                    }}
+                    key={`${w.id}-${i}`}
+                    className="flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-[#1a0b3a]/70 px-2.5 py-1 text-[11px]"
                   >
-                    <span className="flex min-w-0 items-center gap-1.5">
-                      <span className="truncate font-bold text-white">{w.name}</span>
-                      <span className="hidden truncate text-[9px] uppercase tracking-wider text-purple-300/70 sm:inline">
-                        · {w.game}
-                      </span>
+                    <span className="font-bold text-white">{w.name}</span>
+                    <span className="text-[9px] uppercase tracking-wider text-purple-300/70">
+                      · {w.game}
                     </span>
                     <span className="font-display font-black text-emerald-300">
                       +${formatCOP(w.amount)}
