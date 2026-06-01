@@ -1,17 +1,14 @@
-import { useState, type ImgHTMLAttributes, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type ImgHTMLAttributes, type CSSProperties } from "react";
 
 type Props = ImgHTMLAttributes<HTMLImageElement> & {
-  /** Tailwind / className applied to the wrapper (controls size & shape) */
   wrapperClassName?: string;
-  /** Inline style on the wrapper (e.g. aspect ratio) */
   wrapperStyle?: CSSProperties;
-  /** Border radius, applied to wrapper. Defaults to inherit. */
   rounded?: string;
 };
 
 /**
- * Renders a shimmering gray skeleton until the underlying image loads,
- * then fades the image in. Pure CSS — no JS animation.
+ * Renders a shimmering placeholder until the underlying image loads,
+ * then fades it in. Handles cached images (where `onLoad` may not fire).
  */
 export function SkeletonImage({
   wrapperClassName = "",
@@ -23,12 +20,22 @@ export function SkeletonImage({
   ...imgProps
 }: Props) {
   const [loaded, setLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement | null>(null);
+
+  useEffect(() => {
+    const el = imgRef.current;
+    if (el && el.complete && el.naturalWidth > 0) {
+      setLoaded(true);
+    }
+  }, []);
+
   return (
     <span
-      className={`skeleton skeleton-img-wrap block ${loaded ? "loaded" : ""} ${wrapperClassName}`}
+      className={`skeleton-img-wrap block ${loaded ? "loaded" : "skeleton"} ${wrapperClassName}`}
       style={{ borderRadius: rounded, ...wrapperStyle }}
     >
       <img
+        ref={imgRef}
         {...imgProps}
         className={className}
         onLoad={(e) => {
