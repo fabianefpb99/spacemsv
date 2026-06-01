@@ -9,6 +9,7 @@ type Suit = "♠" | "♥" | "♦" | "♣";
 type Card = { suit: Suit; rank: string; value: number; hidden?: boolean };
 type Outcome = "win" | "lose" | "push" | "blackjack" | "bust";
 type Winner = { id: number; name: string; amount: number; game: string };
+type WinnerSlot = Winner & { slotId: number };
 
 const SUITS: Suit[] = ["♠", "♥", "♦", "♣"];
 const RANKS = [
@@ -23,6 +24,8 @@ const MAX_BET = 100000;
 const BET_STEP = 500;
 const QUICK = [500, 1000, 2000, 5000];
 const TICKER_SPEED_PX_PER_MS = 0.06; // ~60 px/s
+const TICKER_ITEM_WIDTH = 198;
+const TICKER_GAP = 12;
 const NAMES = ["Carlos_07", "Maria.V", "Andrés", "Lucia91", "JuanK", "Sofi", "ElCapo", "Nico", "Daniela", "PipeR", "ValeM", "MateoG", "Camila", "RoyalK", "MissL", "JoseF", "Karen", "Sebas", "TaniaP", "BrayanX"];
 const GAMES = ["Blackjack", "Spaceman", "Minas", "Slot", "Dados"];
 const INITIAL_WINNERS: Winner[] = [
@@ -142,39 +145,77 @@ export function BlackjackGame() {
 
   // Live "last winners" ticker
   const seedRef = useRef(INITIAL_WINNERS.length);
-  const [winners, setWinners] = useState<Winner[]>(INITIAL_WINNERS);
-  const stripRef = useRef<HTMLDivElement>(null);
-  const offsetRef = useRef(0);
+  const [winnerSlots, setWinnerSlots] = useState<WinnerSlot[]>(() =>
+    INITIAL_WINNERS.map((winner, index) => ({ ...winner, slotId: index }))
+  );
+  const winnerSlotsRef = useRef<WinnerSlot[]>([]);
+  const slotRefs = useRef<Record<number, HTMLDivElement | null>>({});
+  const slotPositionsRef = useRef<Record<number, number>>(
+    Object.fromEntries(
+      INITIAL_WINNERS.map((_, index) => [index, index * (TICKER_ITEM_WIDTH + TICKER_GAP)])
+    )
+  );
+
+  useEffect(() => {
+    winnerSlotsRef.current = winnerSlots;
+  }, [winnerSlots]);
 
   useEffect(() => {
     let raf = 0;
     let last = performance.now();
+
+    winnerSlotsRef.current = winnerSlots;
+
     const tick = (now: number) => {
       const dt = now - last;
       last = now;
-      offsetRef.current -= dt * TICKER_SPEED_PX_PER_MS;
-      const strip = stripRef.current;
-      if (strip) {
-        const first = strip.firstElementChild as HTMLElement | null;
-        if (first) {
-          const gap = 12;
-          const w = first.offsetWidth + gap;
-          if (-offsetRef.current >= w) {
-            offsetRef.current += w;
-            setWinners((curr) => {
-              const next = curr.slice(1);
-              next.push(makeLiveWinner(++seedRef.current, next));
-              return next;
-            });
-          }
-        }
-        strip.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
+
+      const positions = slotPositionsRef.current;
+      const slots = winnerSlotsRef.current;
+
+      for (const slot of slots) {
+        positions[slot.slotId] -= dt * TICKER_SPEED_PX_PER_MS;
       }
+
+      let rightMostX = Math.max(...slots.map((slot) => positions[slot.slotId]));
+      const recycledSlotIds: number[] = [];
+
+      for (const slot of [...slots].sort((a, b) => positions[a.slotId] - positions[b.slotId])) {
+        if (positions[slot.slotId] + TICKER_ITEM_WIDTH < 0) {
+          positions[slot.slotId] = rightMostX + TICKER_ITEM_WIDTH + TICKER_GAP;
+          rightMostX = positions[slot.slotId];
+          recycledSlotIds.push(slot.slotId);
+        }
+      }
+
+      for (const slot of slots) {
+        const node = slotRefs.current[slot.slotId];
+        if (node) {
+          node.style.transform = `translate3d(${positions[slot.slotId]}px, -50%, 0)`;
+        }
+      }
+
+      if (recycledSlotIds.length > 0) {
+        setWinnerSlots((current) => {
+          const latestWinners = [...current]
+            .sort((a, b) => positions[a.slotId] - positions[b.slotId])
+            .map(({ slotId: _slotId, ...winner }) => winner);
+
+          return current.map((slot) => {
+            if (!recycledSlotIds.includes(slot.slotId)) return slot;
+            const nextWinner = makeLiveWinner(++seedRef.current, latestWinners);
+            latestWinners.push(nextWinner);
+            return { ...nextWinner, slotId: slot.slotId };
+          });
+        });
+      }
+
       raf = requestAnimationFrame(tick);
     };
+
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [winnerSlots]);
 
   const draw = useCallback((): Card => {
     if (shoeRef.current.length < 20) shoeRef.current = makeShoe();
