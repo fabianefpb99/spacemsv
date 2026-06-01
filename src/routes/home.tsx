@@ -3,6 +3,7 @@ import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Menu, Settings, ChevronRight, ChevronLeft, Gift, Home, Gamepad2, Wallet, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PromoPopup } from "@/components/PromoPopup";
+import { SkeletonImage } from "@/components/SkeletonImage";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
 import heroImg from "@/assets/home-hero.jpg";
 import heroMinesImg from "@/assets/home-hero-mines.jpg";
@@ -155,11 +156,12 @@ function HomePage() {
         <section className="mt-3 overflow-hidden rounded-2xl border border-fuchsia-500/70 bg-[#1a0b3a] shadow-[0_0_8px_rgba(217,70,239,0.25)]">
           <div className="relative h-44 sm:h-52">
             {SLIDES.map((s, i) => (
-              <img
+              <SkeletonImage
                 key={i}
                 src={s.img}
                 alt={s.title}
-                className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${i === slide ? "opacity-100" : "opacity-0"}`}
+                wrapperClassName={`absolute inset-0 h-full w-full transition-opacity duration-700 ${i === slide ? "opacity-100" : "opacity-0"}`}
+                className="h-full w-full object-cover"
               />
             ))}
             {/* Flechas de navegación */}
@@ -224,12 +226,13 @@ function HomePage() {
                 className="group flex flex-col overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400"
               >
                 <div className="aspect-square w-full overflow-hidden">
-                  <img
+                  <SkeletonImage
                     src={g.img}
                     alt={g.name}
                     loading="lazy"
                     width={512}
                     height={512}
+                    wrapperClassName="h-full w-full"
                     className="h-full w-full object-cover transition group-hover:scale-105"
                   />
                 </div>
@@ -252,10 +255,11 @@ function HomePage() {
           className="mt-5 flex items-center gap-3 overflow-hidden rounded-xl border border-fuchsia-500/70 bg-gradient-to-r from-[#1a0b3a]/80 to-[#0c0620] p-3 shadow-[0_0_12px_rgba(217,70,239,0.25)] transition hover:shadow-[0_0_18px_rgba(217,70,239,0.45)] sm:p-4"
         >
           <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-fuchsia-400/60 bg-black/40 shadow-[0_0_12px_rgba(217,70,239,0.45),inset_0_0_8px_rgba(217,70,239,0.25)] sm:h-14 sm:w-14">
-            <img
+            <SkeletonImage
               src={blackjackPromo.url}
               alt="BlackJack"
               loading="lazy"
+              wrapperClassName="h-full w-full"
               className="h-full w-full object-cover"
             />
           </div>
@@ -278,12 +282,13 @@ function HomePage() {
         {/* Jackpot */}
         <section className="mt-3 flex items-center gap-3 rounded-xl border border-purple-500/30 bg-gradient-to-r from-[#1a0b3a]/80 to-[#0c0620] p-3 sm:p-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-amber-400/60 shadow-[0_0_12px_rgba(251,191,36,0.45),inset_0_0_8px_rgba(251,191,36,0.25)] sm:h-14 sm:w-14">
-            <img
+            <SkeletonImage
               src={trophy3d}
               alt="Trofeo"
               loading="lazy"
               width={128}
               height={128}
+              wrapperClassName="h-9 w-9 rounded-md sm:h-11 sm:w-11"
               className="h-9 w-9 object-contain drop-shadow-[0_0_10px_rgba(251,191,36,0.5)] sm:h-11 sm:w-11"
             />
           </div>
@@ -352,12 +357,13 @@ function HomePage() {
         {/* Invita y gana */}
         <section className="mt-4 flex items-center gap-3 rounded-xl border border-purple-500/30 bg-gradient-to-r from-[#1a0b3a]/80 to-[#0c0620] p-3 sm:p-4">
           <div className="flex h-14 w-14 shrink-0 items-center justify-center sm:h-16 sm:w-16">
-            <img
+            <SkeletonImage
               src={gift3d}
               alt="Regalo"
               loading="lazy"
               width={128}
               height={128}
+              wrapperClassName="h-14 w-14 rounded-md sm:h-16 sm:w-16"
               className="h-14 w-14 object-contain drop-shadow-[0_0_12px_rgba(168,85,247,0.6)] sm:h-16 sm:w-16"
             />
           </div>
