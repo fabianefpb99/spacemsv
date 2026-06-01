@@ -416,6 +416,56 @@ export function playDiceRollSound(_durationMs = 2000) {
 export function resetRevealStreak() {
   revealStreak = 0;
 }
+
+// ---- Card deal sound (whoosh + tap on felt) ----
+export function playCardDealSound() {
+  const c = getCtx();
+  if (!c || muted || !masterGain) return;
+  const now = c.currentTime;
+
+  // Whoosh: short filtered noise burst that sweeps down
+  const noiseBuf = makeNoiseBuffer(c);
+  const noise = c.createBufferSource();
+  noise.buffer = noiseBuf;
+  const nf = c.createBiquadFilter();
+  nf.type = "bandpass";
+  nf.Q.value = 0.9;
+  nf.frequency.setValueAtTime(3200, now);
+  nf.frequency.exponentialRampToValueAtTime(900, now + 0.12);
+  const ng = c.createGain();
+  ng.gain.setValueAtTime(0, now);
+  ng.gain.linearRampToValueAtTime(0.18, now + 0.012);
+  ng.gain.exponentialRampToValueAtTime(0.0001, now + 0.14);
+  noise.connect(nf).connect(ng).connect(masterGain);
+  noise.start(now);
+  noise.stop(now + 0.16);
+
+  // Tap: short low click for the card landing on the felt
+  const tap = c.createOscillator();
+  tap.type = "sine";
+  tap.frequency.setValueAtTime(180, now + 0.1);
+  tap.frequency.exponentialRampToValueAtTime(70, now + 0.18);
+  const tg = c.createGain();
+  tg.gain.setValueAtTime(0, now + 0.1);
+  tg.gain.linearRampToValueAtTime(0.22, now + 0.108);
+  tg.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+  tap.connect(tg).connect(masterGain);
+  tap.start(now + 0.1);
+  tap.stop(now + 0.24);
+
+  // Tiny high tick for snap
+  const tick = c.createOscillator();
+  tick.type = "square";
+  tick.frequency.value = 2400;
+  const tkg = c.createGain();
+  tkg.gain.setValueAtTime(0, now + 0.105);
+  tkg.gain.linearRampToValueAtTime(0.03, now + 0.11);
+  tkg.gain.exponentialRampToValueAtTime(0.0001, now + 0.15);
+  tick.connect(tkg).connect(masterGain);
+  tick.start(now + 0.105);
+  tick.stop(now + 0.16);
+}
+
 export function playRevealSound() {
   const c = getCtx();
   if (!c || muted || !masterGain) return;
