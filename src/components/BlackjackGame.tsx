@@ -164,8 +164,6 @@ export function BlackjackGame() {
     let raf = 0;
     let last = performance.now();
 
-    winnerSlotsRef.current = winnerSlots;
-
     const tick = (now: number) => {
       const dt = now - last;
       last = now;
@@ -215,7 +213,7 @@ export function BlackjackGame() {
 
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [winnerSlots]);
+  }, []);
 
   const draw = useCallback((): Card => {
     if (shoeRef.current.length < 20) shoeRef.current = makeShoe();
