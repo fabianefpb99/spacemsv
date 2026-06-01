@@ -18,6 +18,82 @@ let bjGain: GainNode | null = null;
 let bjTimer: number | null = null;
 let bjStep = 0;
 
+// ---- HTML5 background track manager ----
+// Single active background track at a time. When a new game mounts and calls
+// setBackgroundTrack(), the previous track is fully disposed (paused, src
+// cleared, references dropped) so it cannot be resurrected by visibility/
+// focus listeners. A single global visibility listener pauses/resumes only
+// the currently-registered track.
+type ActiveTrack = { audio: HTMLAudioElement; wasPlaying: boolean };
+let activeTrack: ActiveTrack | null = null;
+let trackVisHooked = false;
+
+function hookTrackVisibility() {
+  if (trackVisHooked || typeof document === "undefined") return;
+  trackVisHooked = true;
+  const pauseTrack = () => {
+    if (!activeTrack) return;
+    activeTrack.wasPlaying = !activeTrack.audio.paused;
+    try { activeTrack.audio.pause(); } catch {}
+  };
+  const resumeTrack = () => {
+    if (!activeTrack || muted || !activeTrack.wasPlaying) return;
+    activeTrack.audio.play().catch(() => {});
+  };
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) pauseTrack(); else resumeTrack();
+  });
+  window.addEventListener("pagehide", pauseTrack);
+  window.addEventListener("blur", pauseTrack);
+  window.addEventListener("focus", () => { if (!document.hidden) resumeTrack(); });
+}
+
+export function setBackgroundTrack(
+  url: string,
+  opts: { volume?: number; loop?: boolean } = {},
+): HTMLAudioElement | null {
+  if (typeof window === "undefined") return null;
+  hookTrackVisibility();
+  clearBackgroundTrack();
+  const audio = new Audio(url);
+  audio.loop = opts.loop ?? true;
+  audio.volume = opts.volume ?? 0.1;
+  audio.muted = muted;
+  activeTrack = { audio, wasPlaying: true };
+  return audio;
+}
+
+export function clearBackgroundTrack() {
+  if (!activeTrack) return;
+  const { audio } = activeTrack;
+  try { audio.pause(); } catch {}
+  try { audio.src = ""; audio.load(); } catch {}
+  activeTrack = null;
+}
+
+export function getBackgroundTrack(): HTMLAudioElement | null {
+  return activeTrack?.audio ?? null;
+}
+
+// Broadcast a stop signal that module-level SFX pools (e.g. Mines coin pool)
+// can listen to so they pause and reset themselves when the user leaves a
+// game.
+export const AUDIO_STOP_ALL_EVENT = "betspace:audio:stop-all";
+
+/**
+ * Hard reset of every audio source in the app. Called by each game on mount
+ * to guarantee that no stray track or SFX from a previous game survives.
+ */
+export function stopAllGameAudio() {
+  clearBackgroundTrack();
+  try { stopFlight(); } catch {}
+  try { stopBlackjackAmbient(); } catch {}
+  try { stopAmbient(); } catch {}
+  if (typeof window !== "undefined") {
+    try { window.dispatchEvent(new Event(AUDIO_STOP_ALL_EVENT)); } catch {}
+  }
+}
+
 // Flight nodes
 let flightSource: AudioBufferSourceNode | null = null;
 let flightGain: GainNode | null = null;
@@ -218,6 +294,14 @@ export function setMuted(m: boolean) {
     const t = ctx.currentTime;
     masterGain.gain.cancelScheduledValues(t);
     masterGain.gain.linearRampToValueAtTime(m ? 0 : 1.4, t + 0.2);
+  }
+  if (activeTrack) {
+    activeTrack.audio.muted = m;
+    if (m) {
+      try { activeTrack.audio.pause(); } catch {}
+    } else if (!document.hidden) {
+      activeTrack.audio.play().catch(() => {});
+    }
   }
 }
 
