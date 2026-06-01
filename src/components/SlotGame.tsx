@@ -1171,7 +1171,7 @@ export function SlotGame() {
                     className="-ml-1 font-display text-[11px] font-bold leading-none text-emerald-300"
                     style={{ textShadow: "0 0 6px rgba(46,255,161,0.7), 0 1px 2px rgba(0,0,0,0.8)" }}
                   >
-                    x3
+                    x5
                   </span>
                 </div>
                 <span className="mt-1 font-display text-[11px] font-bold neon-green leading-none">{s.pay[2]}.00x</span>
