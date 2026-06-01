@@ -143,15 +143,37 @@ export function BlackjackGame() {
   // Live "last winners" ticker
   const seedRef = useRef(INITIAL_WINNERS.length);
   const [winners, setWinners] = useState<Winner[]>(INITIAL_WINNERS);
-  const removeWinner = useCallback((id: number) => {
-    setWinners((current) => current.filter((winner) => winner.id !== id));
-  }, []);
+  const stripRef = useRef<HTMLDivElement>(null);
+  const offsetRef = useRef(0);
 
   useEffect(() => {
-    const t = setInterval(() => {
-      setWinners((current) => [...current, makeLiveWinner(++seedRef.current, current)]);
-    }, TICKER_INTERVAL_MS);
-    return () => clearInterval(t);
+    let raf = 0;
+    let last = performance.now();
+    const tick = (now: number) => {
+      const dt = now - last;
+      last = now;
+      offsetRef.current -= dt * TICKER_SPEED_PX_PER_MS;
+      const strip = stripRef.current;
+      if (strip) {
+        const first = strip.firstElementChild as HTMLElement | null;
+        if (first) {
+          const gap = 12;
+          const w = first.offsetWidth + gap;
+          if (-offsetRef.current >= w) {
+            offsetRef.current += w;
+            setWinners((curr) => {
+              const next = curr.slice(1);
+              next.push(makeLiveWinner(++seedRef.current, next));
+              return next;
+            });
+          }
+        }
+        strip.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   const draw = useCallback((): Card => {
