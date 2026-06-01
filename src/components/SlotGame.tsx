@@ -846,6 +846,9 @@ export function SlotGame() {
   const [reelsStopped, setReelsStopped] = useState(0);
   const [wins, setWins] = useState<WinLine[]>([]);
   const [lastWin, setLastWin] = useState(0);
+  // Smoothly animated value used in the UI so wins "count up" instead of
+  // appearing instantly — mimics real casino slots.
+  const [displayedWin, setDisplayedWin] = useState(0);
   const [totalWonRound, setTotalWonRound] = useState(0);
   const [highlightTick, setHighlightTick] = useState(0); // rotates which win is highlighted
 
