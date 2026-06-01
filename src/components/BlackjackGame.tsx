@@ -568,26 +568,27 @@ export function BlackjackGame() {
                   "linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%)",
               }}
             >
-              <div
-                ref={stripRef}
-                className="flex h-full items-center gap-3 will-change-transform"
-                style={{ width: "max-content" }}
-              >
-                {winners.map((w) => (
-                  <div
-                    key={w.id}
-                    className="flex shrink-0 items-center gap-1.5 rounded-full border border-purple-500/30 bg-[#1a0b3a]/70 px-2.5 py-1 text-[11px] whitespace-nowrap"
-                  >
-                    <span className="font-bold text-white">{w.name}</span>
-                    <span className="text-[9px] uppercase tracking-wider text-purple-300/70">
-                      · {w.game}
-                    </span>
-                    <span className="font-display font-black text-emerald-300">
-                      +${formatCOP(w.amount)}
-                    </span>
-                  </div>
-                ))}
-              </div>
+              {winnerSlots.map((w) => (
+                <div
+                  key={w.slotId}
+                  ref={(node) => {
+                    slotRefs.current[w.slotId] = node;
+                  }}
+                  className="absolute left-0 top-1/2 flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full border border-purple-500/30 bg-[#1a0b3a]/70 px-2.5 py-1 text-[11px] will-change-transform"
+                  style={{
+                    width: `${TICKER_ITEM_WIDTH}px`,
+                    transform: `translate3d(${slotPositionsRef.current[w.slotId] ?? 0}px, -50%, 0)`,
+                  }}
+                >
+                  <span className="truncate font-bold text-white">{w.name}</span>
+                  <span className="shrink-0 text-[9px] uppercase tracking-wider text-purple-300/70">
+                    · {w.game}
+                  </span>
+                  <span className="ml-auto shrink-0 font-display font-black text-emerald-300">
+                    +${formatCOP(w.amount)}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
