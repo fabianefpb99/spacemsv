@@ -143,7 +143,7 @@ function HomePage() {
                 <img
                   src={betspaceLogo}
                   alt="BETSPACE"
-                  className="h-5 w-auto sm:h-6"
+                  className="h-6 w-auto sm:h-7"
                 />
               </Link>
             </div>

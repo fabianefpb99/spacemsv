@@ -80,7 +80,7 @@ function PayBrebPage() {
 
         <div className="mt-3 flex justify-center">
           <Link to="/home">
-            <img src={betspaceLogo} alt="BETSPACEMAN" className="h-5 w-auto sm:h-6" />
+            <img src={betspaceLogo} alt="BETSPACEMAN" className="h-6 w-auto sm:h-7" />
           </Link>
         </div>
 
