@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Menu, Settings, Minus, Plus } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import bgAsset from "@/assets/blackjack-bg.png.asset.json";
-import { playCardDealSound, playCashoutSound } from "@/lib/gameAudio";
+import { playCardDealSound } from "@/lib/gameAudio";
 
 type Phase = "betting" | "dealing" | "playing" | "dealerTurn" | "result";
 type Suit = "♠" | "♥" | "♦" | "♣";
