@@ -1,7 +1,7 @@
 {
-  "name": "Spaceman MSV",
-  "short_name": "Spaceman",
-  "description": "Spaceman — apuesta y multiplica antes de que explote.",
+  "name": "BETSPACE",
+  "short_name": "BETSPACE",
+  "description": "BETSPACE — apuesta y multiplica antes de que explote.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
