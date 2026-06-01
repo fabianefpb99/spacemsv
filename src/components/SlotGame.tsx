@@ -5,6 +5,7 @@ import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Menu, Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "lucide-react";
 import { setMuted as setAudioMuted, playCashoutSound, playCoinsSound, isMuted } from "@/lib/gameAudio";
 import pageBg from "@/assets/mines-page-bg.png";
+import mafiaJazzUrl from "@/assets/mafia-jazz.mp3";
 
 import bossImg from "@/assets/slot/boss.png";
 import hatImg from "@/assets/slot/hat.png";
@@ -857,6 +858,40 @@ export function SlotGame() {
   const historyId = useRef(1000);
 
   useEffect(() => { setAudioMuted(muted); }, [muted]);
+
+  // Música de fondo — jazz suave temática mafia/imperio. Se inicia tras
+  // el primer gesto del usuario (requisito de los navegadores) y respeta
+  // el botón de mute del HUD.
+  const bgAudioRef = useRef<HTMLAudioElement | null>(null);
+  useEffect(() => {
+    const audio = new Audio(mafiaJazzUrl);
+    audio.loop = true;
+    audio.volume = 0.12;
+    bgAudioRef.current = audio;
+    const onFirst = () => {
+      audio.play().catch(() => {});
+      window.removeEventListener("pointerdown", onFirst);
+      window.removeEventListener("keydown", onFirst);
+    };
+    window.addEventListener("pointerdown", onFirst);
+    window.addEventListener("keydown", onFirst);
+    return () => {
+      window.removeEventListener("pointerdown", onFirst);
+      window.removeEventListener("keydown", onFirst);
+      audio.pause();
+      bgAudioRef.current = null;
+    };
+  }, []);
+  useEffect(() => {
+    const audio = bgAudioRef.current;
+    if (!audio) return;
+    audio.muted = muted;
+    if (muted) {
+      audio.pause();
+    } else {
+      audio.play().catch(() => {});
+    }
+  }, [muted]);
   // Pre-decode todas las imágenes de símbolos al montar para evitar
   // "icono fantasma" durante el primer giro en iOS/Android. Una vez
   // decodificadas, Safari las mantiene en la caché de texturas GPU.
