@@ -563,7 +563,7 @@ export function startBlackjackAmbient() {
   bjGain = c.createGain();
   bjGain.gain.value = 0;
   bjGain.connect(masterGain!);
-  bjGain.gain.linearRampToValueAtTime(0.55, c.currentTime + 2.0);
+  bjGain.gain.linearRampToValueAtTime(0.22, c.currentTime + 2.0);
 
   bjStep = 0;
   const tick = () => {
