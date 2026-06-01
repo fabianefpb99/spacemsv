@@ -3,7 +3,7 @@ import { flushSync } from "react-dom";
 import { Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Menu, Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "lucide-react";
-import { setMuted as setAudioMuted, playCashoutSound, isMuted } from "@/lib/gameAudio";
+import { setMuted as setAudioMuted, playCashoutSound, playCoinsSound, isMuted } from "@/lib/gameAudio";
 import pageBg from "@/assets/mines-page-bg.png";
 
 import bossImg from "@/assets/slot/boss.png";
@@ -846,6 +846,9 @@ export function SlotGame() {
   const [reelsStopped, setReelsStopped] = useState(0);
   const [wins, setWins] = useState<WinLine[]>([]);
   const [lastWin, setLastWin] = useState(0);
+  // Smoothly animated value used in the UI so wins "count up" instead of
+  // appearing instantly — mimics real casino slots.
+  const [displayedWin, setDisplayedWin] = useState(0);
   const [totalWonRound, setTotalWonRound] = useState(0);
   const [highlightTick, setHighlightTick] = useState(0); // rotates which win is highlighted
 
@@ -894,6 +897,7 @@ export function SlotGame() {
     startReelLoop();
     setBalance((b) => b - bet);
     setLastWin(0);
+    setDisplayedWin(0);
     setTotalWonRound(0);
     setWins([]);
     const newGrid = generateGrid();
@@ -948,6 +952,29 @@ export function SlotGame() {
     const t = setInterval(() => setHighlightTick((x) => x + 1), 1100);
     return () => clearInterval(t);
   }, [wins.length]);
+
+  // Count-up animation for the win amount (with coin cascade sound).
+  useEffect(() => {
+    if (lastWin <= 0) {
+      setDisplayedWin(0);
+      return;
+    }
+    // Duration scales gently with the size of the win, capped so it never drags.
+    const duration = Math.min(1400, Math.max(500, 350 + Math.log10(lastWin + 1) * 220));
+    playCoinsSound(duration);
+    const start = performance.now();
+    let raf = 0;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      // easeOutCubic for a quick start that settles softly
+      const eased = 1 - Math.pow(1 - t, 3);
+      setDisplayedWin(Math.round(lastWin * eased));
+      if (t < 1) raf = requestAnimationFrame(tick);
+      else setDisplayedWin(lastWin);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [lastWin]);
 
   // Compute which cells are currently highlighted
   const activeWin = wins.length > 0 ? wins[highlightTick % wins.length] : null;
@@ -1033,7 +1060,7 @@ export function SlotGame() {
         {/* HUD (matches reference) */}
         <section className="mt-2 grid grid-cols-4 gap-1.5 rounded-2xl glass-panel p-1.5 sm:p-2">
           <HudCell label="LÍNEAS" value={String(LINES)} />
-          <HudCell label="PREMIO TOTAL" value={lastWin > 0 ? `${formatCOP(lastWin)} COP` : "—"} accent="green" wide />
+          <HudCell label="PREMIO TOTAL" value={lastWin > 0 ? `${formatCOP(displayedWin)} COP` : "—"} accent="green" wide />
           <HudCell label="TIRADAS GRATIS" value="--" accent="muted" />
           <HudCell label="MULTIPLICADOR" value={`x${winMult >= 10 ? winMult.toFixed(1) : winMult.toFixed(2).replace(/\.?0+$/, "")}`} accent="purple" />
         </section>
@@ -1142,7 +1169,7 @@ export function SlotGame() {
               style={{ boxShadow: "0 0 24px rgba(46,255,161,0.55)", animation: "scale-in 0.3s ease-out" }}
             >
               <span className="font-display text-xs font-bold uppercase tracking-widest text-emerald-300">
-                ¡Ganaste! <span className="neon-green ml-1">${formatCOP(lastWin)}</span>
+                ¡Ganaste! <span className="neon-green ml-1">${formatCOP(displayedWin)}</span>
               </span>
             </div>
           )}
