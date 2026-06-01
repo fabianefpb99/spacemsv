@@ -423,75 +423,119 @@ export function resetRevealStreak() {
 }
 
 // ---- Coin cascade sound (used while win counter animates up) ----
-// Real slot-machine coin payout: rapid metallic "tings" caused by coins
-// hitting a metal tray. Each hit is a 40ms burst of white noise pushed through
-// two high-Q resonant bandpass filters (inharmonic partials = metallic, not
-// musical), plus a tiny low-mid "body" thud. No swept oscillators — those
-// were the cause of the previous whistle.
-function playCoinHit(c: AudioContext, t: number, intensity = 1) {
+// Slot payout should feel like many coins hitting a metal tray: dry, fast,
+// slightly chaotic, with little bursts of 2-3 impacts. Avoid pitched sweeps
+// and bell-like resonances so it reads as "money dropping" instead of music.
+function playCoinImpact(c: AudioContext, t: number, intensity = 1, pan = 0) {
   if (!masterGain) return;
-  // Short white-noise source for the ting
-  const buf = c.createBuffer(1, Math.floor(c.sampleRate * 0.12), c.sampleRate);
+
+  const len = Math.floor(c.sampleRate * 0.055);
+  const buf = c.createBuffer(1, len, c.sampleRate);
   const d = buf.getChannelData(0);
-  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  for (let i = 0; i < len; i++) {
+    const decay = 1 - i / len;
+    d[i] = (Math.random() * 2 - 1) * decay;
+  }
+
   const src = c.createBufferSource();
   src.buffer = buf;
 
-  // Two inharmonic resonant partials — picked from typical small coin spectra
-  // (~3-7kHz, ratios that are NOT integer multiples → metallic, not bell-like).
-  const f1 = 2800 + Math.random() * 900;
-  const f2 = f1 * (1.71 + Math.random() * 0.25); // inharmonic
+  const panner = typeof c.createStereoPanner === "function" ? c.createStereoPanner() : null;
+  if (panner) panner.pan.value = pan;
 
-  const bp1 = c.createBiquadFilter();
-  bp1.type = "bandpass";
-  bp1.frequency.value = f1;
-  bp1.Q.value = 38;
+  const peak = 0.18 * intensity;
 
-  const bp2 = c.createBiquadFilter();
-  bp2.type = "bandpass";
-  bp2.frequency.value = f2;
-  bp2.Q.value = 28;
+  // Main metal clink: bright but not tonal.
+  const hp = c.createBiquadFilter();
+  hp.type = "highpass";
+  hp.frequency.value = 1800 + Math.random() * 700;
 
-  const g1 = c.createGain();
-  const g2 = c.createGain();
-  const peak = 0.55 * intensity;
-  g1.gain.setValueAtTime(0, t);
-  g1.gain.linearRampToValueAtTime(peak, t + 0.001);
-  g1.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
-  g2.gain.setValueAtTime(0, t);
-  g2.gain.linearRampToValueAtTime(peak * 0.5, t + 0.001);
-  g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+  const bpA = c.createBiquadFilter();
+  bpA.type = "bandpass";
+  bpA.frequency.value = 2600 + Math.random() * 900;
+  bpA.Q.value = 10 + Math.random() * 4;
 
-  src.connect(bp1).connect(g1).connect(masterGain);
-  src.connect(bp2).connect(g2).connect(masterGain);
+  const bpB = c.createBiquadFilter();
+  bpB.type = "bandpass";
+  bpB.frequency.value = 4700 + Math.random() * 1400;
+  bpB.Q.value = 8 + Math.random() * 5;
+
+  const gA = c.createGain();
+  gA.gain.setValueAtTime(0.0001, t);
+  gA.gain.exponentialRampToValueAtTime(peak, t + 0.002);
+  gA.gain.exponentialRampToValueAtTime(0.0001, t + 0.042);
+
+  const gB = c.createGain();
+  gB.gain.setValueAtTime(0.0001, t);
+  gB.gain.exponentialRampToValueAtTime(peak * 0.58, t + 0.0015);
+  gB.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
+
+  // Tray/body: short lower clack so it feels like coins landing in metal.
+  const trayLp = c.createBiquadFilter();
+  trayLp.type = "lowpass";
+  trayLp.frequency.value = 950 + Math.random() * 350;
+
+  const trayHp = c.createBiquadFilter();
+  trayHp.type = "highpass";
+  trayHp.frequency.value = 180;
+
+  const trayGain = c.createGain();
+  trayGain.gain.setValueAtTime(0.0001, t);
+  trayGain.gain.exponentialRampToValueAtTime(peak * 0.42, t + 0.003);
+  trayGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+
+  const outputA = panner ?? masterGain;
+  const outputB = panner ?? masterGain;
+  const outputTray = panner ?? masterGain;
+
+  src.connect(hp);
+  hp.connect(bpA).connect(gA).connect(outputA);
+  hp.connect(bpB).connect(gB).connect(outputB);
+  src.connect(trayLp).connect(trayHp).connect(trayGain).connect(outputTray);
+
+  if (panner) panner.connect(masterGain);
+
   src.start(t);
-  src.stop(t + 0.12);
-
-  // Tiny low body so it has weight, not just sparkle
-  const body = c.createOscillator();
-  body.type = "sine";
-  body.frequency.setValueAtTime(180 + Math.random() * 60, t);
-  const bg = c.createGain();
-  bg.gain.setValueAtTime(0, t);
-  bg.gain.linearRampToValueAtTime(0.08 * intensity, t + 0.002);
-  bg.gain.exponentialRampToValueAtTime(0.0001, t + 0.045);
-  body.connect(bg).connect(masterGain);
-  body.start(t);
-  body.stop(t + 0.06);
+  src.stop(t + 0.06);
 }
 
 export function playCoinsSound(durationMs = 900) {
   const c = getCtx();
   if (!c || muted || !masterGain) return;
+
   const start = c.currentTime;
-  const end = start + durationMs / 1000;
-  // ~10–14 coins/sec — fast enough to feel like a cascade, slow enough that
-  // each hit reads as a distinct coin (not a whistle).
+  const durationSec = durationMs / 1000;
+  const end = start + durationSec;
+
   let t = start;
   while (t < end) {
-    const intensity = 0.55 + Math.random() * 0.45;
-    playCoinHit(c, t, intensity);
-    t += 0.07 + Math.random() * 0.045;
+    const progress = (t - start) / Math.max(durationSec, 0.001);
+    const interval = 0.024 + progress * 0.038 + Math.random() * 0.012;
+    const intensity = 0.9 - progress * 0.2 + Math.random() * 0.12;
+    const pan = (Math.random() * 2 - 1) * 0.55;
+
+    playCoinImpact(c, t, intensity, pan);
+
+    // Small burst pairs make it feel like a real coin payout, not a metronome.
+    if (Math.random() < 0.6) {
+      playCoinImpact(
+        c,
+        t + 0.008 + Math.random() * 0.012,
+        intensity * (0.7 + Math.random() * 0.18),
+        Math.max(-0.8, Math.min(0.8, pan + (Math.random() * 2 - 1) * 0.22)),
+      );
+    }
+
+    if (Math.random() < 0.24) {
+      playCoinImpact(
+        c,
+        t + 0.017 + Math.random() * 0.012,
+        intensity * 0.55,
+        (Math.random() * 2 - 1) * 0.8,
+      );
+    }
+
+    t += interval;
   }
 }
 
