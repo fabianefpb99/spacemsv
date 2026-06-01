@@ -22,18 +22,16 @@ const MIN_BET = 500;
 const MAX_BET = 100000;
 const BET_STEP = 500;
 const QUICK = [500, 1000, 2000, 5000];
-const TICKER_INTERVAL_MS = 1500;
-const TICKER_DURATION_MS = 18000;
+const TICKER_INTERVAL_MS = 2800;
+const TICKER_DURATION_MS = 12000;
 const NAMES = ["Carlos_07", "Maria.V", "Andrés", "Lucia91", "JuanK", "Sofi", "ElCapo", "Nico", "Daniela", "PipeR", "ValeM", "MateoG", "Camila", "RoyalK", "MissL", "JoseF", "Karen", "Sebas", "TaniaP", "BrayanX"];
 const GAMES = ["Blackjack", "Spaceman", "Minas", "Slot", "Dados"];
 const INITIAL_WINNERS: Winner[] = [
-  { id: 1, name: "Andrés", amount: 185000, game: "Spaceman", delayMs: -10500 },
-  { id: 2, name: "Camila", amount: 92000, game: "Minas", delayMs: -9000 },
-  { id: 3, name: "JoseF", amount: 241000, game: "Blackjack", delayMs: -7500 },
-  { id: 4, name: "ValeM", amount: 67000, game: "Slot", delayMs: -6000 },
-  { id: 5, name: "Karen", amount: 158000, game: "Dados", delayMs: -4500 },
-  { id: 6, name: "MateoG", amount: 126000, game: "Blackjack", delayMs: -3000 },
-  { id: 7, name: "Lucia91", amount: 214000, game: "Spaceman", delayMs: -1500 },
+  { id: 1, name: "Andrés", amount: 185000, game: "Spaceman", delayMs: -11200 },
+  { id: 2, name: "Camila", amount: 92000, game: "Minas", delayMs: -8400 },
+  { id: 3, name: "JoseF", amount: 241000, game: "Blackjack", delayMs: -5600 },
+  { id: 4, name: "Karen", amount: 158000, game: "Dados", delayMs: -2800 },
+  { id: 5, name: "Lucia91", amount: 214000, game: "Spaceman", delayMs: 0 },
 ];
 
 function pickDifferent(options: string[], blocked: string[]) {
@@ -328,10 +326,11 @@ export function BlackjackGame() {
                 <CardView key={`d-${i}`} card={c} idx={i} total={dealer.length} hidden={c.hidden} />
               ))}
             </div>
-            {showDealerScore && dealer.length > 0 && (
+            {dealer.length > 0 && (
               <div className="mt-2 text-center">
                 <span className="rounded-full border border-purple-400/50 bg-[#1a0b3a]/80 px-2.5 py-0.5 text-[10px] font-bold tracking-wider text-purple-100">
                   DEALER: {handScore(dealer)}
+                  {!showDealerScore && dealer.some((c) => c.hidden) ? "+" : ""}
                 </span>
               </div>
             )}
