@@ -782,7 +782,7 @@ export function SpacemanGame() {
         {/* Header */}
         <header
           className="flex items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
-          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.75rem)" }}
+          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <div className="flex items-center gap-1">
             <button className="rounded-md p-2 text-white hover:bg-white/10">
