@@ -866,7 +866,7 @@ export function SlotGame() {
   useEffect(() => {
     const audio = new Audio(mafiaJazzUrl);
     audio.loop = true;
-    audio.volume = 0.05;
+    audio.volume = 0.07;
     bgAudioRef.current = audio;
     const onFirst = () => {
       audio.play().catch(() => {});
@@ -1010,7 +1010,7 @@ export function SlotGame() {
       return;
     }
     // Duration scales gently with the size of the win, capped so it never drags.
-    const duration = Math.min(1400, Math.max(500, 350 + Math.log10(lastWin + 1) * 220));
+    const duration = Math.min(1680, Math.max(600, 420 + Math.log10(lastWin + 1) * 264));
     playCoinsSound(duration);
     const start = performance.now();
     let raf = 0;
