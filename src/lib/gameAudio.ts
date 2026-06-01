@@ -6,6 +6,7 @@
 let ctx: AudioContext | null = null;
 let masterGain: GainNode | null = null;
 let muted = false;
+let visibilityHooked = false;
 
 // Ambient loop nodes
 let ambientGain: GainNode | null = null;
@@ -29,7 +30,25 @@ function getCtx(): AudioContext | null {
     masterGain.gain.value = muted ? 0 : 1.4;
     masterGain.connect(ctx.destination);
   }
-  if (ctx.state === "suspended") ctx.resume().catch(() => {});
+  // Auto pause/resume audio when the tab/app is minimized or hidden.
+  if (!visibilityHooked && typeof document !== "undefined") {
+    visibilityHooked = true;
+    const onVis = () => {
+      if (!ctx) return;
+      if (document.hidden) {
+        ctx.suspend().catch(() => {});
+      } else if (!muted) {
+        ctx.resume().catch(() => {});
+      }
+    };
+    document.addEventListener("visibilitychange", onVis);
+    window.addEventListener("pagehide", () => ctx?.suspend().catch(() => {}));
+    window.addEventListener("blur", () => ctx?.suspend().catch(() => {}));
+    window.addEventListener("focus", () => {
+      if (!muted && !document.hidden) ctx?.resume().catch(() => {});
+    });
+  }
+  if (ctx.state === "suspended" && !document.hidden) ctx.resume().catch(() => {});
   return ctx;
 }
 
