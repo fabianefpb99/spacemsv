@@ -99,11 +99,28 @@ function HomePage() {
   const [online] = useState(219);
   const [slide, setSlide] = useState(0);
   const slides = SLIDES.length;
+  const [arrowsVisible, setArrowsVisible] = useState(true);
+  const arrowsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showArrows = () => {
+    setArrowsVisible(true);
+    if (arrowsTimer.current) clearTimeout(arrowsTimer.current);
+    arrowsTimer.current = setTimeout(() => setArrowsVisible(false), 1500);
+  };
 
   useEffect(() => {
     const id = setInterval(() => setSlide((s) => (s + 1) % SLIDES.length), 5000);
     return () => clearInterval(id);
   }, []);
+
+  // Auto-ocultar flechas al cargar y cada vez que cambia el slide
+  useEffect(() => {
+    showArrows();
+    return () => {
+      if (arrowsTimer.current) clearTimeout(arrowsTimer.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slide]);
 
   const current = SLIDES[slide];
 
@@ -166,16 +183,16 @@ function HomePage() {
             ))}
             {/* Flechas de navegación */}
             <button
-              onClick={() => setSlide((s) => (s - 1 + SLIDES.length) % SLIDES.length)}
+              onClick={() => { showArrows(); setSlide((s) => (s - 1 + SLIDES.length) % SLIDES.length); }}
               aria-label="Anterior"
-              className="absolute left-2 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white/80 backdrop-blur-sm transition hover:bg-black/50 hover:text-white"
+              className={`absolute left-2 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white/80 backdrop-blur-sm transition-opacity duration-500 hover:bg-black/50 hover:text-white ${arrowsVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
             <button
-              onClick={() => setSlide((s) => (s + 1) % SLIDES.length)}
+              onClick={() => { showArrows(); setSlide((s) => (s + 1) % SLIDES.length); }}
               aria-label="Siguiente"
-              className="absolute right-2 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white/80 backdrop-blur-sm transition hover:bg-black/50 hover:text-white"
+              className={`absolute right-2 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white/80 backdrop-blur-sm transition-opacity duration-500 hover:bg-black/50 hover:text-white ${arrowsVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}
             >
               <ChevronRight className="h-4 w-4" />
             </button>
