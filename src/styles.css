@@ -995,3 +995,42 @@ html, body {
   box-shadow: 0 0 3px currentColor;
 }
 .mini-pip-off { width: 4px; height: 4px; }
+
+/* ---- Skeleton shimmer (used by SkeletonImage / placeholders) ---- */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #1a0f33 0%, #150b2a 100%);
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(168, 85, 247, 0.08) 35%,
+    rgba(217, 70, 239, 0.18) 50%,
+    rgba(168, 85, 247, 0.08) 65%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: skeleton-shimmer 1.4s linear infinite;
+}
+@keyframes skeleton-shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.skeleton-img-wrap > img {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.skeleton-img-wrap.loaded > img {
+  opacity: 1;
+}
+.skeleton-img-wrap.loaded {
+  background: transparent;
+}
+.skeleton-img-wrap.loaded::after {
+  display: none;
+}
