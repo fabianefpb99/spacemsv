@@ -16,6 +16,7 @@ import gameDice from "@/assets/game-dice.jpg";
 import gift3d from "@/assets/gift-3d.png";
 import trophy3d from "@/assets/trophy-3d.png";
 import blackjackPromo from "@/assets/blackjack-promo.png.asset.json";
+import blackjackBanner from "@/assets/blackjack-banner.jpg";
 
 const LAST_WINS = [
   { user: "Usuario123", game: "Spaceman", amount: 252413, mult: 1.85 },
@@ -269,31 +270,35 @@ function HomePage() {
         {/* BlackJack — acceso directo */}
         <Link
           to="/blackjack"
-          className="mt-5 flex items-center gap-3 overflow-hidden rounded-xl border border-fuchsia-500/70 bg-gradient-to-r from-[#1a0b3a]/80 to-[#0c0620] p-3 shadow-[0_0_12px_rgba(217,70,239,0.25)] transition hover:shadow-[0_0_18px_rgba(217,70,239,0.45)] sm:p-4"
+          className="relative mt-5 block h-24 overflow-hidden rounded-xl border border-fuchsia-500/70 shadow-[0_0_12px_rgba(217,70,239,0.25)] transition hover:shadow-[0_0_22px_rgba(217,70,239,0.55)] sm:h-28"
         >
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-fuchsia-400/60 bg-black/40 shadow-[0_0_12px_rgba(217,70,239,0.45),inset_0_0_8px_rgba(217,70,239,0.25)] sm:h-14 sm:w-14">
-            <SkeletonImage
-              src={blackjackPromo.url}
-              alt="BlackJack"
-              loading="lazy"
-              wrapperClassName="h-full w-full"
-              className="h-full w-full object-cover"
-            />
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="text-[10px] uppercase tracking-widest text-fuchsia-200/80">
-              Nuevo juego
-            </div>
-            <div className="font-display text-base font-bold sm:text-lg">
-              <span className="text-white">BlackJack</span>
-              <span className="ml-2 text-[10px] font-semibold uppercase tracking-wider text-fuchsia-300/90">
+          {/* Imagen de fondo completa */}
+          <SkeletonImage
+            src={blackjackBanner}
+            alt="BlackJack"
+            loading="lazy"
+            wrapperClassName="absolute inset-0 h-full w-full"
+            className="h-full w-full object-cover"
+          />
+          {/* Oscurecido a la izquierda para legibilidad del texto */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent" />
+          {/* Texto encima */}
+          <div className="relative z-10 flex h-full items-center justify-between gap-3 px-4 sm:px-5">
+            <div className="min-w-0 flex-1">
+              <div className="text-[10px] font-semibold uppercase tracking-widest text-fuchsia-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+                Nuevo juego
+              </div>
+              <div className="mt-0.5 font-display text-2xl font-black leading-none tracking-wide text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] sm:text-3xl">
+                BlackJack
+              </div>
+              <div className="mt-1 inline-block rounded-sm bg-fuchsia-600/80 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white shadow-[0_0_8px_rgba(217,70,239,0.6)]">
                 Paga 3 a 2
-              </span>
+              </div>
             </div>
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-fuchsia-400/70 bg-black/50 text-fuchsia-100 backdrop-blur-sm shadow-[0_0_10px_rgba(217,70,239,0.5)]">
+              <ChevronRight className="h-4 w-4" />
+            </span>
           </div>
-          <span className="rounded-full border border-fuchsia-500/50 p-2 text-fuchsia-200 hover:bg-fuchsia-500/10">
-            <ChevronRight className="h-4 w-4" />
-          </span>
         </Link>
 
         {/* Jackpot */}
