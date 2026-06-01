@@ -897,6 +897,7 @@ export function SlotGame() {
     startReelLoop();
     setBalance((b) => b - bet);
     setLastWin(0);
+    setDisplayedWin(0);
     setTotalWonRound(0);
     setWins([]);
     const newGrid = generateGrid();
