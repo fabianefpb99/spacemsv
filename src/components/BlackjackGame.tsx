@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, Settings, Minus, Plus } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
@@ -106,6 +106,27 @@ export function BlackjackGame() {
   const [payout, setPayout] = useState(0);
   const [doubled, setDoubled] = useState(false);
   const shoeRef = useRef<Card[]>(makeShoe());
+
+  // Live "last winners" ticker
+  type Winner = { id: number; name: string; amount: number; game: string };
+  const NAMES = ["Carlos_07", "Maria.V", "Andrés", "Lucia91", "JuanK", "Sofi", "ElCapo", "Nico", "Daniela", "PipeR", "ValeM", "MateoG", "Camila", "RoyalK", "MissL", "JoseF", "Karen", "Sebas", "TaniaP", "BrayanX"];
+  const GAMES = ["Blackjack", "Spaceman", "Minas", "Slot", "Dados"];
+  const randWinner = (id: number): Winner => ({
+    id,
+    name: NAMES[Math.floor(Math.random() * NAMES.length)],
+    amount: (Math.floor(Math.random() * 195) + 5) * 1000,
+    game: GAMES[Math.floor(Math.random() * GAMES.length)],
+  });
+  const seedRef = useRef(0);
+  const [winners, setWinners] = useState<Winner[]>(() =>
+    Array.from({ length: 8 }, () => randWinner(++seedRef.current))
+  );
+  useEffect(() => {
+    const t = setInterval(() => {
+      setWinners((ws) => [randWinner(++seedRef.current), ...ws].slice(0, 20));
+    }, 1500);
+    return () => clearInterval(t);
+  }, []);
 
   const draw = useCallback((): Card => {
     if (shoeRef.current.length < 20) shoeRef.current = makeShoe();
