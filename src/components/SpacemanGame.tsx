@@ -7,7 +7,7 @@ import astronautIdlePng from "@/assets/astronaut-idle.svg";
 import astronautFlyingSrc from "@/assets/astronaut-flying.png";
 import meteorSrc from "@/assets/asteroid.svg";
 import saturnSrc from "@/assets/saturn.svg";
-import { startFlight, stopFlight, setMuted as setAudioMuted, playCrashSound, playCashoutSound } from "@/lib/gameAudio";
+import { startFlight, stopFlight, setMuted as setAudioMuted, playCrashSound, playCashoutSound, setBackgroundTrack, clearBackgroundTrack, getBackgroundTrack, stopAllGameAudio } from "@/lib/gameAudio";
 import bgMusicUrl from "@/assets/bg-music.mp3";
 
 type Phase = "betting" | "running" | "crashed";
@@ -263,12 +263,10 @@ export function SpacemanGame() {
   }, [historyOpen]);
 
   // Background music (mp3) — starts on first user interaction (browsers require a gesture)
-  const bgAudioRef = useRef<HTMLAudioElement | null>(null);
   useEffect(() => {
-    const audio = new Audio(bgMusicUrl);
-    audio.loop = true;
-    audio.volume = 0.18;
-    bgAudioRef.current = audio;
+    stopAllGameAudio();
+    const audio = setBackgroundTrack(bgMusicUrl, { volume: 0.18, loop: true });
+    if (!audio) return;
     const onFirst = () => {
       audio.play().catch(() => {});
       window.removeEventListener("pointerdown", onFirst);
@@ -276,30 +274,10 @@ export function SpacemanGame() {
     };
     window.addEventListener("pointerdown", onFirst);
     window.addEventListener("keydown", onFirst);
-    // Pausar al minimizar la app o cambiar de pestaña.
-    const onVis = () => {
-      if (document.hidden) {
-        audio.pause();
-      } else {
-        audio.play().catch(() => {});
-      }
-    };
-    document.addEventListener("visibilitychange", onVis);
-    const onPageHide = () => audio.pause();
-    const onBlur = () => audio.pause();
-    const onFocus = () => { if (!document.hidden) audio.play().catch(() => {}); };
-    window.addEventListener("pagehide", onPageHide);
-    window.addEventListener("blur", onBlur);
-    window.addEventListener("focus", onFocus);
     return () => {
       window.removeEventListener("pointerdown", onFirst);
       window.removeEventListener("keydown", onFirst);
-      document.removeEventListener("visibilitychange", onVis);
-      window.removeEventListener("pagehide", onPageHide);
-      window.removeEventListener("blur", onBlur);
-      window.removeEventListener("focus", onFocus);
-      audio.pause();
-      bgAudioRef.current = null;
+      clearBackgroundTrack();
     };
   }, []);
 
