@@ -423,50 +423,75 @@ export function resetRevealStreak() {
 }
 
 // ---- Coin cascade sound (used while win counter animates up) ----
-// Schedules a stream of short metallic "clink" tones over `durationMs`.
-// Each clink = bright sine ping + tiny filtered-noise tick to feel like a coin.
-let coinsStopAt = 0;
+// Real slot-machine coin payout: rapid metallic "tings" caused by coins
+// hitting a metal tray. Each hit is a 40ms burst of white noise pushed through
+// two high-Q resonant bandpass filters (inharmonic partials = metallic, not
+// musical), plus a tiny low-mid "body" thud. No swept oscillators — those
+// were the cause of the previous whistle.
+function playCoinHit(c: AudioContext, t: number, intensity = 1) {
+  if (!masterGain) return;
+  // Short white-noise source for the ting
+  const buf = c.createBuffer(1, Math.floor(c.sampleRate * 0.12), c.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  const src = c.createBufferSource();
+  src.buffer = buf;
+
+  // Two inharmonic resonant partials — picked from typical small coin spectra
+  // (~3-7kHz, ratios that are NOT integer multiples → metallic, not bell-like).
+  const f1 = 2800 + Math.random() * 900;
+  const f2 = f1 * (1.71 + Math.random() * 0.25); // inharmonic
+
+  const bp1 = c.createBiquadFilter();
+  bp1.type = "bandpass";
+  bp1.frequency.value = f1;
+  bp1.Q.value = 38;
+
+  const bp2 = c.createBiquadFilter();
+  bp2.type = "bandpass";
+  bp2.frequency.value = f2;
+  bp2.Q.value = 28;
+
+  const g1 = c.createGain();
+  const g2 = c.createGain();
+  const peak = 0.55 * intensity;
+  g1.gain.setValueAtTime(0, t);
+  g1.gain.linearRampToValueAtTime(peak, t + 0.001);
+  g1.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+  g2.gain.setValueAtTime(0, t);
+  g2.gain.linearRampToValueAtTime(peak * 0.5, t + 0.001);
+  g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+
+  src.connect(bp1).connect(g1).connect(masterGain);
+  src.connect(bp2).connect(g2).connect(masterGain);
+  src.start(t);
+  src.stop(t + 0.12);
+
+  // Tiny low body so it has weight, not just sparkle
+  const body = c.createOscillator();
+  body.type = "sine";
+  body.frequency.setValueAtTime(180 + Math.random() * 60, t);
+  const bg = c.createGain();
+  bg.gain.setValueAtTime(0, t);
+  bg.gain.linearRampToValueAtTime(0.08 * intensity, t + 0.002);
+  bg.gain.exponentialRampToValueAtTime(0.0001, t + 0.045);
+  body.connect(bg).connect(masterGain);
+  body.start(t);
+  body.stop(t + 0.06);
+}
+
 export function playCoinsSound(durationMs = 900) {
   const c = getCtx();
   if (!c || muted || !masterGain) return;
   const start = c.currentTime;
   const end = start + durationMs / 1000;
-  coinsStopAt = Math.max(coinsStopAt, end);
-  const noiseBuf = makeNoiseBuffer(c);
-  // ~22 clinks per second feels like a cascade without being noisy.
-  const interval = 0.045;
-  for (let t = start; t < end; t += interval * (0.7 + Math.random() * 0.6)) {
-    // Bell ping
-    const baseFreq = 1700 + Math.random() * 1400;
-    const o = c.createOscillator();
-    o.type = "sine";
-    o.frequency.setValueAtTime(baseFreq, t);
-    o.frequency.exponentialRampToValueAtTime(baseFreq * 0.7, t + 0.09);
-    const g = c.createGain();
-    const vol = 0.04 + Math.random() * 0.05;
-    g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(vol, t + 0.004);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.13);
-    const hp = c.createBiquadFilter();
-    hp.type = "highpass";
-    hp.frequency.value = 900;
-    o.connect(hp).connect(g).connect(masterGain);
-    o.start(t);
-    o.stop(t + 0.15);
-    // Tiny noise tick for metallic edge
-    const ns = c.createBufferSource();
-    ns.buffer = noiseBuf;
-    const nf = c.createBiquadFilter();
-    nf.type = "bandpass";
-    nf.frequency.value = 5000 + Math.random() * 2500;
-    nf.Q.value = 2.5;
-    const ng = c.createGain();
-    ng.gain.setValueAtTime(0, t);
-    ng.gain.linearRampToValueAtTime(0.025, t + 0.002);
-    ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
-    ns.connect(nf).connect(ng).connect(masterGain);
-    ns.start(t);
-    ns.stop(t + 0.06);
+  // ~10–14 coins/sec — fast enough to feel like a cascade, slow enough that
+  // each hit reads as a distinct coin (not a whistle).
+  let t = start;
+  while (t < end) {
+    const intensity = 0.55 + Math.random() * 0.45;
+    playCoinHit(c, t, intensity);
+    t += 0.07 + Math.random() * 0.045;
   }
 }
 
