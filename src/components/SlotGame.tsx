@@ -1060,7 +1060,7 @@ export function SlotGame() {
         {/* HUD (matches reference) */}
         <section className="mt-2 grid grid-cols-4 gap-1.5 rounded-2xl glass-panel p-1.5 sm:p-2">
           <HudCell label="LÍNEAS" value={String(LINES)} />
-          <HudCell label="PREMIO TOTAL" value={lastWin > 0 ? `${formatCOP(lastWin)} COP` : "—"} accent="green" wide />
+          <HudCell label="PREMIO TOTAL" value={lastWin > 0 ? `${formatCOP(displayedWin)} COP` : "—"} accent="green" wide />
           <HudCell label="TIRADAS GRATIS" value="--" accent="muted" />
           <HudCell label="MULTIPLICADOR" value={`x${winMult >= 10 ? winMult.toFixed(1) : winMult.toFixed(2).replace(/\.?0+$/, "")}`} accent="purple" />
         </section>
@@ -1169,7 +1169,7 @@ export function SlotGame() {
               style={{ boxShadow: "0 0 24px rgba(46,255,161,0.55)", animation: "scale-in 0.3s ease-out" }}
             >
               <span className="font-display text-xs font-bold uppercase tracking-widest text-emerald-300">
-                ¡Ganaste! <span className="neon-green ml-1">${formatCOP(lastWin)}</span>
+                ¡Ganaste! <span className="neon-green ml-1">${formatCOP(displayedWin)}</span>
               </span>
             </div>
           )}
