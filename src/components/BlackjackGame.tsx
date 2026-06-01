@@ -69,7 +69,7 @@ function CardView({ card, idx, total, hidden }: { card: Card; idx: number; total
   const red = card.suit === "♥" || card.suit === "♦";
   return (
     <div
-      className="absolute top-0 left-1/2 h-[88px] w-[60px] sm:h-[100px] sm:w-[68px] rounded-md shadow-[0_4px_14px_rgba(0,0,0,0.55)] transition-all duration-300"
+      className="absolute top-0 left-1/2 h-[104px] w-[72px] sm:h-[118px] sm:w-[82px] rounded-md shadow-[0_4px_14px_rgba(0,0,0,0.55)] transition-all duration-300"
       style={{
         transform: `translate(calc(-50% + ${offset}px), 0) rotate(${(idx - (total - 1) / 2) * 2}deg)`,
         zIndex: idx + 1,
@@ -410,14 +410,14 @@ export function BlackjackGame() {
                 <button
                   onClick={onStand}
                   disabled={phase !== "playing"}
-                  className="rounded-xl bg-gradient-to-b from-rose-500 to-rose-700 px-2 py-2.5 text-sm font-black uppercase tracking-wider text-white shadow-md active:scale-95 disabled:opacity-40"
+                  className="rounded-xl bg-gradient-to-b from-fuchsia-600 to-purple-700 px-2 py-2.5 text-sm font-black uppercase tracking-wider text-white shadow-md active:scale-95 disabled:opacity-40"
                 >
                   Plantarse
                 </button>
                 <button
                   onClick={onDouble}
                   disabled={phase !== "playing" || player.length !== 2 || bet > balance}
-                  className="rounded-xl bg-gradient-to-b from-amber-500 to-amber-700 px-2 py-2.5 text-sm font-black uppercase tracking-wider text-white shadow-md active:scale-95 disabled:opacity-40"
+                  className="rounded-xl border-2 border-purple-400 bg-transparent px-2 py-2.5 text-sm font-black uppercase tracking-wider text-purple-100 shadow-[0_0_12px_rgba(168,85,247,0.45)] active:scale-95 disabled:opacity-40"
                 >
                   Doblar
                 </button>
