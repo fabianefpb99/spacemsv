@@ -8,6 +8,7 @@ type Phase = "betting" | "dealing" | "playing" | "dealerTurn" | "result";
 type Suit = "♠" | "♥" | "♦" | "♣";
 type Card = { suit: Suit; rank: string; value: number; hidden?: boolean };
 type Outcome = "win" | "lose" | "push" | "blackjack" | "bust";
+type Winner = { id: number; name: string; amount: number; game: string; delayMs: number };
 
 const SUITS: Suit[] = ["♠", "♥", "♦", "♣"];
 const RANKS = [
@@ -21,6 +22,35 @@ const MIN_BET = 500;
 const MAX_BET = 100000;
 const BET_STEP = 500;
 const QUICK = [500, 1000, 2000, 5000];
+const TICKER_INTERVAL_MS = 1500;
+const TICKER_DURATION_MS = 18000;
+const NAMES = ["Carlos_07", "Maria.V", "Andrés", "Lucia91", "JuanK", "Sofi", "ElCapo", "Nico", "Daniela", "PipeR", "ValeM", "MateoG", "Camila", "RoyalK", "MissL", "JoseF", "Karen", "Sebas", "TaniaP", "BrayanX"];
+const GAMES = ["Blackjack", "Spaceman", "Minas", "Slot", "Dados"];
+const INITIAL_WINNERS: Winner[] = [
+  { id: 1, name: "Andrés", amount: 185000, game: "Spaceman", delayMs: -10500 },
+  { id: 2, name: "Camila", amount: 92000, game: "Minas", delayMs: -9000 },
+  { id: 3, name: "JoseF", amount: 241000, game: "Blackjack", delayMs: -7500 },
+  { id: 4, name: "ValeM", amount: 67000, game: "Slot", delayMs: -6000 },
+  { id: 5, name: "Karen", amount: 158000, game: "Dados", delayMs: -4500 },
+  { id: 6, name: "MateoG", amount: 126000, game: "Blackjack", delayMs: -3000 },
+  { id: 7, name: "Lucia91", amount: 214000, game: "Spaceman", delayMs: -1500 },
+];
+
+function pickDifferent(options: string[], blocked: string[]) {
+  const available = options.filter((option) => !blocked.includes(option));
+  const pool = available.length > 0 ? available : options;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function makeLiveWinner(id: number, current: Winner[]): Winner {
+  return {
+    id,
+    name: pickDifferent(NAMES, current.slice(-4).map((winner) => winner.name)),
+    amount: (Math.floor(Math.random() * 195) + 5) * 1000,
+    game: pickDifferent(GAMES, current.slice(-3).map((winner) => winner.game)),
+    delayMs: 0,
+  };
+}
 
 function makeShoe(): Card[] {
   const deck: Card[] = [];
@@ -108,23 +138,16 @@ export function BlackjackGame() {
   const shoeRef = useRef<Card[]>(makeShoe());
 
   // Live "last winners" ticker
-  type Winner = { id: number; name: string; amount: number; game: string };
-  const NAMES = ["Carlos_07", "Maria.V", "Andrés", "Lucia91", "JuanK", "Sofi", "ElCapo", "Nico", "Daniela", "PipeR", "ValeM", "MateoG", "Camila", "RoyalK", "MissL", "JoseF", "Karen", "Sebas", "TaniaP", "BrayanX"];
-  const GAMES = ["Blackjack", "Spaceman", "Minas", "Slot", "Dados"];
-  const randWinner = (id: number): Winner => ({
-    id,
-    name: NAMES[Math.floor(Math.random() * NAMES.length)],
-    amount: (Math.floor(Math.random() * 195) + 5) * 1000,
-    game: GAMES[Math.floor(Math.random() * GAMES.length)],
-  });
-  const seedRef = useRef(0);
-  const [winners, setWinners] = useState<Winner[]>(() =>
-    Array.from({ length: 8 }, () => randWinner(++seedRef.current))
-  );
+  const seedRef = useRef(INITIAL_WINNERS.length);
+  const [winners, setWinners] = useState<Winner[]>(INITIAL_WINNERS);
+  const removeWinner = useCallback((id: number) => {
+    setWinners((current) => current.filter((winner) => winner.id !== id));
+  }, []);
+
   useEffect(() => {
     const t = setInterval(() => {
-      setWinners((ws) => [randWinner(++seedRef.current), ...ws].slice(0, 20));
-    }, 1500);
+      setWinners((current) => [...current, makeLiveWinner(++seedRef.current, current)]);
+    }, TICKER_INTERVAL_MS);
     return () => clearInterval(t);
   }, []);
 
@@ -254,8 +277,8 @@ export function BlackjackGame() {
           100% { transform: scale(1); opacity: 1; }
         }
         @keyframes bj-marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
+          0% { transform: translate3d(0, -50%, 0); }
+          100% { transform: translate3d(calc(-100vw - 140%), -50%, 0); }
         }
       `}</style>
 
@@ -472,7 +495,7 @@ export function BlackjackGame() {
               </span>
             </div>
             <div
-              className="relative overflow-hidden"
+              className="relative h-8 overflow-hidden"
               style={{
                 maskImage:
                   "linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%)",
@@ -480,14 +503,16 @@ export function BlackjackGame() {
                   "linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%)",
               }}
             >
-              <div
-                className="flex w-max items-center gap-3 whitespace-nowrap"
-                style={{ animation: "bj-marquee 40s linear infinite" }}
-              >
-                {[...winners, ...winners].map((w, i) => (
+              <div className="relative h-full w-full">
+                {winners.map((w) => (
                   <div
-                    key={`${w.id}-${i}`}
-                    className="flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-[#1a0b3a]/70 px-2.5 py-1 text-[11px]"
+                    key={w.id}
+                    className="absolute left-full top-1/2 flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-[#1a0b3a]/70 px-2.5 py-1 text-[11px] whitespace-nowrap will-change-transform"
+                    style={{
+                      animation: `bj-marquee ${TICKER_DURATION_MS}ms linear forwards`,
+                      animationDelay: `${w.delayMs}ms`,
+                    }}
+                    onAnimationEnd={() => removeWinner(w.id)}
                   >
                     <span className="font-bold text-white">{w.name}</span>
                     <span className="text-[9px] uppercase tracking-wider text-purple-300/70">
