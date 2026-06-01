@@ -357,7 +357,7 @@ export function BlackjackGame() {
         {/* Header — same as Mines */}
         <header
           className="flex items-center justify-between border-b border-purple-500/20 bg-[#060210]/80 px-3 pb-3 -mx-3 backdrop-blur-sm"
-          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.75rem)" }}
+          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <div className="flex items-center gap-1">
             <Link to="/home" className="rounded-md p-2 text-white hover:bg-white/10">
