@@ -13,6 +13,11 @@ let ambientGain: GainNode | null = null;
 let ambientTimer: number | null = null;
 let ambientStep = 0;
 
+// Blackjack lounge ambient
+let bjGain: GainNode | null = null;
+let bjTimer: number | null = null;
+let bjStep = 0;
+
 // Flight nodes
 let flightSource: AudioBufferSourceNode | null = null;
 let flightGain: GainNode | null = null;
@@ -464,6 +469,127 @@ export function playCardDealSound() {
   tick.connect(tkg).connect(masterGain);
   tick.start(now + 0.105);
   tick.stop(now + 0.16);
+}
+
+// ---- Blackjack lounge ambient (soft cocktail jazz vibe) ----
+// Smooth Rhodes-like electric piano chords, walking upright bass,
+// gentle brush hi-hat. Low volume by design — meant to sit under SFX.
+
+const BJ_PROG: Array<[number, number[]]> = [
+  [146.83, [293.66, 349.23, 440.0, 523.25]], // Dm7
+  [196.0,  [293.66, 349.23, 440.0, 493.88]], // G7
+  [130.81, [261.63, 329.63, 392.0, 493.88]], // Cmaj7
+  [174.61, [261.63, 329.63, 349.23, 440.0]], // Fmaj7
+  [123.47, [246.94, 293.66, 349.23, 440.0]], // Bm7b5
+  [164.81, [329.63, 415.30, 493.88, 587.33]], // E7
+  [110.0,  [261.63, 329.63, 392.0, 440.0]],  // Am7
+  [110.0,  [277.18, 329.63, 392.0, 440.0]],  // A7
+];
+const BJ_BAR_MS = 2400;
+
+function bjRhodesChord(c: AudioContext, time: number, freqs: number[]) {
+  if (!bjGain) return;
+  freqs.forEach((f, i) => {
+    const o1 = c.createOscillator();
+    const o2 = c.createOscillator();
+    o1.type = "triangle";
+    o2.type = "sine";
+    o1.frequency.value = f;
+    o2.frequency.value = f * 2.005;
+    const g = c.createGain();
+    g.gain.setValueAtTime(0, time);
+    g.gain.linearRampToValueAtTime(0.045 - i * 0.005, time + 0.08);
+    g.gain.exponentialRampToValueAtTime(0.0001, time + 1.9);
+    const lp = c.createBiquadFilter();
+    lp.type = "lowpass";
+    lp.frequency.value = 1800;
+    o1.connect(lp);
+    o2.connect(lp);
+    lp.connect(g).connect(bjGain!);
+    o1.start(time); o1.stop(time + 2.0);
+    o2.start(time); o2.stop(time + 2.0);
+  });
+}
+
+function bjBass(c: AudioContext, time: number, root: number) {
+  if (!bjGain) return;
+  const notes = [
+    { f: root, t: 0 },
+    { f: root * 1.5, t: BJ_BAR_MS / 2000 },
+  ];
+  notes.forEach(({ f, t }) => {
+    const o = c.createOscillator();
+    o.type = "sine";
+    o.frequency.setValueAtTime(f, time + t);
+    const g = c.createGain();
+    g.gain.setValueAtTime(0, time + t);
+    g.gain.linearRampToValueAtTime(0.11, time + t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, time + t + 0.9);
+    const lp = c.createBiquadFilter();
+    lp.type = "lowpass";
+    lp.frequency.value = 320;
+    o.connect(lp).connect(g).connect(bjGain!);
+    o.start(time + t);
+    o.stop(time + t + 1.0);
+  });
+}
+
+function bjBrushHat(c: AudioContext, time: number) {
+  if (!bjGain) return;
+  const beats = 4;
+  const beatDur = BJ_BAR_MS / 1000 / beats;
+  const buf = makeNoiseBuffer(c);
+  for (let i = 0; i < beats; i++) {
+    const t = time + i * beatDur;
+    const src = c.createBufferSource();
+    src.buffer = buf;
+    const hp = c.createBiquadFilter();
+    hp.type = "highpass";
+    hp.frequency.value = 5500;
+    const g = c.createGain();
+    const isOff = i % 2 === 1;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(isOff ? 0.022 : 0.012, t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + (isOff ? 0.22 : 0.09));
+    src.connect(hp).connect(g).connect(bjGain);
+    src.start(t);
+    src.stop(t + 0.3);
+  }
+}
+
+export function startBlackjackAmbient() {
+  const c = getCtx();
+  if (!c || bjGain) return;
+  bjGain = c.createGain();
+  bjGain.gain.value = 0;
+  bjGain.connect(masterGain!);
+  bjGain.gain.linearRampToValueAtTime(0.55, c.currentTime + 2.0);
+
+  bjStep = 0;
+  const tick = () => {
+    if (!ctx || !bjGain) return;
+    const now = ctx.currentTime + 0.02;
+    const [root, chord] = BJ_PROG[bjStep % BJ_PROG.length];
+    bjRhodesChord(ctx, now, chord);
+    bjBass(ctx, now, root);
+    bjBrushHat(ctx, now);
+    bjStep++;
+  };
+  tick();
+  bjTimer = window.setInterval(tick, BJ_BAR_MS);
+}
+
+export function stopBlackjackAmbient() {
+  const c = ctx;
+  if (bjTimer !== null) { clearInterval(bjTimer); bjTimer = null; }
+  if (!c || !bjGain) return;
+  const t = c.currentTime;
+  bjGain.gain.cancelScheduledValues(t);
+  bjGain.gain.setValueAtTime(bjGain.gain.value, t);
+  bjGain.gain.linearRampToValueAtTime(0, t + 0.6);
+  const g = bjGain;
+  bjGain = null;
+  setTimeout(() => { try { g.disconnect(); } catch {} }, 800);
 }
 
 export function playRevealSound() {
