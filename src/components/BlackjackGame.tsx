@@ -9,6 +9,7 @@ import {
   stopBlackjackAmbient,
   setMuted as setAudioMuted,
   isMuted as getAudioMuted,
+  stopAllGameAudio,
 } from "@/lib/gameAudio";
 
 type Phase = "betting" | "dealing" | "playing" | "dealerTurn" | "result";
