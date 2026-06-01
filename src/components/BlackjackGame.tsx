@@ -404,13 +404,6 @@ export function BlackjackGame() {
                 <span className="neon-green mr-0.5">$</span>{formatCOP(balance)} COP
               </div>
             </div>
-            <button
-              onClick={() => setMuted((m) => !m)}
-              className="rounded-md p-1.5 text-purple-200/80 hover:bg-white/5"
-              aria-label={muted ? "Activar sonido" : "Silenciar"}
-            >
-              {muted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
-            </button>
             <button className="rounded-md p-1.5 text-purple-200/80 hover:bg-white/5">
               <Settings className="h-5 w-5 sm:h-6 sm:w-6" />
             </button>
@@ -419,6 +412,14 @@ export function BlackjackGame() {
 
         {/* Play area — flex-1, with absolutely positioned card zones */}
         <div className="relative flex-1">
+          {/* Mute toggle — overlaid on the background, right side, no layout shift */}
+          <button
+            onClick={() => setMuted((m) => !m)}
+            aria-label={muted ? "Activar sonido" : "Silenciar"}
+            className="absolute right-2 top-2 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white/85 backdrop-blur-sm transition hover:bg-black/60 hover:text-white"
+          >
+            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          </button>
           {/* Dealer hand — over the top card slots in the background (~22% of play area) */}
           <div className="absolute left-1/2 top-[14%] -translate-x-1/2">
             <div className="relative h-[100px] w-[200px]">
