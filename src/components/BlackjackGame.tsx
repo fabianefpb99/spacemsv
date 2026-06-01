@@ -367,10 +367,7 @@ export function BlackjackGame() {
         </div>
 
         {/* Dynamic HUD */}
-        <div
-          className="relative z-10 mx-auto w-full max-w-md px-1 pb-3 pt-2"
-          style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 0.75rem)" }}
-        >
+        <div className="relative z-10 mx-auto w-full max-w-md px-1 pt-1">
           {phase === "betting" && (
             <div className="rounded-2xl border border-purple-500/40 bg-[#0c0620]/85 p-3 shadow-[0_0_20px_rgba(168,85,247,0.25)] backdrop-blur-md">
               <div className="text-center text-[10px] font-bold uppercase tracking-widest text-purple-200/80">
