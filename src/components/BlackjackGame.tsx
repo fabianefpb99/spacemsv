@@ -253,6 +253,10 @@ export function BlackjackGame() {
           0% { transform: scale(0.85); opacity: 0; }
           100% { transform: scale(1); opacity: 1; }
         }
+        @keyframes bj-winner-in {
+          0% { transform: translateY(-10px); opacity: 0; }
+          100% { transform: translateY(0); opacity: 1; }
+        }
       `}</style>
 
       {/* Background */}
