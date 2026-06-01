@@ -422,6 +422,54 @@ export function resetRevealStreak() {
   revealStreak = 0;
 }
 
+// ---- Coin cascade sound (used while win counter animates up) ----
+// Schedules a stream of short metallic "clink" tones over `durationMs`.
+// Each clink = bright sine ping + tiny filtered-noise tick to feel like a coin.
+let coinsStopAt = 0;
+export function playCoinsSound(durationMs = 900) {
+  const c = getCtx();
+  if (!c || muted || !masterGain) return;
+  const start = c.currentTime;
+  const end = start + durationMs / 1000;
+  coinsStopAt = Math.max(coinsStopAt, end);
+  const noiseBuf = makeNoiseBuffer(c);
+  // ~22 clinks per second feels like a cascade without being noisy.
+  const interval = 0.045;
+  for (let t = start; t < end; t += interval * (0.7 + Math.random() * 0.6)) {
+    // Bell ping
+    const baseFreq = 1700 + Math.random() * 1400;
+    const o = c.createOscillator();
+    o.type = "sine";
+    o.frequency.setValueAtTime(baseFreq, t);
+    o.frequency.exponentialRampToValueAtTime(baseFreq * 0.7, t + 0.09);
+    const g = c.createGain();
+    const vol = 0.04 + Math.random() * 0.05;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.13);
+    const hp = c.createBiquadFilter();
+    hp.type = "highpass";
+    hp.frequency.value = 900;
+    o.connect(hp).connect(g).connect(masterGain);
+    o.start(t);
+    o.stop(t + 0.15);
+    // Tiny noise tick for metallic edge
+    const ns = c.createBufferSource();
+    ns.buffer = noiseBuf;
+    const nf = c.createBiquadFilter();
+    nf.type = "bandpass";
+    nf.frequency.value = 5000 + Math.random() * 2500;
+    nf.Q.value = 2.5;
+    const ng = c.createGain();
+    ng.gain.setValueAtTime(0, t);
+    ng.gain.linearRampToValueAtTime(0.025, t + 0.002);
+    ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+    ns.connect(nf).connect(ng).connect(masterGain);
+    ns.start(t);
+    ns.stop(t + 0.06);
+  }
+}
+
 // ---- Card deal sound (whoosh + tap on felt) ----
 export function playCardDealSound() {
   const c = getCtx();
