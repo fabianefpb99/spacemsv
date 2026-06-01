@@ -223,6 +223,21 @@ export function startAmbient() {
   ambientTimer = window.setInterval(tick, STEP_MS);
 }
 
+export function stopAmbient() {
+  if (ambientTimer !== null) { clearInterval(ambientTimer); ambientTimer = null; }
+  const c = ctx;
+  if (!c || !ambientGain) return;
+  const t = c.currentTime;
+  try {
+    ambientGain.gain.cancelScheduledValues(t);
+    ambientGain.gain.setValueAtTime(ambientGain.gain.value, t);
+    ambientGain.gain.linearRampToValueAtTime(0, t + 0.4);
+  } catch {}
+  const g = ambientGain;
+  ambientGain = null;
+  setTimeout(() => { try { g.disconnect(); } catch {} }, 600);
+}
+
 // ---- Flight whoosh ----
 
 function makeNoiseBuffer(c: AudioContext): AudioBuffer {
