@@ -14,6 +14,7 @@ import gameMines from "@/assets/game-mines.jpg";
 import gameDice from "@/assets/game-dice.jpg";
 import gift3d from "@/assets/gift-3d.png";
 import trophy3d from "@/assets/trophy-3d.png";
+import blackjackPromo from "@/assets/blackjack-promo.png.asset.json";
 
 const LAST_WINS = [
   { user: "Usuario123", game: "Spaceman", amount: 252413, mult: 1.85 },
@@ -245,8 +246,37 @@ function HomePage() {
           </div>
         </section>
 
+        {/* BlackJack — acceso directo */}
+        <Link
+          to="/blackjack"
+          className="mt-5 flex items-center gap-3 overflow-hidden rounded-xl border border-fuchsia-500/70 bg-gradient-to-r from-[#1a0b3a]/80 to-[#0c0620] p-3 shadow-[0_0_12px_rgba(217,70,239,0.25)] transition hover:shadow-[0_0_18px_rgba(217,70,239,0.45)] sm:p-4"
+        >
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-fuchsia-400/60 bg-black/40 shadow-[0_0_12px_rgba(217,70,239,0.45),inset_0_0_8px_rgba(217,70,239,0.25)] sm:h-14 sm:w-14">
+            <img
+              src={blackjackPromo.url}
+              alt="BlackJack"
+              loading="lazy"
+              className="h-full w-full object-cover"
+            />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-[10px] uppercase tracking-widest text-fuchsia-200/80">
+              Nuevo juego
+            </div>
+            <div className="font-display text-base font-bold sm:text-lg">
+              <span className="text-white">BlackJack</span>
+              <span className="ml-2 text-[10px] font-semibold uppercase tracking-wider text-fuchsia-300/90">
+                Paga 3 a 2
+              </span>
+            </div>
+          </div>
+          <span className="rounded-full border border-fuchsia-500/50 p-2 text-fuchsia-200 hover:bg-fuchsia-500/10">
+            <ChevronRight className="h-4 w-4" />
+          </span>
+        </Link>
+
         {/* Jackpot */}
-        <section className="mt-5 flex items-center gap-3 rounded-xl border border-purple-500/30 bg-gradient-to-r from-[#1a0b3a]/80 to-[#0c0620] p-3 sm:p-4">
+        <section className="mt-3 flex items-center gap-3 rounded-xl border border-purple-500/30 bg-gradient-to-r from-[#1a0b3a]/80 to-[#0c0620] p-3 sm:p-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-amber-400/60 shadow-[0_0_12px_rgba(251,191,36,0.45),inset_0_0_8px_rgba(251,191,36,0.25)] sm:h-14 sm:w-14">
             <img
               src={trophy3d}

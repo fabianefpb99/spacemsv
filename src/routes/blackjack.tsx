@@ -16,7 +16,7 @@ export const Route = createFileRoute("/blackjack")({
 
 function Page() {
   return (
-    <LoadingScreen variant="rocket">
+    <LoadingScreen variant="blackjack">
       <BlackjackGame />
     </LoadingScreen>
   );
