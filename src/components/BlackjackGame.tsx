@@ -241,6 +241,56 @@ export function BlackjackGame() {
     return shoeRef.current.pop()!;
   }, []);
 
+  // ───────── House edge interno (invisible para el jugador) ─────────
+  // 1) Al sacar la hole card del dealer, con 8% de prob. se cambia por una
+  //    carta alta (10/J/Q/K/A) si la siguiente en el mazo no lo es.
+  // 2) Al pedir una carta para el dealer durante su turno, con 5% de prob.
+  //    se busca en las próximas 4 cartas del mazo una que le mejore la mano
+  //    (que lo deje >=17 sin pasarse). Si la encuentra, la trae al frente.
+  const HIGH_RANKS = new Set(["10", "J", "Q", "K", "A"]);
+
+  const drawHoleBiased = useCallback((): Card => {
+    const shoe = shoeRef.current;
+    if (shoe.length < 20) shoeRef.current = makeShoe();
+    const top = shoeRef.current.pop()!;
+    if (Math.random() < 0.08 && !HIGH_RANKS.has(top.rank)) {
+      // buscar carta alta en las próximas 6 posiciones
+      const arr = shoeRef.current;
+      for (let k = arr.length - 1; k >= Math.max(0, arr.length - 6); k--) {
+        if (HIGH_RANKS.has(arr[k].rank)) {
+          const swapped = arr[k];
+          arr[k] = top;
+          return swapped;
+        }
+      }
+    }
+    return top;
+  }, []);
+
+  const drawForDealerHit = useCallback((currentScore: number): Card => {
+    const shoe = shoeRef.current;
+    if (shoe.length < 20) shoeRef.current = makeShoe();
+    if (Math.random() < 0.05) {
+      const arr = shoeRef.current;
+      // necesita un valor entre (17 - currentScore) y (21 - currentScore)
+      const need = (v: number) => {
+        const total = currentScore + v;
+        return total >= 17 && total <= 21;
+      };
+      for (let k = arr.length - 1; k >= Math.max(0, arr.length - 4); k--) {
+        const c = arr[k];
+        // valor efectivo del As: 11 si no se pasa, 1 si no
+        const v = c.rank === "A" ? (currentScore + 11 <= 21 ? 11 : 1) : c.value;
+        if (need(v)) {
+          arr.splice(k, 1);
+          return c;
+        }
+      }
+    }
+    return shoeRef.current.pop()!;
+  }, []);
+  // ──────────────────────────────────────────────────────────────────
+
   const playerScore = handScore(player);
   const dealerScore = handScore(dealer);
 
@@ -273,7 +323,7 @@ export function BlackjackGame() {
     const step = () => {
       const score = handScore(current);
       if (score < 17) {
-        const c = draw();
+        const c = drawForDealerHit(score);
         current = [...current, c];
         setDealer([...current]);
         playCardDealSound();
@@ -283,7 +333,7 @@ export function BlackjackGame() {
       }
     };
     setTimeout(step, 700);
-  }, [draw, resolve]);
+  }, [drawForDealerHit, resolve]);
 
   const onDeal = () => {
     if (bet > balance || bet < MIN_BET) return;
@@ -292,7 +342,7 @@ export function BlackjackGame() {
     setPayout(0);
     setDoubled(false);
     const p: Card[] = [draw(), draw()];
-    const hole: Card = { ...draw(), hidden: true };
+    const hole: Card = { ...drawHoleBiased(), hidden: true };
     const d: Card[] = [draw(), hole];
     setPlayer(p);
     setDealer(d);
