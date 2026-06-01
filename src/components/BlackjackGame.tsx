@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, Settings, Minus, Plus } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
@@ -443,7 +443,3 @@ export function BlackjackGame() {
 
 // Avoid unused import warning when builds are strict
 export default BlackjackGame;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _ = useMemo;
-const __ = useEffect;
-void _; void __;
