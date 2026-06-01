@@ -153,6 +153,7 @@ export function BlackjackGame() {
 
   // Start lounge ambient on mount, stop on unmount
   useEffect(() => {
+    stopAllGameAudio();
     if (!muted) startBlackjackAmbient();
     return () => { stopBlackjackAmbient(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
