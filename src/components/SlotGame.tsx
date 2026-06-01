@@ -875,9 +875,24 @@ export function SlotGame() {
     };
     window.addEventListener("pointerdown", onFirst);
     window.addEventListener("keydown", onFirst);
+    // Pausar al minimizar la app o cambiar de pestaña.
+    const onVis = () => {
+      if (document.hidden) {
+        audio.pause();
+      } else if (!isMuted()) {
+        audio.play().catch(() => {});
+      }
+    };
+    document.addEventListener("visibilitychange", onVis);
+    window.addEventListener("pagehide", () => audio.pause());
+    window.addEventListener("blur", () => audio.pause());
+    window.addEventListener("focus", () => {
+      if (!isMuted() && !document.hidden) audio.play().catch(() => {});
+    });
     return () => {
       window.removeEventListener("pointerdown", onFirst);
       window.removeEventListener("keydown", onFirst);
+      document.removeEventListener("visibilitychange", onVis);
       audio.pause();
       bgAudioRef.current = null;
     };
