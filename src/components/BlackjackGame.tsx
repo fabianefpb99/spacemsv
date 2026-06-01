@@ -504,12 +504,12 @@ export function BlackjackGame() {
           )}
 
           {(phase === "playing" || phase === "dealing" || phase === "dealerTurn") && (
-            <div className="rounded-2xl border border-purple-500/40 bg-[#0c0620]/85 p-3 shadow-[0_0_20px_rgba(168,85,247,0.25)] backdrop-blur-md">
-              <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-purple-200/80">
+            <div className="-mt-4 rounded-2xl border border-purple-500/40 bg-[#0c0620]/85 p-3.5 shadow-[0_0_20px_rgba(168,85,247,0.25)] backdrop-blur-md">
+              <div className="flex items-center justify-between text-[12px] font-bold uppercase tracking-widest text-purple-200/80">
                 <span>Apuesta: <span className="text-white">${formatCOP(doubled ? bet * 2 : bet)}</span></span>
                 <span>Puntos: <span className="text-white">{playerScore}</span></span>
               </div>
-              <div className="mt-2 grid grid-cols-3 gap-2">
+              <div className="mt-2.5 grid grid-cols-3 gap-2">
                 <button
                   onClick={onHit}
                   disabled={phase !== "playing"}
