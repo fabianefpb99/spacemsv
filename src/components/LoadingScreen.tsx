@@ -9,6 +9,7 @@ import gameSpaceman from "@/assets/game-spaceman.jpg";
 import gameSlotMafia from "@/assets/game-slot-mafia.jpg";
 import gameMines from "@/assets/game-mines.jpg";
 import gameDice from "@/assets/game-dice.jpg";
+import blackjackPromo from "@/assets/blackjack-promo.png.asset.json";
 
 const ASSETS: { src: string; type: "image" | "audio" }[] = [
   { src: bgImage, type: "image" },
@@ -42,7 +43,7 @@ function preloadAsset(asset: { src: string; type: "image" | "audio" }): Promise<
   });
 }
 
-export function LoadingScreen({ children, variant = "rocket" }: { children: React.ReactNode; variant?: "rocket" | "mine" | "slot" | "dice" }) {
+export function LoadingScreen({ children, variant = "rocket" }: { children: React.ReactNode; variant?: "rocket" | "mine" | "slot" | "dice" | "blackjack" }) {
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
   const [targetProgress, setTargetProgress] = useState(0);
@@ -134,6 +135,7 @@ export function LoadingScreen({ children, variant = "rocket" }: { children: Reac
               variant === "mine" ? gameMines
               : variant === "slot" ? gameSlotMafia
               : variant === "dice" ? gameDice
+              : variant === "blackjack" ? blackjackPromo.url
               : variant === "rocket" ? gameSpaceman
               : astronautRocket
             }
