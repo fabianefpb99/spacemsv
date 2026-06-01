@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, Settings, Minus, Plus } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
@@ -106,6 +106,27 @@ export function BlackjackGame() {
   const [payout, setPayout] = useState(0);
   const [doubled, setDoubled] = useState(false);
   const shoeRef = useRef<Card[]>(makeShoe());
+
+  // Live "last winners" ticker
+  type Winner = { id: number; name: string; amount: number; game: string };
+  const NAMES = ["Carlos_07", "Maria.V", "Andrés", "Lucia91", "JuanK", "Sofi", "ElCapo", "Nico", "Daniela", "PipeR", "ValeM", "MateoG", "Camila", "RoyalK", "MissL", "JoseF", "Karen", "Sebas", "TaniaP", "BrayanX"];
+  const GAMES = ["Blackjack", "Spaceman", "Minas", "Slot", "Dados"];
+  const randWinner = (id: number): Winner => ({
+    id,
+    name: NAMES[Math.floor(Math.random() * NAMES.length)],
+    amount: (Math.floor(Math.random() * 195) + 5) * 1000,
+    game: GAMES[Math.floor(Math.random() * GAMES.length)],
+  });
+  const seedRef = useRef(0);
+  const [winners, setWinners] = useState<Winner[]>(() =>
+    Array.from({ length: 8 }, () => randWinner(++seedRef.current))
+  );
+  useEffect(() => {
+    const t = setInterval(() => {
+      setWinners((ws) => [randWinner(++seedRef.current), ...ws].slice(0, 20));
+    }, 1500);
+    return () => clearInterval(t);
+  }, []);
 
   const draw = useCallback((): Card => {
     if (shoeRef.current.length < 20) shoeRef.current = makeShoe();
@@ -232,6 +253,10 @@ export function BlackjackGame() {
           0% { transform: scale(0.85); opacity: 0; }
           100% { transform: scale(1); opacity: 1; }
         }
+        @keyframes bj-winner-in {
+          0% { transform: translateY(-10px); opacity: 0; }
+          100% { transform: translateY(0); opacity: 1; }
+        }
       `}</style>
 
       {/* Background */}
@@ -346,10 +371,7 @@ export function BlackjackGame() {
         </div>
 
         {/* Dynamic HUD */}
-        <div
-          className="relative z-10 mx-auto w-full max-w-md px-1 pb-3 pt-2"
-          style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 0.75rem)" }}
-        >
+        <div className="relative z-10 mx-auto w-full max-w-md px-1 pt-1">
           {phase === "betting" && (
             <div className="rounded-2xl border border-purple-500/40 bg-[#0c0620]/85 p-3 shadow-[0_0_20px_rgba(168,85,247,0.25)] backdrop-blur-md">
               <div className="text-center text-[10px] font-bold uppercase tracking-widest text-purple-200/80">
@@ -435,6 +457,45 @@ export function BlackjackGame() {
               </button>
             </div>
           )}
+        </div>
+
+        {/* Last winners ticker */}
+        <div
+          className="relative z-10 mx-auto mt-2 w-full max-w-md px-1"
+          style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 0.5rem)" }}
+        >
+          <div className="rounded-xl border border-purple-500/30 bg-[#0c0620]/80 px-2 py-1.5 backdrop-blur-md">
+            <div className="mb-1 flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
+              <span className="text-[9px] font-bold uppercase tracking-widest text-purple-200/80">
+                Últimos ganadores
+              </span>
+            </div>
+            <div className="relative h-[26px] overflow-hidden">
+              <div className="flex flex-col gap-1">
+                {winners.slice(0, 4).map((w, i) => (
+                  <div
+                    key={w.id}
+                    className="flex items-center justify-between text-[11px]"
+                    style={{
+                      animation: i === 0 ? "bj-winner-in 0.5s ease-out both" : undefined,
+                      opacity: i === 0 ? 1 : 0.55 - i * 0.12,
+                    }}
+                  >
+                    <span className="flex min-w-0 items-center gap-1.5">
+                      <span className="truncate font-bold text-white">{w.name}</span>
+                      <span className="hidden truncate text-[9px] uppercase tracking-wider text-purple-300/70 sm:inline">
+                        · {w.game}
+                      </span>
+                    </span>
+                    <span className="font-display font-black text-emerald-300">
+                      +${formatCOP(w.amount)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
