@@ -120,19 +120,11 @@ function HomePage() {
                 <Menu className="h-7 w-7" strokeWidth={3} />
               </button>
               <Link to="/home">
-                <div className="flex flex-col items-start">
-                  <img
-                    src={betspaceLogo}
-                    alt="BETSPACE"
-                    className="h-6 w-auto sm:h-7"
-                  />
-                  <div
-                    className="font-display text-[6.5px] font-bold uppercase text-white leading-none -mt-[1px]"
-                    style={{ letterSpacing: '0.08em', width: '94%', textAlign: 'justify', textAlignLast: 'justify' }}
-                  >
-                    APUESTA Y GANA
-                  </div>
-                </div>
+                <img
+                  src={betspaceLogo}
+                  alt="BETSPACE"
+                  className="h-8 w-auto sm:h-9"
+                />
               </Link>
             </div>
             <div className="flex items-center gap-2">
