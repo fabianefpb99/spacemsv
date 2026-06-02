@@ -477,6 +477,27 @@ function Reel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spinning]);
 
+  // If the server result arrives AFTER the spin animation has already started,
+  // patch the bottom `ROWS` tiles of the strip so the reel lands on the
+  // correct (server-decided) symbols. Without this, starting the reels
+  // optimistically (before awaiting the server) would land on whatever
+  // placeholder symbols we started with.
+  useEffect(() => {
+    if (!spinning) return;
+    setStrip((prev) => {
+      if (prev.length < ROWS) return prev;
+      const head = prev.slice(0, prev.length - ROWS);
+      // already correct → no state update
+      let same = true;
+      for (let i = 0; i < ROWS; i++) {
+        if (prev[prev.length - ROWS + i] !== finalSyms[i]) { same = false; break; }
+      }
+      if (same) return prev;
+      return [...head, ...finalSyms];
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [finalSyms]);
+
   const visibleRows = ROWS;
   return (
     <div
