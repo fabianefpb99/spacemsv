@@ -175,8 +175,24 @@ function PayBrebPage() {
 
         {/* Status banners */}
         {isReview && (
-          <div className="mt-3 rounded-xl border border-amber-400/50 bg-amber-500/10 p-3 text-center text-xs text-amber-200">
-            Tu pago está en <b>revisión</b>. Te notificaremos cuando sea aprobado.
+          <div className="mt-3 rounded-xl border border-amber-400/50 bg-amber-500/10 p-3 text-xs text-amber-200">
+            <p className="text-center">
+              Hay un pago en <b>verificación</b> en este momento. Te notificaremos cuando sea aprobado.
+            </p>
+            <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+              <Link
+                to="/mis-recargas"
+                className="rounded-md border border-amber-400/60 bg-amber-500/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-amber-100 hover:bg-amber-500/20"
+              >
+                Ver mis recargas
+              </Link>
+              <button
+                onClick={() => { setConfirmCancel(false); setCancelErr(null); setOpenCancel(true); }}
+                className="rounded-md border border-rose-400/60 bg-rose-500/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-rose-100 hover:bg-rose-500/20"
+              >
+                Cancelar solicitud
+              </button>
+            </div>
           </div>
         )}
         {isApproved && (
@@ -283,6 +299,14 @@ function PayBrebPage() {
             <CheckCircle2 className="h-5 w-5" />
             Ya envié mi pago
           </button>
+        ) : isReview ? (
+          <button
+            disabled
+            className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl border border-purple-500/40 bg-[#0c0620] px-4 py-3.5 text-sm font-extrabold uppercase tracking-wide text-purple-300/60 cursor-not-allowed"
+          >
+            <Loader2 className="h-5 w-5 animate-spin" />
+            Pago en verificación
+          </button>
         ) : (
           <button
             onClick={() => navigate({ to: "/home" })}
@@ -320,6 +344,64 @@ function PayBrebPage() {
           username={me.data?.profile?.username ?? (user?.email?.split("@")[0] ?? "Usuario")}
           userShortId={user ? shortId(user.id) : "00000"}
         />
+      )}
+
+      {openCancel && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center sm:justify-center">
+          <div className="absolute inset-0 bg-black/75" onClick={() => !cancelling && setOpenCancel(false)} />
+          <div className="relative w-full max-w-md rounded-t-2xl border border-rose-500/40 bg-gradient-to-b from-[#1a0820] to-[#0a0410] p-4 shadow-[0_0_30px_rgba(244,63,94,0.35)] sm:rounded-2xl">
+            <div className="flex items-start justify-between">
+              <h3 className="font-display text-base font-black uppercase tracking-widest text-white">
+                Cancelar solicitud
+              </h3>
+              <button onClick={() => !cancelling && setOpenCancel(false)} className="rounded-md p-1 text-purple-200 hover:bg-white/5">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="mt-3 rounded-xl border border-amber-400/40 bg-amber-500/10 p-3 text-[11px] leading-snug text-amber-100/90">
+              <p className="font-bold uppercase tracking-wider text-amber-200">¿Confirmaste por error?</p>
+              <p className="mt-1">
+                Si confirmaste la solicitud por error y <b>no llegaste a enviar el pago</b>, te recomendamos cancelarla y repetir los pasos nuevamente.
+              </p>
+            </div>
+
+            <div className="mt-2 rounded-xl border border-rose-500/50 bg-rose-500/10 p-3 text-[11px] leading-snug text-rose-100/90">
+              <p className="font-bold uppercase tracking-wider text-rose-200">⚠ Si ya enviaste el pago</p>
+              <p className="mt-1">
+                <b>No canceles esta solicitud.</b> Si ya transferiste el dinero y cancelas, no podremos asociar el pago a tu cuenta y los fondos podrían <b>perderse</b>. Espera a que el administrador verifique tu depósito.
+              </p>
+            </div>
+
+            <label className="mt-3 flex items-start gap-2 text-[11px] text-purple-100/90">
+              <input
+                type="checkbox"
+                checked={confirmCancel}
+                onChange={(e) => setConfirmCancel(e.target.checked)}
+                className="mt-0.5 h-4 w-4 accent-rose-400"
+              />
+              <span>Confirmo que <b>no he enviado</b> el pago y deseo cancelar esta solicitud.</span>
+            </label>
+
+            {cancelErr && <p className="mt-2 text-center text-xs text-rose-300">{cancelErr}</p>}
+
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <button
+                onClick={() => !cancelling && setOpenCancel(false)}
+                className="rounded-xl border border-purple-500/40 bg-[#0c0620] px-4 py-3 text-xs font-extrabold uppercase tracking-wide text-purple-200 hover:bg-purple-500/10"
+              >
+                Volver
+              </button>
+              <button
+                onClick={submitCancel}
+                disabled={!confirmCancel || cancelling}
+                className="rounded-xl bg-rose-500 px-4 py-3 text-xs font-extrabold uppercase tracking-wide text-[#1a0408] shadow-[0_0_24px_-6px_rgba(244,63,94,0.8)] transition hover:bg-rose-400 disabled:cursor-not-allowed disabled:bg-rose-900/40 disabled:text-rose-200/40"
+              >
+                {cancelling ? "Cancelando…" : "Sí, cancelar"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
