@@ -1,19 +1,20 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { ArrowLeft, Settings, Copy, Check, Info, CheckCircle2 } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, Settings, Copy, Check, Info, CheckCircle2, Loader2, X } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { useAuth } from "@/hooks/useAuth";
+import { useMe } from "@/hooks/useMe";
+import { confirmDeposit, getMyDeposit } from "@/lib/deposits/deposit.functions";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import nequiAstronaut from "@/assets/nequi-astronaut-wide.png";
 import nequiLogo from "@/assets/nequi.svg";
 import brebLogo from "@/assets/bre-b.svg";
 
-type Method = "nequi" | "breb";
-
 export const Route = createFileRoute("/pay_/breb")({
   validateSearch: (search: Record<string, unknown>) => {
-    const m = search.method === "nequi" || search.method === "breb" ? (search.method as Method) : "nequi";
-    const amount = Number(search.amount) || 20000;
-    const bonus = Number(search.bonus) || 5000;
-    return { method: m, amount, bonus };
+    const id = typeof search.id === "string" ? search.id : "";
+    return { id };
   },
   head: () => ({
     meta: [
@@ -28,18 +29,34 @@ function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
 }
 
-function genReference() {
-  const part = () =>
-    Math.random().toString(36).replace(/[^a-z0-9]/gi, "").toUpperCase().slice(0, 4).padEnd(4, "X");
-  return `SPM-${part()}-${part()}`;
+function shortId(id: string) {
+  const hex = id.replace(/[^0-9a-f]/gi, "").slice(-6);
+  const n = parseInt(hex || "0", 16) % 100000;
+  return String(n).padStart(5, "0");
 }
 
 function PayBrebPage() {
   const navigate = useNavigate();
-  const { method, amount, bonus } = Route.useSearch();
-  const [balance] = useState(100000);
-  const [reference, setReference] = useState("SPM-XXXX-XXXX");
-  useEffect(() => { setReference(genReference()); }, []);
+  const { id } = Route.useSearch();
+  const { user } = useAuth();
+  const me = useMe();
+  const getFn = useServerFn(getMyDeposit);
+  const confirmFn = useServerFn(confirmDeposit);
+  const q = useQuery({
+    queryKey: ["my-deposit", id],
+    enabled: !!id,
+    queryFn: () => getFn({ data: { id } }),
+    refetchInterval: (qq) => {
+      const s = (qq.state.data as { status?: string } | undefined)?.status;
+      return s === "pendiente_revision" || s === "aprobada" || s === "rechazada" ? 5000 : false;
+    },
+  });
+  const row = q.data;
+  const method = row?.method ?? "nequi";
+  const amount = Number(row?.amount ?? 0);
+  const bonus = Number(row?.bonus ?? 0);
+  const reference = row?.reference ?? "SPM-XXXX-XXXX";
+  const balance = me.data?.balance ?? 0;
   const brebAlias = "@spaceman.breb";
 
   const isNequi = method === "nequi";
@@ -51,6 +68,56 @@ function PayBrebPage() {
     navigator.clipboard?.writeText(value).catch(() => {});
     setCopied(key);
     setTimeout(() => setCopied((c) => (c === key ? null : c)), 1500);
+  }
+
+  // Payer modal state
+  const [openPayer, setOpenPayer] = useState(false);
+  const [payerSelf, setPayerSelf] = useState(true);
+  const [pFirst, setPFirst] = useState("");
+  const [pLast, setPLast] = useState("");
+  const [pPhone, setPPhone] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [confirmErr, setConfirmErr] = useState<string | null>(null);
+
+  const isAlreadyConfirmed = row?.status && row.status !== "pendiente_pago";
+  const isExpired = row?.status === "expirada";
+  const isApproved = row?.status === "aprobada";
+  const isRejected = row?.status === "rechazada";
+  const isReview = row?.status === "pendiente_revision";
+
+  async function submitConfirm() {
+    if (!id || submitting) return;
+    setSubmitting(true); setConfirmErr(null);
+    try {
+      await confirmFn({ data: {
+        id, payer_self: payerSelf,
+        first_name: payerSelf ? null : pFirst,
+        last_name: payerSelf ? null : pLast,
+        phone: payerSelf ? null : (pPhone || null),
+      } });
+      setOpenPayer(false);
+      q.refetch();
+    } catch (e) {
+      setConfirmErr((e as Error).message || "Error al confirmar");
+    } finally { setSubmitting(false); }
+  }
+
+  if (!id) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#060210] text-purple-200">
+        <div className="text-center">
+          <p className="text-sm">Solicitud inválida.</p>
+          <Link to="/pay" className="mt-3 inline-block rounded-md bg-purple-600 px-4 py-2 text-xs font-bold uppercase text-white">Volver</Link>
+        </div>
+      </div>
+    );
+  }
+  if (q.isLoading || !row) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#060210] text-purple-200">
+        <Loader2 className="h-6 w-6 animate-spin" />
+      </div>
+    );
   }
 
   return (
@@ -85,7 +152,29 @@ function PayBrebPage() {
         </div>
 
         {/* Stepper */}
-        <Stepper step={1} />
+        <Stepper step={isApproved || isRejected ? 3 : isReview ? 3 : 1} />
+
+        {/* Status banners */}
+        {isReview && (
+          <div className="mt-3 rounded-xl border border-amber-400/50 bg-amber-500/10 p-3 text-center text-xs text-amber-200">
+            Tu pago está en <b>revisión</b>. Te notificaremos cuando sea aprobado.
+          </div>
+        )}
+        {isApproved && (
+          <div className="mt-3 rounded-xl border border-emerald-400/50 bg-emerald-500/10 p-3 text-center text-xs text-emerald-200">
+            ¡Recarga <b>aprobada</b>! Tu saldo ya está disponible.
+          </div>
+        )}
+        {isRejected && (
+          <div className="mt-3 rounded-xl border border-rose-400/50 bg-rose-500/10 p-3 text-center text-xs text-rose-200">
+            Recarga <b>rechazada</b>. {row.reject_reason ?? ""}
+          </div>
+        )}
+        {isExpired && (
+          <div className="mt-3 rounded-xl border border-purple-400/50 bg-purple-500/10 p-3 text-center text-xs text-purple-200">
+            Esta solicitud <b>expiró</b>. Genera una nueva recarga.
+          </div>
+        )}
 
         {/* Main card */}
         <div className="relative mt-4 overflow-hidden rounded-2xl border border-purple-500/30 bg-gradient-to-b from-[#160838] to-[#0a0420] shadow-[0_0_30px_-12px_rgba(168,85,247,0.5)]">
@@ -150,8 +239,8 @@ function PayBrebPage() {
         {/* Reference */}
         <Field label="CÓDIGO DE REFERENCIA">
           <div className="flex items-center justify-between gap-3">
-            <div className="font-mono text-base font-bold tracking-[0.15em] text-white">
-              {reference}
+            <div className="font-mono text-sm font-bold tracking-[0.15em] text-white">
+              {reference} <span className="text-purple-300/70">/ #{user ? shortId(user.id) : "00000"}</span>
             </div>
             <CopyButton copied={copied === "ref"} onClick={() => copy("ref", reference)} />
           </div>
@@ -166,13 +255,23 @@ function PayBrebPage() {
         </div>
 
         {/* CTA */}
-        <button
-          onClick={() => navigate({ to: "/pay" })}
-          className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-purple-500 px-4 py-3.5 text-sm font-extrabold uppercase tracking-wide text-white shadow-[0_0_24px_-6px_rgba(168,85,247,0.8)] transition hover:from-purple-500 hover:to-purple-400"
-        >
-          <CheckCircle2 className="h-5 w-5" />
-          Ya envié mi pago
-        </button>
+        {!isAlreadyConfirmed ? (
+          <button
+            onClick={() => setOpenPayer(true)}
+            disabled={isExpired}
+            className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-purple-500 px-4 py-3.5 text-sm font-extrabold uppercase tracking-wide text-white shadow-[0_0_24px_-6px_rgba(168,85,247,0.8)] transition hover:from-purple-500 hover:to-purple-400 disabled:opacity-50"
+          >
+            <CheckCircle2 className="h-5 w-5" />
+            Ya envié mi pago
+          </button>
+        ) : (
+          <button
+            onClick={() => navigate({ to: "/home" })}
+            className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl border border-purple-500/40 bg-[#0c0620] px-4 py-3.5 text-sm font-extrabold uppercase tracking-wide text-purple-200"
+          >
+            Volver al inicio
+          </button>
+        )}
 
         <p className="mt-3 text-center text-[10px] leading-relaxed text-purple-300/70">
           Una vez hecho el pago, vuelva inmediatamente aquí y confirme el pago.
@@ -187,6 +286,123 @@ function PayBrebPage() {
             <span className="neon-green mr-0.5">$</span>{formatCOP(balance)} COP
           </span>
         </div>
+      </div>
+
+      {openPayer && (
+        <PayerModal
+          onClose={() => setOpenPayer(false)}
+          self={payerSelf} setSelf={setPayerSelf}
+          first={pFirst} setFirst={setPFirst}
+          last={pLast} setLast={setPLast}
+          phone={pPhone} setPhone={setPPhone}
+          onSubmit={submitConfirm}
+          submitting={submitting}
+          error={confirmErr}
+          username={me.data?.profile?.username ?? (user?.email?.split("@")[0] ?? "Usuario")}
+          userShortId={user ? shortId(user.id) : "00000"}
+        />
+      )}
+    </div>
+  );
+}
+
+function PayerModal(props: {
+  onClose: () => void;
+  self: boolean; setSelf: (v: boolean) => void;
+  first: string; setFirst: (v: string) => void;
+  last: string; setLast: (v: string) => void;
+  phone: string; setPhone: (v: string) => void;
+  onSubmit: () => void;
+  submitting: boolean;
+  error: string | null;
+  username: string;
+  userShortId: string;
+}) {
+  const canSubmit = props.self || (props.first.trim().length > 0 && props.last.trim().length > 0);
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center sm:justify-center">
+      <div className="absolute inset-0 bg-black/75" onClick={props.onClose} />
+      <div className="relative w-full max-w-md rounded-t-2xl border border-purple-500/40 bg-gradient-to-b from-[#160838] to-[#0a0420] p-4 shadow-[0_0_30px_rgba(168,85,247,0.4)] sm:rounded-2xl">
+        <div className="flex items-start justify-between">
+          <h3 className="font-display text-base font-black uppercase tracking-widest text-white">
+            ¿Quién realizó el pago?
+          </h3>
+          <button onClick={props.onClose} className="rounded-md p-1 text-purple-200 hover:bg-white/5">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Option 1 */}
+        <label
+          className={`mt-4 block cursor-pointer rounded-xl border p-3 transition ${
+            props.self ? "border-emerald-400/70 bg-emerald-500/5 shadow-[0_0_18px_-8px_rgba(52,211,153,0.6)]" : "border-purple-500/30 bg-[#0c0620]"
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <input
+              type="radio" checked={props.self} onChange={() => props.setSelf(true)}
+              className="h-4 w-4 accent-emerald-400"
+            />
+            <span className="text-sm font-bold text-white">Lo hice yo mismo</span>
+          </div>
+          {props.self && (
+            <div className="mt-2 space-y-1 text-[11px] text-purple-200/80">
+              <p>Se utilizarán los datos de tu cuenta registrada para validar el pago.</p>
+              <div className="mt-2 rounded-md bg-[#150830] p-2">
+                <div><span className="text-purple-300/70 uppercase tracking-wider text-[9px]">Nombre:</span> <span className="font-bold text-white">{props.username}</span></div>
+                <div><span className="text-purple-300/70 uppercase tracking-wider text-[9px]">ID:</span> <span className="font-mono font-bold text-white">#{props.userShortId}</span></div>
+              </div>
+            </div>
+          )}
+        </label>
+
+        {/* Option 2 */}
+        <label
+          className={`mt-2 block cursor-pointer rounded-xl border p-3 transition ${
+            !props.self ? "border-emerald-400/70 bg-emerald-500/5" : "border-purple-500/30 bg-[#0c0620]"
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <input
+              type="radio" checked={!props.self} onChange={() => props.setSelf(false)}
+              className="h-4 w-4 accent-emerald-400"
+            />
+            <span className="text-sm font-bold text-white">Lo realizó otra persona</span>
+          </div>
+          {!props.self && (
+            <div className="mt-2 space-y-2">
+              <p className="text-[11px] text-purple-200/80">
+                Utiliza esta opción si el pago fue realizado desde una cuenta diferente a la del titular registrado.
+              </p>
+              <input
+                value={props.first} onChange={(e) => props.setFirst(e.target.value)}
+                placeholder="Nombres" maxLength={80}
+                className="w-full rounded-md border border-purple-500/30 bg-[#150830] px-3 py-2 text-sm text-white placeholder:text-purple-300/40 focus:border-fuchsia-400 focus:outline-none"
+              />
+              <input
+                value={props.last} onChange={(e) => props.setLast(e.target.value)}
+                placeholder="Apellidos" maxLength={80}
+                className="w-full rounded-md border border-purple-500/30 bg-[#150830] px-3 py-2 text-sm text-white placeholder:text-purple-300/40 focus:border-fuchsia-400 focus:outline-none"
+              />
+              <input
+                value={props.phone} onChange={(e) => props.setPhone(e.target.value.replace(/[^0-9+ ]/g, ""))}
+                placeholder="Teléfono desde el que realizó el pago (opcional)" maxLength={30} inputMode="tel"
+                className="w-full rounded-md border border-purple-500/30 bg-[#150830] px-3 py-2 text-sm text-white placeholder:text-purple-300/40 focus:border-fuchsia-400 focus:outline-none"
+              />
+            </div>
+          )}
+        </label>
+
+        {props.error && <p className="mt-2 text-center text-xs text-rose-300">{props.error}</p>}
+
+        <button
+          onClick={props.onSubmit}
+          disabled={!canSubmit || props.submitting}
+          className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-3 text-sm font-extrabold uppercase tracking-wide text-[#04130c] shadow-[0_0_24px_-6px_rgba(52,211,153,0.8)] transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-emerald-900/40 disabled:text-emerald-200/40"
+        >
+          {props.submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-5 w-5" />}
+          Confirmar pago enviado
+        </button>
       </div>
     </div>
   );
