@@ -103,10 +103,6 @@ function PerfilPage() {
     (user?.user_metadata?.full_name as string | undefined) ??
     email.split("@")[0] ??
     "Usuario";
-  const providers: string[] =
-    (user?.app_metadata?.providers as string[] | undefined) ??
-    (user?.app_metadata?.provider ? [user.app_metadata.provider as string] : []);
-  const googleLinked = providers.includes("google");
   const emailVerified = !!user?.email_confirmed_at;
   const phone = user?.phone || (user?.user_metadata?.phone as string | undefined) || "";
   const balanceText = me.data ? formatCOP(me.data.balance) : "—";
