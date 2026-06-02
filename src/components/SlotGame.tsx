@@ -1062,7 +1062,7 @@ export function SlotGame() {
     }
     setSpinning(false);
     setReelsStopped(0);
-  }, [reelsStopped, spinning, bet, queryClient]);
+  }, [reelsStopped, spinning, bet, queryClient, resultTick]);
 
   // Auto-spin: re-trigger spin after each round when enabled
   useEffect(() => {
