@@ -960,13 +960,16 @@ export function SlotGame() {
         data: { bet_amount: bet, client_action_id: clientActionId },
       });
       pendingResultRef.current = result;
-      // NOTE: do NOT invalidate the balance here. The server already credited
-      // both the bet debit and any win in a single atomic call, so refetching
-      // now would jump the HUD straight to the final post-win balance while
-      // the reels are still spinning — making it look like the win never
-      // added to the balance. We defer the refetch until the reels stop
-      // (see the effect below), so the user sees: spin → balance drops by
-      // bet → reels stop → balance jumps up by the win.
+      // Optimistic UI: subtract ONLY the bet immediately so the HUD reflects
+      // the debit at the moment of clicking Girar. The win (if any) is
+      // applied when the reels settle, where we invalidate and refetch the
+      // authoritative balance from the server. The server already debited
+      // and credited atomically — this is purely cosmetic.
+      queryClient.setQueryData(
+        ["me", user?.id ?? null],
+        (old: { balance: number; bonus_balance: number; profile: unknown } | null | undefined) =>
+          old ? { ...old, balance: Math.max(0, Number(old.balance) - bet) } : old,
+      );
       startReelLoop();
       setLastWin(0);
       setDisplayedWin(0);
@@ -979,10 +982,12 @@ export function SlotGame() {
       const msg = e instanceof Error ? e.message : String(e);
       setSpinError(msg || "No se pudo girar");
       setAutoSpin(false);
+      // Revert any optimistic state by refetching the real balance.
+      queryClient.invalidateQueries({ queryKey: ["me"] });
     } finally {
       inFlightRef.current = false;
     }
-  }, [spinning, bet, balance, isAuthed, callSpin, queryClient]);
+  }, [spinning, bet, balance, isAuthed, callSpin, queryClient, user?.id]);
 
   // Triggered when last reel reports stop
   const handleReelStop = useCallback(() => {
