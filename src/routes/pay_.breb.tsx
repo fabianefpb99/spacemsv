@@ -422,13 +422,13 @@ function PayerModal(props: {
   const canSubmit = props.self || (props.first.trim().length > 0 && props.last.trim().length > 0);
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center sm:justify-center">
-      <div className="absolute inset-0 bg-black/75" onClick={props.onClose} />
+      <div className="absolute inset-0 bg-black/75" onClick={() => !props.submitting && props.onClose()} />
       <div className="relative w-full max-w-md rounded-t-2xl border border-purple-500/40 bg-gradient-to-b from-[#160838] to-[#0a0420] p-4 shadow-[0_0_30px_rgba(168,85,247,0.4)] sm:rounded-2xl">
         <div className="flex items-start justify-between">
           <h3 className="font-display text-base font-black uppercase tracking-widest text-white">
             ¿Quién realizó el pago?
           </h3>
-          <button onClick={props.onClose} className="rounded-md p-1 text-purple-200 hover:bg-white/5">
+          <button onClick={() => !props.submitting && props.onClose()} className="rounded-md p-1 text-purple-200 hover:bg-white/5">
             <X className="h-5 w-5" />
           </button>
         </div>
