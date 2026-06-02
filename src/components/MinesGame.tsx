@@ -153,7 +153,16 @@ function relativeTime(ts: number, now: number): string {
 }
 
 export function MinesGame() {
-  const [balance, setBalance] = useState(100000);
+  const { user } = useAuth();
+  const me = useMe();
+  const queryClient = useQueryClient();
+  const balance = me.data?.balance ?? 0;
+
+  const dealFn = useServerFn(minesDeal);
+  const revealFn = useServerFn(minesReveal);
+  const cashoutFn = useServerFn(minesCashout);
+  const resumeFn = useServerFn(minesResume);
+
   const [bet, setBet] = useState(2000);
   const [mines, setMines] = useState(3);
   const [minesPickerOpen, setMinesPickerOpen] = useState(false);
@@ -163,6 +172,13 @@ export function MinesGame() {
   const [revealed, setRevealed] = useState<Set<number>>(() => new Set());
   const [explodedTile, setExplodedTile] = useState<number | null>(null);
   const [picks, setPicks] = useState(0);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  /** Live session reference (id + nonce). */
+  const sessionRef = useRef<{ id: string; nonce: number } | null>(null);
+  /** Per-action UUID used for idempotency of the current click. */
+  const actionIdRef = useRef<string | null>(null);
 
   const [muted, setMuted] = useState(false);
   const [online] = useState(263);
@@ -170,6 +186,96 @@ export function MinesGame() {
   const [now, setNow] = useState(() => Date.now());
   const [shake, setShake] = useState(false);
   const historyId = useRef(1000);
+
+  // Push server-confirmed balance into the useMe cache for instant header update.
+  const applyBalance = useCallback(
+    (newBalance: number) => {
+      if (!user) return;
+      queryClient.setQueryData<MeData | null>(["me", user.id], (prev) =>
+        prev ? { ...prev, balance: newBalance } : prev,
+      );
+    },
+    [queryClient, user],
+  );
+
+  const resetRound = useCallback(() => {
+    setPhase("betting");
+    setRevealed(new Set());
+    setMineSet(new Set());
+    setExplodedTile(null);
+    setPicks(0);
+    sessionRef.current = null;
+    actionIdRef.current = null;
+  }, []);
+
+  /** Sync local UI state with a server-returned session view. */
+  const applyServerView = useCallback((view: MinesSessionView) => {
+    sessionRef.current = { id: view.session_id, nonce: view.nonce };
+    const pub = view.public_state;
+    setRevealed(new Set(pub.revealed));
+    setPicks(pub.picks);
+    applyBalance(view.new_balance);
+
+    if (pub.phase === "result") {
+      const allMines = new Set<number>(pub.mineSetReveal ?? []);
+      setMineSet(allMines);
+      if (pub.outcome === "lost") {
+        const last = pub.explodedTile ?? null;
+        setExplodedTile(last);
+        playGameOver();
+        playCrashSound();
+        setShake(true);
+        setTimeout(() => setShake(false), 400);
+        // Reveal all mines slightly after the explosion frame.
+        setTimeout(() => {
+          setRevealed((prev) => {
+            const all = new Set(prev);
+            allMines.forEach((m) => all.add(m));
+            return all;
+          });
+        }, 250);
+        setHistory((h) => [
+          { id: ++historyId.current, user: "Tú", mines: pub.mines, multiplier: 0, amount: pub.bet, exploded: true, ts: Date.now() },
+          ...h,
+        ].slice(0, 20));
+        setPhase("lost");
+        setTimeout(() => resetRound(), 2400);
+      } else {
+        // Won (manual cashout OR auto-cashout when every safe tile is opened).
+        playCashoutSound();
+        if ((pub.picks ?? 0) >= MINES_TILES - pub.mines) playVictory();
+        setHistory((h) => [
+          { id: ++historyId.current, user: "Tú", mines: pub.mines, multiplier: pub.multiplier, amount: pub.payout ?? 0, exploded: false, ts: Date.now() },
+          ...h,
+        ].slice(0, 20));
+        setPhase("cashed");
+        setTimeout(() => resetRound(), 1800);
+      }
+    } else {
+      setMineSet(new Set());
+      setExplodedTile(null);
+      setPhase("playing");
+    }
+  }, [applyBalance, resetRound]);
+
+  // Resume any open server-side session on mount.
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const view = await resumeFn();
+        if (cancelled || !view) return;
+        setBet(view.public_state.bet);
+        setMines(view.public_state.mines);
+        applyServerView(view);
+      } catch {
+        // best-effort; ignore
+      }
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   // Cierra cualquier audio de otro juego al entrar, y para SFX propios al salir.
   useEffect(() => {
@@ -205,87 +311,76 @@ export function MinesGame() {
   const nextMult    = useMemo(() => nextMultiplier(mines, picks), [mines, picks]);
   const cashoutAmount = Math.floor(bet * currentMult);
 
-  const startGame = useCallback(() => {
-    if (phase !== "betting") return;
+  const startGame = useCallback(async () => {
+    if (phase !== "betting" || busy) return;
     if (bet < MIN_BET || bet > balance) return;
-    setBalance((b) => b - bet);
-    setMineSet(placeMines(mines));
-    setRevealed(new Set());
-    setPicks(0);
-    setExplodedTile(null);
-    resetRevealStreak();
-    setPhase("playing");
-  }, [phase, bet, balance, mines]);
-
-  const cashout = useCallback(() => {
-    if (phase !== "playing" || picks === 0) return;
-    const win = Math.floor(bet * currentMult);
-    setBalance((b) => b + win);
-    playCashoutSound();
-    setHistory((h) => [
-      { id: ++historyId.current, user: "Tú", mines, multiplier: currentMult, amount: win, exploded: false, ts: Date.now() },
-      ...h,
-    ].slice(0, 20));
-    setPhase("cashed");
-    setTimeout(() => resetRound(), 1750);
-  }, [phase, picks, bet, currentMult, mines]);
-
-  const resetRound = useCallback(() => {
-    setPhase("betting");
-    setRevealed(new Set());
-    setMineSet(new Set());
-    setExplodedTile(null);
-    setPicks(0);
-  }, []);
-
-  const handleTile = useCallback((idx: number) => {
-    if (phase !== "playing") return;
-    if (revealed.has(idx)) return;
-    const isMine = mineSet.has(idx);
-    const nextRev = new Set(revealed);
-    nextRev.add(idx);
-    setRevealed(nextRev);
-    if (isMine) {
-      playGameOver();
-      setExplodedTile(idx);
-      playCrashSound();
-      setShake(true);
-      setTimeout(() => setShake(false), 400);
-      // reveal all mines
-      setTimeout(() => {
-        setRevealed((prev) => {
-          const all = new Set(prev);
-          mineSet.forEach((m) => all.add(m));
-          return all;
-        });
-      }, 250);
-      setHistory((h) => [
-        { id: ++historyId.current, user: "Tú", mines, multiplier: 0, amount: bet, exploded: true, ts: Date.now() },
-        ...h,
-      ].slice(0, 20));
-      setPhase("lost");
-      setTimeout(() => resetRound(), 2400);
-    } else {
-      setPicks((p) => p + 1);
-      playReveal();
-      // auto cashout if all safes opened
-      const safeOpened = nextRev.size; // includes this safe pick
-      const safeTotal = TILES - mines;
-      if (safeOpened >= safeTotal) {
-        const mult = multiplierFor(mines, safeTotal);
-        const win = Math.floor(bet * mult);
-        setBalance((b) => b + win);
-        playCashoutSound();
-        playVictory();
-        setHistory((h) => [
-          { id: ++historyId.current, user: "Tú", mines, multiplier: mult, amount: win, exploded: false, ts: Date.now() },
-          ...h,
-        ].slice(0, 20));
-        setPhase("cashed");
-        setTimeout(() => resetRound(), 1800);
-      }
+    setBusy(true);
+    setError(null);
+    try {
+      const actionId = uuid();
+      actionIdRef.current = actionId;
+      const view = await dealFn({ data: { bet, mines, client_action_id: actionId } });
+      resetRevealStreak();
+      applyServerView(view);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Error al iniciar");
+    } finally {
+      setBusy(false);
     }
-  }, [phase, revealed, mineSet, mines, bet, resetRound]);
+  }, [phase, busy, bet, balance, mines, dealFn, applyServerView]);
+
+  const cashout = useCallback(async () => {
+    if (phase !== "playing" || picks === 0 || busy) return;
+    const sess = sessionRef.current;
+    if (!sess) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const view = await cashoutFn({
+        data: { session_id: sess.id, nonce: sess.nonce, client_action_id: uuid() },
+      });
+      applyServerView(view);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Error al cobrar");
+    } finally {
+      setBusy(false);
+    }
+  }, [phase, picks, busy, cashoutFn, applyServerView]);
+
+  const handleTile = useCallback(async (idx: number) => {
+    if (phase !== "playing" || busy) return;
+    if (revealed.has(idx)) return;
+    const sess = sessionRef.current;
+    if (!sess) return;
+
+    // Optimistic UI: open the tile immediately as "safe" so the click feels
+    // instant. If the server says it's a mine, applyServerView() will paint
+    // the explosion and reveal the rest of the field.
+    const optimisticRevealed = new Set(revealed);
+    optimisticRevealed.add(idx);
+    setRevealed(optimisticRevealed);
+    playReveal();
+    setBusy(true);
+    setError(null);
+
+    try {
+      const view = await revealFn({
+        data: {
+          session_id: sess.id,
+          nonce: sess.nonce,
+          tile_idx: idx,
+          client_action_id: uuid(),
+        },
+      });
+      applyServerView(view);
+    } catch (e) {
+      // Rollback the optimistic open on error (e.g. stale nonce).
+      setRevealed(revealed);
+      setError(e instanceof Error ? e.message : "Error en la jugada");
+    } finally {
+      setBusy(false);
+    }
+  }, [phase, busy, revealed, revealFn, applyServerView]);
 
   const canStart = phase === "betting" && bet >= MIN_BET && bet <= balance;
   const canCashout = phase === "playing" && picks > 0;
