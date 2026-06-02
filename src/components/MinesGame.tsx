@@ -2,37 +2,47 @@ import { AuthControl } from "@/components/auth/AuthControl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Link } from "@tanstack/react-router";
-import { Menu, Settings, Minus, Plus, Volume2, VolumeX, ChevronDown, Bomb, Gem, TrendingUp, User } from "lucide-react";
+import { Menu, Minus, Plus, Volume2, VolumeX, ChevronDown, Bomb, Gem, TrendingUp } from "lucide-react";
 import { setMuted as setAudioMuted, playCrashSound, playCashoutSound, isMuted, stopAllGameAudio, AUDIO_STOP_ALL_EVENT } from "@/lib/gameAudio";
 import coinRevealSfx from "@/assets/sfx/coin-reveal.mp3";
 import victorySfx from "@/assets/sfx/victory.mp3";
 import gameOverSfx from "@/assets/sfx/game-over.mp3";
 import minesBg from "@/assets/mines-page-bg.png";
+import { useServerFn } from "@tanstack/react-start";
+import { useQueryClient } from "@tanstack/react-query";
+import { useMe, type MeData } from "@/hooks/useMe";
+import { useAuth } from "@/hooks/useAuth";
+import { minesDeal, minesReveal, minesCashout, minesResume, type MinesSessionView } from "@/lib/games/mines.functions";
+import {
+  MINES_TILES,
+  MINES_MIN, MINES_MAX,
+  MINES_MIN_BET, MINES_MAX_BET, MINES_BET_STEP,
+  multiplierFor,
+} from "@/lib/games/mines.shared";
+
+/** Lightweight UUID v4 for client_action_id. */
+function uuid(): string {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return (crypto as Crypto).randomUUID();
+  }
+  const bytes = new Uint8Array(16);
+  if (typeof crypto !== "undefined") crypto.getRandomValues(bytes);
+  else for (let i = 0; i < 16; i++) bytes[i] = Math.floor(Math.random() * 256);
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const h = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+  return `${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`;
+}
 
 type Phase = "betting" | "playing" | "lost" | "cashed";
 
-const TILES = 16;
-const RTP_BASE = 0.907;
-// Las variantes de bajo riesgo (≤3 minas) son las más explotables:
-// aplicamos una penalización extra para equilibrar la ganancia temprana.
-const RTP_LOW_RISK = 0.887; // mines ≤ 3
-function rtpFor(mines: number) {
-  // Coeficientes por nº de minas (calibrados para la primera revelación):
-  //  1 mina  → 0.95x  (castigo en la primera, obliga a seguir)
-  //  2 minas → 1.00x  (mínimo justo)
-  //  3 minas → 1.15x  (RTP > 100%, casa en pérdida estadística leve)
-  //  4+      → RTP_BASE (0.907)
-  if (mines <= 1) return 0.887625; // 0.887625 * 16/15 ≈ 0.95x
-  if (mines === 2) return 0.917;
-  if (mines === 3) return 0.934375; // 0.934375 * 16/13 = 1.15x primera revelación
-  return RTP_BASE;
-}
-const MIN_MINES = 1;
-const MAX_MINES = 15;
-
-const MIN_BET = 500;
-const MAX_BET = 100000;
-const BET_STEP = 500;
+// Alias to keep the existing JSX/limits unchanged.
+const TILES = MINES_TILES;
+const MIN_MINES = MINES_MIN;
+const MAX_MINES = MINES_MAX;
+const MIN_BET = MINES_MIN_BET;
+const MAX_BET = MINES_MAX_BET;
+const BET_STEP = MINES_BET_STEP;
 const QUICK_ADDS = [1000, 2000, 5000, 10000];
 
 // Preloaded pool for the reveal SFX — allows rapid overlapping playback.
