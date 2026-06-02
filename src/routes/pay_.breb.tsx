@@ -86,6 +86,7 @@ function PayBrebPage() {
   const bonus = Number(row?.bonus ?? 0);
   const reference = row?.reference ?? "SPM-XXXX-XXXX";
   const balance = me.data?.balance ?? 0;
+  const balanceText = user && me.data ? formatCOP(me.data.balance) : "—";
   const brebAlias = "@spaceman.breb";
 
   const isNequi = method === "nequi";
@@ -192,25 +193,23 @@ function PayBrebPage() {
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.75rem)" }}
         >
           <div className="flex items-center gap-1">
-            <Link
-              to="/pay"
-              className="rounded-md p-2 text-white hover:bg-white/10"
-              aria-label="Volver"
-            >
+            <Link to="/pay" className="rounded-md p-2 text-white hover:bg-white/10" aria-label="Volver">
               <ArrowLeft className="h-7 w-7" strokeWidth={3} />
             </Link>
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-purple-200/80">
-              Pago <span className="text-purple-400/60">|</span> Depósito
-            </div>
+            <Link to="/home">
+              <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7" />
+            </Link>
           </div>
-          <AuthControl />
+          <div className="flex items-center gap-2">
+            <div className="text-right">
+              <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
+              <div className="text-[11px] font-bold sm:text-xs text-white">
+                <span className="neon-green mr-0.5">$</span>{balanceText} COP
+              </div>
+            </div>
+            <AuthControl />
+          </div>
         </header>
-
-        <div className="mt-3 flex justify-center">
-          <Link to="/home">
-            <img src={betspaceLogo} alt="BETSPACEMAN" className="h-6 w-auto sm:h-7" />
-          </Link>
-        </div>
 
         {/* Stepper */}
         <Stepper step={isApproved || isRejected ? 3 : isReview ? 3 : 1} />
