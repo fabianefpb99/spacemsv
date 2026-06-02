@@ -52,6 +52,12 @@ function PayPage() {
   const pendingReview = pendingQ.data as { id: string; method: string } | null | undefined;
   const blocked = !!pendingReview;
 
+  useEffect(() => {
+    if (pendingReview?.id) {
+      setSubmitting(false);
+    }
+  }, [pendingReview?.id]);
+
   // Bonus countdown: 10 minutes, restarts every time PAY is opened, and
   // auto-restarts when it hits 00:00 (psychological urgency).
   const BONUS_MS = 10 * 60 * 1000;
@@ -381,6 +387,9 @@ function PayPage() {
                 const msg = (e as Error).message || "Error al crear la recarga";
                 if (msg.includes("has_pending_review")) {
                   setErrMsg("Tienes un pago en verificación. Espera la confirmación antes de iniciar otro.");
+                  pendingQ.refetch();
+                } else if (msg.includes("duplicate") || msg.includes("multiple") || msg.includes("JSON object requested")) {
+                  setErrMsg("Ya tienes una solicitud abierta. Te llevaremos a esa recarga para continuar.");
                   pendingQ.refetch();
                 } else setErrMsg(msg);
               } finally { setSubmitting(false); }
