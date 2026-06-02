@@ -44,15 +44,14 @@ export function drawCard(shoe: Card[]): { card: Card; shoe: Card[] } {
 }
 
 /**
- * Draw the dealer's hole card with an 8% bias toward a high rank.
- * Identical odds to the previous client implementation.
+ * Draw the dealer's hole card with a 9% bias toward a high rank.
  */
 export function drawHoleBiased(shoe: Card[]): { card: Card; shoe: Card[] } {
   if (shoe.length < RESHUFFLE_THRESHOLD) {
     shoe = makeShoe();
   }
   const top = shoe.pop()!;
-  if (cryptoRandomInt(100) < 8 && !HIGH_RANKS.has(top.rank)) {
+  if (cryptoRandomInt(100) < 9 && !HIGH_RANKS.has(top.rank)) {
     const lookback = Math.min(6, shoe.length);
     for (let k = shoe.length - 1; k >= shoe.length - lookback; k--) {
       if (HIGH_RANKS.has(shoe[k].rank)) {
@@ -66,8 +65,8 @@ export function drawHoleBiased(shoe: Card[]): { card: Card; shoe: Card[] } {
 }
 
 /**
- * Draw a card for the dealer's hit with a 5% bias toward a card that
- * lands the dealer in [17, 21]. Identical odds to the client version.
+ * Draw a card for the dealer's hit with a 6% bias toward a card that
+ * lands the dealer in [17, 21].
  */
 export function drawForDealerHit(
   shoe: Card[],
@@ -76,7 +75,7 @@ export function drawForDealerHit(
   if (shoe.length < RESHUFFLE_THRESHOLD) {
     shoe = makeShoe();
   }
-  if (cryptoRandomInt(100) < 5) {
+  if (cryptoRandomInt(100) < 6) {
     const lookback = Math.min(4, shoe.length);
     const need = (v: number) => {
       const total = currentScore + v;
