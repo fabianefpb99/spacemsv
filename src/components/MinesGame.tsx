@@ -171,13 +171,24 @@ export function MinesGame() {
   const [revealed, setRevealed] = useState<Set<number>>(() => new Set());
   const [explodedTile, setExplodedTile] = useState<number | null>(null);
   const [picks, setPicks] = useState(0);
-  const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   /** Live session reference (id + nonce). */
   const sessionRef = useRef<{ id: string; nonce: number } | null>(null);
   /** Per-action UUID used for idempotency of the current click. */
   const actionIdRef = useRef<string | null>(null);
+  /** Tiles the user has clicked but the server hasn't confirmed yet. */
+  const [pendingTiles, setPendingTiles] = useState<Set<number>>(() => new Set());
+  const pendingQueueRef = useRef<number[]>([]);
+  /** Mirror of `revealed` for the async queue worker. */
+  const revealedRef = useRef<Set<number>>(new Set());
+  /** True while the deal RPC is in flight. */
+  const dealInFlightRef = useRef(false);
+  /** True while a reveal/cashout RPC is in flight. */
+  const actionInFlightRef = useRef(false);
+  /** True while we're optimistically in "playing" but waiting for the deal. */
+  const startingRef = useRef(false);
+  useEffect(() => { revealedRef.current = revealed; }, [revealed]);
 
   const [muted, setMuted] = useState(false);
   const [online] = useState(263);
@@ -205,6 +216,9 @@ export function MinesGame() {
     setPicks(0);
     sessionRef.current = null;
     actionIdRef.current = null;
+    pendingQueueRef.current = [];
+    setPendingTiles(new Set());
+    startingRef.current = false;
   }, []);
 
   /** Sync local UI state with a server-returned session view. */
@@ -214,8 +228,18 @@ export function MinesGame() {
     setRevealed(new Set(pub.revealed));
     setPicks(pub.picks);
     applyBalance(view.new_balance);
+    // Whatever tiles came back as revealed/closed are no longer pending.
+    setPendingTiles((prev) => {
+      if (prev.size === 0 && pub.phase === "playing") return prev;
+      const next = new Set<number>();
+      if (pub.phase === "playing") {
+        prev.forEach((i) => { if (!pub.revealed.includes(i)) next.add(i); });
+      }
+      return next;
+    });
 
     if (pub.phase === "result") {
+      pendingQueueRef.current = [];
       const allMines = new Set<number>(pub.mineSetReveal ?? []);
       setMineSet(allMines);
       if (pub.outcome === "lost") {
@@ -311,28 +335,49 @@ export function MinesGame() {
   const cashoutAmount = Math.floor(bet * currentMult);
 
   const startGame = useCallback(async () => {
-    if (phase !== "betting" || busy) return;
+    if (phase !== "betting" || startingRef.current || dealInFlightRef.current) return;
     if (bet < MIN_BET || bet > balance) return;
-    setBusy(true);
+    startingRef.current = true;
+    dealInFlightRef.current = true;
     setError(null);
+    // Optimistic UI: switch board to "playing" + debit balance instantly so
+    // APOSTAR responds without waiting for the network roundtrip.
+    const prevBalance = balance;
+    applyBalance(Math.max(0, balance - bet));
+    setRevealed(new Set());
+    setMineSet(new Set());
+    setExplodedTile(null);
+    setPicks(0);
+    setPendingTiles(new Set());
+    pendingQueueRef.current = [];
+    setPhase("playing");
+    resetRevealStreak();
     try {
       const actionId = uuid();
       actionIdRef.current = actionId;
       const view = await dealFn({ data: { bet, mines, client_action_id: actionId } });
-      resetRevealStreak();
       applyServerView(view);
+      // Drain any clicks the user made between APOSTAR and the deal response.
+      void processQueue();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Error al iniciar");
+      // Rollback optimistic UI.
+      applyBalance(prevBalance);
+      pendingQueueRef.current = [];
+      setPendingTiles(new Set());
+      setPhase("betting");
     } finally {
-      setBusy(false);
+      dealInFlightRef.current = false;
+      startingRef.current = false;
     }
-  }, [phase, busy, bet, balance, mines, dealFn, applyServerView]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, bet, balance, mines, dealFn, applyServerView, applyBalance]);
 
   const cashout = useCallback(async () => {
-    if (phase !== "playing" || picks === 0 || busy) return;
+    if (phase !== "playing" || picks === 0 || actionInFlightRef.current) return;
     const sess = sessionRef.current;
     if (!sess) return;
-    setBusy(true);
+    actionInFlightRef.current = true;
     setError(null);
     try {
       const view = await cashoutFn({
@@ -342,44 +387,72 @@ export function MinesGame() {
     } catch (e) {
       setError(e instanceof Error ? e.message : "Error al cobrar");
     } finally {
-      setBusy(false);
+      actionInFlightRef.current = false;
     }
-  }, [phase, picks, busy, cashoutFn, applyServerView]);
+  }, [phase, picks, cashoutFn, applyServerView]);
 
-  const handleTile = useCallback(async (idx: number) => {
-    if (phase !== "playing" || busy) return;
+  /**
+   * Drain queued tile clicks one at a time. Runs only one network call in
+   * flight so the server's nonce stays in sync, but the user can click as
+   * fast as they want — each click flips its tile to a "pending" press and
+   * the worker reconciles with the server in order.
+   */
+  const processQueue = useCallback(async () => {
+    if (actionInFlightRef.current) return;
+    while (pendingQueueRef.current.length > 0) {
+      const sess = sessionRef.current;
+      if (!sess) return; // wait for deal to complete; will be re-kicked
+      const idx = pendingQueueRef.current.shift()!;
+      if (revealedRef.current.has(idx)) {
+        setPendingTiles((prev) => {
+          if (!prev.has(idx)) return prev;
+          const n = new Set(prev); n.delete(idx); return n;
+        });
+        continue;
+      }
+      actionInFlightRef.current = true;
+      try {
+        const view = await revealFn({
+          data: {
+            session_id: sess.id,
+            nonce: sess.nonce,
+            tile_idx: idx,
+            client_action_id: uuid(),
+          },
+        });
+        // Sound matches the confirmed outcome — no diamond-then-bomb flash.
+        if (view.public_state.phase === "playing") playReveal();
+        applyServerView(view);
+        if (view.public_state.phase === "result") {
+          pendingQueueRef.current = [];
+          break;
+        }
+      } catch (e) {
+        setPendingTiles((prev) => {
+          if (!prev.has(idx)) return prev;
+          const n = new Set(prev); n.delete(idx); return n;
+        });
+        setError(e instanceof Error ? e.message : "Error en la jugada");
+        // Drop the rest of the queue — the nonce likely drifted.
+        pendingQueueRef.current = [];
+        break;
+      } finally {
+        actionInFlightRef.current = false;
+      }
+    }
+  }, [revealFn, applyServerView]);
+
+  const handleTile = useCallback((idx: number) => {
+    if (phase !== "playing") return;
     if (revealed.has(idx)) return;
-    const sess = sessionRef.current;
-    if (!sess) return;
-
-    // Optimistic UI: open the tile immediately as "safe" so the click feels
-    // instant. If the server says it's a mine, applyServerView() will paint
-    // the explosion and reveal the rest of the field.
-    const optimisticRevealed = new Set(revealed);
-    optimisticRevealed.add(idx);
-    setRevealed(optimisticRevealed);
-    playReveal();
-    setBusy(true);
-    setError(null);
-
-    try {
-      const view = await revealFn({
-        data: {
-          session_id: sess.id,
-          nonce: sess.nonce,
-          tile_idx: idx,
-          client_action_id: uuid(),
-        },
-      });
-      applyServerView(view);
-    } catch (e) {
-      // Rollback the optimistic open on error (e.g. stale nonce).
-      setRevealed(revealed);
-      setError(e instanceof Error ? e.message : "Error en la jugada");
-    } finally {
-      setBusy(false);
-    }
-  }, [phase, busy, revealed, revealFn, applyServerView]);
+    if (pendingTiles.has(idx)) return;
+    // Queue + flip the tile visually to a "pressed" state. We DON'T paint a
+    // diamond here: the icon (gem or bomb) is committed only after the server
+    // confirms, so the user never sees a tile flip from gem → bomb.
+    pendingQueueRef.current.push(idx);
+    setPendingTiles((prev) => { const n = new Set(prev); n.add(idx); return n; });
+    void processQueue();
+  }, [phase, revealed, pendingTiles, processQueue]);
 
   const canStart = phase === "betting" && bet >= MIN_BET && bet <= balance;
   const canCashout = phase === "playing" && picks > 0;
@@ -536,6 +609,7 @@ export function MinesGame() {
           <div className="grid grid-cols-4 gap-2 sm:gap-2.5">
             {Array.from({ length: TILES }).map((_, i) => {
               const isRevealed = revealed.has(i);
+              const isPending = !isRevealed && pendingTiles.has(i);
               const isMine = mineSet.has(i);
               const isExploded = explodedTile === i;
               const isDimMine = isRevealed && isMine && !isExploded && (phase === "lost" || phase === "cashed");
@@ -543,15 +617,18 @@ export function MinesGame() {
                 <button
                   key={i}
                   type="button"
-                  disabled={phase !== "playing" || isRevealed}
+                  disabled={phase !== "playing" || isRevealed || isPending}
                   onClick={() => handleTile(i)}
                   className={`mines-tile aspect-square ${
                     isRevealed ? "mines-tile-revealed" : ""
                   } ${isRevealed && !isMine ? "mines-tile-safe" : ""} ${
                     isRevealed && isMine ? "mines-tile-mine" : ""
-                  } ${isDimMine ? "mines-tile-mine-dim" : ""}`}
+                  } ${isDimMine ? "mines-tile-mine-dim" : ""} ${isPending ? "mines-tile-pending" : ""}`}
                   aria-label={`Casilla ${i + 1}`}
                 >
+                  {isPending && (
+                    <span className="mines-tile-pending-dot absolute inset-0 m-auto h-2 w-2 rounded-full bg-white/70" />
+                  )}
                   {isRevealed && !isMine && (
                     <>
                       <Shards />

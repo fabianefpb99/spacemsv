@@ -705,6 +705,23 @@ html, body {
 }
 .mines-tile-mine-dim { opacity: 0.55; filter: saturate(0.7); }
 
+/* Pending: tile pressed by the user, awaiting server confirmation. */
+.mines-tile-pending {
+  transform: translateY(1px) scale(0.97);
+  filter: brightness(0.85);
+  border-color: rgba(168,85,247,0.55);
+  box-shadow:
+    0 0 0 1px rgba(168,85,247,0.30) inset,
+    0 2px 6px rgba(0,0,0,0.5);
+}
+.mines-tile-pending-dot {
+  animation: mines-pending-pulse 0.8s ease-in-out infinite;
+}
+@keyframes mines-pending-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.85); }
+  50%      { opacity: 1;    transform: scale(1.15); }
+}
+
 .mines-gem  { animation: mines-reveal-pop 380ms cubic-bezier(.34,1.56,.64,1), mines-gem-pulse 1.8s ease-in-out 380ms infinite; }
 .mines-bomb { animation: mines-reveal-pop 380ms cubic-bezier(.34,1.56,.64,1), mines-bomb-pulse 1.4s ease-in-out 380ms infinite; }
 
