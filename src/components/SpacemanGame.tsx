@@ -1142,7 +1142,7 @@ export function SpacemanGame() {
         </section>
 
         {/* Round status (fixed height to prevent layout shifts) */}
-        <div className="mt-2 px-1 h-[30px]">
+        <div className="-mt-2 px-1 h-[30px]">
           <div className="flex h-5 items-center justify-between gap-3 text-xs sm:text-sm whitespace-nowrap">
             <div className="flex items-center gap-2 font-semibold min-w-0">
               <span
@@ -1171,7 +1171,7 @@ export function SpacemanGame() {
         </div>
 
         {/* Bet panel */}
-        <div className="mt-3 glass-panel rounded-xl p-3 sm:p-4">
+        <div className="mt-1 glass-panel rounded-xl p-3 sm:p-4">
           <div className="text-center text-[11px] uppercase tracking-[0.2em] text-purple-200/70">
             Apuesta (COP)
           </div>
