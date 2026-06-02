@@ -705,21 +705,84 @@ html, body {
 }
 .mines-tile-mine-dim { opacity: 0.55; filter: saturate(0.7); }
 
-/* Pending: tile pressed by the user, awaiting server confirmation. */
+/* Pending: tile pressed by the user, awaiting server confirmation.
+   Renders a "cracking glass" effect with a subtle jitter so the user
+   sees clear physical feedback while the server is still resolving. */
 .mines-tile-pending {
   transform: translateY(1px) scale(0.97);
-  filter: brightness(0.85);
-  border-color: rgba(168,85,247,0.55);
+  filter: brightness(0.92);
+  border-color: rgba(168,85,247,0.65);
   box-shadow:
-    0 0 0 1px rgba(168,85,247,0.30) inset,
-    0 2px 6px rgba(0,0,0,0.5);
+    0 0 0 1px rgba(168,85,247,0.35) inset,
+    0 2px 8px rgba(0,0,0,0.55),
+    0 0 14px rgba(168,85,247,0.35);
+  animation: mines-pending-jitter 220ms ease-in-out infinite;
 }
-.mines-tile-pending-dot {
-  animation: mines-pending-pulse 0.8s ease-in-out infinite;
+.mines-tile-crack {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
 }
-@keyframes mines-pending-pulse {
-  0%, 100% { opacity: 0.35; transform: scale(0.85); }
-  50%      { opacity: 1;    transform: scale(1.15); }
+.mines-tile-crack::before,
+.mines-tile-crack::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 140%;
+  height: 1.5px;
+  transform-origin: 0% 50%;
+  background:
+    linear-gradient(90deg,
+      rgba(255,255,255,0) 0%,
+      rgba(255,255,255,0.95) 18%,
+      rgba(220,180,255,0.85) 55%,
+      rgba(255,255,255,0) 100%);
+  box-shadow: 0 0 6px rgba(255,255,255,0.7);
+  transform: rotate(0deg) scaleX(0);
+  animation: mines-crack-grow 360ms cubic-bezier(.22,.61,.36,1) forwards;
+}
+.mines-tile-crack::before { animation-delay: 0ms;   transform: rotate(28deg)  scaleX(0); }
+.mines-tile-crack::after  { animation-delay: 70ms;  transform: rotate(-52deg) scaleX(0); }
+.mines-tile-crack > i,
+.mines-tile-crack > i + i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 110%;
+  height: 1px;
+  transform-origin: 0% 50%;
+  background:
+    linear-gradient(90deg,
+      rgba(255,255,255,0) 0%,
+      rgba(255,255,255,0.75) 30%,
+      rgba(180,140,255,0.6) 70%,
+      rgba(255,255,255,0) 100%);
+  box-shadow: 0 0 4px rgba(200,160,255,0.6);
+  transform: rotate(0deg) scaleX(0);
+  animation: mines-crack-grow 420ms cubic-bezier(.22,.61,.36,1) forwards;
+}
+.mines-tile-crack > i:nth-child(1) { animation-delay: 130ms; transform: rotate(110deg) scaleX(0); }
+.mines-tile-crack > i:nth-child(2) { animation-delay: 200ms; transform: rotate(-160deg) scaleX(0); }
+
+@keyframes mines-crack-grow {
+  0%   { opacity: 0;   }
+  20%  { opacity: 1;   }
+  100% { opacity: 0.95; transform: var(--mines-crack-end, rotate(0deg) scaleX(1)); }
+}
+/* Per-line end transforms (keyframes can't read computed rotation otherwise). */
+.mines-tile-crack::before { --mines-crack-end: rotate(28deg)  scaleX(1); }
+.mines-tile-crack::after  { --mines-crack-end: rotate(-52deg) scaleX(1); }
+.mines-tile-crack > i:nth-child(1) { --mines-crack-end: rotate(110deg) scaleX(1); }
+.mines-tile-crack > i:nth-child(2) { --mines-crack-end: rotate(-160deg) scaleX(1); }
+
+@keyframes mines-pending-jitter {
+  0%, 100% { transform: translate(0, 1px) scale(0.97); }
+  25%      { transform: translate(-0.6px, 0.6px) scale(0.97); }
+  50%      { transform: translate(0.6px, 1.2px) scale(0.97); }
+  75%      { transform: translate(-0.4px, 0.8px) scale(0.97); }
 }
 
 .mines-gem  { animation: mines-reveal-pop 380ms cubic-bezier(.34,1.56,.64,1), mines-gem-pulse 1.8s ease-in-out 380ms infinite; }

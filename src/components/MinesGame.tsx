@@ -627,7 +627,10 @@ export function MinesGame() {
                   aria-label={`Casilla ${i + 1}`}
                 >
                   {isPending && (
-                    <span className="mines-tile-pending-dot absolute inset-0 m-auto h-2 w-2 rounded-full bg-white/70" />
+                    <span className="mines-tile-crack" aria-hidden="true">
+                      <i />
+                      <i />
+                    </span>
                   )}
                   {isRevealed && !isMine && (
                     <>
