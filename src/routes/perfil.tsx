@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import astronaut from "@/assets/astronaut.svg";
 
@@ -94,6 +95,7 @@ function PerfilPage() {
   const me = useMe();
   const stats = useStats(user?.id);
   const navigate = useNavigate();
+  const isAdminQ = useIsAdmin();
 
   if (!loading && !user) {
     return (
@@ -140,7 +142,18 @@ function PerfilPage() {
             <ArrowLeft className="h-7 w-7" strokeWidth={3} />
           </button>
           <h1 className="font-display text-base font-bold uppercase tracking-widest">Mi Perfil</h1>
-          <div className="h-7 w-11" />
+          {isAdminQ.data ? (
+            <button
+              onClick={() => navigate({ to: "/adminpanel" })}
+              aria-label="Panel administrativo"
+              title="Panel administrativo"
+              className="rounded-md p-2 text-fuchsia-300 hover:bg-white/5"
+            >
+              <SettingsIcon className="h-6 w-6" strokeWidth={2.5} />
+            </button>
+          ) : (
+            <div className="h-7 w-11" />
+          )}
         </header>
 
         {/* Identity card */}
