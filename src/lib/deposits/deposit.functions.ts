@@ -32,12 +32,22 @@ export const createDeposit = createServerFn({ method: "POST" })
     bonus: z.number().int().min(0).max(5_000_000),
     method: z.enum(["nequi", "breb"]),
   }).parse(i))
-  .handler(async ({ data }) => {
-    const supa = userClient(bearer());
+  .handler(async ({ data, context }) => {
+    const token = bearer();
+    if (!token) {
+      console.error("[createDeposit] missing bearer", { userId: context.userId });
+      throw new Error("missing_auth_token");
+    }
+    const supa = userClient(token);
     const { data: row, error } = await supa.rpc("create_deposit_request", {
       p_amount: data.amount, p_bonus: data.bonus, p_method: data.method,
     });
-    if (error) throw new Error(error.message);
+    if (error) {
+      console.error("[createDeposit] RPC error", {
+        userId: context.userId, code: error.code, message: error.message, details: error.details,
+      });
+      throw new Error(error.message);
+    }
     return row;
   });
 
@@ -50,8 +60,13 @@ export const confirmDeposit = createServerFn({ method: "POST" })
     last_name: z.string().trim().max(80).optional().nullable(),
     phone: z.string().trim().max(30).optional().nullable(),
   }).parse(i))
-  .handler(async ({ data }) => {
-    const supa = userClient(bearer());
+  .handler(async ({ data, context }) => {
+    const token = bearer();
+    if (!token) {
+      console.error("[confirmDeposit] missing bearer", { userId: context.userId, depositId: data.id });
+      throw new Error("missing_auth_token");
+    }
+    const supa = userClient(token);
     const ip = getRequestHeader("cf-connecting-ip")
       ?? getRequestHeader("x-forwarded-for")?.split(",")[0]?.trim()
       ?? null;
@@ -63,7 +78,14 @@ export const confirmDeposit = createServerFn({ method: "POST" })
       p_phone: data.phone ?? null,
       p_ip: ip,
     });
-    if (error) throw new Error(error.message);
+    if (error) {
+      console.error("[confirmDeposit] RPC error", {
+        userId: context.userId, depositId: data.id,
+        code: error.code, message: error.message, details: error.details, hint: error.hint,
+      });
+      throw new Error(error.message);
+    }
+    console.log("[confirmDeposit] success", { userId: context.userId, depositId: data.id, status: row?.status });
     return row;
   });
 
