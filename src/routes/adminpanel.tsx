@@ -6,6 +6,7 @@ import {
   ArrowLeft,
   BarChart3,
   Bell,
+  Check,
   Clipboard,
   Coins,
   Cog,
