@@ -939,7 +939,7 @@ function RtpSection() {
         <Loader2 className="mx-auto h-5 w-5 animate-spin text-purple-300" />
       ) : (
         <div className="space-y-2">
-          {q.data?.map((row: { game: string; rtp_target: number; rtp_live: number | null; is_active: boolean; updated_at?: string | null; updated_by_label?: string | null }) => {
+          {q.data?.map((row: { game: string; rtp_target?: number | null; rtp_live: number | null; is_active?: boolean | null; updated_at?: string | null; updated_by_label?: string | null }) => {
             const draft = drafts[row.game] ?? String(row.rtp_target);
             const dirty = Number(draft) !== Number(row.rtp_target);
             return (
