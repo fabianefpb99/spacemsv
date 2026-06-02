@@ -379,9 +379,7 @@ export function MinesGame() {
                 <span className="neon-green mr-0.5">$</span>{formatCOP(balance)} COP
               </div>
             </div>
-            <button className="rounded-md p-1.5 text-purple-200/80 hover:bg-white/5">
-              <Settings className="h-5 w-5 sm:h-6 sm:w-6" />
-            </button>
+            <AuthControl />
           </div>
         </header>
 
