@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Settings, LogOut, User as UserIcon } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -88,6 +89,13 @@ export function AuthControl({ className }: { className?: string }) {
             </div>
           )}
         </div>
+        <Link
+          to="/perfil"
+          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md border border-purple-500/40 bg-transparent px-3 py-2 text-sm font-medium text-purple-100 transition hover:bg-purple-500/10 hover:text-white"
+        >
+          <UserIcon className="h-4 w-4" />
+          Ver perfil
+        </Link>
         <LogoutButton />
       </PopoverContent>
     </Popover>
