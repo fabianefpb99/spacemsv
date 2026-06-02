@@ -21,7 +21,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
-    const syncSession = async () => {
+    const bootstrap = async () => {
       const { data } = await supabase.auth.getSession();
       if (!mounted) return;
       bootstrappedRef.current = true;
@@ -35,40 +35,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: sub } = supabase.auth.onAuthStateChange((event, newSession) => {
       if (!mounted) return;
 
-      setSession(newSession);
-
-      // On slower mobile browsers the auth library can transiently surface a
-      // null session before storage/cookies finish recovering after OAuth.
-      // Do not mark auth as ready from that null until the initial bootstrap
-      // getSession() has completed; otherwise user-scoped queries can run too
-      // early, RLS returns no row, and the UI caches a fake $0 balance.
-      if (newSession || bootstrappedRef.current || event === "SIGNED_OUT") {
+      // Only treat the session as gone on an explicit SIGNED_OUT. On mobile
+      // (and after token refresh) the SDK can transiently emit null sessions
+      // for INITIAL_SESSION / TOKEN_REFRESHED / USER_UPDATED while it
+      // rehydrates from localStorage — clobbering state with that null kicks
+      // the user out of protected routes and looks like a phantom logout.
+      if (event === "SIGNED_OUT") {
+        setSession(null);
         setLoading(false);
+        queryClient.invalidateQueries({ queryKey: ["me"] });
+        return;
       }
 
-      if (newSession?.user || event === "SIGNED_OUT") {
+      if (newSession) {
+        setSession(newSession);
+        setLoading(false);
         queryClient.invalidateQueries({ queryKey: ["me"] });
+      } else if (bootstrappedRef.current) {
+        // Bootstrap done and got a null event that isn't SIGNED_OUT → ignore.
+        setLoading(false);
       }
     });
 
-    void syncSession();
-
-    const refreshFromVisibility = () => {
-      if (typeof document === "undefined" || document.visibilityState === "visible") {
-        void syncSession();
-      }
-    };
-
-    window.addEventListener("focus", refreshFromVisibility);
-    window.addEventListener("pageshow", refreshFromVisibility);
-    document.addEventListener("visibilitychange", refreshFromVisibility);
+    void bootstrap();
 
     return () => {
       mounted = false;
       sub.subscription.unsubscribe();
-      window.removeEventListener("focus", refreshFromVisibility);
-      window.removeEventListener("pageshow", refreshFromVisibility);
-      document.removeEventListener("visibilitychange", refreshFromVisibility);
     };
   }, [queryClient]);
 
