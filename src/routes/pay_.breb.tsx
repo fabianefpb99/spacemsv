@@ -1,12 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Settings, Copy, Check, Info, CheckCircle2, Loader2, X } from "lucide-react";
+import { ArrowLeft, Copy, Check, Info, CheckCircle2, Loader2, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
 import { confirmDeposit, getMyDeposit, cancelMyDeposit } from "@/lib/deposits/deposit.functions";
 import betspaceLogo from "@/assets/betspace-logo.svg";
+import { AuthControl } from "@/components/auth/AuthControl";
+import { RequireAuth } from "@/components/auth/RequireAuth";
 import nequiAstronaut from "@/assets/nequi-astronaut-wide.png";
 import nequiLogo from "@/assets/nequi.svg";
 import brebLogo from "@/assets/bre-b.svg";
@@ -22,8 +24,16 @@ export const Route = createFileRoute("/pay_/breb")({
       { name: "description", content: "Sigue las instrucciones para completar tu depósito de forma segura." },
     ],
   }),
-  component: PayBrebPage,
+  component: PayBrebGated,
 });
+
+function PayBrebGated() {
+  return (
+    <RequireAuth>
+      <PayBrebPage />
+    </RequireAuth>
+  );
+}
 
 function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
@@ -192,9 +202,7 @@ function PayBrebPage() {
               Pago <span className="text-purple-400/60">|</span> Depósito
             </div>
           </div>
-          <button className="rounded-md p-1.5 text-purple-200/80 hover:bg-white/5">
-            <Settings className="h-5 w-5 sm:h-6 sm:w-6" />
-          </button>
+          <AuthControl />
         </header>
 
         <div className="mt-3 flex justify-center">
