@@ -1,4 +1,5 @@
 import { AuthControl } from "@/components/auth/AuthControl";
+import { FitText } from "@/components/ui/fit-text";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Link } from "@tanstack/react-router";
