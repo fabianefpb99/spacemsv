@@ -163,6 +163,7 @@ export const adminAdjustBalance = createServerFn({ method: "POST" })
       .parse(input)
   )
   .handler(async ({ data, context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
     const { data: res, error } = await supabaseAdmin.rpc("admin_adjust_balance", {
       p_target_user_id: data.userId,
@@ -184,6 +185,7 @@ export const adminSetBlock = createServerFn({ method: "POST" })
     z.object({ userId: z.string().uuid(), blocked: z.boolean() }).parse(input)
   )
   .handler(async ({ data, context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
     const { error } = await supabaseAdmin.rpc("admin_set_block", {
       p_target_user_id: data.userId,
@@ -197,6 +199,7 @@ export const adminResetPassword = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ userId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
     const uRes = await supabaseAdmin.auth.admin.getUserById(data.userId);
     const email = "data" in uRes ? uRes.data.user?.email : undefined;
@@ -220,6 +223,7 @@ export const adminResetPassword = createServerFn({ method: "POST" })
 export const adminListRtp = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
     const { data: rows, error } = await supabaseAdmin
       .from("game_rtp_config")
@@ -276,6 +280,7 @@ export const adminUpdateRtp = createServerFn({ method: "POST" })
       .parse(input)
   )
   .handler(async ({ data, context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
     const { data: row, error } = await supabaseAdmin.rpc("admin_update_rtp", {
       p_game: data.game,
