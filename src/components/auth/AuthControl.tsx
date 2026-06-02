@@ -52,7 +52,9 @@ export function AuthControl({ className }: { className?: string }) {
       </PopoverTrigger>
       <PopoverContent
         align="end"
-        className="w-64 border-purple-500/40 bg-[#0c0620] text-white"
+        sideOffset={8}
+        collisionPadding={12}
+        className="z-50 w-[min(16rem,calc(100vw-1.5rem))] max-w-[calc(100vw-1.5rem)] border-purple-500/40 bg-[#0c0620] text-white"
       >
         <div className="flex items-center gap-2 border-b border-purple-500/20 pb-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-600/30 ring-1 ring-purple-400/30">
