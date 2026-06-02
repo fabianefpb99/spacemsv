@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,31 +16,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const queryClient = useQueryClient();
+  const bootstrappedRef = useRef(false);
 
   useEffect(() => {
     let mounted = true;
 
-    // Trust the session emitted by supabase-js — JWT is signed and validated
-    // server-side on every PostgREST call. Doing an extra getUser() round-trip
-    // here causes a 1–3 s flap where `user` is null even though the user is
-    // logged in, which breaks balance reads (useMe disabled) and shows wrong
-    // header values. We just sync state immediately.
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    const syncSession = async () => {
+      const { data } = await supabase.auth.getSession();
       if (!mounted) return;
-      setSession(newSession);
-      setLoading(false);
-      queryClient.invalidateQueries({ queryKey: ["me"] });
-    });
-
-    supabase.auth.getSession().then(({ data }) => {
-      if (!mounted) return;
+      bootstrappedRef.current = true;
       setSession(data.session);
       setLoading(false);
+      if (data.session?.user) {
+        queryClient.invalidateQueries({ queryKey: ["me"] });
+      }
+    };
+
+    const { data: sub } = supabase.auth.onAuthStateChange((event, newSession) => {
+      if (!mounted) return;
+
+      setSession(newSession);
+
+      // On slower mobile browsers the auth library can transiently surface a
+      // null session before storage/cookies finish recovering after OAuth.
+      // Do not mark auth as ready from that null until the initial bootstrap
+      // getSession() has completed; otherwise user-scoped queries can run too
+      // early, RLS returns no row, and the UI caches a fake $0 balance.
+      if (newSession || bootstrappedRef.current || event === "SIGNED_OUT") {
+        setLoading(false);
+      }
+
+      if (newSession?.user || event === "SIGNED_OUT") {
+        queryClient.invalidateQueries({ queryKey: ["me"] });
+      }
     });
+
+    void syncSession();
+
+    const refreshFromVisibility = () => {
+      if (typeof document === "undefined" || document.visibilityState === "visible") {
+        void syncSession();
+      }
+    };
+
+    window.addEventListener("focus", refreshFromVisibility);
+    window.addEventListener("pageshow", refreshFromVisibility);
+    document.addEventListener("visibilitychange", refreshFromVisibility);
 
     return () => {
       mounted = false;
       sub.subscription.unsubscribe();
+      window.removeEventListener("focus", refreshFromVisibility);
+      window.removeEventListener("pageshow", refreshFromVisibility);
+      document.removeEventListener("visibilitychange", refreshFromVisibility);
     };
   }, [queryClient]);
 

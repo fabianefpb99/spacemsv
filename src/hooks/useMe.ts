@@ -18,11 +18,13 @@ export type MeData = {
  * Source of truth: Supabase. RLS scopes both reads to the current user.
  */
 export function useMe() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   return useQuery<MeData | null>({
     queryKey: ["me", user?.id ?? null],
-    enabled: !!user,
+    enabled: !loading && !!user,
     staleTime: 30_000,
+    retry: 3,
+    refetchOnWindowFocus: true,
     queryFn: async () => {
       if (!user) return null;
       const [{ data: profile, error: profileError }, { data: bal, error: balanceError }] = await Promise.all([
@@ -40,11 +42,14 @@ export function useMe() {
 
       if (profileError) throw profileError;
       if (balanceError) throw balanceError;
+      if (!bal) {
+        throw new Error("El saldo aún no se pudo confirmar. Reintentando...");
+      }
 
       return {
         profile: profile ?? null,
-        balance: bal?.balance ? Number(bal.balance) : 0,
-        bonus_balance: bal?.bonus_balance ? Number(bal.bonus_balance) : 0,
+        balance: Number(bal.balance ?? 0),
+        bonus_balance: Number(bal.bonus_balance ?? 0),
       };
     },
   });
