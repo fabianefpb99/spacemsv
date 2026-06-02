@@ -18,7 +18,10 @@ const signUpSchema = z.object({
     .min(3, "Mínimo 3 caracteres")
     .max(20, "Máximo 20 caracteres")
     .regex(/^[a-zA-Z0-9_]+$/, "Solo letras, números y guion bajo"),
-  password: z.string().min(8, "Mínimo 8 caracteres"),
+  password: z
+    .string()
+    .min(1, "Requerido")
+    .regex(/^[a-zA-Z0-9]+$/, "Solo letras y números"),
 });
 
 const signInSchema = z.object({
