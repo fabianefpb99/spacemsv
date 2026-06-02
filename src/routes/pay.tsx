@@ -6,7 +6,8 @@ import nequiLogo from "@/assets/nequi.svg";
 import bancolombiaLogo from "@/assets/bancolombia.svg";
 import brebLogo from "@/assets/bre-b.svg";
 import { useServerFn } from "@tanstack/react-start";
-import { createDeposit } from "@/lib/deposits/deposit.functions";
+import { createDeposit, getMyPendingReview } from "@/lib/deposits/deposit.functions";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/pay")({
   head: () => ({
@@ -41,6 +42,15 @@ function PayPage() {
   const createFn = useServerFn(createDeposit);
   const [submitting, setSubmitting] = useState(false);
   const [errMsg, setErrMsg] = useState<string | null>(null);
+
+  const pendingFn = useServerFn(getMyPendingReview);
+  const pendingQ = useQuery({
+    queryKey: ["my-pending-review"],
+    queryFn: () => pendingFn(),
+    refetchInterval: 10000,
+  });
+  const pendingReview = pendingQ.data as { id: string; method: string } | null | undefined;
+  const blocked = !!pendingReview;
 
   // Bonus countdown: 10 minutes, restarts every time PAY is opened, and
   // auto-restarts when it hits 00:00 (psychological urgency).
@@ -146,17 +156,40 @@ function PayPage() {
         <h3 className="mt-6 text-sm font-semibold text-white">
           1. Selecciona tu medio de pago
         </h3>
+        {blocked && (
+          <div className="mt-3 rounded-xl border border-amber-400/50 bg-amber-500/10 p-3 text-xs text-amber-100">
+            <p className="text-center">
+              Tienes un pago en <b>verificación</b>. Espera la confirmación antes de iniciar otro.
+            </p>
+            <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+              <button
+                onClick={() => navigate({ to: "/pay/breb", search: { id: pendingReview!.id } })}
+                className="rounded-md border border-amber-400/60 bg-amber-500/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-amber-100 hover:bg-amber-500/20"
+              >
+                Ver mi solicitud
+              </button>
+              <Link
+                to="/mis-recargas"
+                className="rounded-md border border-purple-400/50 bg-purple-500/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-purple-100 hover:bg-purple-500/20"
+              >
+                Ver mis recargas
+              </Link>
+            </div>
+          </div>
+        )}
         <div className="mt-3 flex flex-col gap-2.5">
           <MethodCard
             selected={method === "nequi"}
-            onClick={() => setMethod("nequi")}
+            disabled={blocked}
+            onClick={() => !blocked && setMethod("nequi")}
             logo={<NequiLogo />}
             title="NEQUI"
             subtitle="Pago instantáneo"
           />
           <MethodCard
             selected={method === "breb"}
-            onClick={() => setMethod("breb")}
+            disabled={blocked}
+            onClick={() => !blocked && setMethod("breb")}
             logo={<BrebLogo />}
             title="BRE-B"
             subtitle="Pago instantáneo interbancario"
@@ -335,9 +368,9 @@ function PayPage() {
 
         {/* Continue button */}
         <button
-          disabled={!canContinue || submitting}
+          disabled={!canContinue || submitting || blocked}
           onClick={async () => {
-            if (!canContinue || !combo || !method) return;
+            if (!canContinue || !combo || !method || blocked) return;
             const c = COMBOS.find((x) => x.id === combo)!;
             if (method === "nequi" || method === "breb") {
               setSubmitting(true); setErrMsg(null);
@@ -345,12 +378,16 @@ function PayPage() {
                 const row = await createFn({ data: { amount: c.amount, bonus: c.bonus, method } });
                 navigate({ to: "/pay/breb", search: { id: row.id } });
               } catch (e) {
-                setErrMsg((e as Error).message || "Error al crear la recarga");
+                const msg = (e as Error).message || "Error al crear la recarga";
+                if (msg.includes("has_pending_review")) {
+                  setErrMsg("Tienes un pago en verificación. Espera la confirmación antes de iniciar otro.");
+                  pendingQ.refetch();
+                } else setErrMsg(msg);
               } finally { setSubmitting(false); }
             }
           }}
           className={`mt-6 inline-flex items-center justify-center rounded-xl px-4 py-3.5 text-sm font-bold tracking-tight transition ${
-            canContinue
+            canContinue && !blocked
               ? "bg-emerald-500 text-[#04130c] shadow-[0_0_24px_-6px_rgba(52,211,153,0.8)] hover:bg-emerald-400"
               : "cursor-not-allowed bg-emerald-900/40 text-emerald-200/40 ring-1 ring-emerald-700/40"
           }`}
