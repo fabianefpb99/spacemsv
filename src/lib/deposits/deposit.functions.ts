@@ -90,6 +90,30 @@ export const listMyDeposits = createServerFn({ method: "GET" })
     return data ?? [];
   });
 
+export const cancelMyDeposit = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((i: unknown) => z.object({ id: z.string().uuid() }).parse(i))
+  .handler(async ({ data }) => {
+    const supa = userClient(bearer());
+    const { data: row, error } = await supa.rpc("cancel_deposit_request", { p_id: data.id });
+    if (error) throw new Error(error.message);
+    return row;
+  });
+
+export const getMyPendingReview = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await supabaseAdmin
+      .from("deposit_requests").select("*")
+      .eq("user_id", context.userId)
+      .eq("status", "pendiente_revision")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return data;
+  });
+
 /* ---------- Admin ---------- */
 
 const adminListInput = z.object({
