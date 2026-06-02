@@ -275,6 +275,9 @@ function PerfilPage() {
 
         {/* Acciones */}
         <div className="mt-5 space-y-2">
+          <Link to="/mis-recargas" className="block">
+            <LinkRow icon={<WalletIcon className="h-4 w-4 text-purple-200" />} label="Mis Recargas" />
+          </Link>
           <LinkRow icon={<History className="h-4 w-4 text-purple-200" />} label="Historial de Transacciones" />
           <LinkRow icon={<Gift className="h-4 w-4 text-purple-200" />} label="Mis Bonos" />
           <LinkRow
