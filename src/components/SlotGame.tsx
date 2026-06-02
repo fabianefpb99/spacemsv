@@ -1000,9 +1000,10 @@ export function SlotGame() {
     setWins(w);
     setLastWin(total);
     setTotalWonRound(total);
+    // Always refresh balance after the reels settle — applies for losses too,
+    // so the HUD shows the bet debit even when there is no win.
+    queryClient.invalidateQueries({ queryKey: ["me"] });
     if (total > 0) {
-      // Pull the freshly-credited balance from Supabase.
-      queryClient.invalidateQueries({ queryKey: ["me"] });
       const bestPayout = Math.max(...w.map((x) => x.payout));
       const tier = getWinTier(bestPayout, bet);
       if (tier === "mega") playMegaWinSound();
