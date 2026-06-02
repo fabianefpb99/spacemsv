@@ -73,8 +73,8 @@ function PayBrebPage() {
     queryKey: ["my-deposit", id],
     enabled: !!id,
     queryFn: () => getFn({ data: { id } }),
-    refetchInterval: (qq) => {
-      const s = (qq.state.data as { status?: string } | undefined)?.status;
+    refetchInterval: (query) => {
+      const s = (query.state.data as { status?: string } | undefined)?.status;
       if (submitting) return 2000;
       return s === "pendiente_revision" || s === "aprobada" || s === "rechazada" ? 5000 : false;
     },
