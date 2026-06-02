@@ -1,7 +1,9 @@
 import { AuthControl } from "@/components/auth/AuthControl";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, Settings, Minus, Plus, Volume2, VolumeX } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { Menu, Minus, Plus, Volume2, VolumeX } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import bgAsset from "@/assets/blackjack-bg.png.asset.json";
 import {
@@ -12,27 +14,32 @@ import {
   isMuted as getAudioMuted,
   stopAllGameAudio,
 } from "@/lib/gameAudio";
+import { useMe, type MeData } from "@/hooks/useMe";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  bjDeal,
+  bjDouble,
+  bjHit,
+  bjResume,
+  bjStand,
+  type BJSessionView,
+} from "@/lib/games/blackjack.functions";
+import {
+  BJ_BET_STEP,
+  BJ_MAX_BET,
+  BJ_MIN_BET,
+  type BJOutcome,
+  type BJPublicState,
+  type Card,
+  handScore,
+} from "@/lib/games/blackjack.shared";
 
 type Phase = "betting" | "dealing" | "playing" | "dealerTurn" | "result";
-type Suit = "♠" | "♥" | "♦" | "♣";
-type Card = { suit: Suit; rank: string; value: number; hidden?: boolean };
-type Outcome = "win" | "lose" | "push" | "blackjack" | "bust";
 type Winner = { id: number; name: string; amount: number; game: string };
 type WinnerSlot = Winner & { slotId: number };
 
-const SUITS: Suit[] = ["♠", "♥", "♦", "♣"];
-const RANKS = [
-  { r: "A", v: 11 },
-  { r: "2", v: 2 }, { r: "3", v: 3 }, { r: "4", v: 4 }, { r: "5", v: 5 },
-  { r: "6", v: 6 }, { r: "7", v: 7 }, { r: "8", v: 8 }, { r: "9", v: 9 },
-  { r: "10", v: 10 }, { r: "J", v: 10 }, { r: "Q", v: 10 }, { r: "K", v: 10 },
-];
-
-const MIN_BET = 500;
-const MAX_BET = 100000;
-const BET_STEP = 500;
 const QUICK = [500, 1000, 2000, 5000];
-const TICKER_SPEED_PX_PER_MS = 0.06; // ~60 px/s
+const TICKER_SPEED_PX_PER_MS = 0.06;
 const TICKER_ITEM_WIDTH = 198;
 const TICKER_GAP = 12;
 const NAMES = ["Carlos_07", "Maria.V", "Andrés", "Lucia91", "JuanK", "Sofi", "ElCapo", "Nico", "Daniela", "PipeR", "ValeM", "MateoG", "Camila", "RoyalK", "MissL", "JoseF", "Karen", "Sebas", "TaniaP", "BrayanX"];
@@ -61,53 +68,29 @@ function pickDifferent(options: string[], blocked: string[]) {
 function makeLiveWinner(id: number, current: Winner[]): Winner {
   return {
     id,
-    name: pickDifferent(NAMES, current.slice(-4).map((winner) => winner.name)),
+    name: pickDifferent(NAMES, current.slice(-4).map((w) => w.name)),
     amount: (Math.floor(Math.random() * 195) + 5) * 1000,
-    game: pickDifferent(GAMES, current.slice(-3).map((winner) => winner.game)),
+    game: pickDifferent(GAMES, current.slice(-3).map((w) => w.game)),
   };
-}
-
-function makeShoe(): Card[] {
-  const deck: Card[] = [];
-  for (let d = 0; d < 6; d++) {
-    for (const s of SUITS) {
-      for (const r of RANKS) deck.push({ suit: s, rank: r.r, value: r.v });
-    }
-  }
-  // Fisher-Yates
-  for (let i = deck.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [deck[i], deck[j]] = [deck[j], deck[i]];
-  }
-  return deck;
-}
-
-function handScore(cards: Card[]): number {
-  let total = 0;
-  let aces = 0;
-  for (const c of cards) {
-    if (c.hidden) continue;
-    total += c.value;
-    if (c.rank === "A") aces++;
-  }
-  while (total > 21 && aces > 0) {
-    total -= 10;
-    aces--;
-  }
-  return total;
-}
-
-function isBlackjack(cards: Card[]) {
-  return cards.length === 2 && handScore(cards) === 21;
 }
 
 function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
 }
 
+function uuid(): string {
+  // Browser-only call site; falls back to a low-quality id only if crypto missing.
+  const c = (globalThis as { crypto?: Crypto }).crypto;
+  if (c?.randomUUID) return c.randomUUID();
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (ch) => {
+    const r = (Math.random() * 16) | 0;
+    const v = ch === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
 function CardView({ card, idx, total, hidden }: { card: Card; idx: number; total: number; hidden?: boolean }) {
-  // Compute overlap offset that shrinks as count grows
-  const maxSpread = 38; // px between cards
+  const maxSpread = 38;
   const minSpread = 18;
   const spread = Math.max(minSpread, maxSpread - (total - 2) * 4);
   const offset = (idx - (total - 1) / 2) * spread;
@@ -142,18 +125,34 @@ function CardView({ card, idx, total, hidden }: { card: Card; idx: number; total
 }
 
 export function BlackjackGame() {
-  const [balance, setBalance] = useState(100000);
+  const { user } = useAuth();
+  const me = useMe();
+  const queryClient = useQueryClient();
+
+  const balance = me.data?.balance ?? 0;
+
+  const dealFn = useServerFn(bjDeal);
+  const hitFn = useServerFn(bjHit);
+  const standFn = useServerFn(bjStand);
+  const doubleFn = useServerFn(bjDouble);
+  const resumeFn = useServerFn(bjResume);
+
   const [bet, setBet] = useState(2000);
   const [phase, setPhase] = useState<Phase>("betting");
   const [player, setPlayer] = useState<Card[]>([]);
   const [dealer, setDealer] = useState<Card[]>([]);
-  const [outcome, setOutcome] = useState<Outcome | null>(null);
+  const [outcome, setOutcome] = useState<BJOutcome | null>(null);
   const [payout, setPayout] = useState(0);
   const [doubled, setDoubled] = useState(false);
-  const shoeRef = useRef<Card[]>(makeShoe());
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Server session tracking
+  const sessionRef = useRef<{ id: string; nonce: number } | null>(null);
+
   const [muted, setMuted] = useState<boolean>(() => (typeof window === "undefined" ? false : getAudioMuted()));
 
-  // Start lounge ambient on mount, stop on unmount
+  // Lounge ambient
   useEffect(() => {
     stopAllGameAudio();
     if (!muted) startBlackjackAmbient();
@@ -167,17 +166,117 @@ export function BlackjackGame() {
     else startBlackjackAmbient();
   }, [muted]);
 
+  // Push the server-confirmed balance into the useMe cache so the header
+  // updates instantly without waiting for a refetch.
+  const applyBalance = useCallback(
+    (newBalance: number) => {
+      if (!user) return;
+      queryClient.setQueryData<MeData | null>(["me", user.id], (prev) =>
+        prev ? { ...prev, balance: newBalance } : prev,
+      );
+    },
+    [queryClient, user],
+  );
+
+  // Hydrate visible state from a server snapshot.
+  const applyServerState = useCallback((view: BJSessionView) => {
+    sessionRef.current = { id: view.session_id, nonce: view.nonce };
+    const pub = view.public_state;
+    setPlayer(pub.player);
+    setDealer(pub.dealer);
+    setBet(pub.bet);
+    setDoubled(pub.doubled);
+    if (pub.phase === "result") {
+      setOutcome(pub.outcome ?? null);
+      setPayout(pub.payout ?? 0);
+      setPhase("result");
+    } else {
+      setOutcome(null);
+      setPayout(0);
+      setPhase("playing");
+    }
+    applyBalance(view.new_balance);
+  }, [applyBalance]);
+
+  // Animate the dealer turn: reveal the hole card, then deal each card
+  // from `dealerSequence` with a 600ms cadence. Returns when the show is
+  // over so the caller can flip the phase to "result".
+  const animateDealerReveal = useCallback(
+    (revealedDealer: Card[], dealerSequence: Card[] | undefined): Promise<void> => {
+      return new Promise((resolve) => {
+        // Step 1: flip the hole card (replace hidden with the first revealed card)
+        const initial: Card[] = revealedDealer.slice(0, 2);
+        setDealer(initial);
+        playCardDealSound();
+        setPhase("dealerTurn");
+
+        const seq = dealerSequence ?? [];
+        let idx = 0;
+        const tick = () => {
+          if (idx >= seq.length) {
+            setTimeout(resolve, 400);
+            return;
+          }
+          const nextCards = revealedDealer.slice(0, 2 + idx + 1);
+          setDealer(nextCards);
+          playCardDealSound();
+          idx++;
+          setTimeout(tick, 600);
+        };
+        setTimeout(tick, 700);
+      });
+    },
+    [],
+  );
+
+  // Settle: run the dealer animation then show the result card.
+  const settleAnimated = useCallback(
+    async (view: BJSessionView) => {
+      const pub = view.public_state;
+      sessionRef.current = { id: view.session_id, nonce: view.nonce };
+      setBet(pub.bet);
+      setDoubled(pub.doubled);
+      setPlayer(pub.player);
+      await animateDealerReveal(pub.dealer, pub.dealerSequence);
+      setDealer(pub.dealer);
+      setOutcome(pub.outcome ?? null);
+      setPayout(pub.payout ?? 0);
+      setPhase("result");
+      applyBalance(view.new_balance);
+    },
+    [animateDealerReveal, applyBalance],
+  );
+
+  // ── Resume on mount ─────────────────────────────────────────────
+  useEffect(() => {
+    let cancelled = false;
+    if (!user) return;
+    (async () => {
+      try {
+        const view = await resumeFn();
+        if (cancelled || !view) return;
+        // If the latest open session has phase=result, just close it
+        // visually — the user already collected. Better UX: clear it.
+        if (view.public_state.phase === "result") return;
+        applyServerState(view);
+      } catch {
+        // ignore — fresh start
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [user, resumeFn, applyServerState]);
+
   // Live "last winners" ticker
   const seedRef = useRef(INITIAL_WINNERS.length);
   const [winnerSlots, setWinnerSlots] = useState<WinnerSlot[]>(() =>
-    INITIAL_WINNERS.map((winner, index) => ({ ...winner, slotId: index }))
+    INITIAL_WINNERS.map((winner, index) => ({ ...winner, slotId: index })),
   );
   const winnerSlotsRef = useRef<WinnerSlot[]>([]);
   const slotRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const slotPositionsRef = useRef<Record<number, number>>(
     Object.fromEntries(
-      INITIAL_WINNERS.map((_, index) => [index, index * (TICKER_ITEM_WIDTH + TICKER_GAP)])
-    )
+      INITIAL_WINNERS.map((_, index) => [index, index * (TICKER_ITEM_WIDTH + TICKER_GAP)]),
+    ),
   );
 
   useEffect(() => {
@@ -187,223 +286,179 @@ export function BlackjackGame() {
   useEffect(() => {
     let raf = 0;
     let last = performance.now();
-
     const tick = (now: number) => {
       const dt = now - last;
       last = now;
-
       const positions = slotPositionsRef.current;
       const slots = winnerSlotsRef.current;
-
       for (const slot of slots) {
         positions[slot.slotId] -= dt * TICKER_SPEED_PX_PER_MS;
       }
-
-      let rightMostX = Math.max(...slots.map((slot) => positions[slot.slotId]));
-      const recycledSlotIds: number[] = [];
-
+      let rightMostX = Math.max(...slots.map((s) => positions[s.slotId]));
+      const recycled: number[] = [];
       for (const slot of [...slots].sort((a, b) => positions[a.slotId] - positions[b.slotId])) {
         if (positions[slot.slotId] + TICKER_ITEM_WIDTH < 0) {
           positions[slot.slotId] = rightMostX + TICKER_ITEM_WIDTH + TICKER_GAP;
           rightMostX = positions[slot.slotId];
-          recycledSlotIds.push(slot.slotId);
+          recycled.push(slot.slotId);
         }
       }
-
       for (const slot of slots) {
         const node = slotRefs.current[slot.slotId];
-        if (node) {
-          node.style.transform = `translate3d(${positions[slot.slotId]}px, -50%, 0)`;
-        }
+        if (node) node.style.transform = `translate3d(${positions[slot.slotId]}px, -50%, 0)`;
       }
-
-      if (recycledSlotIds.length > 0) {
+      if (recycled.length > 0) {
         setWinnerSlots((current) => {
           const latestWinners = [...current]
             .sort((a, b) => positions[a.slotId] - positions[b.slotId])
-            .map(({ slotId: _slotId, ...winner }) => winner);
-
+            .map(({ slotId: _s, ...winner }) => winner);
           return current.map((slot) => {
-            if (!recycledSlotIds.includes(slot.slotId)) return slot;
-            const nextWinner = makeLiveWinner(++seedRef.current, latestWinners);
-            latestWinners.push(nextWinner);
-            return { ...nextWinner, slotId: slot.slotId };
+            if (!recycled.includes(slot.slotId)) return slot;
+            const next = makeLiveWinner(++seedRef.current, latestWinners);
+            latestWinners.push(next);
+            return { ...next, slotId: slot.slotId };
           });
         });
       }
-
       raf = requestAnimationFrame(tick);
     };
-
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  const draw = useCallback((): Card => {
-    if (shoeRef.current.length < 20) shoeRef.current = makeShoe();
-    return shoeRef.current.pop()!;
-  }, []);
+  const playerScore = useMemo(() => handScore(player), [player]);
+  const showDealerScore = phase !== "betting" && phase !== "dealing" && phase !== "playing";
 
-  // ───────── House edge interno (invisible para el jugador) ─────────
-  // 1) Al sacar la hole card del dealer, con 8% de prob. se cambia por una
-  //    carta alta (10/J/Q/K/A) si la siguiente en el mazo no lo es.
-  // 2) Al pedir una carta para el dealer durante su turno, con 5% de prob.
-  //    se busca en las próximas 4 cartas del mazo una que le mejore la mano
-  //    (que lo deje >=17 sin pasarse). Si la encuentra, la trae al frente.
-  const HIGH_RANKS = new Set(["10", "J", "Q", "K", "A"]);
-
-  const drawHoleBiased = useCallback((): Card => {
-    const shoe = shoeRef.current;
-    if (shoe.length < 20) shoeRef.current = makeShoe();
-    const top = shoeRef.current.pop()!;
-    if (Math.random() < 0.08 && !HIGH_RANKS.has(top.rank)) {
-      // buscar carta alta en las próximas 6 posiciones
-      const arr = shoeRef.current;
-      for (let k = arr.length - 1; k >= Math.max(0, arr.length - 6); k--) {
-        if (HIGH_RANKS.has(arr[k].rank)) {
-          const swapped = arr[k];
-          arr[k] = top;
-          return swapped;
-        }
-      }
-    }
-    return top;
-  }, []);
-
-  const drawForDealerHit = useCallback((currentScore: number): Card => {
-    const shoe = shoeRef.current;
-    if (shoe.length < 20) shoeRef.current = makeShoe();
-    if (Math.random() < 0.05) {
-      const arr = shoeRef.current;
-      // necesita un valor entre (17 - currentScore) y (21 - currentScore)
-      const need = (v: number) => {
-        const total = currentScore + v;
-        return total >= 17 && total <= 21;
-      };
-      for (let k = arr.length - 1; k >= Math.max(0, arr.length - 4); k--) {
-        const c = arr[k];
-        // valor efectivo del As: 11 si no se pasa, 1 si no
-        const v = c.rank === "A" ? (currentScore + 11 <= 21 ? 11 : 1) : c.value;
-        if (need(v)) {
-          arr.splice(k, 1);
-          return c;
-        }
-      }
-    }
-    return shoeRef.current.pop()!;
-  }, []);
-  // ──────────────────────────────────────────────────────────────────
-
-  const playerScore = handScore(player);
-  const dealerScore = handScore(dealer);
-
-  const resolve = useCallback((p: Card[], d: Card[], betAmount: number) => {
-    const pBJ = isBlackjack(p);
-    const dBJ = isBlackjack(d);
-    const pScore = handScore(p);
-    const dScore = handScore(d);
-    let result: Outcome = "lose";
-    let win = 0;
-    if (pScore > 21) { result = "bust"; win = 0; }
-    else if (pBJ && !dBJ) { result = "blackjack"; win = Math.floor(betAmount * 2.5); }
-    else if (pBJ && dBJ) { result = "push"; win = betAmount; }
-    else if (dScore > 21 || pScore > dScore) { result = "win"; win = betAmount * 2; }
-    else if (pScore === dScore) { result = "push"; win = betAmount; }
-    else { result = "lose"; win = 0; }
-    setOutcome(result);
-    setPayout(win);
-    if (win > 0) setBalance((b) => b + win);
-    setPhase("result");
-  }, []);
-
-  const dealerPlay = useCallback((p: Card[], d: Card[], betAmount: number) => {
-    // Reveal hidden
-    const revealed: Card[] = d.map((c) => ({ ...c, hidden: false }));
-    setDealer(revealed);
-    playCardDealSound();
-    setPhase("dealerTurn");
-    let current: Card[] = [...revealed];
-    const step = () => {
-      const score = handScore(current);
-      if (score < 17) {
-        const c = drawForDealerHit(score);
-        current = [...current, c];
-        setDealer([...current]);
-        playCardDealSound();
-        setTimeout(step, 600);
-      } else {
-        setTimeout(() => resolve(p, current, betAmount), 500);
-      }
-    };
-    setTimeout(step, 700);
-  }, [drawForDealerHit, resolve]);
-
-  const onDeal = () => {
-    if (bet > balance || bet < MIN_BET) return;
-    setBalance((b) => b - bet);
+  // ── Actions ─────────────────────────────────────────────────────
+  const onDeal = async () => {
+    if (!user) return;
+    if (bet > balance || bet < BJ_MIN_BET || busy) return;
+    setBusy(true);
+    setError(null);
     setOutcome(null);
     setPayout(0);
     setDoubled(false);
-    const p: Card[] = [draw(), draw()];
-    const hole: Card = { ...drawHoleBiased(), hidden: true };
-    const d: Card[] = [draw(), hole];
-    setPlayer(p);
-    setDealer(d);
+    setPlayer([]);
+    setDealer([]);
     setPhase("dealing");
-    // Sequence of 4 deals: player, dealer, player, dealer
-    playCardDealSound();
-    setTimeout(() => playCardDealSound(), 220);
-    setTimeout(() => playCardDealSound(), 440);
-    setTimeout(() => playCardDealSound(), 660);
-    setTimeout(() => {
-      if (isBlackjack(p)) {
-        dealerPlay(p, d, bet);
-      } else {
-        setPhase("playing");
-      }
-    }, 900);
-  };
+    try {
+      const view = await dealFn({ data: { bet, client_action_id: uuid() } });
+      // Animate the initial 4-card deal using the cards the server returned.
+      const initialPlayer = view.public_state.player;
+      const initialDealer = view.public_state.dealer;
+      sessionRef.current = { id: view.session_id, nonce: view.nonce };
+      applyBalance(view.new_balance);
 
-  const onHit = () => {
-    if (phase !== "playing") return;
-    const c = draw();
-    const np = [...player, c];
-    setPlayer(np);
-    playCardDealSound();
-    if (handScore(np) >= 21) {
-      setTimeout(() => dealerPlay(np, dealer, doubled ? bet * 2 : bet), 600);
+      // Render cards progressively with the same cadence as before.
+      playCardDealSound();
+      setPlayer([initialPlayer[0]]);
+      setTimeout(() => { setDealer([initialDealer[0]]); playCardDealSound(); }, 220);
+      setTimeout(() => { setPlayer(initialPlayer); playCardDealSound(); }, 440);
+      setTimeout(() => { setDealer(initialDealer); playCardDealSound(); }, 660);
+
+      setTimeout(() => {
+        if (view.public_state.phase === "result") {
+          // Natural blackjack — settle with dealer reveal animation.
+          void settleAnimated(view);
+        } else {
+          setPhase("playing");
+        }
+      }, 900);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al repartir");
+      setPhase("betting");
+    } finally {
+      setBusy(false);
     }
   };
 
-  const onStand = () => {
-    if (phase !== "playing") return;
-    dealerPlay(player, dealer, doubled ? bet * 2 : bet);
+  const onHit = async () => {
+    if (phase !== "playing" || busy || !sessionRef.current) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const view = await hitFn({
+        data: {
+          session_id: sessionRef.current.id,
+          nonce: sessionRef.current.nonce,
+          client_action_id: uuid(),
+        },
+      });
+      sessionRef.current = { id: view.session_id, nonce: view.nonce };
+      // Show the new player card immediately.
+      setPlayer(view.public_state.player);
+      playCardDealSound();
+      if (view.public_state.phase === "result") {
+        setTimeout(() => { void settleAnimated(view); }, 500);
+      } else {
+        applyBalance(view.new_balance);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error");
+    } finally {
+      setBusy(false);
+    }
   };
 
-  const onDouble = () => {
-    if (phase !== "playing" || player.length !== 2 || bet > balance) return;
-    setBalance((b) => b - bet);
-    setDoubled(true);
-    const c = draw();
-    const np = [...player, c];
-    setPlayer(np);
-    playCardDealSound();
-    setTimeout(() => dealerPlay(np, dealer, bet * 2), 700);
+  const onStand = async () => {
+    if (phase !== "playing" || busy || !sessionRef.current) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const view = await standFn({
+        data: {
+          session_id: sessionRef.current.id,
+          nonce: sessionRef.current.nonce,
+          client_action_id: uuid(),
+        },
+      });
+      await settleAnimated(view);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onDouble = async () => {
+    if (phase !== "playing" || busy || !sessionRef.current) return;
+    if (player.length !== 2 || bet > balance) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const view = await doubleFn({
+        data: {
+          session_id: sessionRef.current.id,
+          nonce: sessionRef.current.nonce,
+          client_action_id: uuid(),
+        },
+      });
+      sessionRef.current = { id: view.session_id, nonce: view.nonce };
+      setDoubled(true);
+      setPlayer(view.public_state.player);
+      playCardDealSound();
+      setTimeout(() => { void settleAnimated(view); }, 600);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error");
+    } finally {
+      setBusy(false);
+    }
   };
 
   const onNewHand = () => {
+    sessionRef.current = null;
     setPlayer([]);
     setDealer([]);
     setOutcome(null);
     setPayout(0);
+    setDoubled(false);
+    setError(null);
     setPhase("betting");
   };
 
   const adjustBet = (delta: number) => {
-    setBet((b) => Math.min(MAX_BET, Math.max(MIN_BET, b + delta)));
+    setBet((b) => Math.min(BJ_MAX_BET, Math.max(BJ_MIN_BET, b + delta)));
   };
-
-  const showDealerScore = phase !== "betting" && phase !== "dealing" && phase !== "playing";
 
   return (
     <div className="relative min-h-[100dvh] w-full overflow-hidden bg-[#060210] text-white">
@@ -420,13 +475,8 @@ export function BlackjackGame() {
           0% { transform: scale(0.85); opacity: 0; }
           100% { transform: scale(1); opacity: 1; }
         }
-        @keyframes bj-marquee {
-          0% { transform: translate3d(0, -50%, 0); }
-          100% { transform: translate3d(calc(-100vw - 140%), -50%, 0); }
-        }
       `}</style>
 
-      {/* Background */}
       <img
         src={bgAsset.url}
         alt=""
@@ -437,7 +487,6 @@ export function BlackjackGame() {
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#060210]/60 via-transparent to-[#060210]/30" />
 
       <div className="relative mx-auto flex min-h-[100dvh] max-w-md flex-col px-3 sm:max-w-lg sm:px-4">
-        {/* Header — same as Mines */}
         <header
           className="flex items-center justify-between border-b border-purple-500/20 bg-[#060210]/80 px-3 pb-3 -mx-3 backdrop-blur-sm"
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
@@ -461,9 +510,7 @@ export function BlackjackGame() {
           </div>
         </header>
 
-        {/* Play area — flex-1, with absolutely positioned card zones */}
         <div className="relative flex-1">
-          {/* Mute toggle — overlaid on the background, right side, no layout shift */}
           <button
             onClick={() => setMuted((m) => !m)}
             aria-label={muted ? "Activar sonido" : "Silenciar"}
@@ -471,7 +518,7 @@ export function BlackjackGame() {
           >
             {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
           </button>
-          {/* Dealer hand — over the top card slots in the background (~22% of play area) */}
+
           <div className="absolute left-1/2 top-[14%] -translate-x-1/2">
             <div className="relative h-[100px] w-[200px]">
               {dealer.map((c, i) => (
@@ -488,7 +535,6 @@ export function BlackjackGame() {
             )}
           </div>
 
-          {/* Player hand — over the bottom card slots */}
           <div className="absolute left-1/2 top-[52%] -translate-x-1/2">
             <div className="relative h-[100px] w-[220px]">
               {player.map((c, i) => (
@@ -510,7 +556,6 @@ export function BlackjackGame() {
             )}
           </div>
 
-          {/* Result overlay */}
           {phase === "result" && outcome && (
             <div className="absolute left-1/2 top-[38%] -translate-x-1/2 text-center" style={{ animation: "bj-pop 0.4s ease-out both" }}>
               <div
@@ -542,9 +587,14 @@ export function BlackjackGame() {
               </div>
             </div>
           )}
+
+          {error && (
+            <div className="absolute left-1/2 top-[2%] -translate-x-1/2 z-20 max-w-[90%] rounded-md border border-rose-400/60 bg-rose-950/80 px-3 py-1.5 text-center text-[11px] font-bold text-rose-100 backdrop-blur-md">
+              {error}
+            </div>
+          )}
         </div>
 
-        {/* Dynamic HUD */}
         <div className="relative z-10 mx-auto -mt-3 w-full max-w-md px-1 pt-1">
           {phase === "betting" && (
             <div className="rounded-2xl border border-purple-500/40 bg-[#0c0620]/85 p-3 shadow-[0_0_20px_rgba(168,85,247,0.25)] backdrop-blur-md">
@@ -553,7 +603,7 @@ export function BlackjackGame() {
               </div>
               <div className="mt-2 flex items-center justify-center gap-3">
                 <button
-                  onClick={() => adjustBet(-BET_STEP)}
+                  onClick={() => adjustBet(-BJ_BET_STEP)}
                   className="flex h-10 w-10 items-center justify-center rounded-full border border-purple-400/50 bg-purple-900/40 text-purple-100 active:scale-95"
                 >
                   <Minus className="h-5 w-5" />
@@ -562,7 +612,7 @@ export function BlackjackGame() {
                   <span className="neon-green mr-0.5">$</span>{formatCOP(bet)}
                 </div>
                 <button
-                  onClick={() => adjustBet(BET_STEP)}
+                  onClick={() => adjustBet(BJ_BET_STEP)}
                   className="flex h-10 w-10 items-center justify-center rounded-full border border-purple-400/50 bg-purple-900/40 text-purple-100 active:scale-95"
                 >
                   <Plus className="h-5 w-5" />
@@ -572,7 +622,7 @@ export function BlackjackGame() {
                 {QUICK.map((q) => (
                   <button
                     key={q}
-                    onClick={() => setBet((b) => Math.min(MAX_BET, b + q))}
+                    onClick={() => setBet((b) => Math.min(BJ_MAX_BET, b + q))}
                     className="rounded-md border border-purple-500/40 bg-purple-900/30 px-2.5 py-1 text-[11px] font-bold text-purple-100 active:scale-95"
                   >
                     +{q >= 1000 ? `${q / 1000}K` : q}
@@ -581,10 +631,10 @@ export function BlackjackGame() {
               </div>
               <button
                 onClick={onDeal}
-                disabled={bet > balance}
+                disabled={!user || bet > balance || busy}
                 className="mt-3 w-full rounded-xl bg-gradient-to-r from-fuchsia-600 to-purple-600 px-4 py-3 font-display text-base font-black uppercase tracking-widest text-white shadow-[0_0_18px_rgba(217,70,239,0.55)] transition active:scale-[0.98] disabled:opacity-50"
               >
-                Repartir
+                {busy ? "..." : "Repartir"}
               </button>
             </div>
           )}
@@ -598,21 +648,21 @@ export function BlackjackGame() {
               <div className="mt-2.5 grid grid-cols-3 gap-2">
                 <button
                   onClick={onHit}
-                  disabled={phase !== "playing"}
+                  disabled={phase !== "playing" || busy}
                   className="rounded-xl bg-gradient-to-b from-emerald-500 to-emerald-700 px-2 py-2.5 text-sm font-black uppercase tracking-wider text-white shadow-md active:scale-95 disabled:opacity-40"
                 >
                   Pedir
                 </button>
                 <button
                   onClick={onStand}
-                  disabled={phase !== "playing"}
+                  disabled={phase !== "playing" || busy}
                   className="rounded-xl bg-gradient-to-b from-fuchsia-600 to-purple-700 px-2 py-2.5 text-sm font-black uppercase tracking-wider text-white shadow-md active:scale-95 disabled:opacity-40"
                 >
                   Plantarse
                 </button>
                 <button
                   onClick={onDouble}
-                  disabled={phase !== "playing" || player.length !== 2 || bet > balance}
+                  disabled={phase !== "playing" || busy || player.length !== 2 || bet > balance}
                   className="rounded-xl border-2 border-purple-400 bg-transparent px-2 py-2.5 text-sm font-black uppercase tracking-wider text-purple-100 shadow-[0_0_12px_rgba(168,85,247,0.45)] active:scale-95 disabled:opacity-40"
                 >
                   Doblar
@@ -633,7 +683,6 @@ export function BlackjackGame() {
           )}
         </div>
 
-        {/* Last winners ticker */}
         <div
           className="relative z-10 mx-auto mt-1 w-full max-w-md px-1"
           style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 1.25rem)" }}
@@ -683,5 +732,4 @@ export function BlackjackGame() {
   );
 }
 
-// Avoid unused import warning when builds are strict
 export default BlackjackGame;

@@ -1,0 +1,2 @@
+REVOKE EXECUTE ON FUNCTION public.bj_apply_action(uuid, uuid, int, jsonb, jsonb, game_session_status, numeric) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.bj_apply_action(uuid, uuid, int, jsonb, jsonb, game_session_status, numeric) TO service_role;
