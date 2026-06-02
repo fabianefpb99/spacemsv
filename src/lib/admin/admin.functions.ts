@@ -247,7 +247,7 @@ export const adminListRtp = createServerFn({ method: "GET" })
     }
 
     // Load updater usernames
-    const ids = Array.from(new Set((rows ?? []).map((r) => r.updated_by).filter(Boolean) as string[]));
+    const ids = Array.from(new Set((rows ?? []).map((r: { updated_by: string | null }) => r.updated_by).filter(Boolean) as string[]));
     const updaters: Record<string, string> = {};
     if (ids.length) {
       const { data: profs } = await supabaseAdmin
@@ -257,7 +257,7 @@ export const adminListRtp = createServerFn({ method: "GET" })
       for (const p of profs ?? []) updaters[p.id] = p.username ?? p.email ?? p.id.slice(0, 6);
     }
 
-    return (rows ?? []).map((r) => {
+    return (rows ?? []).map((r: { game: string; updated_by: string | null }) => {
       const a = agg[r.game];
       const live = a && a.bet > 0 ? Number(((a.win / a.bet) * 100).toFixed(2)) : null;
       return {
