@@ -270,7 +270,7 @@ export function DiceGame() {
       applyBalance(prevBalance);
       setRollPhase("idle");
       setPhase("betting");
-      setError(e instanceof Error ? e.message : "No se pudo lanzar");
+      setError(toFriendlyError(e, "No se pudo lanzar."));
       // Resync from server in case the debit landed despite the throw.
       queryClient.invalidateQueries({ queryKey: ["me"] });
     } finally {

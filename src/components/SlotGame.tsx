@@ -1017,8 +1017,7 @@ export function SlotGame() {
       setGrid(result.grid);
       setResultTick((n) => n + 1);
     } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
-      setSpinError(msg || "No se pudo girar");
+      setSpinError(toFriendlyError(e, "No se pudo girar."));
       setAutoSpin(false);
       // Revert: abort the visual spin and resync balance with the server.
       pendingResultRef.current = null;

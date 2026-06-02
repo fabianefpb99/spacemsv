@@ -365,7 +365,7 @@ export function MinesGame() {
       // Drain any clicks the user made between APOSTAR and the deal response.
       void processQueue();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Error al iniciar");
+      setError(toFriendlyError(e, "No se pudo iniciar la partida."));
       // Rollback optimistic UI.
       applyBalance(prevBalance);
       pendingQueueRef.current = [];
@@ -390,7 +390,7 @@ export function MinesGame() {
       });
       applyServerView(view);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Error al cobrar");
+      setError(toFriendlyError(e, "No se pudo cobrar."));
     } finally {
       actionInFlightRef.current = false;
     }
@@ -437,7 +437,7 @@ export function MinesGame() {
           if (!prev.has(idx)) return prev;
           const n = new Set(prev); n.delete(idx); return n;
         });
-        setError(e instanceof Error ? e.message : "Error en la jugada");
+        setError(toFriendlyError(e, "No se pudo realizar la jugada."));
         // Drop the rest of the queue — the nonce likely drifted.
         pendingQueueRef.current = [];
         break;
