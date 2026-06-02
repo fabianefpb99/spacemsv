@@ -99,11 +99,9 @@ export function AuthDialog({
             </TabsList>
             <TabsContent value="signin">
               <SignInForm onSuccess={() => onOpenChange(false)} />
-              <GoogleButton />
             </TabsContent>
             <TabsContent value="signup">
               <SignUpForm onSuccess={() => onOpenChange(false)} />
-              <GoogleButton />
             </TabsContent>
           </Tabs>
         </div>
