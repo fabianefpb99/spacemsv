@@ -960,9 +960,13 @@ export function SlotGame() {
         data: { bet_amount: bet, client_action_id: clientActionId },
       });
       pendingResultRef.current = result;
-      // Refresh balance from Supabase so the HUD shows the post-bet value
-      // (the count-up of `displayedWin` runs separately when reels stop).
-      queryClient.invalidateQueries({ queryKey: ["me"] });
+      // NOTE: do NOT invalidate the balance here. The server already credited
+      // both the bet debit and any win in a single atomic call, so refetching
+      // now would jump the HUD straight to the final post-win balance while
+      // the reels are still spinning — making it look like the win never
+      // added to the balance. We defer the refetch until the reels stop
+      // (see the effect below), so the user sees: spin → balance drops by
+      // bet → reels stop → balance jumps up by the win.
       startReelLoop();
       setLastWin(0);
       setDisplayedWin(0);
