@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.spaceman_current_round() FROM anon;
