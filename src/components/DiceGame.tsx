@@ -393,7 +393,13 @@ export function DiceGame() {
             {/* 3D dice */}
             <div className={`dice-stage ${rolling ? "dice-stage-rolling" : ""}`}>
               <div
-                className={`dice-cube ${rolling ? "dice-cube-rolling" : "dice-cube-idle"} dice-face-${rolling ? targetFace : face}`}
+                className={
+                  rollPhase === "spinning"
+                    ? "dice-cube dice-cube-spinning"
+                    : rollPhase === "landing"
+                      ? `dice-cube dice-cube-rolling dice-face-${targetFace}`
+                      : `dice-cube dice-cube-idle dice-face-${face}`
+                }
               >
                 <DiceFace n={1} className="dice-front" />
                 <DiceFace n={6} className="dice-back" />
