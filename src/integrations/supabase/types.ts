@@ -14,6 +14,149 @@ export type Database = {
   }
   public: {
     Tables: {
+      game_bets: {
+        Row: {
+          amount: number
+          cashout_multiplier: number | null
+          client_action_id: string
+          created_at: string
+          id: string
+          payout: number | null
+          round_id: string
+          settled_at: string | null
+          status: Database["public"]["Enums"]["game_bet_status"]
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          cashout_multiplier?: number | null
+          client_action_id: string
+          created_at?: string
+          id?: string
+          payout?: number | null
+          round_id: string
+          settled_at?: string | null
+          status?: Database["public"]["Enums"]["game_bet_status"]
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          cashout_multiplier?: number | null
+          client_action_id?: string
+          created_at?: string
+          id?: string
+          payout?: number | null
+          round_id?: string
+          settled_at?: string | null
+          status?: Database["public"]["Enums"]["game_bet_status"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_bets_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
+            referencedRelation: "game_rounds"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      game_rounds: {
+        Row: {
+          betting_ends_at: string
+          client_seed: string | null
+          crash_multiplier: number | null
+          created_at: string
+          ended_at: string | null
+          game: string
+          id: string
+          server_seed: string | null
+          server_seed_hash: string
+          started_at: string | null
+          status: Database["public"]["Enums"]["game_round_status"]
+        }
+        Insert: {
+          betting_ends_at: string
+          client_seed?: string | null
+          crash_multiplier?: number | null
+          created_at?: string
+          ended_at?: string | null
+          game: string
+          id?: string
+          server_seed?: string | null
+          server_seed_hash: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["game_round_status"]
+        }
+        Update: {
+          betting_ends_at?: string
+          client_seed?: string | null
+          crash_multiplier?: number | null
+          created_at?: string
+          ended_at?: string | null
+          game?: string
+          id?: string
+          server_seed?: string | null
+          server_seed_hash?: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["game_round_status"]
+        }
+        Relationships: []
+      }
+      game_sessions: {
+        Row: {
+          bet_amount: number
+          client_action_id: string
+          client_seed: string | null
+          closed_at: string | null
+          created_at: string
+          game: string
+          id: string
+          nonce: number
+          payout: number | null
+          public_state: Json
+          server_seed: string
+          server_seed_hash: string
+          state: Json
+          status: Database["public"]["Enums"]["game_session_status"]
+          user_id: string
+        }
+        Insert: {
+          bet_amount: number
+          client_action_id: string
+          client_seed?: string | null
+          closed_at?: string | null
+          created_at?: string
+          game: string
+          id?: string
+          nonce?: number
+          payout?: number | null
+          public_state?: Json
+          server_seed: string
+          server_seed_hash: string
+          state?: Json
+          status?: Database["public"]["Enums"]["game_session_status"]
+          user_id: string
+        }
+        Update: {
+          bet_amount?: number
+          client_action_id?: string
+          client_seed?: string | null
+          closed_at?: string | null
+          created_at?: string
+          game?: string
+          id?: string
+          nonce?: number
+          payout?: number | null
+          public_state?: Json
+          server_seed?: string
+          server_seed_hash?: string
+          state?: Json
+          status?: Database["public"]["Enums"]["game_session_status"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           birth_date: string | null
@@ -66,8 +209,10 @@ export type Database = {
         Row: {
           amount: number
           balance_after: number | null
+          client_action_id: string | null
           created_at: string
           game: string | null
+          game_round_id: string | null
           id: string
           meta: Json
           type: Database["public"]["Enums"]["transaction_type"]
@@ -76,8 +221,10 @@ export type Database = {
         Insert: {
           amount: number
           balance_after?: number | null
+          client_action_id?: string | null
           created_at?: string
           game?: string | null
+          game_round_id?: string | null
           id?: string
           meta?: Json
           type: Database["public"]["Enums"]["transaction_type"]
@@ -86,8 +233,10 @@ export type Database = {
         Update: {
           amount?: number
           balance_after?: number | null
+          client_action_id?: string | null
           created_at?: string
           game?: string | null
+          game_round_id?: string | null
           id?: string
           meta?: Json
           type?: Database["public"]["Enums"]["transaction_type"]
@@ -139,9 +288,75 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      game_sessions_public: {
+        Row: {
+          bet_amount: number | null
+          client_seed: string | null
+          closed_at: string | null
+          created_at: string | null
+          game: string | null
+          id: string | null
+          nonce: number | null
+          payout: number | null
+          public_state: Json | null
+          server_seed: string | null
+          server_seed_hash: string | null
+          state_revealed: Json | null
+          status: Database["public"]["Enums"]["game_session_status"] | null
+          user_id: string | null
+        }
+        Insert: {
+          bet_amount?: number | null
+          client_seed?: string | null
+          closed_at?: string | null
+          created_at?: string | null
+          game?: string | null
+          id?: string | null
+          nonce?: number | null
+          payout?: number | null
+          public_state?: Json | null
+          server_seed?: never
+          server_seed_hash?: string | null
+          state_revealed?: never
+          status?: Database["public"]["Enums"]["game_session_status"] | null
+          user_id?: string | null
+        }
+        Update: {
+          bet_amount?: number | null
+          client_seed?: string | null
+          closed_at?: string | null
+          created_at?: string | null
+          game?: string | null
+          id?: string | null
+          nonce?: number | null
+          payout?: number | null
+          public_state?: Json | null
+          server_seed?: never
+          server_seed_hash?: string | null
+          state_revealed?: never
+          status?: Database["public"]["Enums"]["game_session_status"] | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      adjust_balance: {
+        Args: {
+          p_client_action_id?: string
+          p_delta: number
+          p_game?: string
+          p_game_round_id?: string
+          p_meta?: Json
+          p_type: Database["public"]["Enums"]["transaction_type"]
+          p_user_id: string
+        }
+        Returns: {
+          new_balance: number
+          transaction_id: string
+          was_duplicate: boolean
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -152,6 +367,9 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      game_bet_status: "active" | "cashed_out" | "lost" | "refunded"
+      game_round_status: "betting" | "running" | "crashed" | "settled"
+      game_session_status: "open" | "won" | "lost" | "cashed_out" | "aborted"
       transaction_type:
         | "deposit"
         | "withdrawal"
@@ -288,6 +506,9 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      game_bet_status: ["active", "cashed_out", "lost", "refunded"],
+      game_round_status: ["betting", "running", "crashed", "settled"],
+      game_session_status: ["open", "won", "lost", "cashed_out", "aborted"],
       transaction_type: [
         "deposit",
         "withdrawal",
