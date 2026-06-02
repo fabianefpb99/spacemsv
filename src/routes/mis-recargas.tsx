@@ -166,7 +166,7 @@ function DepositRow({ row, onCancelled }: {
 
       {canPay && (
         <Link
-          to="/pay_/breb"
+          to="/pay/breb"
           search={{ id: row.id }}
           className="mt-2 flex w-full items-center justify-center rounded-md bg-gradient-to-r from-fuchsia-500 to-purple-600 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-white hover:brightness-110"
         >
