@@ -108,42 +108,8 @@ function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
 }
 
-/**
- * Multiplier after `picks` safe tiles opened, with `mines` mines, RTP 97%.
- * Formula: RTP * C(N,k) / C(N-M, k)  with N = TILES, M = mines, k = picks
- * Equivalent product: RTP * prod_{i=0..k-1} (N - i) / (N - M - i)
- */
-function multiplierFor(mines: number, picks: number): number {
-  if (picks <= 0) return 1;
-  const safeTotal = TILES - mines;
-  if (picks > safeTotal) return 0;
-  let m = rtpFor(mines);
-  for (let i = 0; i < picks; i++) {
-    m *= (TILES - i) / (safeTotal - i);
-  }
-  return Math.round(m * 100) / 100;
-}
-
 function nextMultiplier(mines: number, picks: number): number {
   return multiplierFor(mines, picks + 1);
-}
-
-/** secure RNG-backed shuffle to place mines */
-function placeMines(mines: number): Set<number> {
-  const indices = Array.from({ length: TILES }, (_, i) => i);
-  const rand = (max: number) => {
-    if (typeof crypto !== "undefined" && crypto.getRandomValues) {
-      const arr = new Uint32Array(1);
-      crypto.getRandomValues(arr);
-      return arr[0] % max;
-    }
-    return Math.floor(Math.random() * max);
-  };
-  for (let i = indices.length - 1; i > 0; i--) {
-    const j = rand(i + 1);
-    [indices[i], indices[j]] = [indices[j], indices[i]];
-  }
-  return new Set(indices.slice(0, mines));
 }
 
 type HistoryItem = {
