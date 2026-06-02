@@ -111,7 +111,10 @@ const SLIDES = [
 function HomePage() {
   const { user } = useAuth();
   const me = useMe();
-  const balance = user ? (me.data?.balance ?? 0) : 100000;
+  // Never show a fake demo amount. If not logged in, show a dash; if logged
+  // in but balance hasn't arrived yet, also show a dash so we don't flash $0.
+  const balanceText =
+    user && me.data ? formatCOP(me.data.balance) : user ? "—" : "—";
   const [online] = useState(219);
   const [slide, setSlide] = useState(0);
   const slides = SLIDES.length;
@@ -169,7 +172,7 @@ function HomePage() {
               <div className="text-right">
                 <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
                 <div className="font-display text-[11px] font-bold sm:text-xs text-white">
-                  <span className="neon-green mr-0.5">$</span>{formatCOP(balance)} COP
+                  <span className="neon-green mr-0.5">$</span>{balanceText} COP
                 </div>
               </div>
               <AuthControl />

@@ -20,38 +20,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
-    const applyVerifiedSession = async (nextSession: Session | null) => {
-      if (!mounted) return;
-
-      if (!nextSession) {
-        setSession(null);
-        setLoading(false);
-        return;
-      }
-
-      const { data, error } = await supabase.auth.getUser();
-      if (!mounted) return;
-
-      if (error || !data.user) {
-        setSession(null);
-        setLoading(false);
-        return;
-      }
-
-      setSession(nextSession);
-      setLoading(false);
-    };
-
-    // Single subscription. Don't await async work inside the callback to
-    // avoid deadlocks; invalidate caches synchronously and let React Query refetch.
+    // Trust the session emitted by supabase-js — JWT is signed and validated
+    // server-side on every PostgREST call. Doing an extra getUser() round-trip
+    // here causes a 1–3 s flap where `user` is null even though the user is
+    // logged in, which breaks balance reads (useMe disabled) and shows wrong
+    // header values. We just sync state immediately.
     const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      setLoading(true);
-      void applyVerifiedSession(newSession);
+      if (!mounted) return;
+      setSession(newSession);
+      setLoading(false);
       queryClient.invalidateQueries({ queryKey: ["me"] });
     });
 
     supabase.auth.getSession().then(({ data }) => {
-      void applyVerifiedSession(data.session);
+      if (!mounted) return;
+      setSession(data.session);
+      setLoading(false);
     });
 
     return () => {
