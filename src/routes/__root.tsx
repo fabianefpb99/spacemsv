@@ -145,6 +145,17 @@ function RootComponent() {
     return () => subscription.unsubscribe();
   }, [queryClient, router]);
 
+  // Block right-click "Save image" on desktop. Long-press on mobile is
+  // already handled via CSS (-webkit-touch-callout + pointer-events).
+  useEffect(() => {
+    const onContextMenu = (e: MouseEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (t && t.tagName === "IMG") e.preventDefault();
+    };
+    document.addEventListener("contextmenu", onContextMenu);
+    return () => document.removeEventListener("contextmenu", onContextMenu);
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
