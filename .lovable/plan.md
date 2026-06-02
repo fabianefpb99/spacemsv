@@ -1,83 +1,93 @@
-## Modelo de saldo promocional (bonus-first, ganancias a real)
+## Panel de Administración `/adminpanel`
 
-### Reglas de negocio
+Construcción del panel admin completo siguiendo la identidad visual del casino (oscuro, morados, neón, bordes iluminados). Mobile-first 9:16 con versión desktop adaptada.
 
-1. **Apostar:** débito automático bonus-first. Primero consume `bonus_balance`, completa con `balance` (real) si la apuesta es mayor.
-2. **Ganar:** 100% del premio se acredita a `balance` (real). El bono no "regenera" bono.
-3. **Retirar:** solo se permite hasta el monto de `balance`. `bonus_balance` nunca se retira.
-4. **Sin caps ni locks:** la apuesta es libre (respeta min/max del juego). No se bloquea al usuario aunque el bono sea menor que la apuesta mínima.
-5. **Bono de bienvenida (beta):** se queda en `balance` real por ahora. Al cerrar la beta, cambias `handle_new_user` para dar 0 o mover el welcome a `bonus_balance`.
-6. **Trazabilidad:** cada transacción de apuesta guarda en `meta` cuánto salió del bono y cuánto del real.
+### Acceso y seguridad
 
----
+- Promover `fabianefpb99@gmail.com` a `role = 'admin'` en `user_roles` (migración idempotente por email).
+- En `/perfil`: mostrar un ícono de tuerca (Settings) **solo si** `has_role(admin)` es true. Click → navega a `/adminpanel`.
+- Ruta `/adminpanel` (top-level con guard cliente + verificación server). Si no es admin → redirect a `/home`.
+- Todas las acciones admin se ejecutan vía `createServerFn` con middleware `requireSupabaseAuth` + check `has_role(uid, 'admin')`. Cliente nunca toca tablas directamente con privilegios elevados.
 
-### Cambios técnicos
+### Base de datos (migración)
 
-#### 1. Backend SQL (migración)
+Nuevas tablas:
 
-Helper `_debit_bet(user_id, amount)` que:
-- bloquea la fila de `user_balances`
-- valida `balance + bonus_balance >= amount`
-- calcula `from_bonus = min(bonus_balance, amount)` y `from_real = amount - from_bonus`
-- actualiza ambas columnas en una sola operación atómica
-- devuelve `(new_balance, new_bonus, from_bonus, from_real)`
+1. **`game_rtp_config`** — RTP central por juego.
+   - `game text PK` (spaceman, slot, mines, dice, blackjack)
+   - `rtp_target numeric(5,2)` (ej. 96.20)
+   - `rtp_actual numeric(5,2)` (calculado desde transacciones, refrescable)
+   - `is_active boolean default true`
+   - `updated_at timestamptz`
+   - `updated_by uuid` (admin que cambió)
+   - Seed inicial con los 5 juegos a valores actuales (96.20 / 94.50 / 97.00 / 98.10 / 99.00).
 
-Helper `_credit_win(user_id, amount)` que suma todo a `balance`.
+2. **`admin_audit_log`** — auditoría de toda acción admin.
+   - `admin_id uuid`, `action text`, `target_user_id uuid?`, `meta jsonb`, `created_at`.
 
-Modificar las funciones existentes para usar estos helpers:
-- `spin_slot_v1`
-- `spaceman_place_bet` (débito) y `spaceman_cashout` (crédito)
-- `bj_apply_action` (débito al abrir mano, crédito al cerrar)
-- Mines (si tiene RPC equivalente)
+3. **`user_status`** (o columna `is_blocked` en `profiles`) — bloqueo de usuarios.
+   - Añadir `is_blocked boolean default false` a `profiles`.
 
-Cada `INSERT INTO transactions` de tipo `bet` incluye en `meta` el desglose `{from_bonus, from_real}`.
+RLS: las tablas admin solo lectura/escritura para `has_role(admin)`. Tabla `game_rtp_config` lectura pública autenticada (los juegos la leen al jugar).
 
-#### 2. Hook `useMe`
+### Server functions (`src/lib/admin/*.functions.ts`)
 
-Mantiene `balance` y `bonus_balance` por separado. Agregar campos derivados:
-- `totalBalance = balance + bonus_balance` (lo que muestra el HUD principal)
-- `withdrawable = balance`
+Todas usan middleware `requireAdmin` (chequea has_role + supabaseAdmin):
 
-#### 3. HUD de los juegos (cambio visual mínimo)
+- `listUsers({ search, status, dateFrom, dateTo, page })` → paginado, busca por email/username/id corto, devuelve avatar/datos/balances.
+- `getUserDetail({ userId })` → perfil + balances + stats (total apostado/ganado/depositado/retirado/neta/favorito/último acceso).
+- `adjustUserBalance({ userId, amount, target: 'real'|'bonus' })` → usa `adjust_balance` con tipo `adjustment` + audit log.
+- `blockUser` / `unblockUser` → actualiza `is_blocked` + audit.
+- `resetUserPassword({ userId })` → `supabaseAdmin.auth.admin.generateLink` reset + audit.
+- `getUserTransactions({ userId, page })`.
+- `listRtpConfig()` / `updateRtpConfig({ game, rtp_target })` → actualiza tabla + audit, recalcula `rtp_actual`.
+- `getCasinoStats({ range: 'today'|'week'|'month'|'custom', from?, to? })` → agrega transactions por tipo y por juego, calcula ventaja de casa.
 
-En cada juego (Slot, Spaceman, Blackjack, Mines, Dice), en el control donde el usuario fija la apuesta:
+### Integración RTP en juegos (importante)
 
-- **Si `bonus_balance > 0` y la apuesta toca al menos $1 de bono:**
-  - El monto apostado se renderiza en **amarillo** (token `text-warning` o equivalente del design system).
-  - Debajo del monto, en tipografía muy pequeña: `+550 BONUS` (también en amarillo), donde `550 = min(bonus_balance, bet_amount)`.
-- **Si `bonus_balance = 0`:**
-  - El monto vuelve al color blanco normal (sin texto debajo). Cero cambio respecto a hoy.
+Hoy los multiplicadores/weights son hardcoded en SQL functions (`spin_slot_v1`, `_spaceman_gen_crash`, etc.). **No vamos a reescribir los algoritmos** en esta fase para no romper la jugabilidad. En su lugar:
 
-Esto se hace creando **un único componente compartido** `BetAmountDisplay` que recibe `betAmount` y `bonusBalance` y aplica la lógica de color + micro-texto. Cada juego lo importa en lugar de su `<span>` actual. No se toca el layout, solo el contenido del span del monto.
+- `game_rtp_config` se almacena en Supabase como **fuente de verdad declarativa**.
+- Los algoritmos leen `rtp_target` para aplicar un **factor de modulación post-cálculo** (escalar payouts del win al ratio `rtp_target / rtp_baseline`). Implementado en helper `apply_rtp_modulation(game, raw_payout)`.
+- El campo `rtp_actual` se calcula on-demand desde `transactions` (sum wins / sum bets últimas N rondas) y se cachea.
 
-#### 4. `/perfil`
+Esto deja la infra lista; los algoritmos consultan Supabase y los cambios se reflejan en futuras partidas sin redeploy.
 
-Mostrar dos cifras en la sección de saldo:
-- **Real:** `$X` (etiqueta "Disponible para retirar")
-- **Bono:** `$Y` (etiqueta "Saldo promocional · no retirable")
+### UI — Estructura `/adminpanel`
 
-Usar `formatCompactCOP` ya implementado.
+**Mobile (prioridad):** Layout con header sticky + bottom-sheet style nav o drawer lateral con las 10 secciones. Cada sección es ruta hija `_adminpanel.{seccion}.tsx` bajo `src/routes/`.
 
-#### 5. Validación de retiros
+Secciones desarrolladas completas:
+- **Dashboard**: KPIs top (usuarios totales, apuestas hoy, ganancias hoy), accesos rápidos.
+- **Usuarios**: lista paginada con búsqueda/filtros + detalle modal/route con acciones admin.
+- **RTP de Juegos**: tabla editable de los 5 juegos con input numérico, badge estado, fecha última actualización + admin.
+- **Ganancias del Casino**: KPIs financieros, ventaja de casa real, desglose por juego, filtros de rango.
 
-Cuando se implemente el flujo de retiro, validar `monto <= balance` (real), nunca contra `total`.
+Secciones placeholder (módulos visuales preparados, sin lógica):
+- Transacciones, Depósitos, Retiros, Bonos, Reportes, Logs del Sistema, Configuración.
 
----
+**Desktop**: el mismo layout reflows con sidebar fijo izquierdo (como la imagen de referencia), contenido a la derecha en grid responsive.
 
-### Lo que NO se toca
+### Realtime
 
-- Layout/dimensiones de los HUDs.
-- `/home` (sigue mostrando total combinado).
-- Tabla `user_balances` (ya tiene las dos columnas).
-- `handle_new_user` (welcome bonus sigue como real en beta).
+- Suscripción Postgres Changes a `transactions` para refrescar Dashboard y Ganancias del Casino (debounced, no re-query por cada evento).
+- `user_balances` realtime en pantalla de detalle de usuario.
+- RTP config realtime para reflejar cambios sin recargar.
 
----
+### Componentes nuevos
+
+- `src/components/admin/AdminGuard.tsx` — verifica role y renderiza fallback.
+- `src/components/admin/AdminLayout.tsx` — shell con sidebar (desktop) / drawer (mobile).
+- `src/components/admin/UserList.tsx`, `UserDetailDrawer.tsx`, `RtpTable.tsx`, `CasinoStatsPanel.tsx`, `KpiCard.tsx`, `AdminPlaceholder.tsx`.
+- Helpers en `src/lib/admin/admin.shared.ts` (tipos, formatters).
 
 ### Orden de implementación
 
-1. Migración SQL con helpers + actualización de las 4 funciones de juego.
-2. `useMe`: agregar `totalBalance` y `withdrawable`.
-3. Componente `BetAmountDisplay` (amarillo + `+X BONUS`).
-4. Reemplazar los spans de monto apostado en Slot, Spaceman, Blackjack, Mines, Dice.
-5. Actualizar `/perfil` con desglose real/bono.
-6. Probar con un usuario que tenga saldo mixto: apostar > bono, verificar débito atómico, ganar, verificar crédito 100% a real.
+1. Migración SQL (roles, `game_rtp_config` con seed, `admin_audit_log`, `is_blocked`, RLS) — **se enviará primero para aprobación**.
+2. Promover usuario admin (insert).
+3. Server functions admin con middleware.
+4. Shell `/adminpanel` + guard + entrada desde `/perfil` (tuerca solo para admin).
+5. Sección Usuarios (lista + detalle + acciones).
+6. Sección RTP de Juegos + helper de modulación en SQL.
+7. Sección Ganancias del Casino + realtime.
+8. Placeholders del resto + Dashboard con KPIs.

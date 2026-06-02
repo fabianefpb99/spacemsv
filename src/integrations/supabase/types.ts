@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string
+          id: string
+          meta: Json
+          target_user_id: string | null
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string
+          id?: string
+          meta?: Json
+          target_user_id?: string | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string
+          id?: string
+          meta?: Json
+          target_user_id?: string | null
+        }
+        Relationships: []
+      }
       game_bets: {
         Row: {
           amount: number
@@ -103,6 +130,33 @@ export type Database = {
         }
         Relationships: []
       }
+      game_rtp_config: {
+        Row: {
+          game: string
+          is_active: boolean
+          rtp_baseline: number
+          rtp_target: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          game: string
+          is_active?: boolean
+          rtp_baseline: number
+          rtp_target: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          game?: string
+          is_active?: boolean
+          rtp_baseline?: number
+          rtp_target?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       game_sessions: {
         Row: {
           bet_amount: number
@@ -167,6 +221,7 @@ export type Database = {
           email: string | null
           first_name: string | null
           id: string
+          is_blocked: boolean
           last_name: string | null
           phone: string | null
           updated_at: string
@@ -182,6 +237,7 @@ export type Database = {
           email?: string | null
           first_name?: string | null
           id: string
+          is_blocked?: boolean
           last_name?: string | null
           phone?: string | null
           updated_at?: string
@@ -197,6 +253,7 @@ export type Database = {
           email?: string | null
           first_name?: string | null
           id?: string
+          is_blocked?: boolean
           last_name?: string | null
           phone?: string | null
           updated_at?: string
@@ -288,6 +345,21 @@ export type Database = {
       }
     }
     Views: {
+      admin_users_overview: {
+        Row: {
+          balance: number | null
+          bonus_balance: number | null
+          created_at: string | null
+          email: string | null
+          id: string | null
+          is_blocked: boolean | null
+          username: string | null
+          verification_status:
+            | Database["public"]["Enums"]["verification_status"]
+            | null
+        }
+        Relationships: []
+      }
       game_sessions_public: {
         Row: {
           bet_amount: number | null
@@ -373,6 +445,39 @@ export type Database = {
           transaction_id: string
           was_duplicate: boolean
         }[]
+      }
+      admin_adjust_balance: {
+        Args: {
+          p_delta: number
+          p_reason?: string
+          p_target: string
+          p_target_user_id: string
+        }
+        Returns: {
+          new_balance: number
+          new_bonus: number
+        }[]
+      }
+      admin_set_block: {
+        Args: { p_blocked: boolean; p_target_user_id: string }
+        Returns: boolean
+      }
+      admin_update_rtp: {
+        Args: { p_game: string; p_is_active?: boolean; p_rtp_target: number }
+        Returns: {
+          game: string
+          is_active: boolean
+          rtp_baseline: number
+          rtp_target: number
+          updated_at: string
+          updated_by: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "game_rtp_config"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       bj_apply_action: {
         Args: {
