@@ -1,5 +1,6 @@
 import { AuthControl } from "@/components/auth/AuthControl";
 import { FitText } from "@/components/ui/fit-text";
+import { BetAmount } from "@/components/games/BetAmount";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
@@ -104,7 +105,9 @@ export function DiceGame() {
   const { user } = useAuth();
   const me = useMe();
   const queryClient = useQueryClient();
-  const balance = me.data?.balance ?? 0;
+  const realBalance = me.data?.balance ?? 0;
+  const bonusBalance = me.data?.bonus_balance ?? 0;
+  const balance = realBalance + bonusBalance;
 
   const rollFn = useServerFn(diceRoll);
 
@@ -515,7 +518,7 @@ export function DiceGame() {
                   className="h-10 w-full min-w-0 flex-1 cursor-default rounded-lg border border-purple-500/30 bg-[#160830]/60 px-2 font-display text-lg font-bold text-white"
                   aria-label="Apuesta"
                 >
-                  <FitText>{formatCOP(bet)}</FitText>
+                  <BetAmount bet={bet} bonusBalance={bonusBalance} />
                 </div>
                 <button
                   onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b + BET_STEP))}

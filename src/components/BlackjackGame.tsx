@@ -1,6 +1,7 @@
 import { AuthControl } from "@/components/auth/AuthControl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FitText } from "@/components/ui/fit-text";
+import { BetAmount } from "@/components/games/BetAmount";
 import { Link } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -130,7 +131,9 @@ export function BlackjackGame() {
   const me = useMe();
   const queryClient = useQueryClient();
 
-  const balance = me.data?.balance ?? 0;
+  const realBalance = me.data?.balance ?? 0;
+  const bonusBalance = me.data?.bonus_balance ?? 0;
+  const balance = realBalance + bonusBalance;
 
   const dealFn = useServerFn(bjDeal);
   const hitFn = useServerFn(bjHit);
@@ -626,9 +629,9 @@ export function BlackjackGame() {
                   <Minus className="h-5 w-5" />
                 </button>
                 <div className="min-w-0 flex-1 h-10 font-display text-2xl font-black text-white">
-                  <FitText>
-                    <span className="neon-green mr-0.5">$</span>{formatCOP(bet)}
-                  </FitText>
+                  <BetAmount bet={bet} bonusBalance={bonusBalance}>
+                    <><span className="neon-green mr-0.5">$</span>{formatCOP(bet)}</>
+                  </BetAmount>
                 </div>
                 <button
                   onClick={() => adjustBet(BJ_BET_STEP)}

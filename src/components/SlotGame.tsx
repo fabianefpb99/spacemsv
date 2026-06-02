@@ -1,6 +1,7 @@
 import { AuthControl } from "@/components/auth/AuthControl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FitText } from "@/components/ui/fit-text";
+import { BetAmount } from "@/components/games/BetAmount";
 import { flushSync } from "react-dom";
 import { Link } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
@@ -877,7 +878,9 @@ export function SlotGame() {
   const isAuthed = !!user;
   // Source of truth = backend. If it hasn't loaded yet, never pretend the
   // user has 0 because that looks like lost money.
-  const balance = me.data?.balance ?? 0;
+  const realBalance = me.data?.balance ?? 0;
+  const bonusBalance = me.data?.bonus_balance ?? 0;
+  const balance = realBalance + bonusBalance;
   const balanceReady = !!me.data;
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [spinError, setSpinError] = useState<string | null>(null);
@@ -1354,7 +1357,7 @@ export function SlotGame() {
                   className="flex h-11 w-11 items-center justify-center rounded-xl btn-bet disabled:opacity-40"
                 ><Minus className="h-5 w-5" /></button>
                 <div className="flex-1 min-w-0 h-11 rounded-xl border border-purple-500/40 bg-[#0c0620] px-2 font-display text-lg font-bold text-white">
-                  <FitText>{formatCOP(bet)}</FitText>
+                  <BetAmount bet={bet} bonusBalance={bonusBalance} />
                 </div>
                 <button
                   onClick={() => setBet((b) => Math.min(MAX_BET, b + BET_STEP))}

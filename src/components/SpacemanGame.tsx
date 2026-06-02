@@ -1,6 +1,7 @@
 import { AuthControl } from "@/components/auth/AuthControl";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { FitText } from "@/components/ui/fit-text";
+import { BetAmount } from "@/components/games/BetAmount";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Link } from "@tanstack/react-router";
 import { Menu, Settings, Clock, ArrowRight, Minus, Plus, Volume2, VolumeX, ChevronDown, ChevronUp } from "lucide-react";
@@ -240,7 +241,9 @@ export function SpacemanGame() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const meQuery = useMe();
-  const balance = meQuery.data?.balance ?? 0;
+  const realBalance = meQuery.data?.balance ?? 0;
+  const bonusBalance = meQuery.data?.bonus_balance ?? 0;
+  const balance = realBalance + bonusBalance;
   const balanceReady = !!meQuery.data;
 
   // === Estado de ronda: viene del servidor (la fuente de verdad) ===
@@ -1185,7 +1188,7 @@ export function SpacemanGame() {
               className={`min-w-0 flex-1 h-14 sm:h-16 rounded-lg border border-purple-500/30 bg-black/40 px-2 font-display text-2xl font-bold text-white sm:text-3xl ${activeBet ? "opacity-70" : ""}`}
               aria-label="Apuesta"
             >
-              <FitText>{formatCOP(bet)}</FitText>
+              <BetAmount bet={bet} bonusBalance={bonusBalance} />
             </div>
             <button
               className="btn-bet flex h-14 w-14 shrink-0 items-center justify-center rounded-lg text-2xl font-black sm:h-16 sm:w-16"
