@@ -18,6 +18,7 @@ import {
 } from "@/lib/gameAudio";
 import { useMe, type MeData } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
+import { toFriendlyError } from "@/lib/friendly-error";
 import {
   bjDeal,
   bjDouble,
