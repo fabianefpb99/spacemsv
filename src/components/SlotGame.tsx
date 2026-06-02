@@ -1396,6 +1396,16 @@ export function SlotGame() {
           50%      { transform: scale(1.10); }
         }
       `}</style>
+      {spinError && (
+        <div
+          className="fixed left-1/2 top-20 z-50 -translate-x-1/2 rounded-lg border border-red-400/60 bg-red-950/95 px-4 py-2 text-sm font-semibold text-red-100 shadow-xl"
+          role="alert"
+          onClick={() => setSpinError(null)}
+        >
+          {spinError}
+        </div>
+      )}
+      <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
     </div>
   );
 }
