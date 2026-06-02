@@ -115,7 +115,7 @@ function HomePage() {
   // Never show a fake demo amount. If not logged in, show a dash; if logged
   // in but balance hasn't arrived yet, also show a dash so we don't flash $0.
   const balanceText =
-    user && me.data ? formatCOP(me.data.balance) : user ? "—" : "—";
+    user && me.data ? formatCOP(me.data.balance + me.data.bonus_balance) : user ? "—" : "—";
   const [online] = useState(219);
   const [slide, setSlide] = useState(0);
   const slides = SLIDES.length;
