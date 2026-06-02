@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
-import { confirmDeposit, getMyDeposit } from "@/lib/deposits/deposit.functions";
+import { confirmDeposit, getMyDeposit, cancelMyDeposit } from "@/lib/deposits/deposit.functions";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import nequiAstronaut from "@/assets/nequi-astronaut-wide.png";
 import nequiLogo from "@/assets/nequi.svg";
@@ -42,6 +42,7 @@ function PayBrebPage() {
   const me = useMe();
   const getFn = useServerFn(getMyDeposit);
   const confirmFn = useServerFn(confirmDeposit);
+  const cancelFn = useServerFn(cancelMyDeposit);
   const q = useQuery({
     queryKey: ["my-deposit", id],
     enabled: !!id,
@@ -79,6 +80,12 @@ function PayBrebPage() {
   const [submitting, setSubmitting] = useState(false);
   const [confirmErr, setConfirmErr] = useState<string | null>(null);
 
+  // Cancel modal state
+  const [openCancel, setOpenCancel] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelErr, setCancelErr] = useState<string | null>(null);
+  const [confirmCancel, setConfirmCancel] = useState(false);
+
   const isAlreadyConfirmed = row?.status && row.status !== "pendiente_pago";
   const isExpired = row?.status === "expirada";
   const isApproved = row?.status === "aprobada";
@@ -100,6 +107,18 @@ function PayBrebPage() {
     } catch (e) {
       setConfirmErr((e as Error).message || "Error al confirmar");
     } finally { setSubmitting(false); }
+  }
+
+  async function submitCancel() {
+    if (!id || cancelling || !confirmCancel) return;
+    setCancelling(true); setCancelErr(null);
+    try {
+      await cancelFn({ data: { id } });
+      setOpenCancel(false);
+      navigate({ to: "/mis-recargas" });
+    } catch (e) {
+      setCancelErr((e as Error).message || "Error al cancelar");
+    } finally { setCancelling(false); }
   }
 
   if (!id) {
