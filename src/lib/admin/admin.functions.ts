@@ -1,13 +1,17 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+
+async function getSupabaseAdmin() {
+  return (await import("@/integrations/supabase/client.server")).supabaseAdmin;
+}
 
 /**
  * Server-side helper: assert the calling user has the admin role.
  * Uses supabaseAdmin to bypass RLS for the role lookup.
  */
 async function assertAdmin(userId: string) {
+  const supabaseAdmin = await getSupabaseAdmin();
   const { data, error } = await supabaseAdmin
     .from("user_roles")
     .select("role")
@@ -23,6 +27,7 @@ async function assertAdmin(userId: string) {
 export const checkIsAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
     const { data, error } = await supabaseAdmin
       .from("user_roles")
       .select("role")
@@ -46,6 +51,7 @@ export const adminListUsers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => listUsersInput.parse(input))
   .handler(async ({ data, context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
     const from = (data.page - 1) * data.pageSize;
     const to = from + data.pageSize - 1;
@@ -75,6 +81,7 @@ export const adminGetUserDetail = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ userId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
     const [{ data: profile }, { data: bal }, { data: txs }, authUserRes] = await Promise.all([
       supabaseAdmin.from("profiles").select("*").eq("id", data.userId).maybeSingle(),
@@ -129,6 +136,7 @@ export const adminGetUserTransactions = createServerFn({ method: "POST" })
     z.object({ userId: z.string().uuid(), limit: z.number().int().min(1).max(200).default(50) }).parse(input)
   )
   .handler(async ({ data, context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
     const { data: rows, error } = await supabaseAdmin
       .from("transactions")
@@ -155,6 +163,7 @@ export const adminAdjustBalance = createServerFn({ method: "POST" })
       .parse(input)
   )
   .handler(async ({ data, context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
     const { data: res, error } = await supabaseAdmin.rpc("admin_adjust_balance", {
       p_target_user_id: data.userId,
@@ -176,6 +185,7 @@ export const adminSetBlock = createServerFn({ method: "POST" })
     z.object({ userId: z.string().uuid(), blocked: z.boolean() }).parse(input)
   )
   .handler(async ({ data, context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
     const { error } = await supabaseAdmin.rpc("admin_set_block", {
       p_target_user_id: data.userId,
@@ -189,6 +199,7 @@ export const adminResetPassword = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ userId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
     const uRes = await supabaseAdmin.auth.admin.getUserById(data.userId);
     const email = "data" in uRes ? uRes.data.user?.email : undefined;
@@ -212,6 +223,7 @@ export const adminResetPassword = createServerFn({ method: "POST" })
 export const adminListRtp = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
     const { data: rows, error } = await supabaseAdmin
       .from("game_rtp_config")
@@ -235,7 +247,7 @@ export const adminListRtp = createServerFn({ method: "GET" })
     }
 
     // Load updater usernames
-    const ids = Array.from(new Set((rows ?? []).map((r) => r.updated_by).filter(Boolean) as string[]));
+    const ids = Array.from(new Set((rows ?? []).map((r: { updated_by: string | null }) => r.updated_by).filter(Boolean) as string[]));
     const updaters: Record<string, string> = {};
     if (ids.length) {
       const { data: profs } = await supabaseAdmin
@@ -245,7 +257,14 @@ export const adminListRtp = createServerFn({ method: "GET" })
       for (const p of profs ?? []) updaters[p.id] = p.username ?? p.email ?? p.id.slice(0, 6);
     }
 
-    return (rows ?? []).map((r) => {
+    return (rows ?? []).map((r: {
+      game: string;
+      updated_by: string | null;
+      updated_at?: string | null;
+      rtp_target?: number | null;
+      is_active?: boolean | null;
+      [key: string]: unknown;
+    }) => {
       const a = agg[r.game];
       const live = a && a.bet > 0 ? Number(((a.win / a.bet) * 100).toFixed(2)) : null;
       return {
@@ -268,6 +287,7 @@ export const adminUpdateRtp = createServerFn({ method: "POST" })
       .parse(input)
   )
   .handler(async ({ data, context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
     const { data: row, error } = await supabaseAdmin.rpc("admin_update_rtp", {
       p_game: data.game,
@@ -308,6 +328,7 @@ export const adminGetCasinoStats = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => rangeInput.parse(input))
   .handler(async ({ data, context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
     const { from, to } = resolveRange(data);
 
@@ -368,6 +389,7 @@ export const adminGetCasinoStats = createServerFn({ method: "POST" })
 export const adminGetDashboardKpis = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);

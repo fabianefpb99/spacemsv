@@ -5,6 +5,7 @@ import { ArrowLeft, Loader2, Wallet as WalletIcon, Copy, Check, X } from "lucide
 import { useState } from "react";
 import { listMyDeposits, cancelMyDeposit } from "@/lib/deposits/deposit.functions";
 import { useAuth } from "@/hooks/useAuth";
+import { RequireAuth } from "@/components/auth/RequireAuth";
 
 export const Route = createFileRoute("/mis-recargas")({
   head: () => ({
@@ -13,8 +14,16 @@ export const Route = createFileRoute("/mis-recargas")({
       { name: "description", content: "Historial de tus depósitos y recargas." },
     ],
   }),
-  component: MisRecargasPage,
+  component: MisRecargasPageGated,
 });
+
+function MisRecargasPageGated() {
+  return (
+    <RequireAuth>
+      <MisRecargasPage />
+    </RequireAuth>
+  );
+}
 
 function formatCOP(n: number | null | undefined) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(Number(n ?? 0)));
@@ -40,7 +49,7 @@ const STATUS_META: Record<Status, { label: string; cls: string }> = {
 
 function MisRecargasPage() {
   const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const fn = useServerFn(listMyDeposits);
   const q = useQuery({
     queryKey: ["my-deposits", user?.id ?? null],
@@ -48,11 +57,6 @@ function MisRecargasPage() {
     queryFn: () => fn(),
     refetchInterval: 15_000,
   });
-
-  if (!authLoading && !user) {
-    navigate({ to: "/perfil" });
-    return null;
-  }
 
   const rows = (q.data ?? []) as Array<{
     id: string; reference: string; method: "nequi" | "breb";
