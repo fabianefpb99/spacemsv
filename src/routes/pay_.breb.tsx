@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Settings, Copy, Check, Info, CheckCircle2, Loader2, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -92,6 +92,13 @@ function PayBrebPage() {
   const isRejected = row?.status === "rechazada";
   const isReview = row?.status === "pendiente_revision";
 
+  useEffect(() => {
+    if (row?.status === "pendiente_revision") {
+      setSubmitting(false);
+      setOpenPayer(false);
+    }
+  }, [row?.status]);
+
   async function submitConfirm() {
     if (!id || submitting) return;
     setSubmitting(true); setConfirmErr(null);
@@ -131,10 +138,31 @@ function PayBrebPage() {
       </div>
     );
   }
-  if (q.isLoading || !row) {
+  if (q.isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#060210] text-purple-200">
         <Loader2 className="h-6 w-6 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!row) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#060210] px-4 text-purple-200">
+        <div className="max-w-sm rounded-2xl border border-amber-400/40 bg-amber-500/10 p-5 text-center">
+          <p className="text-sm font-semibold text-amber-100">No encontramos esa solicitud.</p>
+          <p className="mt-2 text-xs text-amber-200/80">
+            Si ya habías iniciado una recarga, entra a <b>Mis recargas</b> para retomarla o revisa si fue cancelada.
+          </p>
+          <div className="mt-4 flex flex-wrap justify-center gap-2">
+            <Link to="/mis-recargas" className="rounded-md border border-amber-400/60 bg-amber-500/10 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-amber-100 hover:bg-amber-500/20">
+              Ver mis recargas
+            </Link>
+            <Link to="/pay" className="rounded-md border border-purple-400/50 bg-purple-500/10 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-purple-100 hover:bg-purple-500/20">
+              Volver a recargar
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }
