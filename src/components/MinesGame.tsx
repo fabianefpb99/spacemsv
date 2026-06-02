@@ -22,11 +22,10 @@ import {
 
 /** Lightweight UUID v4 for client_action_id. */
 function uuid(): string {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
-    return (crypto as Crypto).randomUUID();
-  }
+  const g = (typeof globalThis !== "undefined" ? (globalThis as unknown as { crypto?: Crypto }).crypto : undefined);
+  if (g && typeof g.randomUUID === "function") return g.randomUUID();
   const bytes = new Uint8Array(16);
-  if (typeof crypto !== "undefined") crypto.getRandomValues(bytes);
+  if (g && typeof g.getRandomValues === "function") g.getRandomValues(bytes);
   else for (let i = 0; i < 16; i++) bytes[i] = Math.floor(Math.random() * 256);
   bytes[6] = (bytes[6] & 0x0f) | 0x40;
   bytes[8] = (bytes[8] & 0x3f) | 0x80;
