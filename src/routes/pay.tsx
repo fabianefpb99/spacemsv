@@ -169,7 +169,7 @@ function PayPage() {
             </p>
             <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
               <button
-                onClick={() => navigate({ to: "/pay/breb", search: { id: pendingReview!.id } })}
+                onClick={() => navigate({ to: "/pay_/breb", search: { id: pendingReview!.id } })}
                 className="rounded-md border border-amber-400/60 bg-amber-500/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-amber-100 hover:bg-amber-500/20"
               >
                 Ver mi solicitud
@@ -382,7 +382,7 @@ function PayPage() {
               setSubmitting(true); setErrMsg(null);
               try {
                 const row = await createFn({ data: { amount: c.amount, bonus: c.bonus, method } });
-                navigate({ to: "/pay/breb", search: { id: row.id } });
+                navigate({ to: "/pay_/breb", search: { id: row.id } });
               } catch (e) {
                 const msg = (e as Error).message || "Error al crear la recarga";
                 if (msg.includes("has_pending_review")) {
