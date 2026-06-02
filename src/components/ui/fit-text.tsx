@@ -65,6 +65,8 @@ export function FitText({
         style={{
           display: "inline-block",
           whiteSpace: "nowrap",
+          lineHeight: 1,
+          verticalAlign: "middle",
           transform: `scale(${scale})`,
           transformOrigin: "center center",
           willChange: "transform",
