@@ -257,7 +257,14 @@ export const adminListRtp = createServerFn({ method: "GET" })
       for (const p of profs ?? []) updaters[p.id] = p.username ?? p.email ?? p.id.slice(0, 6);
     }
 
-    return (rows ?? []).map((r: { game: string; updated_by: string | null }) => {
+    return (rows ?? []).map((r: {
+      game: string;
+      updated_by: string | null;
+      updated_at?: string | null;
+      rtp_target?: number | null;
+      is_active?: boolean | null;
+      [key: string]: unknown;
+    }) => {
       const a = agg[r.game];
       const live = a && a.bet > 0 ? Number(((a.win / a.bet) * 100).toFixed(2)) : null;
       return {
