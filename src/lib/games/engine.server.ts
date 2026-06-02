@@ -97,10 +97,10 @@ export async function adjustBalance(args: {
     p_user_id: args.user_id,
     p_delta: args.delta,
     p_type: args.type,
-    p_game: args.game ?? null,
-    p_game_round_id: args.round_id ?? null,
+    p_game: args.game ?? undefined,
+    p_game_round_id: args.round_id ?? undefined,
     p_client_action_id: args.client_action_id,
-    p_meta: args.meta ?? {},
+    p_meta: (args.meta ?? {}) as never,
   });
   if (error) {
     // Surface known business errors as typed strings.
@@ -136,7 +136,7 @@ export async function getTransactionById(id: string) {
 export async function setTransactionMeta(id: string, meta: Record<string, unknown>) {
   const { error } = await supabaseAdmin
     .from("transactions")
-    .update({ meta })
+    .update({ meta: meta as never })
     .eq("id", id);
   if (error) throw new Error(`set_tx_meta_failed: ${error.message}`);
 }
