@@ -3,6 +3,17 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { getRequestHeader } from "@tanstack/react-start/server";
+import { createClient } from "@supabase/supabase-js";
+
+function userClient(token: string) {
+  const url = process.env.SUPABASE_URL!;
+  const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
+  return createClient(url, key, { global: { headers: { Authorization: `Bearer ${token}` } } });
+}
+function bearer() {
+  const auth = getRequestHeader("Authorization") ?? "";
+  return auth.replace(/^Bearer\s+/i, "");
+}
 
 async function assertAdmin(userId: string) {
   const { data, error } = await supabaseAdmin
@@ -21,35 +32,8 @@ export const createDeposit = createServerFn({ method: "POST" })
     bonus: z.number().int().min(0).max(5_000_000),
     method: z.enum(["nequi", "breb"]),
   }).parse(i))
-  .handler(async ({ data, context }) => {
-    const { data: row, error } = await supabaseAdmin.rpc("create_deposit_request", {
-      p_amount: data.amount, p_bonus: data.bonus, p_method: data.method,
-    });
-    if (error) throw new Error(error.message);
-    // RPC uses auth.uid() which is null when called via service role; do via authed client instead
-    void context;
-    return row;
-  });
-
-// Use authed supabase client (from requireSupabaseAuth) so auth.uid() works inside RPCs
-import { createClient } from "@supabase/supabase-js";
-function userClient(token: string) {
-  const url = process.env.SUPABASE_URL!;
-  const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
-  return createClient(url, key, { global: { headers: { Authorization: `Bearer ${token}` } } });
-}
-
-export const createDepositAsUser = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((i: unknown) => z.object({
-    amount: z.number().int().min(1000).max(5_000_000),
-    bonus: z.number().int().min(0).max(5_000_000),
-    method: z.enum(["nequi", "breb"]),
-  }).parse(i))
   .handler(async ({ data }) => {
-    const auth = getRequestHeader("Authorization") ?? "";
-    const token = auth.replace(/^Bearer\s+/i, "");
-    const supa = userClient(token);
+    const supa = userClient(bearer());
     const { data: row, error } = await supa.rpc("create_deposit_request", {
       p_amount: data.amount, p_bonus: data.bonus, p_method: data.method,
     });
@@ -67,9 +51,7 @@ export const confirmDeposit = createServerFn({ method: "POST" })
     phone: z.string().trim().max(30).optional().nullable(),
   }).parse(i))
   .handler(async ({ data }) => {
-    const auth = getRequestHeader("Authorization") ?? "";
-    const token = auth.replace(/^Bearer\s+/i, "");
-    const supa = userClient(token);
+    const supa = userClient(bearer());
     const ip = getRequestHeader("cf-connecting-ip")
       ?? getRequestHeader("x-forwarded-for")?.split(",")[0]?.trim()
       ?? null;
@@ -171,9 +153,7 @@ export const adminApproveDeposit = createServerFn({ method: "POST" })
   .inputValidator((i: unknown) => z.object({ id: z.string().uuid() }).parse(i))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
-    const auth = getRequestHeader("Authorization") ?? "";
-    const token = auth.replace(/^Bearer\s+/i, "");
-    const supa = userClient(token);
+    const supa = userClient(bearer());
     const { data: row, error } = await supa.rpc("admin_approve_deposit", { p_id: data.id });
     if (error) throw new Error(error.message);
     return row;
@@ -187,9 +167,7 @@ export const adminRejectDeposit = createServerFn({ method: "POST" })
   }).parse(i))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
-    const auth = getRequestHeader("Authorization") ?? "";
-    const token = auth.replace(/^Bearer\s+/i, "");
-    const supa = userClient(token);
+    const supa = userClient(bearer());
     const { data: row, error } = await supa.rpc("admin_reject_deposit", {
       p_id: data.id, p_reason: data.reason,
     });
