@@ -675,6 +675,43 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      cancel_deposit_request: {
+        Args: { p_id: string }
+        Returns: {
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          bonus: number
+          bonus_applied: number | null
+          confirmed_at: string | null
+          created_at: string
+          email: string | null
+          expires_at: string
+          id: string
+          method: Database["public"]["Enums"]["deposit_method"]
+          new_balance: number | null
+          payer_first_name: string | null
+          payer_ip: string | null
+          payer_last_name: string | null
+          payer_phone: string | null
+          payer_self: boolean | null
+          prev_balance: number | null
+          reference: string
+          reject_reason: string | null
+          rejected_at: string | null
+          rejected_by: string | null
+          status: Database["public"]["Enums"]["deposit_status"]
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "deposit_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       confirm_deposit_request: {
         Args: {
           p_first_name: string
