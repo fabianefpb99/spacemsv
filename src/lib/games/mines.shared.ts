@@ -12,13 +12,13 @@ export const MINES_MIN_BET = 500;
 export const MINES_MAX_BET = 100000;
 export const MINES_BET_STEP = 500;
 
-const RTP_BASE = 0.907;
+const RTP_BASE = 0.907 * 0.96;
 
-/** Per-mines RTP (matches the previous client-local tuning). */
+/** Per-mines RTP (matches the previous client-local tuning, reduced 4% globally). */
 export function rtpFor(mines: number): number {
-  if (mines <= 1) return 0.887625; // → ~0.95x first pick
-  if (mines === 2) return 0.917;
-  if (mines === 3) return 0.934375; // → ~1.15x first pick
+  if (mines <= 1) return 0.887625 * 0.96; // → ~0.912x first pick
+  if (mines === 2) return 0.917 * 0.96;
+  if (mines === 3) return 0.934375 * 0.96; // → ~1.104x first pick
   return RTP_BASE;
 }
 
