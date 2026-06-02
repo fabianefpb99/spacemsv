@@ -236,28 +236,41 @@ function Stars({ multiplier = 1, phase }: { multiplier?: number; phase: Phase })
 }
 
 export function SpacemanGame() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const { data: me } = useMe();
+  const balance = me?.balance ?? 0;
+
+  // === Estado de ronda: viene del servidor (la fuente de verdad) ===
+  const [round, setRound] = useState<ServerRound | null>(null);
+  const roundRef = useRef<ServerRound | null>(null);
+  useEffect(() => { roundRef.current = round; }, [round]);
+
+  // Offset = serverNow - clientNow (ms). Lo recalculamos al fetchear la ronda.
+  const serverOffsetRef = useRef<number>(0);
+
+  // Estado derivado por rAF (fase + multiplicador + countdown)
   const [phase, setPhase] = useState<Phase>("betting");
   const [multiplier, setMultiplier] = useState(1);
-  const [crashPoint, setCrashPoint] = useState<number>(1.5);
   const [countdown, setCountdown] = useState(BETTING_MS / 1000);
   const [bettingBarFill, setBettingBarFill] = useState(0);
   const [bettingBarDuration, setBettingBarDuration] = useState(0);
-  const [history, setHistory] = useState<HistoryItem[]>(() => {
-    const seed = [
-      1.22, 3.11, 19.4, 1.3, 7.02, 54.35, 1.78, 2.45, 1.05, 4.8,
-      1.9, 1.13, 8.22, 1.14, 1.33, 5.91, 1.08, 2.1, 1.06, 1.75,
-      3.62, 12.45, 1.17, 2.25, 1.09, 4.36, 1.15, 1.97, 7.23, 1.11,
-      2.05, 1.35, 1.6, 3.74, 1.01, 1.66, 2.91, 1.18, 6.45, 1.07,
-      1.89, 9.2, 1.25, 1.43, 2.2, 1.12, 3.88, 1.16, 2.7, 5.1,
-    ];
-    return seed.map((v, i) => ({ id: i + 1, value: v }));
-  });
+  // El crash real solo se conoce cuando el servidor lo revela
+  const crashPointRef = useRef<number>(0);
 
-  const [balance, setBalance] = useState(100000);
+  // Historia de rondas pasadas (últimas 50 desde la DB)
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+
+  // Apuesta UI
   const [bet, setBet] = useState(2000);
+  // Apuesta colocada para la ronda actual (server-confirmada)
   const [activeBet, setActiveBet] = useState<number | null>(null);
+  const [activeBetRoundId, setActiveBetRoundId] = useState<string | null>(null);
   const [cashedOutAt, setCashedOutAt] = useState<number | null>(null);
   const [lastWin, setLastWin] = useState<number | null>(null);
+  // Lock para evitar doble-click mientras viaja el RPC
+  const inFlightRef = useRef(false);
+
   const [online, setOnline] = useState(150);
   const [messageIdx, setMessageIdx] = useState(0);
   const [muted, setMuted] = useState(false);
