@@ -1,7 +1,10 @@
 import type { ReactNode } from "react";
 import { FitText } from "@/components/ui/fit-text";
-import { formatCOP } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+
+function formatCOP(n: number) {
+  return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(n);
+}
 
 /**
  * Renders the bet amount with the casino's "bonus-first" UX hint:
