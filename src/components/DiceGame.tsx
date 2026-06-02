@@ -43,8 +43,11 @@ function uuid(): string {
   return `${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`;
 }
 
-/** Animation length (ms). The roll RPC almost always returns well before this. */
-const ROLL_ANIM_MS = 2100;
+/** Landing animation length (ms) — must match `.dice-cube-rolling` keyframe duration in styles.css. */
+const LAND_ANIM_MS = 2200;
+/** Minimum free-spin time before we allow the cube to land, even if the server is super fast.
+ *  Prevents the dice from "snapping" the moment you click. */
+const MIN_SPIN_MS = 350;
 
 function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
@@ -110,14 +113,17 @@ export function DiceGame() {
   const [phase, setPhase] = useState<Phase>("betting");
   const [face, setFace] = useState<number>(1); // currently displayed face when settled
   const [targetFace, setTargetFace] = useState<number>(1); // face we'll land on during a roll
-  const [rolling, setRolling] = useState(false);
+  /** "idle" = no roll in progress.
+   *  "spinning" = waiting for server response; cube free-spins, no face committed.
+   *  "landing" = server result in hand; cube animates to land on `targetFace`. */
+  const [rollPhase, setRollPhase] = useState<"idle" | "spinning" | "landing">("idle");
+  const rolling = rollPhase !== "idle";
   const [resultAmount, setResultAmount] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   // Refs used to coordinate the roll animation with the server response.
   const inFlightRef = useRef(false);
-  const pendingResultRef = useRef<DiceRollResult | null>(null);
-  const animTimerRef = useRef<number | null>(null);
+  const landTimerRef = useRef<number | null>(null);
 
   const [muted, setMuted] = useState(false);
   const [online] = useState(263);
@@ -158,9 +164,9 @@ export function DiceGame() {
 
   // Clean up the animation timer if the component unmounts mid-roll.
   useEffect(() => () => {
-    if (animTimerRef.current) {
-      window.clearTimeout(animTimerRef.current);
-      animTimerRef.current = null;
+    if (landTimerRef.current) {
+      window.clearTimeout(landTimerRef.current);
+      landTimerRef.current = null;
     }
   }, []);
 
@@ -174,7 +180,7 @@ export function DiceGame() {
    * whichever resolves last.
    */
   const settle = useCallback((result: DiceRollResult, snapshotBet: number, snapshotSide: Side, snapshotMult: number) => {
-    setRolling(false);
+    setRollPhase("idle");
     setFace(result.roll);
     setResultAmount(result.payout);
     applyBalance(result.new_balance);
@@ -219,25 +225,13 @@ export function DiceGame() {
     // Both happen BEFORE the network call so the button feels instant.
     const prevBalance = balance;
     applyBalance(Math.max(0, balance - snapshotBet));
-    pendingResultRef.current = null;
     setPhase("rolling");
-    setRolling(true);
-    // Placeholder target face — server overrides it as soon as it lands.
-    setTargetFace(snapshotSide === "low" ? 1 + Math.floor(Math.random() * 3) : 4 + Math.floor(Math.random() * 3));
-    playDiceRollSound(ROLL_ANIM_MS);
-
-    // Schedule the animation end.
-    const animStartedAt = Date.now();
-    animTimerRef.current = window.setTimeout(() => {
-      animTimerRef.current = null;
-      const result = pendingResultRef.current;
-      if (result) {
-        pendingResultRef.current = null;
-        settle(result, snapshotBet, snapshotSide, snapshotMult);
-      }
-      // Else: server is still pending. settle() will run from the .then()
-      // below when the response finally arrives.
-    }, ROLL_ANIM_MS);
+    // Start in free-spin mode — NO face is committed until the server confirms.
+    // This prevents the visible "placeholder face → real face" swap that
+    // makes the game look like it's cheating.
+    setRollPhase("spinning");
+    const spinStartedAt = Date.now();
+    playDiceRollSound(LAND_ANIM_MS + MIN_SPIN_MS);
 
     // ── Server call (runs in parallel with the animation) ───────────────
     try {
@@ -249,27 +243,27 @@ export function DiceGame() {
           client_action_id: clientActionId,
         },
       });
-      // Lock the cube onto the server-decided face for the rest of the spin.
-      setTargetFace(result.roll);
 
-      const elapsed = Date.now() - animStartedAt;
-      if (elapsed >= ROLL_ANIM_MS || animTimerRef.current === null) {
-        // Animation already finished → settle now.
-        pendingResultRef.current = null;
-        settle(result, snapshotBet, snapshotSide, snapshotMult);
-      } else {
-        // Animation still running → stash the result; the timer will pick it up.
-        pendingResultRef.current = result;
-      }
+      // Enforce a tiny minimum spin so super-fast responses still look like a roll.
+      const elapsed = Date.now() - spinStartedAt;
+      const beforeLand = Math.max(0, MIN_SPIN_MS - elapsed);
+      window.setTimeout(() => {
+        // Commit the real face and switch to the landing animation in the same paint.
+        setTargetFace(result.roll);
+        setRollPhase("landing");
+        landTimerRef.current = window.setTimeout(() => {
+          landTimerRef.current = null;
+          settle(result, snapshotBet, snapshotSide, snapshotMult);
+        }, LAND_ANIM_MS);
+      }, beforeLand);
     } catch (e) {
       // Rollback the optimistic debit, cancel the spin, surface the message.
-      if (animTimerRef.current) {
-        window.clearTimeout(animTimerRef.current);
-        animTimerRef.current = null;
+      if (landTimerRef.current) {
+        window.clearTimeout(landTimerRef.current);
+        landTimerRef.current = null;
       }
-      pendingResultRef.current = null;
       applyBalance(prevBalance);
-      setRolling(false);
+      setRollPhase("idle");
       setPhase("betting");
       setError(e instanceof Error ? e.message : "No se pudo lanzar");
       // Resync from server in case the debit landed despite the throw.
