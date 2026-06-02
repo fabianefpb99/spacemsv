@@ -238,8 +238,9 @@ function Stars({ multiplier = 1, phase }: { multiplier?: number; phase: Phase })
 export function SpacemanGame() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const { data: me } = useMe();
-  const balance = me?.balance ?? 0;
+  const meQuery = useMe();
+  const balance = meQuery.data?.balance ?? 0;
+  const balanceReady = !!meQuery.data;
 
   // === Estado de ronda: viene del servidor (la fuente de verdad) ===
   const [round, setRound] = useState<ServerRound | null>(null);
@@ -716,7 +717,7 @@ export function SpacemanGame() {
         // Confirmar con datos reales del servidor
         setCashedOutAt(Number(res.cashout_multiplier));
         setLastWin(Number(res.payout) - (activeBet ?? 0));
-        queryClient.setQueryData(["me", user.id], (old: typeof me) =>
+        queryClient.setQueryData(["me", user.id], (old: { balance: number } | null | undefined) =>
           old ? { ...old, balance: Number(res.new_balance) } : old,
         );
       } catch (err) {
@@ -737,7 +738,7 @@ export function SpacemanGame() {
       // Optimista: bloquear apuesta visualmente y descontar saldo
       setActiveBet(bet);
       setActiveBetRoundId(r.id);
-      queryClient.setQueryData(["me", user.id], (old: typeof me) =>
+        queryClient.setQueryData(["me", user.id], (old: { balance: number } | null | undefined) =>
         old ? { ...old, balance: Math.max(0, old.balance - bet) } : old,
       );
       try {
@@ -748,7 +749,7 @@ export function SpacemanGame() {
         });
         if (error) throw error;
         const res = data as { new_balance: number };
-        queryClient.setQueryData(["me", user.id], (old: typeof me) =>
+        queryClient.setQueryData(["me", user.id], (old: { balance: number } | null | undefined) =>
           old ? { ...old, balance: Number(res.new_balance) } : old,
         );
       } catch (err) {
@@ -774,7 +775,7 @@ export function SpacemanGame() {
       return { label: `RETIRAR  +${formatCOP(profit)}`, cls: "btn-primary-red", disabled: false, key: "cashout" };
     }
     if (phase === "betting") {
-      return { label: activeBet ? "APUESTA REGISTRADA" : "APOSTAR", cls: "btn-primary-green", disabled: !!activeBet || bet < MIN_BET || bet > balance, key: activeBet ? "registered" : "bet" };
+      return { label: activeBet ? "APUESTA REGISTRADA" : "APOSTAR", cls: "btn-primary-green", disabled: !!activeBet || !balanceReady || bet < MIN_BET || bet > balance, key: activeBet ? "registered" : "bet" };
     }
     return { label: "ESPERANDO RONDA", cls: "btn-primary-green opacity-50 brightness-75", disabled: true, key: "waiting" };
   })();
@@ -912,7 +913,7 @@ export function SpacemanGame() {
             <div className="text-right">
               <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
               <div className="font-display text-[11px] font-bold sm:text-xs text-white">
-                <span className="neon-green mr-0.5">$</span>{formatCOP(balance)} COP
+                <span className="neon-green mr-0.5">$</span>{balanceReady ? formatCOP(balance) : "—"} COP
               </div>
             </div>
             <AuthControl />

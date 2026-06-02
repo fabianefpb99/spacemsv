@@ -22,6 +22,8 @@ export function AuthControl({ className }: { className?: string }) {
   const { user } = useAuth();
   const [dialogOpen, setDialogOpen] = useState(false);
   const me = useMe();
+  const balanceText = me.data ? formatCOP(me.data.balance) : "—";
+  const bonusText = me.data ? formatCOP(me.data.bonus_balance) : null;
 
   if (!user) {
     return (
@@ -73,11 +75,16 @@ export function AuthControl({ className }: { className?: string }) {
           </div>
           <div className="font-display text-sm font-bold">
             <span className="neon-green mr-0.5">$</span>
-            <span className="text-white">{formatCOP(me.data?.balance ?? 0)} COP</span>
+            <span className="text-white">{balanceText} COP</span>
           </div>
-          {(me.data?.bonus_balance ?? 0) > 0 && (
+          {bonusText && me.data!.bonus_balance > 0 && (
             <div className="mt-0.5 text-[10px] text-purple-200/70">
-              Bono: ${formatCOP(me.data?.bonus_balance ?? 0)}
+              Bono: ${bonusText}
+            </div>
+          )}
+          {me.isError && (
+            <div className="mt-1 text-[10px] text-rose-300/90">
+              No se pudo cargar el saldo.
             </div>
           )}
         </div>
