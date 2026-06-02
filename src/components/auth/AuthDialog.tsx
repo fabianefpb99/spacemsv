@@ -33,7 +33,7 @@ export function AuthDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] border-purple-500/40 bg-[#0c0620] p-4 text-white sm:w-full sm:max-w-md sm:p-6">
+      <DialogContent className="left-4 right-4 w-auto max-h-[calc(100dvh-2rem)] max-w-none translate-x-0 overflow-y-auto border-purple-500/40 bg-[#0c0620] p-4 text-white sm:left-[50%] sm:right-auto sm:w-full sm:max-w-md sm:translate-x-[-50%] sm:p-6">
         <DialogHeader>
           <DialogTitle className="font-display text-2xl font-black tracking-wide text-white">
             BIENVENIDO
