@@ -1,96 +1,83 @@
-# Migración de Blackjack al servidor
+## Modelo de saldo promocional (bonus-first, ganancias a real)
 
-Cada usuario tendrá su propia partida privada (no compartida). El servidor es quien reparte cartas, controla el mazo y resuelve la mano. El cliente solo anima lo que el servidor le dice.
+### Reglas de negocio
 
-## Cómo va a sentirse el usuario
-
-- Sin delay perceptible: cada acción (Repartir, Pedir, Plantarse, Doblar) hace **una sola llamada** al servidor y vuelve con todas las cartas necesarias para esa acción.
-- Animaciones locales: el "vuelo" de las cartas, el flip del dealer y los sonidos siguen siendo instantáneos (no esperan al servidor más allá de la primera respuesta).
-- Si el usuario recarga la página en medio de una mano, la partida se recupera tal cual estaba (las cartas siguen sobre la mesa).
-- Saldo siempre sincronizado con el real (`useMe`), igual que ya hicimos en Slot.
-
-## Reglas del juego (sin cambios)
-
-- Apuesta mínima 500, máxima 100.000, paso 500.
-- Blackjack natural paga 3:2, gana paga 2:1, empate devuelve la apuesta.
-- Doblar solo disponible con 2 cartas.
-- Dealer pide hasta 17 (soft 17 también se planta).
-- **Ventaja de la casa preservada** (igual que hoy, pero ya validada y oculta en el servidor):
-  - 8% de probabilidad de que la carta tapada del dealer sea una carta alta.
-  - 5% de probabilidad de que el dealer mejore su mano al pedir.
+1. **Apostar:** débito automático bonus-first. Primero consume `bonus_balance`, completa con `balance` (real) si la apuesta es mayor.
+2. **Ganar:** 100% del premio se acredita a `balance` (real). El bono no "regenera" bono.
+3. **Retirar:** solo se permite hasta el monto de `balance`. `bonus_balance` nunca se retira.
+4. **Sin caps ni locks:** la apuesta es libre (respeta min/max del juego). No se bloquea al usuario aunque el bono sea menor que la apuesta mínima.
+5. **Bono de bienvenida (beta):** se queda en `balance` real por ahora. Al cerrar la beta, cambias `handle_new_user` para dar 0 o mover el welcome a `bonus_balance`.
+6. **Trazabilidad:** cada transacción de apuesta guarda en `meta` cuánto salió del bono y cuánto del real.
 
 ---
 
-## Detalles técnicos
+### Cambios técnicos
 
-### 1. Persistencia: usar `game_sessions` (ya existe)
+#### 1. Backend SQL (migración)
 
-Una partida = una fila con `game = 'blackjack'`, `user_id`, `status`. RLS ya bloquea SELECT directo del cliente: todo va por server functions con `supabaseAdmin`. Reutilizo las columnas existentes:
+Helper `_debit_bet(user_id, amount)` que:
+- bloquea la fila de `user_balances`
+- valida `balance + bonus_balance >= amount`
+- calcula `from_bonus = min(bonus_balance, amount)` y `from_real = amount - from_bonus`
+- actualiza ambas columnas en una sola operación atómica
+- devuelve `(new_balance, new_bonus, from_bonus, from_real)`
 
-- `state` (jsonb privado): `{ shoe: number[] }` con los índices restantes del shoe de 6 mazos. Nunca se envía al cliente.
-- `public_state` (jsonb público): `{ player: Card[], dealer: Card[], bet, doubled, phase, outcome?, payout? }`. La carta tapada del dealer va con `hidden: true` hasta el settle.
-- `bet_amount`, `payout`, `server_seed`, `server_seed_hash`, `nonce` (concurrencia optimista), `client_action_id` (idempotencia de la jugada inicial).
-- `status`: `open` mientras la mano corre, `closed` al terminar.
+Helper `_credit_win(user_id, amount)` que suma todo a `balance`.
 
-No hace falta migración: las columnas ya están y la policy `game_sessions_no_direct_select` ya bloquea el acceso directo del cliente.
+Modificar las funciones existentes para usar estos helpers:
+- `spin_slot_v1`
+- `spaceman_place_bet` (débito) y `spaceman_cashout` (crédito)
+- `bj_apply_action` (débito al abrir mano, crédito al cerrar)
+- Mines (si tiene RPC equivalente)
 
-### 2. Lógica server-only en TypeScript
+Cada `INSERT INTO transactions` de tipo `bet` incluye en `meta` el desglose `{from_bonus, from_real}`.
 
-Archivos nuevos:
+#### 2. Hook `useMe`
 
-- `src/lib/games/blackjack.shared.ts` (cliente + servidor): tipos (`Card`, `Suit`, `Outcome`, `BJPublicState`), constantes (`BJ_MIN_BET`, `BJ_MAX_BET`, `BJ_BET_STEP`), helpers puros (`handScore`, `isBlackjack`).
-- `src/lib/games/blackjack.server.ts` (solo servidor): generación de shoe con `cryptoRandomInt`, draw normal, `drawHoleBiased` (8%), `drawForDealerHit` (5%), y la función `resolveDealer` que juega todo el turno del dealer en una sola pasada y devuelve la secuencia de cartas + resultado.
-- `src/lib/games/blackjack.functions.ts`: 5 server functions, todas protegidas con `requireSupabaseAuth`:
-  - `bjResume()` → devuelve la partida abierta del usuario si existe (para recuperar tras refresh).
-  - `bjDeal({ bet, client_action_id })` → crea/abre sesión, debita apuesta vía `adjust_balance`, reparte 2+2 cartas, si es blackjack natural resuelve y settle.
-  - `bjHit({ session_id, nonce, client_action_id })` → roba una carta, si pasa de 21 settle automático.
-  - `bjStand({ session_id, nonce, client_action_id })` → juega el dealer completo, settle.
-  - `bjDouble({ session_id, nonce, client_action_id })` → debita la segunda apuesta, roba una carta, juega dealer, settle.
+Mantiene `balance` y `bonus_balance` por separado. Agregar campos derivados:
+- `totalBalance = balance + bonus_balance` (lo que muestra el HUD principal)
+- `withdrawable = balance`
 
-Cada handler hace: lock de la fila (`SELECT ... FOR UPDATE` vía `rpc` o transacción), validar `nonce`, mutar `state`/`public_state`, incrementar `nonce`, devolver el nuevo `public_state` + `new_balance`. Si el settle suma payout, lo acredita con `adjust_balance` (tipo `win`, `game = 'blackjack'`, `client_action_id` derivado con `deriveActionId`).
+#### 3. HUD de los juegos (cambio visual mínimo)
 
-Para evitar transacciones complejas en TS, voy a crear **una única función SQL** `bj_apply_action(p_session_id uuid, p_expected_nonce int, p_new_state jsonb, p_new_public_state jsonb, p_new_status text)` que hace `UPDATE ... WHERE id = ? AND nonce = ?` y devuelve la fila actualizada. Si no actualiza nada, error de concurrencia. La lógica de cartas vive en TS; SQL solo persiste el resultado de forma atómica.
+En cada juego (Slot, Spaceman, Blackjack, Mines, Dice), en el control donde el usuario fija la apuesta:
 
-### 3. Refactor del componente `BlackjackGame.tsx`
+- **Si `bonus_balance > 0` y la apuesta toca al menos $1 de bono:**
+  - El monto apostado se renderiza en **amarillo** (token `text-warning` o equivalente del design system).
+  - Debajo del monto, en tipografía muy pequeña: `+550 BONUS` (también en amarillo), donde `550 = min(bonus_balance, bet_amount)`.
+- **Si `bonus_balance = 0`:**
+  - El monto vuelve al color blanco normal (sin texto debajo). Cero cambio respecto a hoy.
 
-- Quitar `useState` del balance — usar `useMe()` (igual que `SlotGame.tsx`).
-- Quitar `makeShoe`, `draw`, `drawHoleBiased`, `drawForDealerHit`, `resolve`, `dealerPlay` del cliente (ahora viven en el servidor).
-- En vez de generar cartas localmente, el cliente:
-  1. Llama a `bjDeal`, recibe `public_state` con las 4 cartas iniciales.
-  2. Anima la repartida visualmente con los timings actuales (`setTimeout` 0/220/440/660ms para los 4 dealings), usando las cartas que vienen del servidor.
-  3. Para `Stand`/`Double`/bust en `Hit`: el servidor devuelve la secuencia completa de cartas del dealer; el cliente las muestra una por una con `setTimeout` de 600ms, igual que hoy.
-- En `useEffect` de mount: llama a `bjResume` y, si hay sesión abierta, rehidrata el estado visual sin animar.
-- Optimistic update del saldo en `useMe` cache después de cada acción (igual que Slot).
-- Mantener `client_action_id` (uuid v4) por acción para idempotencia.
+Esto se hace creando **un único componente compartido** `BetAmountDisplay` que recibe `betAmount` y `bonusBalance` y aplica la lógica de color + micro-texto. Cada juego lo importa en lugar de su `<span>` actual. No se toca el layout, solo el contenido del span del monto.
 
-### 4. Hardening
+#### 4. `/perfil`
 
-- Validación zod en cada server function (`bet` múltiplo de 500, dentro de rango, `nonce` int positivo, uuids válidos).
-- El cliente nunca decide el resultado: aunque envíe "stand", el servidor recalcula `handScore` y juega al dealer él mismo.
-- La carta tapada del dealer **nunca** se manda al cliente con su valor real hasta el settle.
+Mostrar dos cifras en la sección de saldo:
+- **Real:** `$X` (etiqueta "Disponible para retirar")
+- **Bono:** `$Y` (etiqueta "Saldo promocional · no retirable")
 
-### 5. Lo que NO toco
+Usar `formatCompactCOP` ya implementado.
 
-- Sonidos / animaciones / fondo / ticker de ganadores (puro cliente).
-- Lógica de `RequireAuth` ya existente en la ruta.
-- Tabla `game_sessions` (su schema ya alcanza).
+#### 5. Validación de retiros
+
+Cuando se implemente el flujo de retiro, validar `monto <= balance` (real), nunca contra `total`.
 
 ---
 
-## Archivos a crear
+### Lo que NO se toca
 
-- `src/lib/games/blackjack.shared.ts`
-- `src/lib/games/blackjack.server.ts`
-- `src/lib/games/blackjack.functions.ts`
-- Migración SQL: función `bj_apply_action(...)`.
+- Layout/dimensiones de los HUDs.
+- `/home` (sigue mostrando total combinado).
+- Tabla `user_balances` (ya tiene las dos columnas).
+- `handle_new_user` (welcome bonus sigue como real en beta).
 
-## Archivos a modificar
+---
 
-- `src/components/BlackjackGame.tsx` (refactor a server-authoritative, mantiene 100% del UI).
+### Orden de implementación
 
-## Riesgos / mitigaciones
-
-- **Latencia en redes lentas**: cada acción es 1 round-trip. Para `Stand` se devuelve toda la secuencia del dealer en la primera respuesta, así no hay round-trips intermedios.
-- **Doble click en "Repartir"**: idempotencia por `client_action_id` evita doble cobro.
-- **Recarga en medio de la mano**: `bjResume` la recupera.
-- **Concurrencia (usuario haciendo trampas con dos pestañas)**: `nonce` rechaza acciones obsoletas.
+1. Migración SQL con helpers + actualización de las 4 funciones de juego.
+2. `useMe`: agregar `totalBalance` y `withdrawable`.
+3. Componente `BetAmountDisplay` (amarillo + `+X BONUS`).
+4. Reemplazar los spans de monto apostado en Slot, Spaceman, Blackjack, Mines, Dice.
+5. Actualizar `/perfil` con desglose real/bono.
+6. Probar con un usuario que tenga saldo mixto: apostar > bono, verificar débito atómico, ganar, verificar crédito 100% a real.
