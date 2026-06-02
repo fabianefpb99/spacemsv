@@ -21,7 +21,8 @@ const signUpSchema = z.object({
   password: z
     .string()
     .min(1, "Requerido")
-    .regex(/^[a-zA-Z0-9]+$/, "Solo letras y números"),
+    .regex(/[A-Za-z]/, "Debe incluir al menos una letra")
+    .regex(/[0-9]/, "Debe incluir al menos un número"),
 });
 
 const signInSchema = z.object({
