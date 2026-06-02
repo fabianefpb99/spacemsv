@@ -318,6 +318,27 @@ export const bjDeal = createServerFn({ method: "POST" })
       .select("id, nonce")
       .single();
     if (insertErr || !inserted) {
+      // Race: another concurrent deal with the same client_action_id
+      // just inserted the row. Recover it instead of failing.
+      if (insertErr?.message?.toLowerCase().includes("duplicate")) {
+        const { data: dup } = await supabaseAdmin
+          .from("game_sessions")
+          .select("id, user_id, status, bet_amount, state, public_state, nonce")
+          .eq("user_id", userId)
+          .eq("game", "blackjack")
+          .eq("client_action_id", client_action_id)
+          .maybeSingle();
+        if (dup) {
+          const row = dup as unknown as SessionRow;
+          return {
+            session_id: row.id,
+            nonce: row.nonce,
+            status: row.status,
+            public_state: maskHole(row.public_state),
+            new_balance: await getBalance(userId),
+          };
+        }
+      }
       throw new Error(`bj_insert_failed: ${insertErr?.message ?? "unknown"}`);
     }
 
