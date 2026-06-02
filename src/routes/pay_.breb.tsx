@@ -49,6 +49,7 @@ function PayBrebPage() {
     queryFn: () => getFn({ data: { id } }),
     refetchInterval: (qq) => {
       const s = (qq.state.data as { status?: string } | undefined)?.status;
+      if (submitting) return 2000;
       return s === "pendiente_revision" || s === "aprobada" || s === "rechazada" ? 5000 : false;
     },
   });
@@ -103,12 +104,15 @@ function PayBrebPage() {
     if (!id || submitting) return;
     setSubmitting(true); setConfirmErr(null);
     try {
-      await confirmFn({ data: {
+      const nextRow = await confirmFn({ data: {
         id, payer_self: payerSelf,
         first_name: payerSelf ? null : pFirst,
         last_name: payerSelf ? null : pLast,
         phone: payerSelf ? null : (pPhone || null),
       } });
+      if (nextRow?.status === "pendiente_revision") {
+        setOpenPayer(false);
+      }
       setOpenPayer(false);
       q.refetch();
     } catch (e) {
