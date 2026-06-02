@@ -5,6 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import { PromoPopup } from "@/components/PromoPopup";
 import { SkeletonImage } from "@/components/SkeletonImage";
 import { stopAllGameAudio } from "@/lib/gameAudio";
+import { AuthControl } from "@/components/auth/AuthControl";
+import { useAuth } from "@/hooks/useAuth";
+import { useMe } from "@/hooks/useMe";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
 import heroImg from "@/assets/home-hero.jpg";
 import heroMinesImg from "@/assets/home-hero-mines.jpg";
@@ -106,7 +109,9 @@ const SLIDES = [
 ];
 
 function HomePage() {
-  const [balance] = useState(100000);
+  const { user } = useAuth();
+  const me = useMe();
+  const balance = user ? (me.data?.balance ?? 0) : 100000;
   const [online] = useState(219);
   const [slide, setSlide] = useState(0);
   const slides = SLIDES.length;
@@ -167,9 +172,7 @@ function HomePage() {
                   <span className="neon-green mr-0.5">$</span>{formatCOP(balance)} COP
                 </div>
               </div>
-              <button className="rounded-md p-1.5 text-purple-200/80 hover:bg-white/5">
-                <Settings className="h-5 w-5 sm:h-6 sm:w-6" />
-              </button>
+              <AuthControl />
             </div>
           </div>
         </header>
