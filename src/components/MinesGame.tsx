@@ -1,5 +1,6 @@
 import { AuthControl } from "@/components/auth/AuthControl";
 import { FitText } from "@/components/ui/fit-text";
+import { BetAmount } from "@/components/games/BetAmount";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Link } from "@tanstack/react-router";
@@ -157,6 +158,7 @@ export function MinesGame() {
   const me = useMe();
   const queryClient = useQueryClient();
   const balance = me.data?.balance ?? 0;
+  const bonusBalance = me.data?.bonus_balance ?? 0;
 
   const dealFn = useServerFn(minesDeal);
   const revealFn = useServerFn(minesReveal);
@@ -679,7 +681,7 @@ export function MinesGame() {
               className="h-11 w-full min-w-0 flex-1 cursor-default rounded-lg border border-purple-500/30 bg-[#160830]/60 px-2 font-display text-xl font-bold text-white"
               aria-label="Apuesta"
             >
-              <FitText>{formatCOP(bet)}</FitText>
+              <BetAmount bet={bet} bonusBalance={bonusBalance} />
             </div>
             <button
               type="button"
