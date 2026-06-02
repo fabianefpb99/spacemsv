@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { BlackjackGame } from "@/components/BlackjackGame";
 import { LoadingScreen } from "@/components/LoadingScreen";
+import { RequireAuth } from "@/components/auth/RequireAuth";
 
 export const Route = createFileRoute("/blackjack")({
   head: () => ({
@@ -16,8 +17,10 @@ export const Route = createFileRoute("/blackjack")({
 
 function Page() {
   return (
-    <LoadingScreen variant="blackjack">
-      <BlackjackGame />
-    </LoadingScreen>
+    <RequireAuth>
+      <LoadingScreen variant="blackjack">
+        <BlackjackGame />
+      </LoadingScreen>
+    </RequireAuth>
   );
 }
