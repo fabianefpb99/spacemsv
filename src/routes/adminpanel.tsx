@@ -46,6 +46,12 @@ import {
   adminSetBlock,
   adminUpdateRtp,
 } from "@/lib/admin/admin.functions";
+import {
+  adminApproveDeposit,
+  adminGetDeposit,
+  adminListDeposits,
+  adminRejectDeposit,
+} from "@/lib/deposits/deposit.functions";
 
 export const Route = createFileRoute("/adminpanel")({
   head: () => ({
@@ -62,7 +68,7 @@ type Section =
   | "usuarios"
   | "rtp"
   | "ganancias"
-  | "depositos"
+  | "recargas"
   | "retiros"
   | "bonos"
   | "transacciones"
@@ -75,7 +81,7 @@ const SECTIONS: { id: Section; label: string; icon: typeof Home; ready: boolean 
   { id: "usuarios", label: "Usuarios", icon: Users, ready: true },
   { id: "rtp", label: "RTP de Juegos", icon: Percent, ready: true },
   { id: "ganancias", label: "Ganancias del Casino", icon: TrendingUp, ready: true },
-  { id: "depositos", label: "Depósitos", icon: WalletIcon, ready: false },
+  { id: "recargas", label: "Recargas", icon: WalletIcon, ready: true },
   { id: "retiros", label: "Retiros", icon: Download, ready: false },
   { id: "bonos", label: "Bonos", icon: Gift, ready: false },
   { id: "transacciones", label: "Transacciones", icon: Coins, ready: false },
@@ -214,10 +220,12 @@ function AdminPanelPage() {
             {section === "usuarios" && <UsersSection />}
             {section === "rtp" && <RtpSection />}
             {section === "ganancias" && <EarningsSection />}
+            {section === "recargas" && <DepositsSection />}
             {section !== "dashboard" &&
               section !== "usuarios" &&
               section !== "rtp" &&
-              section !== "ganancias" && <PlaceholderSection label={currentLabel} />}
+              section !== "ganancias" &&
+              section !== "recargas" && <PlaceholderSection label={currentLabel} />}
           </div>
         </main>
       </div>
