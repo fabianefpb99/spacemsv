@@ -8,6 +8,7 @@ type AuthContextValue = {
   session: Session | null;
   loading: boolean;
   signOut: () => Promise<void>;
+  refreshSession: () => Promise<Session | null>;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -17,18 +18,71 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const queryClient = useQueryClient();
   const bootstrappedRef = useRef(false);
+  const sessionRef = useRef<Session | null>(null);
+  const refreshPromiseRef = useRef<Promise<Session | null> | null>(null);
+
+  sessionRef.current = session;
+
+  const applySession = (nextSession: Session | null) => {
+    bootstrappedRef.current = true;
+    setSession(nextSession);
+    setLoading(false);
+    queryClient.invalidateQueries({ queryKey: ["me"] });
+  };
+
+  const refreshSession = async () => {
+    if (refreshPromiseRef.current) return refreshPromiseRef.current;
+
+    const promise = (async () => {
+      const hadSession = !!sessionRef.current;
+      const delays = [0, 150, 400, 900];
+
+      if (!hadSession) {
+        setLoading(true);
+      }
+
+      for (const delay of delays) {
+        if (delay > 0) {
+          await new Promise((resolve) => window.setTimeout(resolve, delay));
+        }
+
+        const {
+          data: { session: nextSession },
+        } = await supabase.auth.getSession();
+
+        if (nextSession) {
+          applySession(nextSession);
+          return nextSession;
+        }
+
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        if (!userError && userData.user) {
+          continue;
+        }
+      }
+
+      bootstrappedRef.current = true;
+      if (!hadSession) {
+        setSession(null);
+      }
+      setLoading(false);
+      return hadSession ? sessionRef.current : null;
+    })().finally(() => {
+      refreshPromiseRef.current = null;
+    });
+
+    refreshPromiseRef.current = promise;
+    return promise;
+  };
 
   useEffect(() => {
     let mounted = true;
 
     const bootstrap = async () => {
-      const { data } = await supabase.auth.getSession();
+      const nextSession = await refreshSession();
       if (!mounted) return;
-      bootstrappedRef.current = true;
-      setSession(data.session);
-      setLoading(false);
-      if (data.session?.user) {
-        queryClient.invalidateQueries({ queryKey: ["me"] });
+      if (nextSession) {
+        setSession(nextSession);
       }
     };
 
@@ -41,27 +95,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // rehydrates from localStorage — clobbering state with that null kicks
       // the user out of protected routes and looks like a phantom logout.
       if (event === "SIGNED_OUT") {
-        setSession(null);
-        setLoading(false);
-        queryClient.invalidateQueries({ queryKey: ["me"] });
+        applySession(null);
         return;
       }
 
       if (newSession) {
-        setSession(newSession);
-        setLoading(false);
-        queryClient.invalidateQueries({ queryKey: ["me"] });
+        applySession(newSession);
       } else if (bootstrappedRef.current) {
-        // Bootstrap done and got a null event that isn't SIGNED_OUT → ignore.
-        setLoading(false);
+        void refreshSession();
       }
     });
 
+    const recoverOnForeground = () => {
+      if (document.visibilityState === "hidden") return;
+      if (!sessionRef.current) {
+        void refreshSession();
+      }
+    };
+
     void bootstrap();
+
+    window.addEventListener("focus", recoverOnForeground);
+    window.addEventListener("pageshow", recoverOnForeground);
+    document.addEventListener("visibilitychange", recoverOnForeground);
 
     return () => {
       mounted = false;
       sub.subscription.unsubscribe();
+      window.removeEventListener("focus", recoverOnForeground);
+      window.removeEventListener("pageshow", recoverOnForeground);
+      document.removeEventListener("visibilitychange", recoverOnForeground);
     };
   }, [queryClient]);
 
@@ -72,6 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signOut: async () => {
       await supabase.auth.signOut();
     },
+    refreshSession,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
