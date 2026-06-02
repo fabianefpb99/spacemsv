@@ -18,6 +18,7 @@ import {
   History,
   Settings as SettingsIcon,
   IdCard,
+  Gamepad2,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
@@ -36,6 +37,19 @@ export const Route = createFileRoute("/perfil")({
 
 function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
+}
+
+// Compact formatter for tight stat cells: 1.250 → 1.250, 12.500 → 12.5k, 1.234.567 → 1.23M
+function formatCompactCOP(n: number) {
+  const v = Math.floor(n);
+  if (v < 100_000) return formatCOP(v);
+  if (v < 1_000_000) return `${(v / 1000).toFixed(v >= 100_000 ? 0 : 1)}k`;
+  if (v < 1_000_000_000) {
+    const m = v / 1_000_000;
+    return `${m >= 100 ? m.toFixed(0) : m >= 10 ? m.toFixed(1) : m.toFixed(2)}M`;
+  }
+  const b = v / 1_000_000_000;
+  return `${b >= 100 ? b.toFixed(0) : b >= 10 ? b.toFixed(1) : b.toFixed(2)}B`;
 }
 
 function shortId(id: string) {
