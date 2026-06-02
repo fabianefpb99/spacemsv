@@ -942,8 +942,6 @@ export function SlotGame() {
     return () => clearInterval(t);
   }, []);
 
-  const lineBet = useMemo(() => Math.max(1, Math.floor(bet / LINES)), [bet]);
-
   const spin = useCallback(async () => {
     if (spinning || inFlightRef.current) return;
     if (!isAuthed) {
