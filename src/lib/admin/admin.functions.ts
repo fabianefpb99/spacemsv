@@ -76,7 +76,7 @@ export const adminGetUserDetail = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => z.object({ userId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
-    const [{ data: profile }, { data: bal }, { data: txs }, { data: authUser }] = await Promise.all([
+    const [{ data: profile }, { data: bal }, { data: txs }, authUserRes] = await Promise.all([
       supabaseAdmin.from("profiles").select("*").eq("id", data.userId).maybeSingle(),
       supabaseAdmin.from("user_balances").select("*").eq("user_id", data.userId).maybeSingle(),
       supabaseAdmin
@@ -86,6 +86,7 @@ export const adminGetUserDetail = createServerFn({ method: "POST" })
         .limit(2000),
       supabaseAdmin.auth.admin.getUserById(data.userId),
     ]);
+    const authUser = "data" in authUserRes ? authUserRes.data.user : null;
 
     let totalBet = 0,
       totalWin = 0,
@@ -115,8 +116,8 @@ export const adminGetUserDetail = createServerFn({ method: "POST" })
         net: totalWin - totalBet,
         favorite,
       },
-      lastSignInAt: authUser.data.user?.last_sign_in_at ?? null,
-      email: authUser.data.user?.email ?? profile?.email ?? null,
+      lastSignInAt: authUser?.last_sign_in_at ?? null,
+      email: authUser?.email ?? profile?.email ?? null,
     };
   });
 
@@ -159,7 +160,7 @@ export const adminAdjustBalance = createServerFn({ method: "POST" })
       p_target_user_id: data.userId,
       p_delta: data.amount,
       p_target: data.target,
-      p_reason: data.reason ?? null,
+      p_reason: data.reason ?? undefined,
     });
     if (error) throw new Error(error.message);
     const row = Array.isArray(res) ? res[0] : res;
@@ -189,8 +190,8 @@ export const adminResetPassword = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => z.object({ userId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
-    const { data: u } = await supabaseAdmin.auth.admin.getUserById(data.userId);
-    const email = u.user?.email;
+    const uRes = await supabaseAdmin.auth.admin.getUserById(data.userId);
+    const email = "data" in uRes ? uRes.data.user?.email : undefined;
     if (!email) throw new Error("user_email_missing");
     const { data: link, error } = await supabaseAdmin.auth.admin.generateLink({
       type: "recovery",
@@ -271,7 +272,7 @@ export const adminUpdateRtp = createServerFn({ method: "POST" })
     const { data: row, error } = await supabaseAdmin.rpc("admin_update_rtp", {
       p_game: data.game,
       p_rtp_target: data.rtp_target,
-      p_is_active: data.is_active ?? null,
+      p_is_active: data.is_active ?? undefined,
     });
     if (error) throw new Error(error.message);
     return row;
