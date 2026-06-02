@@ -109,8 +109,8 @@ function PerfilPage() {
   const googleLinked = providers.includes("google");
   const emailVerified = !!user?.email_confirmed_at;
   const phone = user?.phone || (user?.user_metadata?.phone as string | undefined) || "";
-  const balance = me.data?.balance ?? 0;
-  const bonus = me.data?.bonus_balance ?? 0;
+  const balanceText = me.data ? formatCOP(me.data.balance) : "—";
+  const bonusText = me.data ? formatCOP(me.data.bonus_balance) : "—";
   const verification = me.data?.profile?.verification_status ?? "unverified";
   const verified = verification === "verified";
 
@@ -191,7 +191,7 @@ function PerfilPage() {
             </div>
             <div className="font-display mt-1 text-lg font-black">
               <span className="neon-green mr-0.5">$</span>
-              <span className="text-white">{formatCOP(balance)}</span>
+              <span className="text-white">{balanceText}</span>
             </div>
             <Link
               to="/pay"
@@ -207,7 +207,7 @@ function PerfilPage() {
             </div>
             <div className="font-display mt-1 text-lg font-black">
               <span className="neon-green mr-0.5">$</span>
-              <span className="text-white">{formatCOP(bonus)}</span>
+              <span className="text-white">{bonusText}</span>
             </div>
             <button className="mt-2 flex w-full items-center justify-center gap-1 rounded-md border border-amber-400/60 bg-amber-500/10 px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-200 hover:bg-amber-500/20">
               Ver bonos
