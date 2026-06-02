@@ -18,6 +18,7 @@ import { Route as MinesRouteImport } from './routes/mines'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as DadosRouteImport } from './routes/dados'
 import { Route as BlackjackRouteImport } from './routes/blackjack'
+import { Route as AdminpanelRouteImport } from './routes/adminpanel'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PayBrebRouteImport } from './routes/pay_.breb'
 
@@ -66,6 +67,11 @@ const BlackjackRoute = BlackjackRouteImport.update({
   path: '/blackjack',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminpanelRoute = AdminpanelRouteImport.update({
+  id: '/adminpanel',
+  path: '/adminpanel',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -79,6 +85,7 @@ const PayBrebRoute = PayBrebRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/adminpanel': typeof AdminpanelRoute
   '/blackjack': typeof BlackjackRoute
   '/dados': typeof DadosRoute
   '/home': typeof HomeRoute
@@ -92,6 +99,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/adminpanel': typeof AdminpanelRoute
   '/blackjack': typeof BlackjackRoute
   '/dados': typeof DadosRoute
   '/home': typeof HomeRoute
@@ -106,6 +114,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/adminpanel': typeof AdminpanelRoute
   '/blackjack': typeof BlackjackRoute
   '/dados': typeof DadosRoute
   '/home': typeof HomeRoute
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/adminpanel'
     | '/blackjack'
     | '/dados'
     | '/home'
@@ -134,6 +144,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/adminpanel'
     | '/blackjack'
     | '/dados'
     | '/home'
@@ -147,6 +158,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/adminpanel'
     | '/blackjack'
     | '/dados'
     | '/home'
@@ -161,6 +173,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminpanelRoute: typeof AdminpanelRoute
   BlackjackRoute: typeof BlackjackRoute
   DadosRoute: typeof DadosRoute
   HomeRoute: typeof HomeRoute
@@ -238,6 +251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlackjackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/adminpanel': {
+      id: '/adminpanel'
+      path: '/adminpanel'
+      fullPath: '/adminpanel'
+      preLoaderRoute: typeof AdminpanelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -257,6 +277,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminpanelRoute: AdminpanelRoute,
   BlackjackRoute: BlackjackRoute,
   DadosRoute: DadosRoute,
   HomeRoute: HomeRoute,
@@ -271,3 +292,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
