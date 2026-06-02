@@ -321,6 +321,7 @@ export const adminGetCasinoStats = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => rangeInput.parse(input))
   .handler(async ({ data, context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
     const { from, to } = resolveRange(data);
 
@@ -381,6 +382,7 @@ export const adminGetCasinoStats = createServerFn({ method: "POST" })
 export const adminGetDashboardKpis = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
