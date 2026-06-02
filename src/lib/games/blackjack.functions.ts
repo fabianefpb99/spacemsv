@@ -180,9 +180,46 @@ export const bjDeal = createServerFn({ method: "POST" })
     const userId = context.userId;
     const { bet, client_action_id } = data;
 
-    // 1. Force-close any leftover open session before starting a new one.
+    // 1a. Idempotency: if this exact client_action_id already produced
+    // a session, just return it. Prevents `bj_insert_failed: duplicate
+    // key` when the client retries the same deal call.
+    {
+      const { data: dup } = await supabaseAdmin
+        .from("game_sessions")
+        .select("id, user_id, status, bet_amount, state, public_state, nonce")
+        .eq("user_id", userId)
+        .eq("game", "blackjack")
+        .eq("client_action_id", client_action_id)
+        .maybeSingle();
+      if (dup) {
+        const row = dup as unknown as SessionRow;
+        const balance = await getBalance(userId);
+        return {
+          session_id: row.id,
+          nonce: row.nonce,
+          status: row.status,
+          public_state: maskHole(row.public_state),
+          new_balance: balance,
+        };
+      }
+    }
+
+    // 1b. If a hand is already in progress, RESUME it instead of
+    // force-closing — closing a playing hand would leave the bet
+    // debited with no payout (real money loss).
     const existing = await loadOpenSession(userId);
     if (existing) {
+      if (existing.public_state.phase === "playing") {
+        const balance = await getBalance(userId);
+        return {
+          session_id: existing.id,
+          nonce: existing.nonce,
+          status: existing.status,
+          public_state: maskHole(existing.public_state),
+          new_balance: balance,
+        };
+      }
+      // Stale open session (e.g. result already shown) → safe to close.
       await supabaseAdmin
         .from("game_sessions")
         .update({ status: "closed", closed_at: new Date().toISOString() })
