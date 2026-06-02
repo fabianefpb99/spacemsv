@@ -11,6 +11,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMe, type MeData } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
+import { toFriendlyError } from "@/lib/friendly-error";
 import { diceRoll } from "@/lib/games/dice.functions";
 import {
   DICE_BET_STEP,
@@ -269,7 +270,7 @@ export function DiceGame() {
       applyBalance(prevBalance);
       setRollPhase("idle");
       setPhase("betting");
-      setError(e instanceof Error ? e.message : "No se pudo lanzar");
+      setError(toFriendlyError(e, "No se pudo lanzar."));
       // Resync from server in case the debit landed despite the throw.
       queryClient.invalidateQueries({ queryKey: ["me"] });
     } finally {

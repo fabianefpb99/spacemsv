@@ -18,6 +18,7 @@ import {
 } from "@/lib/gameAudio";
 import { useMe, type MeData } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
+import { toFriendlyError } from "@/lib/friendly-error";
 import {
   bjDeal,
   bjDouble,
@@ -375,7 +376,7 @@ export function BlackjackGame() {
         }
       }, 900);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al repartir");
+      setError(toFriendlyError(err, "No se pudo repartir."));
       setPhase("betting");
     } finally {
       setBusy(false);
@@ -407,7 +408,7 @@ export function BlackjackGame() {
         applyBalance(view.new_balance);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error");
+      setError(toFriendlyError(err));
     } finally {
       setBusy(false);
       inFlightRef.current = false;
@@ -430,7 +431,7 @@ export function BlackjackGame() {
       });
       await settleAnimated(view);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error");
+      setError(toFriendlyError(err));
     } finally {
       setBusy(false);
       inFlightRef.current = false;
@@ -458,7 +459,7 @@ export function BlackjackGame() {
       playCardDealSound();
       setTimeout(() => { void settleAnimated(view); }, 600);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error");
+      setError(toFriendlyError(err));
     } finally {
       setBusy(false);
       inFlightRef.current = false;
