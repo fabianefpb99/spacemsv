@@ -10,6 +10,10 @@ import meteorSrc from "@/assets/asteroid.svg";
 import saturnSrc from "@/assets/saturn.svg";
 import { startFlight, stopFlight, setMuted as setAudioMuted, playCrashSound, playCashoutSound, setBackgroundTrack, clearBackgroundTrack, getBackgroundTrack, stopAllGameAudio } from "@/lib/gameAudio";
 import bgMusicUrl from "@/assets/bg-music.mp3";
+import { supabase } from "@/integrations/supabase/client";
+import { useMe } from "@/hooks/useMe";
+import { useAuth } from "@/hooks/useAuth";
+import { useQueryClient } from "@tanstack/react-query";
 
 type Phase = "betting" | "running" | "crashed";
 type HistoryItem = { id: number; value: number };
@@ -18,8 +22,24 @@ const MIN_BET = 500;
 const MAX_BET = 100000;
 const BET_STEP = 500;
 const QUICK_ADDS = [1000, 2000, 5000, 10000];
-const BETTING_MS = 5000;
-const CRASH_HOLD_MS = 2200;
+// Estos valores DEBEN coincidir con la migración del servidor:
+//   betting_ends_at = created_at + 7s
+//   reveal hold = 3s antes de crear la siguiente ronda
+//   multiplier(t_s) = exp(GROWTH_RATE * t)
+const BETTING_MS = 7000;
+const CRASH_HOLD_MS = 3000;
+const GROWTH_RATE = 0.06;
+
+type ServerRound = {
+  id: string;
+  status: Phase;
+  server_seed_hash: string;
+  betting_ends_at: string;
+  started_at: string | null;
+  ended_at: string | null;
+  server_seed: string | null;
+  crash_multiplier: number | null;
+};
 
 const IDLE_MESSAGES = [
   "Esta vez iré más lejos",
