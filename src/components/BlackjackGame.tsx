@@ -338,6 +338,8 @@ export function BlackjackGame() {
   const onDeal = async () => {
     if (!user) return;
     if (bet > balance || bet < BJ_MIN_BET || busy) return;
+    if (inFlightRef.current) return;
+    inFlightRef.current = true;
     setBusy(true);
     setError(null);
     setOutcome(null);
@@ -374,6 +376,7 @@ export function BlackjackGame() {
       setPhase("betting");
     } finally {
       setBusy(false);
+      inFlightRef.current = false;
     }
   };
 
