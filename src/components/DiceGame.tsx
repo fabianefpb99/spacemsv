@@ -5,30 +5,46 @@ import betspaceLogo from "@/assets/betspace-logo.svg";
 import pageBg from "@/assets/mines-page-bg.png";
 import { Menu, Settings, Minus, Plus, Volume2, VolumeX, TrendingUp } from "lucide-react";
 import { setMuted as setAudioMuted, playCashoutSound, playCrashSound, playDiceRollSound, isMuted, stopAllGameAudio } from "@/lib/gameAudio";
+import { useServerFn } from "@tanstack/react-start";
+import { useQueryClient } from "@tanstack/react-query";
+import { useMe, type MeData } from "@/hooks/useMe";
+import { useAuth } from "@/hooks/useAuth";
+import { diceRoll } from "@/lib/games/dice.functions";
+import {
+  DICE_BET_STEP,
+  DICE_MAX_BET,
+  DICE_MIN_BET,
+  DICE_MULTS,
+  DICE_WIN_PROB,
+  type DiceRollResult,
+} from "@/lib/games/dice.shared";
 
 type Phase = "betting" | "rolling" | "won" | "lost";
 type Side = "low" | "high";
 
-// Tabla de probabilidades — bajos más amigables, altos más castigados.
-//   1.15x → 49%    (EV 0.564)
-//   1.42x → 39%   (EV 0.554)
-//   1.90x → 22%   (EV 0.418)
-//   2.85x → 12%   (EV 0.342)
-//   4.75x →  6%   (EV 0.285)
-//   9.50x →  3%   (EV 0.285)
-const MULTS = [1.15, 1.42, 1.9, 2.85, 4.75, 9.5] as const;
-const WIN_PROB: Record<number, number> = {
-  1.15: 0.49,
-  1.42: 0.39,
-  1.9: 0.22,
-  2.85: 0.12,
-  4.75: 0.06,
-  9.5: 0.03,
-};
-const MIN_BET = 500;
-const MAX_BET = 100000;
-const BET_STEP = 500;
+// Game math + limits live in dice.shared.ts (shared with the server).
+const MULTS = DICE_MULTS;
+const WIN_PROB = DICE_WIN_PROB;
+const MIN_BET = DICE_MIN_BET;
+const MAX_BET = DICE_MAX_BET;
+const BET_STEP = DICE_BET_STEP;
 const QUICK_ADDS = [1000, 2000, 5000, 10000];
+
+/** Lightweight UUID v4 for client_action_id (idempotency anchor). */
+function uuid(): string {
+  const g = (typeof globalThis !== "undefined" ? (globalThis as unknown as { crypto?: Crypto }).crypto : undefined);
+  if (g && typeof g.randomUUID === "function") return g.randomUUID();
+  const bytes = new Uint8Array(16);
+  if (g && typeof g.getRandomValues === "function") g.getRandomValues(bytes);
+  else for (let i = 0; i < 16; i++) bytes[i] = Math.floor(Math.random() * 256);
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const h = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+  return `${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`;
+}
+
+/** Animation length (ms). The roll RPC almost always returns well before this. */
+const ROLL_ANIM_MS = 2100;
 
 function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
@@ -69,7 +85,8 @@ function winProbFor(mult: number) {
   return WIN_PROB[mult] ?? 0.01;
 }
 
-function rollDice(side: Side, mult: number): { roll: number; won: boolean } {
+/** Local-only roll used to populate the fake history sidebar. */
+function fakeRollDice(side: Side, mult: number): { roll: number; won: boolean } {
   const winProb = winProbFor(mult);
   const won = Math.random() < winProb;
   const inRange = (lo: number, hi: number) => lo + Math.floor(Math.random() * (hi - lo + 1));
@@ -80,7 +97,13 @@ function rollDice(side: Side, mult: number): { roll: number; won: boolean } {
 }
 
 export function DiceGame() {
-  const [balance, setBalance] = useState(100000);
+  const { user } = useAuth();
+  const me = useMe();
+  const queryClient = useQueryClient();
+  const balance = me.data?.balance ?? 0;
+
+  const rollFn = useServerFn(diceRoll);
+
   const [bet, setBet] = useState(2000);
   const [side, setSide] = useState<Side>("low");
   const [mult, setMult] = useState<number>(MULTS[0]);
@@ -89,10 +112,28 @@ export function DiceGame() {
   const [targetFace, setTargetFace] = useState<number>(1); // face we'll land on during a roll
   const [rolling, setRolling] = useState(false);
   const [resultAmount, setResultAmount] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+
+  // Refs used to coordinate the roll animation with the server response.
+  const inFlightRef = useRef(false);
+  const pendingResultRef = useRef<DiceRollResult | null>(null);
+  const animTimerRef = useRef<number | null>(null);
+
   const [muted, setMuted] = useState(false);
   const [online] = useState(263);
   const [history, setHistory] = useState<HistoryItem[]>(() => seedHistory());
   const historyId = useRef(1000);
+
+  // Push server-confirmed balance into the useMe cache for instant header update.
+  const applyBalance = useCallback(
+    (newBalance: number) => {
+      if (!user) return;
+      queryClient.setQueryData<MeData | null>(["me", user.id], (prev) =>
+        prev ? { ...prev, balance: newBalance } : prev,
+      );
+    },
+    [queryClient, user],
+  );
 
   useEffect(() => { setAudioMuted(muted); }, [muted]);
 
@@ -104,7 +145,7 @@ export function DiceGame() {
     const t = setInterval(() => {
       const m = MULTS[Math.floor(Math.random() * MULTS.length)];
       const s: Side = Math.random() < 0.5 ? "low" : "high";
-      const { roll, won } = rollDice(s, m);
+      const { roll, won } = fakeRollDice(s, m);
       const stake = [500, 1000, 2000, 5000, 10000][Math.floor(Math.random() * 5)];
       const amount = won ? Math.floor(stake * m) : stake;
       setHistory((h) => [
@@ -115,39 +156,128 @@ export function DiceGame() {
     return () => clearInterval(t);
   }, []);
 
-  const canRoll = phase === "betting" && bet >= MIN_BET && bet <= balance;
+  // Clean up the animation timer if the component unmounts mid-roll.
+  useEffect(() => () => {
+    if (animTimerRef.current) {
+      window.clearTimeout(animTimerRef.current);
+      animTimerRef.current = null;
+    }
+  }, []);
+
+  const canRoll = phase === "betting" && bet >= MIN_BET && bet <= balance && !!user;
   const potentialWin = Math.floor(bet * mult);
   const winProbPct = winProbFor(mult) * 100;
 
-  const handleRoll = useCallback(() => {
-    if (!canRoll) return;
-    setBalance((b) => b - bet);
+  /**
+   * Settle the round visually once both the animation has ended AND the
+   * server result is in hand. Either may finish first — we land here from
+   * whichever resolves last.
+   */
+  const settle = useCallback((result: DiceRollResult, snapshotBet: number, snapshotSide: Side, snapshotMult: number) => {
+    setRolling(false);
+    setFace(result.roll);
+    setResultAmount(result.payout);
+    applyBalance(result.new_balance);
+    if (result.won) {
+      playCashoutSound();
+      setPhase("won");
+    } else {
+      playCrashSound();
+      setPhase("lost");
+    }
+    setHistory((h) => [
+      {
+        id: ++historyId.current,
+        user: "Tú",
+        side: snapshotSide,
+        roll: result.roll,
+        multiplier: snapshotMult,
+        amount: result.won ? result.payout : snapshotBet,
+        won: result.won,
+      },
+      ...h,
+    ].slice(0, 30));
+    window.setTimeout(() => setPhase("betting"), 1800);
+  }, [applyBalance]);
+
+  const handleRoll = useCallback(async () => {
+    if (!canRoll || inFlightRef.current) return;
+    inFlightRef.current = true;
+    setError(null);
+
+    // Snapshot the round parameters — bet / side / mult are still bound to
+    // the betting state during the animation, but the user can adjust them
+    // for the *next* round. We use the snapshot to settle the current one.
+    const snapshotBet = bet;
+    const snapshotSide = side;
+    const snapshotMult = mult;
+    const clientActionId = uuid();
+
+    // ── Optimistic UI ──────────────────────────────────────────────────
+    // 1) Debit the balance instantly in the header cache.
+    // 2) Switch to "rolling" phase and start the cube animation.
+    // Both happen BEFORE the network call so the button feels instant.
+    const prevBalance = balance;
+    applyBalance(Math.max(0, balance - snapshotBet));
+    pendingResultRef.current = null;
     setPhase("rolling");
-    const { roll, won } = rollDice(side, mult);
-    setTargetFace(roll);
     setRolling(true);
-    playDiceRollSound(2100);
-    const win = won ? Math.floor(bet * mult) : 0;
-    // Settle after the rolling animation
-    setTimeout(() => {
-      setRolling(false);
-      setFace(roll);
-      setResultAmount(win);
-      if (won) {
-        setBalance((b) => b + win);
-        playCashoutSound();
-        setPhase("won");
-      } else {
-        playCrashSound();
-        setPhase("lost");
+    // Placeholder target face — server overrides it as soon as it lands.
+    setTargetFace(snapshotSide === "low" ? 1 + Math.floor(Math.random() * 3) : 4 + Math.floor(Math.random() * 3));
+    playDiceRollSound(ROLL_ANIM_MS);
+
+    // Schedule the animation end.
+    const animStartedAt = Date.now();
+    animTimerRef.current = window.setTimeout(() => {
+      animTimerRef.current = null;
+      const result = pendingResultRef.current;
+      if (result) {
+        pendingResultRef.current = null;
+        settle(result, snapshotBet, snapshotSide, snapshotMult);
       }
-      setHistory((h) => [
-        { id: ++historyId.current, user: "Tú", side, roll, multiplier: mult, amount: won ? win : bet, won },
-        ...h,
-      ].slice(0, 30));
-      setTimeout(() => setPhase("betting"), 2200);
-    }, 2200);
-  }, [canRoll, bet, side, mult]);
+      // Else: server is still pending. settle() will run from the .then()
+      // below when the response finally arrives.
+    }, ROLL_ANIM_MS);
+
+    // ── Server call (runs in parallel with the animation) ───────────────
+    try {
+      const result = await rollFn({
+        data: {
+          bet: snapshotBet,
+          side: snapshotSide,
+          mult: snapshotMult,
+          client_action_id: clientActionId,
+        },
+      });
+      // Lock the cube onto the server-decided face for the rest of the spin.
+      setTargetFace(result.roll);
+
+      const elapsed = Date.now() - animStartedAt;
+      if (elapsed >= ROLL_ANIM_MS || animTimerRef.current === null) {
+        // Animation already finished → settle now.
+        pendingResultRef.current = null;
+        settle(result, snapshotBet, snapshotSide, snapshotMult);
+      } else {
+        // Animation still running → stash the result; the timer will pick it up.
+        pendingResultRef.current = result;
+      }
+    } catch (e) {
+      // Rollback the optimistic debit, cancel the spin, surface the message.
+      if (animTimerRef.current) {
+        window.clearTimeout(animTimerRef.current);
+        animTimerRef.current = null;
+      }
+      pendingResultRef.current = null;
+      applyBalance(prevBalance);
+      setRolling(false);
+      setPhase("betting");
+      setError(e instanceof Error ? e.message : "No se pudo lanzar");
+      // Resync from server in case the debit landed despite the throw.
+      queryClient.invalidateQueries({ queryKey: ["me"] });
+    } finally {
+      inFlightRef.current = false;
+    }
+  }, [canRoll, bet, side, mult, balance, rollFn, applyBalance, settle, queryClient]);
 
   const recent = useMemo(() => history.slice(0, 10), [history]);
 
@@ -431,6 +561,11 @@ export function DiceGame() {
               </button>
             </div>
           </div>
+          {error && (
+            <div className="mt-1.5 rounded-md border border-rose-500/40 bg-rose-950/30 px-2 py-1 text-center text-[11px] font-semibold text-rose-200">
+              {error}
+            </div>
+          )}
         </section>
 
         <div className="h-1" />

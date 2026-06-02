@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DiceGame } from "@/components/DiceGame";
 import { LoadingScreen } from "@/components/LoadingScreen";
+import { RequireAuth } from "@/components/auth/RequireAuth";
 
 export const Route = createFileRoute("/dados")({
   head: () => ({
@@ -16,8 +17,10 @@ export const Route = createFileRoute("/dados")({
 
 function Page() {
   return (
-    <LoadingScreen variant="dice">
-      <DiceGame />
-    </LoadingScreen>
+    <RequireAuth>
+      <LoadingScreen variant="dice">
+        <DiceGame />
+      </LoadingScreen>
+    </RequireAuth>
   );
 }
