@@ -431,7 +431,13 @@ export type Database = {
       app_role: "admin" | "user"
       game_bet_status: "active" | "cashed_out" | "lost" | "refunded"
       game_round_status: "betting" | "running" | "crashed" | "settled"
-      game_session_status: "open" | "won" | "lost" | "cashed_out" | "aborted"
+      game_session_status:
+        | "open"
+        | "won"
+        | "lost"
+        | "cashed_out"
+        | "aborted"
+        | "closed"
       transaction_type:
         | "deposit"
         | "withdrawal"
@@ -570,7 +576,14 @@ export const Constants = {
       app_role: ["admin", "user"],
       game_bet_status: ["active", "cashed_out", "lost", "refunded"],
       game_round_status: ["betting", "running", "crashed", "settled"],
-      game_session_status: ["open", "won", "lost", "cashed_out", "aborted"],
+      game_session_status: [
+        "open",
+        "won",
+        "lost",
+        "cashed_out",
+        "aborted",
+        "closed",
+      ],
       transaction_type: [
         "deposit",
         "withdrawal",
