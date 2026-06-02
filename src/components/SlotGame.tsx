@@ -878,10 +878,10 @@ export function SlotGame() {
   const isAuthed = !!user;
   // Source of truth = backend. If it hasn't loaded yet, never pretend the
   // user has 0 because that looks like lost money.
-  const balance = me.data?.balance ?? 0;
-  const balanceReady = !!me.data;
+  const realBalance = me.data?.balance ?? 0;
   const bonusBalance = me.data?.bonus_balance ?? 0;
-  const totalAvailable = balance + bonusBalance;
+  const balance = realBalance + bonusBalance;
+  const balanceReady = !!me.data;
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [spinError, setSpinError] = useState<string | null>(null);
   // Holds the official outcome returned by the server until the visual

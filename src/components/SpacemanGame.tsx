@@ -241,9 +241,10 @@ export function SpacemanGame() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const meQuery = useMe();
-  const balance = meQuery.data?.balance ?? 0;
-  const balanceReady = !!meQuery.data;
+  const realBalance = meQuery.data?.balance ?? 0;
   const bonusBalance = meQuery.data?.bonus_balance ?? 0;
+  const balance = realBalance + bonusBalance;
+  const balanceReady = !!meQuery.data;
 
   // === Estado de ronda: viene del servidor (la fuente de verdad) ===
   const [round, setRound] = useState<ServerRound | null>(null);

@@ -105,8 +105,9 @@ export function DiceGame() {
   const { user } = useAuth();
   const me = useMe();
   const queryClient = useQueryClient();
-  const balance = me.data?.balance ?? 0;
+  const realBalance = me.data?.balance ?? 0;
   const bonusBalance = me.data?.bonus_balance ?? 0;
+  const balance = realBalance + bonusBalance;
 
   const rollFn = useServerFn(diceRoll);
 
