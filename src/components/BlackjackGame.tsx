@@ -609,8 +609,10 @@ export function BlackjackGame() {
                 >
                   <Minus className="h-5 w-5" />
                 </button>
-                <div className="font-display text-2xl font-black text-white">
-                  <span className="neon-green mr-0.5">$</span>{formatCOP(bet)}
+                <div className="min-w-0 flex-1 h-10 font-display text-2xl font-black text-white">
+                  <FitText>
+                    <span className="neon-green mr-0.5">$</span>{formatCOP(bet)}
+                  </FitText>
                 </div>
                 <button
                   onClick={() => adjustBet(BJ_BET_STEP)}
