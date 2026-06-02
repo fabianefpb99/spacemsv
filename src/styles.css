@@ -895,6 +895,13 @@ html, body {
   will-change: transform;
 }
 .dice-cube-idle { animation: dice-spin-idle 9s linear infinite; }
+/* Pre-landing free spin: used while we wait for the server to confirm the result.
+   No specific face is "claimed" yet, so we cannot reveal a final number prematurely. */
+.dice-cube-spinning { animation: dice-spin-free 0.7s linear infinite; }
+@keyframes dice-spin-free {
+  from { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+  to   { transform: rotateX(360deg) rotateY(720deg) rotateZ(180deg); }
+}
 /* Rolling uses per-face animations that LAND on the idle resting orientation */
 .dice-cube-rolling.dice-face-1 { animation: dice-spin-roll-1 2.2s cubic-bezier(.22,.61,.36,1) forwards; }
 .dice-cube-rolling.dice-face-2 { animation: dice-spin-roll-2 2.2s cubic-bezier(.22,.61,.36,1) forwards; }
