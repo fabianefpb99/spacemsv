@@ -33,6 +33,43 @@ export const createDeposit = createServerFn({ method: "POST" })
     method: z.enum(["nequi", "breb"]),
   }).parse(i))
   .handler(async ({ data, context }) => {
+    const activeRequestQuery = supabaseAdmin
+      .from("deposit_requests")
+      .select("*")
+      .eq("user_id", context.userId)
+      .in("status", ["pendiente_pago", "pendiente_revision"])
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const { data: activeRequest, error: activeRequestError } = await activeRequestQuery;
+    if (activeRequestError) {
+      console.error("[createDeposit] active request lookup failed", {
+        userId: context.userId,
+        message: activeRequestError.message,
+      });
+      throw new Error(activeRequestError.message);
+    }
+
+    if (activeRequest?.status === "pendiente_revision") {
+      console.warn("[createDeposit] blocked by pending review", {
+        userId: context.userId,
+        depositId: activeRequest.id,
+      });
+      throw new Error("has_pending_review");
+    }
+
+    if (activeRequest?.status === "pendiente_pago") {
+      const expiresAt = activeRequest.expires_at ? new Date(activeRequest.expires_at).getTime() : 0;
+      if (expiresAt > Date.now()) {
+        console.log("[createDeposit] reusing pending payment request", {
+          userId: context.userId,
+          depositId: activeRequest.id,
+        });
+        return activeRequest;
+      }
+    }
+
     const token = bearer();
     if (!token) {
       console.error("[createDeposit] missing bearer", { userId: context.userId });
@@ -61,6 +98,35 @@ export const confirmDeposit = createServerFn({ method: "POST" })
     phone: z.string().trim().max(30).optional().nullable(),
   }).parse(i))
   .handler(async ({ data, context }) => {
+    const { data: currentRow, error: currentRowError } = await supabaseAdmin
+      .from("deposit_requests")
+      .select("*")
+      .eq("id", data.id)
+      .eq("user_id", context.userId)
+      .maybeSingle();
+
+    if (currentRowError) {
+      console.error("[confirmDeposit] current row lookup failed", {
+        userId: context.userId,
+        depositId: data.id,
+        message: currentRowError.message,
+      });
+      throw new Error(currentRowError.message);
+    }
+
+    if (!currentRow) {
+      throw new Error("not_found");
+    }
+
+    if (currentRow.status !== "pendiente_pago") {
+      console.log("[confirmDeposit] returning existing non-pending row", {
+        userId: context.userId,
+        depositId: data.id,
+        status: currentRow.status,
+      });
+      return currentRow;
+    }
+
     const token = bearer();
     if (!token) {
       console.error("[confirmDeposit] missing bearer", { userId: context.userId, depositId: data.id });
