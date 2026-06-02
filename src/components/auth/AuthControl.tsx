@@ -79,7 +79,7 @@ export function AuthControl({ className }: { className?: string }) {
             <span className="text-white">{balanceText} COP</span>
           </div>
           {bonusText && me.data!.bonus_balance > 0 && (
-            <div className="mt-0.5 text-[10px] text-purple-200/70">
+            <div className="mt-0.5 text-[10px] font-semibold text-yellow-300">
               Bono: ${bonusText}
             </div>
           )}
