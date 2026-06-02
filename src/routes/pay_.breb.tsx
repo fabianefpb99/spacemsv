@@ -43,6 +43,22 @@ function PayBrebPage() {
   const getFn = useServerFn(getMyDeposit);
   const confirmFn = useServerFn(confirmDeposit);
   const cancelFn = useServerFn(cancelMyDeposit);
+
+  // Payer modal state
+  const [openPayer, setOpenPayer] = useState(false);
+  const [payerSelf, setPayerSelf] = useState(true);
+  const [pFirst, setPFirst] = useState("");
+  const [pLast, setPLast] = useState("");
+  const [pPhone, setPPhone] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [confirmErr, setConfirmErr] = useState<string | null>(null);
+
+  // Cancel modal state
+  const [openCancel, setOpenCancel] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelErr, setCancelErr] = useState<string | null>(null);
+  const [confirmCancel, setConfirmCancel] = useState(false);
+
   const q = useQuery({
     queryKey: ["my-deposit", id],
     enabled: !!id,
@@ -71,21 +87,6 @@ function PayBrebPage() {
     setCopied(key);
     setTimeout(() => setCopied((c) => (c === key ? null : c)), 1500);
   }
-
-  // Payer modal state
-  const [openPayer, setOpenPayer] = useState(false);
-  const [payerSelf, setPayerSelf] = useState(true);
-  const [pFirst, setPFirst] = useState("");
-  const [pLast, setPLast] = useState("");
-  const [pPhone, setPPhone] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [confirmErr, setConfirmErr] = useState<string | null>(null);
-
-  // Cancel modal state
-  const [openCancel, setOpenCancel] = useState(false);
-  const [cancelling, setCancelling] = useState(false);
-  const [cancelErr, setCancelErr] = useState<string | null>(null);
-  const [confirmCancel, setConfirmCancel] = useState(false);
 
   const isAlreadyConfirmed = row?.status && row.status !== "pendiente_pago";
   const isExpired = row?.status === "expirada";
