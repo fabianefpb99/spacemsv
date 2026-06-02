@@ -150,6 +150,10 @@ export function BlackjackGame() {
 
   // Server session tracking
   const sessionRef = useRef<{ id: string; nonce: number } | null>(null);
+  // Synchronous in-flight lock. `busy` is React state (async) and can't block
+  // a second click that lands in the same tick — that races the nonce and
+  // makes the server reject the second call with `bj_stale_nonce`.
+  const inFlightRef = useRef(false);
 
   const [muted, setMuted] = useState<boolean>(() => (typeof window === "undefined" ? false : getAudioMuted()));
 
@@ -375,6 +379,8 @@ export function BlackjackGame() {
 
   const onHit = async () => {
     if (phase !== "playing" || busy || !sessionRef.current) return;
+    if (inFlightRef.current) return;
+    inFlightRef.current = true;
     setBusy(true);
     setError(null);
     try {
@@ -398,11 +404,14 @@ export function BlackjackGame() {
       setError(err instanceof Error ? err.message : "Error");
     } finally {
       setBusy(false);
+      inFlightRef.current = false;
     }
   };
 
   const onStand = async () => {
     if (phase !== "playing" || busy || !sessionRef.current) return;
+    if (inFlightRef.current) return;
+    inFlightRef.current = true;
     setBusy(true);
     setError(null);
     try {
@@ -418,12 +427,15 @@ export function BlackjackGame() {
       setError(err instanceof Error ? err.message : "Error");
     } finally {
       setBusy(false);
+      inFlightRef.current = false;
     }
   };
 
   const onDouble = async () => {
     if (phase !== "playing" || busy || !sessionRef.current) return;
+    if (inFlightRef.current) return;
     if (player.length !== 2 || bet > balance) return;
+    inFlightRef.current = true;
     setBusy(true);
     setError(null);
     try {
@@ -443,6 +455,7 @@ export function BlackjackGame() {
       setError(err instanceof Error ? err.message : "Error");
     } finally {
       setBusy(false);
+      inFlightRef.current = false;
     }
   };
 
