@@ -358,6 +358,40 @@ export type Database = {
           was_duplicate: boolean
         }[]
       }
+      bj_apply_action: {
+        Args: {
+          p_expected_nonce: number
+          p_new_payout?: number
+          p_new_public_state: Json
+          p_new_state: Json
+          p_new_status: Database["public"]["Enums"]["game_session_status"]
+          p_session_id: string
+          p_user_id: string
+        }
+        Returns: {
+          bet_amount: number
+          client_action_id: string
+          client_seed: string | null
+          closed_at: string | null
+          created_at: string
+          game: string
+          id: string
+          nonce: number
+          payout: number | null
+          public_state: Json
+          server_seed: string
+          server_seed_hash: string
+          state: Json
+          status: Database["public"]["Enums"]["game_session_status"]
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "game_sessions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
