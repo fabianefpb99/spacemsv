@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import nequiLogo from "@/assets/nequi.svg";
 import bancolombiaLogo from "@/assets/bancolombia.svg";
 import brebLogo from "@/assets/bre-b.svg";
+import { useServerFn } from "@tanstack/react-start";
+import { createDeposit } from "@/lib/deposits/deposit.functions";
 
 export const Route = createFileRoute("/pay")({
   head: () => ({
@@ -36,6 +38,9 @@ function PayPage() {
   const [balance] = useState(100000);
   const [method, setMethod] = useState<Method | null>(null);
   const [combo, setCombo] = useState<string | null>(null);
+  const createFn = useServerFn(createDeposit);
+  const [submitting, setSubmitting] = useState(false);
+  const [errMsg, setErrMsg] = useState<string | null>(null);
 
   // Bonus countdown: 10 minutes, restarts every time PAY is opened, and
   // auto-restarts when it hits 00:00 (psychological urgency).
@@ -330,15 +335,18 @@ function PayPage() {
 
         {/* Continue button */}
         <button
-          disabled={!canContinue}
-          onClick={() => {
+          disabled={!canContinue || submitting}
+          onClick={async () => {
             if (!canContinue || !combo || !method) return;
             const c = COMBOS.find((x) => x.id === combo)!;
             if (method === "nequi" || method === "breb") {
-              navigate({
-                to: "/pay/breb",
-                search: { method, amount: c.amount, bonus: c.bonus },
-              });
+              setSubmitting(true); setErrMsg(null);
+              try {
+                const row = await createFn({ data: { amount: c.amount, bonus: c.bonus, method } });
+                navigate({ to: "/pay/breb", search: { id: row.id } });
+              } catch (e) {
+                setErrMsg((e as Error).message || "Error al crear la recarga");
+              } finally { setSubmitting(false); }
             }
           }}
           className={`mt-6 inline-flex items-center justify-center rounded-xl px-4 py-3.5 text-sm font-bold tracking-tight transition ${
@@ -347,8 +355,9 @@ function PayPage() {
               : "cursor-not-allowed bg-emerald-900/40 text-emerald-200/40 ring-1 ring-emerald-700/40"
           }`}
         >
-          Continuar al pago
+          {submitting ? "Generando..." : "Continuar al pago"}
         </button>
+        {errMsg && <p className="mt-2 text-center text-xs text-rose-300">{errMsg}</p>}
 
         <p className="mt-3 text-center text-[10px] uppercase tracking-wider text-purple-300/50">
           Pago 100% seguro · Procesado por pasarela certificada

@@ -41,6 +41,93 @@ export type Database = {
         }
         Relationships: []
       }
+      deposit_requests: {
+        Row: {
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          bonus: number
+          bonus_applied: number | null
+          confirmed_at: string | null
+          created_at: string
+          email: string | null
+          expires_at: string
+          id: string
+          method: Database["public"]["Enums"]["deposit_method"]
+          new_balance: number | null
+          payer_first_name: string | null
+          payer_ip: string | null
+          payer_last_name: string | null
+          payer_phone: string | null
+          payer_self: boolean | null
+          prev_balance: number | null
+          reference: string
+          reject_reason: string | null
+          rejected_at: string | null
+          rejected_by: string | null
+          status: Database["public"]["Enums"]["deposit_status"]
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          amount: number
+          approved_at?: string | null
+          approved_by?: string | null
+          bonus?: number
+          bonus_applied?: number | null
+          confirmed_at?: string | null
+          created_at?: string
+          email?: string | null
+          expires_at?: string
+          id?: string
+          method: Database["public"]["Enums"]["deposit_method"]
+          new_balance?: number | null
+          payer_first_name?: string | null
+          payer_ip?: string | null
+          payer_last_name?: string | null
+          payer_phone?: string | null
+          payer_self?: boolean | null
+          prev_balance?: number | null
+          reference: string
+          reject_reason?: string | null
+          rejected_at?: string | null
+          rejected_by?: string | null
+          status?: Database["public"]["Enums"]["deposit_status"]
+          updated_at?: string
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          amount?: number
+          approved_at?: string | null
+          approved_by?: string | null
+          bonus?: number
+          bonus_applied?: number | null
+          confirmed_at?: string | null
+          created_at?: string
+          email?: string | null
+          expires_at?: string
+          id?: string
+          method?: Database["public"]["Enums"]["deposit_method"]
+          new_balance?: number | null
+          payer_first_name?: string | null
+          payer_ip?: string | null
+          payer_last_name?: string | null
+          payer_phone?: string | null
+          payer_self?: boolean | null
+          prev_balance?: number | null
+          reference?: string
+          reject_reason?: string | null
+          rejected_at?: string | null
+          rejected_by?: string | null
+          status?: Database["public"]["Enums"]["deposit_status"]
+          updated_at?: string
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
       game_bets: {
         Row: {
           amount: number
@@ -429,6 +516,7 @@ export type Database = {
           new_bonus: number
         }[]
       }
+      _gen_deposit_reference: { Args: never; Returns: string }
       _spaceman_gen_crash: { Args: { p_server_seed: string }; Returns: number }
       adjust_balance: {
         Args: {
@@ -457,6 +545,80 @@ export type Database = {
           new_balance: number
           new_bonus: number
         }[]
+      }
+      admin_approve_deposit: {
+        Args: { p_id: string }
+        Returns: {
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          bonus: number
+          bonus_applied: number | null
+          confirmed_at: string | null
+          created_at: string
+          email: string | null
+          expires_at: string
+          id: string
+          method: Database["public"]["Enums"]["deposit_method"]
+          new_balance: number | null
+          payer_first_name: string | null
+          payer_ip: string | null
+          payer_last_name: string | null
+          payer_phone: string | null
+          payer_self: boolean | null
+          prev_balance: number | null
+          reference: string
+          reject_reason: string | null
+          rejected_at: string | null
+          rejected_by: string | null
+          status: Database["public"]["Enums"]["deposit_status"]
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "deposit_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_reject_deposit: {
+        Args: { p_id: string; p_reason: string }
+        Returns: {
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          bonus: number
+          bonus_applied: number | null
+          confirmed_at: string | null
+          created_at: string
+          email: string | null
+          expires_at: string
+          id: string
+          method: Database["public"]["Enums"]["deposit_method"]
+          new_balance: number | null
+          payer_first_name: string | null
+          payer_ip: string | null
+          payer_last_name: string | null
+          payer_phone: string | null
+          payer_self: boolean | null
+          prev_balance: number | null
+          reference: string
+          reject_reason: string | null
+          rejected_at: string | null
+          rejected_by: string | null
+          status: Database["public"]["Enums"]["deposit_status"]
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "deposit_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       admin_set_block: {
         Args: { p_blocked: boolean; p_target_user_id: string }
@@ -513,6 +675,92 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      confirm_deposit_request: {
+        Args: {
+          p_first_name: string
+          p_id: string
+          p_ip: string
+          p_last_name: string
+          p_payer_self: boolean
+          p_phone: string
+        }
+        Returns: {
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          bonus: number
+          bonus_applied: number | null
+          confirmed_at: string | null
+          created_at: string
+          email: string | null
+          expires_at: string
+          id: string
+          method: Database["public"]["Enums"]["deposit_method"]
+          new_balance: number | null
+          payer_first_name: string | null
+          payer_ip: string | null
+          payer_last_name: string | null
+          payer_phone: string | null
+          payer_self: boolean | null
+          prev_balance: number | null
+          reference: string
+          reject_reason: string | null
+          rejected_at: string | null
+          rejected_by: string | null
+          status: Database["public"]["Enums"]["deposit_status"]
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "deposit_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      create_deposit_request: {
+        Args: {
+          p_amount: number
+          p_bonus: number
+          p_method: Database["public"]["Enums"]["deposit_method"]
+        }
+        Returns: {
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          bonus: number
+          bonus_applied: number | null
+          confirmed_at: string | null
+          created_at: string
+          email: string | null
+          expires_at: string
+          id: string
+          method: Database["public"]["Enums"]["deposit_method"]
+          new_balance: number | null
+          payer_first_name: string | null
+          payer_ip: string | null
+          payer_last_name: string | null
+          payer_phone: string | null
+          payer_self: boolean | null
+          prev_balance: number | null
+          reference: string
+          reject_reason: string | null
+          rejected_at: string | null
+          rejected_by: string | null
+          status: Database["public"]["Enums"]["deposit_status"]
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "deposit_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      expire_pending_deposits: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -550,6 +798,13 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      deposit_method: "nequi" | "breb"
+      deposit_status:
+        | "pendiente_pago"
+        | "pendiente_revision"
+        | "aprobada"
+        | "rechazada"
+        | "expirada"
       game_bet_status: "active" | "cashed_out" | "lost" | "refunded"
       game_round_status: "betting" | "running" | "crashed" | "settled"
       game_session_status:
@@ -695,6 +950,14 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      deposit_method: ["nequi", "breb"],
+      deposit_status: [
+        "pendiente_pago",
+        "pendiente_revision",
+        "aprobada",
+        "rechazada",
+        "expirada",
+      ],
       game_bet_status: ["active", "cashed_out", "lost", "refunded"],
       game_round_status: ["betting", "running", "crashed", "settled"],
       game_session_status: [
