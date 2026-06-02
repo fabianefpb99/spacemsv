@@ -2,12 +2,16 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+async function getSupabaseAdmin() {
+  return (await import("@/integrations/supabase/client.server")).supabaseAdmin;
+}
+
 /**
  * Server-side helper: assert the calling user has the admin role.
  * Uses supabaseAdmin to bypass RLS for the role lookup.
  */
 async function assertAdmin(userId: string) {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const supabaseAdmin = await getSupabaseAdmin();
   const { data, error } = await supabaseAdmin
     .from("user_roles")
     .select("role")
@@ -23,6 +27,7 @@ async function assertAdmin(userId: string) {
 export const checkIsAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
     const { data, error } = await supabaseAdmin
       .from("user_roles")
       .select("role")
@@ -46,6 +51,7 @@ export const adminListUsers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => listUsersInput.parse(input))
   .handler(async ({ data, context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
     const from = (data.page - 1) * data.pageSize;
     const to = from + data.pageSize - 1;
@@ -75,6 +81,7 @@ export const adminGetUserDetail = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ userId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
     const [{ data: profile }, { data: bal }, { data: txs }, authUserRes] = await Promise.all([
       supabaseAdmin.from("profiles").select("*").eq("id", data.userId).maybeSingle(),
@@ -129,6 +136,7 @@ export const adminGetUserTransactions = createServerFn({ method: "POST" })
     z.object({ userId: z.string().uuid(), limit: z.number().int().min(1).max(200).default(50) }).parse(input)
   )
   .handler(async ({ data, context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
     const { data: rows, error } = await supabaseAdmin
       .from("transactions")
