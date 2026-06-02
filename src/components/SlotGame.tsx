@@ -1,6 +1,7 @@
 import { AuthControl } from "@/components/auth/AuthControl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FitText } from "@/components/ui/fit-text";
+import { BetAmount } from "@/components/games/BetAmount";
 import { flushSync } from "react-dom";
 import { Link } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
