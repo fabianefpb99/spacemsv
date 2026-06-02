@@ -874,9 +874,10 @@ export function SlotGame() {
   const queryClient = useQueryClient();
   const callSpin = useServerFn(spinSlot);
   const isAuthed = !!user;
-  // Source of truth = Supabase. While the query is loading we show 0 to avoid
-  // accidentally enabling Spin against a stale local value.
+  // Source of truth = backend. If it hasn't loaded yet, never pretend the
+  // user has 0 because that looks like lost money.
   const balance = me.data?.balance ?? 0;
+  const balanceReady = !!me.data;
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [spinError, setSpinError] = useState<string | null>(null);
   // Holds the official outcome returned by the server until the visual
@@ -1121,7 +1122,7 @@ export function SlotGame() {
   const canSpin =
     !spinning &&
     bet >= MIN_BET &&
-    (!isAuthed || (!me.isLoading && bet <= balance));
+    (!isAuthed || (balanceReady && bet <= balance));
   const winMult = lastWin > 0 ? lastWin / bet : 1;
 
   return (
@@ -1164,7 +1165,7 @@ export function SlotGame() {
             <div className="text-right">
               <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
               <div className="font-display text-[11px] font-bold sm:text-xs text-white">
-                <span className="neon-green mr-0.5">$</span>{formatCOP(balance)} COP
+                <span className="neon-green mr-0.5">$</span>{balanceReady ? formatCOP(balance) : "—"} COP
               </div>
             </div>
             <AuthControl />
