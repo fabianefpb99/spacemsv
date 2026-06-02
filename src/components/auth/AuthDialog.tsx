@@ -114,7 +114,7 @@ export function AuthDialog({
 
 function GoogleButton() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, refreshSession } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -141,9 +141,12 @@ function GoogleButton() {
 
     const { data, error: userError } = await supabase.auth.getUser();
     if (userError || !data.user) {
-      setLoading(false);
-      setError("Google autenticó la cuenta, pero la sesión no quedó activa. Intenta de nuevo.");
-      return;
+      const recovered = await refreshSession();
+      if (!recovered?.user) {
+        setLoading(false);
+        setError("Google autenticó la cuenta, pero la sesión no quedó activa. Intenta de nuevo.");
+        return;
+      }
     }
 
     setLoading(false);
@@ -180,6 +183,7 @@ function GoogleButton() {
 }
 
 function SignInForm({ onSuccess }: { onSuccess: () => void }) {
+  const { refreshSession } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -195,13 +199,19 @@ function SignInForm({ onSuccess }: { onSuccess: () => void }) {
     }
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
     if (error) {
+      setLoading(false);
       setError(
         error.message === "Invalid login credentials"
           ? "Email o contraseña incorrectos."
           : error.message,
       );
+      return;
+    }
+    const session = await refreshSession();
+    setLoading(false);
+    if (!session?.user) {
+      setError("La cuenta sí inició, pero el teléfono tardó en recuperar la sesión. Intenta una vez más.");
       return;
     }
     onSuccess();
@@ -226,6 +236,7 @@ function SignInForm({ onSuccess }: { onSuccess: () => void }) {
 }
 
 function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
+  const { refreshSession } = useAuth();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -257,6 +268,7 @@ function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
       return;
     }
     if (data.session) {
+      await refreshSession();
       onSuccess();
     } else {
       setInfo("Cuenta creada. Revisa tu email para confirmarla y luego inicia sesión.");
