@@ -23,24 +23,32 @@ export function BetAmount({
   bet,
   bonusBalance,
   children,
+  className,
+  amountClassName,
+  bonusClassName,
+  minScale,
 }: {
   bet: number;
   bonusBalance: number;
   children?: ReactNode;
+  className?: string;
+  amountClassName?: string;
+  bonusClassName?: string;
+  minScale?: number;
 }) {
   const bonusUsed = Math.min(Math.max(bonusBalance, 0), Math.max(bet, 0));
   const usesBonus = bonusUsed > 0;
 
   if (!usesBonus) {
-    return <FitText>{children ?? formatCOP(bet)}</FitText>;
+    return <FitText className={amountClassName} min={minScale}>{children ?? formatCOP(bet)}</FitText>;
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div className={className ?? "flex h-full min-h-0 flex-col justify-center py-1"}>
       <div className="min-h-0 flex-1">
-        <FitText>{children ?? formatCOP(bet)}</FitText>
+        <FitText className={amountClassName} min={minScale}>{children ?? formatCOP(bet)}</FitText>
       </div>
-      <div className="-mt-2 text-center text-[8px] font-bold leading-none text-yellow-300/95">
+      <div className={bonusClassName ?? "mt-0.5 text-center text-[8px] font-bold leading-none text-yellow-300/95"}>
         +{formatCOP(bonusUsed)} BONUS
       </div>
     </div>
