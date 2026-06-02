@@ -1,24 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import {
-  adjustBalance,
-  deriveActionId,
-  getTransactionById,
-  newServerSeed,
-  setTransactionMeta,
-  sha256Hex,
-  weightedPick,
-} from "./engine.server";
-import {
-  evaluateSlotGrid,
   SLOT_BET_STEP,
-  SLOT_LINES,
   SLOT_MAX_BET,
   SLOT_MIN_BET,
-  SLOT_REELS,
-  SLOT_ROWS,
-  SLOT_SYMBOLS,
   type SlotWin,
 } from "./slot.shared";
 
@@ -41,105 +28,66 @@ export type SpinResult = {
   bet_amount: number;
   new_balance: number;
   server_seed_hash: string;
-  // server_seed only revealed after the round is closed (always closed for slot)
+  // server_seed revealed at settle time (slot rounds settle instantly)
   server_seed: string;
   was_duplicate: boolean;
 };
-
-function generateSlotGrid(): string[][] {
-  const ids = SLOT_SYMBOLS.map((s) => s.id);
-  const weights = SLOT_SYMBOLS.map((s) => s.weight);
-  return Array.from({ length: SLOT_REELS }, () =>
-    Array.from({ length: SLOT_ROWS }, () => weightedPick(ids, weights)),
-  );
-}
 
 export const spinSlot = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => SpinInput.parse(input))
   .handler(async ({ data, context }): Promise<SpinResult> => {
     const userId = context.userId;
-    const lineBet = Math.max(1, Math.floor(data.bet_amount / SLOT_LINES));
 
-    const serverSeed = newServerSeed();
-    const serverSeedHash = sha256Hex(serverSeed);
+    // ONE round-trip: the SQL function `spin_slot_v1` runs the entire spin
+    // atomically (lock balance → validate → RNG → evaluate → debit → credit
+    // → record txs) and returns the full outcome. Same idempotency
+    // contract as before: replaying with the same client_action_id returns
+    // the cached result without re-mutating the balance.
+    const { data: rpcData, error } = await (
+      supabaseAdmin.rpc as unknown as (
+        fn: string,
+        args: Record<string, unknown>,
+      ) => Promise<{ data: unknown; error: { message: string } | null }>
+    )("spin_slot_v1", {
+      p_user_id: userId,
+      p_bet_amount: data.bet_amount,
+      p_client_action_id: data.client_action_id,
+    });
 
-    // 1. Debit the bet (idempotent on client_action_id)
-    let debit;
-    try {
-      debit = await adjustBalance({
-        user_id: userId,
-        delta: -data.bet_amount,
-        type: "bet",
-        game: "slot",
-        client_action_id: data.client_action_id,
-        meta: { kind: "slot_bet", server_seed_hash: serverSeedHash },
-      });
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
-      if (msg === "insufficient_funds") {
-        throw new Error("Saldo insuficiente");
-      }
-      throw e;
+    if (error) {
+      const msg = error.message ?? "";
+      if (msg.includes("insufficient_funds")) throw new Error("Saldo insuficiente");
+      if (msg.includes("invalid_bet")) throw new Error("Apuesta inválida");
+      if (msg.includes("balance_row_missing")) throw new Error("Cuenta sin saldo inicializado");
+      throw new Error(`spin_failed: ${msg}`);
     }
 
-    // 2. Duplicate spin → return the cached outcome from the bet tx meta.
-    if (debit.was_duplicate) {
-      const tx = await getTransactionById(debit.transaction_id);
-      const meta = (tx?.meta ?? {}) as { result?: SpinResult };
-      if (meta.result) {
-        return { ...meta.result, new_balance: debit.new_balance, was_duplicate: true };
-      }
-      throw new Error("duplicate_spin_without_result");
+    const payload = rpcData as {
+      was_duplicate: boolean;
+      new_balance: number | string;
+      cached: {
+        grid: string[][];
+        wins: SlotWin[];
+        total: number;
+        bet_amount: number;
+        server_seed_hash: string;
+        server_seed: string;
+      };
+    } | null;
+
+    if (!payload || !payload.cached || !payload.cached.grid) {
+      throw new Error("spin_no_result");
     }
 
-    // 3. Generate the official grid using crypto RNG and evaluate it.
-    const grid = generateSlotGrid();
-    const { wins, total } = evaluateSlotGrid(grid, lineBet);
-
-    // 4. Credit the win (also idempotent via derived action id).
-    let newBalance = debit.new_balance;
-    if (total > 0) {
-      const winActionId = deriveActionId(data.client_action_id, "win");
-      const credit = await adjustBalance({
-        user_id: userId,
-        delta: total,
-        type: "win",
-        game: "slot",
-        client_action_id: winActionId,
-        meta: {
-          kind: "slot_win",
-          bet_action_id: data.client_action_id,
-          line_count: wins.length,
-        },
-      });
-      newBalance = credit.new_balance;
-    }
-
-    const result: SpinResult = {
-      grid,
-      wins,
-      total,
-      bet_amount: data.bet_amount,
-      new_balance: newBalance,
-      server_seed_hash: serverSeedHash,
-      server_seed: serverSeed,
-      was_duplicate: false,
+    return {
+      grid: payload.cached.grid,
+      wins: payload.cached.wins ?? [],
+      total: Number(payload.cached.total ?? 0),
+      bet_amount: Number(payload.cached.bet_amount ?? data.bet_amount),
+      new_balance: Number(payload.new_balance),
+      server_seed_hash: payload.cached.server_seed_hash,
+      server_seed: payload.cached.server_seed,
+      was_duplicate: Boolean(payload.was_duplicate),
     };
-
-    // 5. Persist the outcome inside the bet tx meta so retries return identically.
-    try {
-      await setTransactionMeta(debit.transaction_id, {
-        kind: "slot_bet",
-        server_seed_hash: serverSeedHash,
-        server_seed: serverSeed,
-        bet_amount: data.bet_amount,
-        result,
-      });
-    } catch {
-      // Best-effort: idempotency still works via the dedupe key; a missing
-      // cached result on retry just throws a clean error to the client.
-    }
-
-    return result;
   });
