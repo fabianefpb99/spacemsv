@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { z } from "zod";
+import { useNavigate } from "@tanstack/react-router";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const signUpSchema = z.object({
   email: z.string().email("Email inválido"),
@@ -109,18 +111,41 @@ export function AuthDialog({
 }
 
 function GoogleButton() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    setLoading(false);
+    void navigate({ to: "/perfil" });
+  }, [navigate, user]);
+
   async function onClick() {
     setError(null);
     setLoading(true);
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,
     });
+    if (result.redirected) {
+      return;
+    }
     if (result.error) {
       setLoading(false);
       setError(result.error.message ?? "No se pudo iniciar sesión con Google.");
+      return;
     }
+
+    const { data, error: userError } = await supabase.auth.getUser();
+    if (userError || !data.user) {
+      setLoading(false);
+      setError("Google autenticó la cuenta, pero la sesión no quedó activa. Intenta de nuevo.");
+      return;
+    }
+
+    setLoading(false);
+    void navigate({ to: "/perfil" });
   }
   return (
     <div className="space-y-2 pt-3">
