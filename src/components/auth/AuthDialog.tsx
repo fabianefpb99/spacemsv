@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { z } from "zod";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,33 +31,80 @@ export function AuthDialog({
   open: boolean;
   onOpenChange: (v: boolean) => void;
 }) {
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="left-4 right-4 w-auto max-h-[calc(100dvh-2rem)] max-w-none translate-x-0 overflow-y-auto border-purple-500/40 bg-[#0c0620] p-4 text-white sm:left-[50%] sm:right-auto sm:w-full sm:max-w-md sm:translate-x-[-50%] sm:p-6">
-        <DialogHeader>
-          <DialogTitle className="font-display text-2xl font-black tracking-wide text-white">
-            BIENVENIDO
-          </DialogTitle>
-          <DialogDescription className="text-purple-200/70">
-            Inicia sesión o crea tu cuenta para guardar tu progreso y balance.
-          </DialogDescription>
-        </DialogHeader>
-        <Tabs defaultValue="signin" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-purple-950/40">
-            <TabsTrigger value="signin">Iniciar sesión</TabsTrigger>
-            <TabsTrigger value="signup">Registrarse</TabsTrigger>
-          </TabsList>
-          <TabsContent value="signin">
-            <SignInForm onSuccess={() => onOpenChange(false)} />
-            <GoogleButton />
-          </TabsContent>
-          <TabsContent value="signup">
-            <SignUpForm onSuccess={() => onOpenChange(false)} />
-            <GoogleButton />
-          </TabsContent>
-        </Tabs>
-      </DialogContent>
-    </Dialog>
+  useEffect(() => {
+    if (!open || typeof document === "undefined") return;
+
+    const { body, documentElement } = document;
+    const previousBodyOverflow = body.style.overflow;
+    const previousHtmlOverflow = documentElement.style.overflow;
+    const previousBodyTouchAction = body.style.touchAction;
+
+    body.style.overflow = "hidden";
+    documentElement.style.overflow = "hidden";
+    body.style.touchAction = "none";
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onOpenChange(false);
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      body.style.overflow = previousBodyOverflow;
+      documentElement.style.overflow = previousHtmlOverflow;
+      body.style.touchAction = previousBodyTouchAction;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open, onOpenChange]);
+
+  if (!open || typeof document === "undefined") return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[120] overflow-hidden" role="dialog" aria-modal="true" aria-label="Inicio de sesión">
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={() => onOpenChange(false)}
+        aria-hidden="true"
+      />
+
+      <div className="relative flex min-h-dvh items-center justify-center overflow-y-auto overflow-x-hidden px-4 py-6 sm:px-6">
+        <div className="relative box-border w-full max-w-md overflow-x-hidden overflow-y-auto rounded-lg border border-purple-500/40 bg-[#0c0620] p-4 text-white shadow-2xl sm:p-6 max-h-[calc(100dvh-2rem)]">
+          <button
+            type="button"
+            onClick={() => onOpenChange(false)}
+            aria-label="Cerrar inicio de sesión"
+            className="absolute right-4 top-4 text-purple-200/80 transition-colors hover:text-white"
+          >
+            ×
+          </button>
+
+          <div className="flex flex-col space-y-1.5 pr-8 text-center sm:text-left">
+            <h2 className="font-display text-2xl font-black tracking-wide text-white">BIENVENIDO</h2>
+            <p className="text-sm text-purple-200/70">
+              Inicia sesión o crea tu cuenta para guardar tu progreso y balance.
+            </p>
+          </div>
+
+          <Tabs defaultValue="signin" className="mt-4 w-full">
+            <TabsList className="grid w-full grid-cols-2 bg-purple-950/40">
+              <TabsTrigger value="signin">Iniciar sesión</TabsTrigger>
+              <TabsTrigger value="signup">Registrarse</TabsTrigger>
+            </TabsList>
+            <TabsContent value="signin">
+              <SignInForm onSuccess={() => onOpenChange(false)} />
+              <GoogleButton />
+            </TabsContent>
+            <TabsContent value="signup">
+              <SignUpForm onSuccess={() => onOpenChange(false)} />
+              <GoogleButton />
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+    </div>,
+    document.body,
   );
 }
 
