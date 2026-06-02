@@ -6,6 +6,7 @@ import { PromoPopup } from "@/components/PromoPopup";
 import { SkeletonImage } from "@/components/SkeletonImage";
 import { stopAllGameAudio } from "@/lib/gameAudio";
 import { AuthControl } from "@/components/auth/AuthControl";
+import { AuthDialog } from "@/components/auth/AuthDialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
@@ -443,6 +444,22 @@ function HomePage() {
         </div>
       </nav>
     </div>
+  );
+}
+
+function AuthCta() {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="rounded-md bg-purple-600 px-2.5 py-1.5 font-display text-[10px] font-bold uppercase tracking-wider text-white shadow-md shadow-purple-900/40 hover:bg-purple-500 sm:text-[11px]"
+      >
+        Iniciar sesión / Registro
+      </button>
+      <AuthDialog open={open} onOpenChange={setOpen} />
+    </>
   );
 }
 
