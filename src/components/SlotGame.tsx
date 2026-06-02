@@ -1356,14 +1356,14 @@ export function SlotGame() {
                   disabled={spinning}
                   className="flex h-11 w-11 items-center justify-center rounded-xl btn-bet disabled:opacity-40"
                 ><Minus className="h-5 w-5" /></button>
-                <div className="flex-1 min-w-0 h-11 rounded-xl border border-purple-500/40 bg-[#0c0620] px-2 font-display text-lg font-bold text-white">
+                <div className="flex h-11 min-w-0 flex-1 items-center rounded-xl border border-purple-500/40 bg-[#0c0620] px-2 font-display text-base font-bold tabular-nums text-white">
                   <BetAmount
                     bet={bet}
                     bonusBalance={bonusBalance}
-                    className="flex h-full min-h-0 flex-col justify-center py-0.5"
-                    amountClassName="pt-0.5"
-                    bonusClassName="mt-px text-center text-[7px] font-bold leading-none text-yellow-300/95"
-                    minScale={0.44}
+                    className="flex h-full min-h-0 w-full flex-col justify-center py-0.5"
+                    amountClassName="w-full pt-0.5 tabular-nums"
+                    bonusClassName="mt-px text-center text-[6px] font-bold leading-none text-yellow-300/95"
+                    minScale={0.38}
                   />
                 </div>
                 <button
