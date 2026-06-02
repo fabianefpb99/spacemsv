@@ -4,6 +4,50 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ------------------------------------------------------------------
+ * App-wide touch & selection hardening
+ *
+ * - Disables long-press "Save image" / drag on every <img>.
+ * - Disables text selection by default for an app-like feel, but
+ *   re-enables it for inputs / textareas / contenteditable so users
+ *   can still register, copy validation codes, paste passwords, etc.
+ * ------------------------------------------------------------------ */
+html, body {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+input,
+textarea,
+[contenteditable="true"],
+[contenteditable=""],
+.allow-select,
+.allow-select * {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+img {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+  -webkit-touch-callout: none; /* disable iOS "Save image" sheet */
+  pointer-events: none;        /* blocks long-press + right-click image */
+}
+/* Re-enable pointer events for images that need to be clickable/zoomable. */
+a img,
+button img,
+[role="button"] img,
+.allow-image-interact,
+.allow-image-interact img {
+  pointer-events: auto;
+}
+
 /*
  * Design system definition.
  *
