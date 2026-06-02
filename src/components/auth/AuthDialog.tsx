@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 import { Loader2 } from "lucide-react";
 
 const signUpSchema = z.object({
@@ -48,13 +49,59 @@ export function AuthDialog({
           </TabsList>
           <TabsContent value="signin">
             <SignInForm onSuccess={() => onOpenChange(false)} />
+            <GoogleButton />
           </TabsContent>
           <TabsContent value="signup">
             <SignUpForm onSuccess={() => onOpenChange(false)} />
+            <GoogleButton />
           </TabsContent>
         </Tabs>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function GoogleButton() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  async function onClick() {
+    setError(null);
+    setLoading(true);
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
+    });
+    if (result.error) {
+      setLoading(false);
+      setError(result.error.message ?? "No se pudo iniciar sesión con Google.");
+    }
+  }
+  return (
+    <div className="space-y-2 pt-3">
+      <div className="relative my-1 flex items-center">
+        <div className="h-px flex-1 bg-purple-500/20" />
+        <span className="px-2 text-[10px] uppercase tracking-widest text-purple-200/60">o</span>
+        <div className="h-px flex-1 bg-purple-500/20" />
+      </div>
+      <Button
+        type="button"
+        onClick={onClick}
+        disabled={loading}
+        variant="outline"
+        className="w-full border-purple-500/40 bg-transparent text-white hover:bg-purple-500/10"
+      >
+        {loading ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <>
+            <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.2 1.4-1.6 4-5.5 4-3.3 0-6-2.7-6-6.1s2.7-6.1 6-6.1c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.7 3.4 14.6 2.4 12 2.4 6.7 2.4 2.4 6.7 2.4 12S6.7 21.6 12 21.6c6.9 0 9.5-4.8 9.5-7.3 0-.5-.1-.9-.1-1.3H12z"/>
+            </svg>
+            Continuar con Google
+          </>
+        )}
+      </Button>
+      {error && <p className="text-xs text-rose-400">{error}</p>}
+    </div>
   );
 }
 
