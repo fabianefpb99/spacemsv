@@ -1018,13 +1018,13 @@ export function SlotGame() {
   // Auto-spin: re-trigger spin after each round when enabled
   useEffect(() => {
     if (!autoSpin || spinning) return;
-    if (bet < MIN_BET || bet > balance) {
+    if (!isAuthed || bet < MIN_BET || bet > balance) {
       setAutoSpin(false);
       return;
     }
     const t = setTimeout(() => spin(), 900);
     return () => clearTimeout(t);
-  }, [autoSpin, spinning, bet, balance, spin]);
+  }, [autoSpin, spinning, bet, balance, spin, isAuthed]);
 
   // Cycle through wins to highlight one at a time
   useEffect(() => {
@@ -1067,7 +1067,12 @@ export function SlotGame() {
     return map;
   }, [activeWin]);
 
-  const canSpin = !spinning && bet >= MIN_BET && bet <= balance;
+  // When the user is not authed, the button is still clickable: clicking
+  // opens the auth dialog. When authed, we apply the normal balance gate.
+  const canSpin =
+    !spinning &&
+    bet >= MIN_BET &&
+    (!isAuthed || (!me.isLoading && bet <= balance));
   const winMult = lastWin > 0 ? lastWin / bet : 1;
 
   return (
