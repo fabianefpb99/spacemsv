@@ -245,16 +245,16 @@ function PerfilPage() {
           <StatCell
             icon={<Trophy className="h-4 w-4 text-emerald-300" />}
             label="Ganado"
-            value={`$${formatCOP(stats.data?.won ?? 0)}`}
+            value={`$${formatCompactCOP(stats.data?.won ?? 0)}`}
             highlight="emerald"
           />
           <StatCell
             icon={<Banknote className="h-4 w-4 text-amber-300" />}
             label="Retirado"
-            value={`$${formatCOP(stats.data?.withdrawn ?? 0)}`}
+            value={`$${formatCompactCOP(stats.data?.withdrawn ?? 0)}`}
           />
           <StatCell
-            icon={<Gift className="h-4 w-4 text-fuchsia-300" />}
+            icon={<Gamepad2 className="h-4 w-4 text-fuchsia-300" />}
             label="Favorito"
             value={(stats.data?.favorite ?? "—").toUpperCase()}
           />
