@@ -341,6 +341,7 @@ export type Database = {
       }
     }
     Functions: {
+      _spaceman_gen_crash: { Args: { p_server_seed: string }; Returns: number }
       adjust_balance: {
         Args: {
           p_client_action_id?: string
@@ -364,6 +365,25 @@ export type Database = {
         }
         Returns: boolean
       }
+      spaceman_cashout: {
+        Args: {
+          p_client_action_id: string
+          p_client_elapsed_ms: number
+          p_round_id: string
+        }
+        Returns: Json
+      }
+      spaceman_current_round: { Args: never; Returns: Json }
+      spaceman_mult_at_ms: { Args: { p_elapsed_ms: number }; Returns: number }
+      spaceman_place_bet: {
+        Args: {
+          p_amount: number
+          p_client_action_id: string
+          p_round_id: string
+        }
+        Returns: Json
+      }
+      spaceman_tick: { Args: never; Returns: Json }
       spin_slot_v1: {
         Args: {
           p_bet_amount: number

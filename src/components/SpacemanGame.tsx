@@ -10,6 +10,10 @@ import meteorSrc from "@/assets/asteroid.svg";
 import saturnSrc from "@/assets/saturn.svg";
 import { startFlight, stopFlight, setMuted as setAudioMuted, playCrashSound, playCashoutSound, setBackgroundTrack, clearBackgroundTrack, getBackgroundTrack, stopAllGameAudio } from "@/lib/gameAudio";
 import bgMusicUrl from "@/assets/bg-music.mp3";
+import { supabase } from "@/integrations/supabase/client";
+import { useMe } from "@/hooks/useMe";
+import { useAuth } from "@/hooks/useAuth";
+import { useQueryClient } from "@tanstack/react-query";
 
 type Phase = "betting" | "running" | "crashed";
 type HistoryItem = { id: number; value: number };
@@ -18,8 +22,24 @@ const MIN_BET = 500;
 const MAX_BET = 100000;
 const BET_STEP = 500;
 const QUICK_ADDS = [1000, 2000, 5000, 10000];
-const BETTING_MS = 5000;
-const CRASH_HOLD_MS = 2200;
+// Estos valores DEBEN coincidir con la migración del servidor:
+//   betting_ends_at = created_at + 7s
+//   reveal hold = 3s antes de crear la siguiente ronda
+//   multiplier(t_s) = exp(GROWTH_RATE * t)
+const BETTING_MS = 7000;
+const CRASH_HOLD_MS = 3000;
+const GROWTH_RATE = 0.06;
+
+type ServerRound = {
+  id: string;
+  status: Phase;
+  server_seed_hash: string;
+  betting_ends_at: string;
+  started_at: string | null;
+  ended_at: string | null;
+  server_seed: string | null;
+  crash_multiplier: number | null;
+};
 
 const IDLE_MESSAGES = [
   "Esta vez iré más lejos",
@@ -216,28 +236,41 @@ function Stars({ multiplier = 1, phase }: { multiplier?: number; phase: Phase })
 }
 
 export function SpacemanGame() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const { data: me } = useMe();
+  const balance = me?.balance ?? 0;
+
+  // === Estado de ronda: viene del servidor (la fuente de verdad) ===
+  const [round, setRound] = useState<ServerRound | null>(null);
+  const roundRef = useRef<ServerRound | null>(null);
+  useEffect(() => { roundRef.current = round; }, [round]);
+
+  // Offset = serverNow - clientNow (ms). Lo recalculamos al fetchear la ronda.
+  const serverOffsetRef = useRef<number>(0);
+
+  // Estado derivado por rAF (fase + multiplicador + countdown)
   const [phase, setPhase] = useState<Phase>("betting");
   const [multiplier, setMultiplier] = useState(1);
-  const [crashPoint, setCrashPoint] = useState<number>(1.5);
   const [countdown, setCountdown] = useState(BETTING_MS / 1000);
   const [bettingBarFill, setBettingBarFill] = useState(0);
   const [bettingBarDuration, setBettingBarDuration] = useState(0);
-  const [history, setHistory] = useState<HistoryItem[]>(() => {
-    const seed = [
-      1.22, 3.11, 19.4, 1.3, 7.02, 54.35, 1.78, 2.45, 1.05, 4.8,
-      1.9, 1.13, 8.22, 1.14, 1.33, 5.91, 1.08, 2.1, 1.06, 1.75,
-      3.62, 12.45, 1.17, 2.25, 1.09, 4.36, 1.15, 1.97, 7.23, 1.11,
-      2.05, 1.35, 1.6, 3.74, 1.01, 1.66, 2.91, 1.18, 6.45, 1.07,
-      1.89, 9.2, 1.25, 1.43, 2.2, 1.12, 3.88, 1.16, 2.7, 5.1,
-    ];
-    return seed.map((v, i) => ({ id: i + 1, value: v }));
-  });
+  // El crash real solo se conoce cuando el servidor lo revela
+  const crashPointRef = useRef<number>(0);
 
-  const [balance, setBalance] = useState(100000);
+  // Historia de rondas pasadas (últimas 50 desde la DB)
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+
+  // Apuesta UI
   const [bet, setBet] = useState(2000);
+  // Apuesta colocada para la ronda actual (server-confirmada)
   const [activeBet, setActiveBet] = useState<number | null>(null);
+  const [activeBetRoundId, setActiveBetRoundId] = useState<string | null>(null);
   const [cashedOutAt, setCashedOutAt] = useState<number | null>(null);
   const [lastWin, setLastWin] = useState<number | null>(null);
+  // Lock para evitar doble-click mientras viaja el RPC
+  const inFlightRef = useRef(false);
+
   const [online, setOnline] = useState(150);
   const [messageIdx, setMessageIdx] = useState(0);
   const [muted, setMuted] = useState(false);
@@ -498,39 +531,113 @@ export function SpacemanGame() {
     if (phase !== "running") updateSceneVisuals(multiplier);
   }, [multiplier, phase, updateSceneVisuals]);
 
-  // ---- Game loop ----
-  const startBetting = useCallback(() => {
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    if (phaseTimer.current) {
-      clearTimeout(phaseTimer.current);
-      phaseTimer.current = null;
+  // === Server-authoritative round wiring ===
+
+  // Convierte la fila del servidor (RPC o realtime) al shape local
+  const applyRoundRow = useCallback((row: ServerRound | null, serverNowISO?: string) => {
+    if (serverNowISO) {
+      serverOffsetRef.current = new Date(serverNowISO).getTime() - Date.now();
     }
-    if (bettingBarRafRef.current) cancelAnimationFrame(bettingBarRafRef.current);
+    setRound(row);
+  }, []);
 
-    setPhase("betting");
-    setMultiplier(1);
-    setCashedOutAt(null);
-    setActiveBet(null);
-    setLastWin(null);
-    setCrashPoint(generateCrashPoint());
-    setCountdown(BETTING_MS / 1000);
-    setBettingBarDuration(0);
-    setBettingBarFill(0);
-    countdownFiredRef.current = new Set();
+  // Fetch inicial de la ronda + historia
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase.rpc("spaceman_current_round");
+      if (cancelled || !data) return;
+      const r = data as ServerRound & { server_now: string };
+      applyRoundRow(r, r.server_now);
+    })();
+    (async () => {
+      const { data } = await supabase
+        .from("game_rounds")
+        .select("id, crash_multiplier, created_at")
+        .eq("game", "spaceman")
+        .eq("status", "crashed")
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (cancelled || !data) return;
+      setHistory(
+        data
+          .filter((r) => r.crash_multiplier != null)
+          .map((r, i) => ({ id: i, value: Number(r.crash_multiplier) })),
+      );
+    })();
+    return () => { cancelled = true; };
+  }, [applyRoundRow]);
 
-    bettingBarRafRef.current = requestAnimationFrame(() => {
-      bettingBarRafRef.current = requestAnimationFrame(() => {
-        setBettingBarDuration(BETTING_MS);
-        setBettingBarFill(100);
-      });
-    });
+  // Realtime: cambios en cualquier ronda de spaceman
+  useEffect(() => {
+    const channel = supabase
+      .channel("spaceman-rounds")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "game_rounds", filter: "game=eq.spaceman" },
+        (payload) => {
+          const row = (payload.new ?? payload.old) as ServerRound | null;
+          if (!row) return;
+          // Si la nueva ronda es más reciente que la actual, reemplazar
+          const current = roundRef.current;
+          if (!current || row.id === current.id || new Date(row.betting_ends_at) >= new Date(current.betting_ends_at)) {
+            applyRoundRow(row);
+            // Si terminó: agregar al historial
+            if (row.status === "crashed" && row.crash_multiplier != null) {
+              setHistory((h) => {
+                if (h[0]?.value === Number(row.crash_multiplier) && h[0]?.id === Date.parse(row.ended_at || "")) return h;
+                return [{ id: Date.parse(row.ended_at || "") || Date.now(), value: Number(row.crash_multiplier) }, ...h].slice(0, 50);
+              });
+            }
+          }
+        },
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [applyRoundRow]);
 
-    const start = performance.now();
+  // Cuando cambia la ronda, resetear apuesta local si es nueva
+  useEffect(() => {
+    if (!round) return;
+    if (round.id !== activeBetRoundId) {
+      // Sólo limpiamos cuando ENTRAMOS a una ronda distinta (no la nuestra)
+      if (round.status === "betting") {
+        setActiveBet(null);
+        setActiveBetRoundId(null);
+        setCashedOutAt(null);
+        setLastWin(null);
+      }
+    }
+    if (round.status === "crashed" && round.crash_multiplier != null) {
+      crashPointRef.current = Number(round.crash_multiplier);
+    }
+  }, [round, activeBetRoundId]);
+
+  // rAF maestro: deriva fase/multiplicador/countdown/barra desde el reloj servidor
+  useEffect(() => {
+    let raf = 0;
     const tick = () => {
-      const elapsed = performance.now() - start;
-      const remaining = Math.max(0, BETTING_MS - elapsed);
-      if (remaining > 0) {
+      const r = roundRef.current;
+      if (!r) {
+        raf = requestAnimationFrame(tick);
+        return;
+      }
+      const nowMs = Date.now() + serverOffsetRef.current;
+      const bettingEndsMs = new Date(r.betting_ends_at).getTime();
+
+      if (r.status === "betting") {
+        const remaining = Math.max(0, bettingEndsMs - nowMs);
+        setPhase("betting");
+        setMultiplier(1);
         setCountdown(remaining / 1000);
+        // Barra: porcentaje consumido
+        const totalMs = BETTING_MS;
+        const consumed = Math.max(0, Math.min(100, ((totalMs - remaining) / totalMs) * 100));
+        setBettingBarFill(consumed);
+        setBettingBarDuration(120);
+        // Beeps 3-2-1
         const fired = countdownFiredRef.current;
         const remSec = remaining / 1000;
         [3, 2, 1].forEach((n) => {
@@ -539,113 +646,118 @@ export function SpacemanGame() {
             playBeep();
           }
         });
-        rafRef.current = requestAnimationFrame(tick);
-      } else {
-        setCountdown(0);
-        setBettingBarFill(100);
-        if (!countdownFiredRef.current.has(0)) {
-          countdownFiredRef.current.add(0);
-          playGo();
+      } else if (r.status === "running" && r.started_at) {
+        const startedMs = new Date(r.started_at).getTime();
+        const t = Math.max(0, (nowMs - startedMs) / 1000);
+        const exact = Math.exp(GROWTH_RATE * t);
+        const shown = +exact.toFixed(2);
+        if (phase !== "running") {
+          setPhase("running");
+          countdownFiredRef.current = new Set();
+          if (!countdownFiredRef.current.has(0)) {
+            countdownFiredRef.current.add(0);
+            playGo();
+          }
         }
-        startRunning();
+        setMultiplier(shown);
+        setBettingBarFill(100);
+        updateSceneVisuals(exact);
+      } else if (r.status === "crashed" && r.crash_multiplier != null) {
+        if (phase !== "crashed") {
+          setPhase("crashed");
+          setMultiplier(Number(r.crash_multiplier));
+          playCrashSound();
+          // Duck bg music
+          const bg = getBackgroundTrack();
+          if (bg && !muted) {
+            bg.volume = 0.04;
+            window.setTimeout(() => {
+              const cur = getBackgroundTrack();
+              if (cur) cur.volume = 0.18;
+            }, 1800);
+          }
+          // Refrescar saldo (por si nos pagaron o liquidaron como perdida)
+          queryClient.invalidateQueries({ queryKey: ["me"] });
+        }
       }
+      raf = requestAnimationFrame(tick);
     };
-    rafRef.current = requestAnimationFrame(tick);
-  }, [playBeep, playGo]);
-
-  // keep crash point in ref so the rAF closure sees fresh value
-  const crashPointRef = useRef(crashPoint);
-  useEffect(() => {
-    crashPointRef.current = crashPoint;
-  }, [crashPoint]);
-
-  const triggerCrash = useCallback(() => {
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    setPhase("crashed");
-    setMultiplier(crashPointRef.current);
-    setHistory((h) => [{ id: Date.now(), value: crashPointRef.current }, ...h].slice(0, 50));
-    playCrashSound();
-    // Duck background music during crash
-    const bg = getBackgroundTrack();
-    if (bg && !muted) {
-      bg.volume = 0.04;
-      window.setTimeout(() => {
-        const cur = getBackgroundTrack();
-        if (!cur) return;
-        const target = 0.18;
-        const steps = 20;
-        let i = 0;
-        const from = cur.volume;
-        const iv = window.setInterval(() => {
-          i++;
-          const c = getBackgroundTrack();
-          if (!c) { window.clearInterval(iv); return; }
-          c.volume = from + (target - from) * (i / steps);
-          if (i >= steps) window.clearInterval(iv);
-        }, 60);
-      }, 1800);
-    }
-    phaseTimer.current = setTimeout(() => {
-      startBetting();
-    }, CRASH_HOLD_MS);
-  }, [startBetting]);
-
-  const startRunning = useCallback(() => {
-    setPhase("running");
-    startRef.current = performance.now();
-    let lastShown = 0;
-    let frameCount = 0;
-    const tick = () => {
-      const t = (performance.now() - startRef.current) / 1000;
-      // Exponential-ish growth, feels like crash games
-      const exactMultiplier = Math.pow(Math.E, 0.09 * t);
-      const shownMultiplier = +exactMultiplier.toFixed(2);
-      // Throttle CSS variable writes to every 3rd frame (~20fps) to reduce GPU/CPU load on mobile
-      frameCount++;
-      if (frameCount % 3 === 0) {
-        updateSceneVisuals(exactMultiplier);
-      }
-      // Only trigger React re-render when the displayed value actually changes
-      if (shownMultiplier !== lastShown) {
-        lastShown = shownMultiplier;
-        setMultiplier(shownMultiplier);
-      }
-      if (exactMultiplier >= crashPointRef.current) {
-        triggerCrash();
-        return;
-      }
-      rafRef.current = requestAnimationFrame(tick);
-    };
-    rafRef.current = requestAnimationFrame(tick);
-  }, [triggerCrash, updateSceneVisuals]);
-
-  // bootstrap
-  useEffect(() => {
-    setCrashPoint(generateCrashPoint());
-    setOnline(80 + Math.floor(Math.random() * 200));
-    startBetting();
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      if (phaseTimer.current) clearTimeout(phaseTimer.current);
-      if (bettingBarRafRef.current) cancelAnimationFrame(bettingBarRafRef.current);
-    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [phase, muted, playBeep, playGo, updateSceneVisuals]);
 
   // ---- Actions ----
-  const handleBetClick = () => {
-    if (phase === "betting") {
-      if (bet < MIN_BET || bet > balance) return;
-      setActiveBet(bet);
-      setBalance((b) => b - bet);
-    } else if (phase === "running" && activeBet != null && cashedOutAt == null) {
-      // cash out: devolver apuesta + ganancia neta = apuesta * multiplicador
-      const payout = activeBet * multiplier;
-      const profit = activeBet * (multiplier - 1);
+  const handleBetClick = async () => {
+    if (inFlightRef.current) return;
+    const r = roundRef.current;
+    if (!r || !user) return;
+
+    // CASHOUT: durante running, con apuesta activa
+    if (r.status === "running" && activeBet != null && activeBetRoundId === r.id && cashedOutAt == null && r.started_at) {
+      inFlightRef.current = true;
+      const nowMs = Date.now() + serverOffsetRef.current;
+      const startedMs = new Date(r.started_at).getTime();
+      const clientElapsedMs = Math.max(0, nowMs - startedMs);
+      // Snapshot visual inmediato (lo que VES es lo que recibes ±)
+      const expectedMult = +Math.exp(GROWTH_RATE * clientElapsedMs / 1000).toFixed(2);
+      const expectedProfit = activeBet * (expectedMult - 1);
       playCashoutSound();
-      setCashedOutAt(multiplier);
-      setLastWin(profit);
-      setBalance((b) => b + payout);
+      setCashedOutAt(expectedMult);
+      setLastWin(expectedProfit);
+      try {
+        const { data, error } = await supabase.rpc("spaceman_cashout", {
+          p_round_id: r.id,
+          p_client_action_id: crypto.randomUUID(),
+          p_client_elapsed_ms: clientElapsedMs,
+        });
+        if (error) throw error;
+        const res = data as { cashout_multiplier: number; payout: number; new_balance: number };
+        // Confirmar con datos reales del servidor
+        setCashedOutAt(Number(res.cashout_multiplier));
+        setLastWin(Number(res.payout) - (activeBet ?? 0));
+        queryClient.setQueryData(["me", user.id], (old: typeof me) =>
+          old ? { ...old, balance: Number(res.new_balance) } : old,
+        );
+      } catch (err) {
+        // Revertir y resincronizar
+        setCashedOutAt(null);
+        setLastWin(null);
+        queryClient.invalidateQueries({ queryKey: ["me"] });
+      } finally {
+        inFlightRef.current = false;
+      }
+      return;
+    }
+
+    // APUESTA: durante betting, sin apuesta previa
+    if (r.status === "betting" && !activeBet) {
+      if (bet < MIN_BET || bet > balance) return;
+      inFlightRef.current = true;
+      // Optimista: bloquear apuesta visualmente y descontar saldo
+      setActiveBet(bet);
+      setActiveBetRoundId(r.id);
+      queryClient.setQueryData(["me", user.id], (old: typeof me) =>
+        old ? { ...old, balance: Math.max(0, old.balance - bet) } : old,
+      );
+      try {
+        const { data, error } = await supabase.rpc("spaceman_place_bet", {
+          p_round_id: r.id,
+          p_amount: bet,
+          p_client_action_id: crypto.randomUUID(),
+        });
+        if (error) throw error;
+        const res = data as { new_balance: number };
+        queryClient.setQueryData(["me", user.id], (old: typeof me) =>
+          old ? { ...old, balance: Number(res.new_balance) } : old,
+        );
+      } catch (err) {
+        setActiveBet(null);
+        setActiveBetRoundId(null);
+        queryClient.invalidateQueries({ queryKey: ["me"] });
+      } finally {
+        inFlightRef.current = false;
+      }
     }
   };
 
