@@ -879,6 +879,8 @@ export function SlotGame() {
   // user has 0 because that looks like lost money.
   const balance = me.data?.balance ?? 0;
   const balanceReady = !!me.data;
+  const bonusBalance = me.data?.bonus_balance ?? 0;
+  const totalAvailable = balance + bonusBalance;
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [spinError, setSpinError] = useState<string | null>(null);
   // Holds the official outcome returned by the server until the visual
@@ -1354,7 +1356,7 @@ export function SlotGame() {
                   className="flex h-11 w-11 items-center justify-center rounded-xl btn-bet disabled:opacity-40"
                 ><Minus className="h-5 w-5" /></button>
                 <div className="flex-1 min-w-0 h-11 rounded-xl border border-purple-500/40 bg-[#0c0620] px-2 font-display text-lg font-bold text-white">
-                  <FitText>{formatCOP(bet)}</FitText>
+                  <BetAmount bet={bet} bonusBalance={bonusBalance} />
                 </div>
                 <button
                   onClick={() => setBet((b) => Math.min(MAX_BET, b + BET_STEP))}
