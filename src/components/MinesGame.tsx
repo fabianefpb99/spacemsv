@@ -674,11 +674,12 @@ export function MinesGame() {
             >
               <Minus className="h-5 w-5" />
             </button>
-            <input
-              readOnly
-              value={formatCOP(bet)}
-              className="no-spinner h-11 w-full cursor-default rounded-lg border border-purple-500/30 bg-[#160830]/60 text-center font-display text-xl font-bold text-white outline-none"
-            />
+            <div
+              className="h-11 w-full min-w-0 flex-1 cursor-default rounded-lg border border-purple-500/30 bg-[#160830]/60 px-2 font-display text-xl font-bold text-white"
+              aria-label="Apuesta"
+            >
+              <FitText>{formatCOP(bet)}</FitText>
+            </div>
             <button
               type="button"
               onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b + BET_STEP))}
