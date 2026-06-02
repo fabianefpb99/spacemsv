@@ -883,6 +883,9 @@ export function SlotGame() {
   // animation finishes. Reading it inside the "all reels stopped" effect
   // lets us paint wins exactly as the backend decided.
   const pendingResultRef = useRef<SpinResult | null>(null);
+  // Bumped whenever a server result lands. Included in the settle effect's
+  // deps so it re-runs if the network was slower than the spin animation.
+  const [resultTick, setResultTick] = useState(0);
   // Prevents a second spin from racing while the previous round is
   // in-flight (network + reel animation).
   const inFlightRef = useRef(false);
@@ -1006,6 +1009,7 @@ export function SlotGame() {
       });
       pendingResultRef.current = result;
       setGrid(result.grid);
+      setResultTick((n) => n + 1);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       setSpinError(msg || "No se pudo girar");
