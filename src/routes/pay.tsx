@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import { ArrowLeft, Settings, Check, CreditCard, ChevronDown } from "lucide-react";
+import { ArrowLeft, Check, CreditCard, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import nequiLogo from "@/assets/nequi.svg";
 import bancolombiaLogo from "@/assets/bancolombia.svg";
@@ -8,6 +8,10 @@ import brebLogo from "@/assets/bre-b.svg";
 import { useServerFn } from "@tanstack/react-start";
 import { createDeposit, getMyPendingReview } from "@/lib/deposits/deposit.functions";
 import { useQuery } from "@tanstack/react-query";
+import { AuthControl } from "@/components/auth/AuthControl";
+import { RequireAuth } from "@/components/auth/RequireAuth";
+import { useMe } from "@/hooks/useMe";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/pay")({
   head: () => ({
@@ -18,8 +22,16 @@ export const Route = createFileRoute("/pay")({
       { property: "og:description", content: "Recarga tu saldo en BetSpaceman con Nequi, Daviplata, Bancolombia o tarjeta de débito." },
     ],
   }),
-  component: PayPage,
+  component: PayPageGated,
 });
+
+function PayPageGated() {
+  return (
+    <RequireAuth>
+      <PayPage />
+    </RequireAuth>
+  );
+}
 
 function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
@@ -36,7 +48,9 @@ const COMBOS = [
 
 function PayPage() {
   const navigate = useNavigate();
-  const [balance] = useState(100000);
+  const { user } = useAuth();
+  const me = useMe();
+  const balanceText = user && me.data ? formatCOP(me.data.balance) : "—";
   const [method, setMethod] = useState<Method | null>(null);
   const [combo, setCombo] = useState<string | null>(null);
   const createFn = useServerFn(createDeposit);
@@ -48,6 +62,7 @@ function PayPage() {
     queryKey: ["my-pending-review"],
     queryFn: () => pendingFn(),
     refetchInterval: 10000,
+    enabled: !!user,
   });
   const pendingReview = pendingQ.data as { id: string; method: string } | null | undefined;
   const blocked = !!pendingReview;
@@ -127,12 +142,10 @@ function PayPage() {
             <div className="text-right">
               <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
               <div className="text-[11px] font-bold sm:text-xs text-white">
-                <span className="neon-green mr-0.5">$</span>{formatCOP(balance)} COP
+                <span className="neon-green mr-0.5">$</span>{balanceText} COP
               </div>
             </div>
-            <button className="rounded-md p-1.5 text-purple-200/80 hover:bg-white/5">
-              <Settings className="h-5 w-5 sm:h-6 sm:w-6" />
-            </button>
+            <AuthControl />
           </div>
         </header>
 
