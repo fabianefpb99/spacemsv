@@ -981,34 +981,40 @@ export function SlotGame() {
       typeof crypto !== "undefined" && "randomUUID" in crypto
         ? crypto.randomUUID()
         : `${Date.now()}-${Math.random().toString(16).slice(2)}-${Math.random().toString(16).slice(2)}`;
+    // 1) Kick the reels off IMMEDIATELY so the click feels instant. The
+    //    reels spin on a placeholder grid; when the server result lands
+    //    (almost always before the animation ends), we swap the target
+    //    symbols in-place via the finalSyms patch effect inside <Reel/>.
+    pendingResultRef.current = null;
+    queryClient.setQueryData(
+      ["me", user?.id ?? null],
+      (old: { balance: number; bonus_balance: number; profile: unknown } | null | undefined) =>
+        old ? { ...old, balance: Math.max(0, Number(old.balance) - bet) } : old,
+    );
+    startReelLoop();
+    setLastWin(0);
+    setDisplayedWin(0);
+    setTotalWonRound(0);
+    setWins([]);
+    setReelsStopped(0);
+    setSpinning(true);
+
+    // 2) Server call runs in parallel with the reel animation.
     try {
       const result = await callSpin({
         data: { bet_amount: bet, client_action_id: clientActionId },
       });
       pendingResultRef.current = result;
-      // Optimistic UI: subtract ONLY the bet immediately so the HUD reflects
-      // the debit at the moment of clicking Girar. The win (if any) is
-      // applied when the reels settle, where we invalidate and refetch the
-      // authoritative balance from the server. The server already debited
-      // and credited atomically — this is purely cosmetic.
-      queryClient.setQueryData(
-        ["me", user?.id ?? null],
-        (old: { balance: number; bonus_balance: number; profile: unknown } | null | undefined) =>
-          old ? { ...old, balance: Math.max(0, Number(old.balance) - bet) } : old,
-      );
-      startReelLoop();
-      setLastWin(0);
-      setDisplayedWin(0);
-      setTotalWonRound(0);
-      setWins([]);
       setGrid(result.grid);
-      setSpinning(true);
-      setReelsStopped(0);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       setSpinError(msg || "No se pudo girar");
       setAutoSpin(false);
-      // Revert any optimistic state by refetching the real balance.
+      // Revert: abort the visual spin and resync balance with the server.
+      pendingResultRef.current = null;
+      setSpinning(false);
+      setReelsStopped(0);
+      stopReelLoop();
       queryClient.invalidateQueries({ queryKey: ["me"] });
     } finally {
       inFlightRef.current = false;
@@ -1023,6 +1029,11 @@ export function SlotGame() {
   // When all reels stopped → apply the server-decided outcome.
   useEffect(() => {
     if (!spinning || reelsStopped < REELS) return;
+    // If the network was slower than the spin animation, wait for the server
+    // response before finalising. The effect will re-run when pendingResultRef
+    // gets set via setGrid → no extra state needed because setGrid changes
+    // `grid`, which is already part of the render cycle.
+    if (!pendingResultRef.current) return;
     stopReelLoop();
     const result = pendingResultRef.current;
     pendingResultRef.current = null;
