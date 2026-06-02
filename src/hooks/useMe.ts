@@ -25,7 +25,7 @@ export function useMe() {
     staleTime: 30_000,
     queryFn: async () => {
       if (!user) return null;
-      const [{ data: profile }, { data: bal }] = await Promise.all([
+      const [{ data: profile, error: profileError }, { data: bal, error: balanceError }] = await Promise.all([
         supabase
           .from("profiles")
           .select("id, email, username, verification_status")
@@ -37,6 +37,10 @@ export function useMe() {
           .eq("user_id", user.id)
           .maybeSingle(),
       ]);
+
+      if (profileError) throw profileError;
+      if (balanceError) throw balanceError;
+
       return {
         profile: profile ?? null,
         balance: bal?.balance ? Number(bal.balance) : 0,
