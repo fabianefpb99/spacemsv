@@ -18,19 +18,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    let mounted = true;
+
+    const applyVerifiedSession = async (nextSession: Session | null) => {
+      if (!mounted) return;
+
+      if (!nextSession) {
+        setSession(null);
+        setLoading(false);
+        return;
+      }
+
+      const { data, error } = await supabase.auth.getUser();
+      if (!mounted) return;
+
+      if (error || !data.user) {
+        setSession(null);
+        setLoading(false);
+        return;
+      }
+
+      setSession(nextSession);
+      setLoading(false);
+    };
+
     // Single subscription. Don't await async work inside the callback to
     // avoid deadlocks; invalidate caches synchronously and let React Query refetch.
     const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      setSession(newSession);
+      setLoading(true);
+      void applyVerifiedSession(newSession);
       queryClient.invalidateQueries({ queryKey: ["me"] });
     });
 
     supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setLoading(false);
+      void applyVerifiedSession(data.session);
     });
 
-    return () => sub.subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      sub.subscription.unsubscribe();
+    };
   }, [queryClient]);
 
   const value: AuthContextValue = {
