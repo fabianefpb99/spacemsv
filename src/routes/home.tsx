@@ -432,7 +432,7 @@ function HomePage() {
           <BottomItem icon={<Gamepad2 className="h-5 w-5" />} label="JUEGOS" />
           <BottomCenter />
           <BottomItem icon={<Wallet className="h-5 w-5" />} label="DEPÓSITO" to="/pay" />
-          <BottomItem icon={<User className="h-5 w-5" />} label="PERFIL" />
+          <BottomItem icon={<User className="h-5 w-5" />} label="PERFIL" to="/perfil" />
         </div>
       </nav>
     </div>
