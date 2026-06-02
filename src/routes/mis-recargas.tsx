@@ -1,9 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowLeft, Loader2, Wallet as WalletIcon, Copy, Check } from "lucide-react";
+import { ArrowLeft, Loader2, Wallet as WalletIcon, Copy, Check, X } from "lucide-react";
 import { useState } from "react";
-import { listMyDeposits } from "@/lib/deposits/deposit.functions";
+import { listMyDeposits, cancelMyDeposit } from "@/lib/deposits/deposit.functions";
 import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/mis-recargas")({
@@ -95,7 +95,7 @@ function MisRecargasPage() {
         ) : (
           <ul className="space-y-2">
             {rows.map((r) => (
-              <DepositRow key={r.id} row={r} />
+              <DepositRow key={r.id} row={r} onCancelled={() => q.refetch()} />
             ))}
           </ul>
         )}
@@ -104,16 +104,19 @@ function MisRecargasPage() {
   );
 }
 
-function DepositRow({ row }: {
+function DepositRow({ row, onCancelled }: {
   row: {
     id: string; reference: string; method: "nequi" | "breb";
     amount: number; bonus: number; status: Status; created_at: string;
     reject_reason: string | null;
   };
+  onCancelled: () => void;
 }) {
   const [copied, setCopied] = useState(false);
   const meta = STATUS_META[row.status];
   const canPay = row.status === "pendiente_pago";
+  const canCancel = row.status === "pendiente_pago" || row.status === "pendiente_revision";
+  const [openCancel, setOpenCancel] = useState(false);
 
   const copy = async () => {
     try {
@@ -170,6 +173,101 @@ function DepositRow({ row }: {
           Continuar pago
         </Link>
       )}
+
+      {canCancel && (
+        <button
+          onClick={() => setOpenCancel(true)}
+          className="mt-2 flex w-full items-center justify-center rounded-md border border-rose-400/50 bg-rose-500/10 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-rose-100 hover:bg-rose-500/20"
+        >
+          Cancelar solicitud
+        </button>
+      )}
+
+      {openCancel && (
+        <CancelModal
+          depositId={row.id}
+          onClose={() => setOpenCancel(false)}
+          onCancelled={() => { setOpenCancel(false); onCancelled(); }}
+        />
+      )}
     </li>
+  );
+}
+
+function CancelModal({ depositId, onClose, onCancelled }: {
+  depositId: string; onClose: () => void; onCancelled: () => void;
+}) {
+  const cancelFn = useServerFn(cancelMyDeposit);
+  const [confirmed, setConfirmed] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  async function submit() {
+    if (!confirmed || submitting) return;
+    setSubmitting(true); setErr(null);
+    try {
+      await cancelFn({ data: { id: depositId } });
+      onCancelled();
+    } catch (e) {
+      setErr((e as Error).message || "Error al cancelar");
+    } finally { setSubmitting(false); }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center sm:justify-center">
+      <div className="absolute inset-0 bg-black/75" onClick={() => !submitting && onClose()} />
+      <div className="relative w-full max-w-md rounded-t-2xl border border-rose-500/40 bg-gradient-to-b from-[#1a0820] to-[#0a0410] p-4 shadow-[0_0_30px_rgba(244,63,94,0.35)] sm:rounded-2xl">
+        <div className="flex items-start justify-between">
+          <h3 className="font-display text-base font-black uppercase tracking-widest text-white">
+            Cancelar solicitud
+          </h3>
+          <button onClick={() => !submitting && onClose()} className="rounded-md p-1 text-purple-200 hover:bg-white/5">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="mt-3 rounded-xl border border-amber-400/40 bg-amber-500/10 p-3 text-[11px] leading-snug text-amber-100/90">
+          <p className="font-bold uppercase tracking-wider text-amber-200">¿Confirmaste por error?</p>
+          <p className="mt-1">
+            Si confirmaste la solicitud por error y <b>no llegaste a enviar el pago</b>, te recomendamos cancelarla y repetir los pasos nuevamente.
+          </p>
+        </div>
+
+        <div className="mt-2 rounded-xl border border-rose-500/50 bg-rose-500/10 p-3 text-[11px] leading-snug text-rose-100/90">
+          <p className="font-bold uppercase tracking-wider text-rose-200">⚠ Si ya enviaste el pago</p>
+          <p className="mt-1">
+            <b>No canceles esta solicitud.</b> Si ya transferiste el dinero y cancelas, no podremos asociar el pago a tu cuenta y los fondos podrían <b>perderse</b>. Espera a que el administrador verifique tu depósito.
+          </p>
+        </div>
+
+        <label className="mt-3 flex items-start gap-2 text-[11px] text-purple-100/90">
+          <input
+            type="checkbox"
+            checked={confirmed}
+            onChange={(e) => setConfirmed(e.target.checked)}
+            className="mt-0.5 h-4 w-4 accent-rose-400"
+          />
+          <span>Confirmo que <b>no he enviado</b> el pago y deseo cancelar esta solicitud.</span>
+        </label>
+
+        {err && <p className="mt-2 text-center text-xs text-rose-300">{err}</p>}
+
+        <div className="mt-4 grid grid-cols-2 gap-2">
+          <button
+            onClick={() => !submitting && onClose()}
+            className="rounded-xl border border-purple-500/40 bg-[#0c0620] px-4 py-3 text-xs font-extrabold uppercase tracking-wide text-purple-200 hover:bg-purple-500/10"
+          >
+            Volver
+          </button>
+          <button
+            onClick={submit}
+            disabled={!confirmed || submitting}
+            className="rounded-xl bg-rose-500 px-4 py-3 text-xs font-extrabold uppercase tracking-wide text-[#1a0408] shadow-[0_0_24px_-6px_rgba(244,63,94,0.8)] transition hover:bg-rose-400 disabled:cursor-not-allowed disabled:bg-rose-900/40 disabled:text-rose-200/40"
+          >
+            {submitting ? "Cancelando…" : "Sí, cancelar"}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
