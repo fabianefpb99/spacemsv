@@ -14,6 +14,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMe, type MeData } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
+import { toFriendlyError } from "@/lib/friendly-error";
 import { minesDeal, minesReveal, minesCashout, minesResume, type MinesSessionView } from "@/lib/games/mines.functions";
 import {
   MINES_TILES,

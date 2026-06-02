@@ -9,6 +9,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { spinSlot, type SpinResult } from "@/lib/games/slot.functions";
 import { useMe } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
+import { toFriendlyError } from "@/lib/friendly-error";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Menu, Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "lucide-react";

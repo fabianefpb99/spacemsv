@@ -11,6 +11,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMe, type MeData } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
+import { toFriendlyError } from "@/lib/friendly-error";
 import { diceRoll } from "@/lib/games/dice.functions";
 import {
   DICE_BET_STEP,

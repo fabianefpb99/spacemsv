@@ -15,6 +15,7 @@ import bgMusicUrl from "@/assets/bg-music.mp3";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
+import { toFriendlyError } from "@/lib/friendly-error";
 import { useQueryClient } from "@tanstack/react-query";
 
 type Phase = "betting" | "running" | "crashed";
