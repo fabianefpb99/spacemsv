@@ -38,10 +38,10 @@ export function BetAmount({
 
   return (
     <div className="flex h-full flex-col">
-      <div className={cn("min-h-0 flex-1 text-yellow-300")}>
+      <div className="min-h-0 flex-1">
         <FitText>{children ?? formatCOP(bet)}</FitText>
       </div>
-      <div className="-mt-0.5 text-center text-[8px] font-bold leading-none text-yellow-300/95">
+      <div className="-mt-1.5 text-center text-[7px] font-bold leading-none text-yellow-300/95">
         +{formatCOP(bonusUsed)} BONUS
       </div>
     </div>
