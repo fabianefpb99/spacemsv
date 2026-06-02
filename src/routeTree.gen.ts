@@ -14,6 +14,7 @@ import { Route as SlotpruebasRouteImport } from './routes/slotpruebas'
 import { Route as SlotRouteImport } from './routes/slot'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as PayRouteImport } from './routes/pay'
+import { Route as MisRecargasRouteImport } from './routes/mis-recargas'
 import { Route as MinesRouteImport } from './routes/mines'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as DadosRouteImport } from './routes/dados'
@@ -45,6 +46,11 @@ const PerfilRoute = PerfilRouteImport.update({
 const PayRoute = PayRouteImport.update({
   id: '/pay',
   path: '/pay',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MisRecargasRoute = MisRecargasRouteImport.update({
+  id: '/mis-recargas',
+  path: '/mis-recargas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MinesRoute = MinesRouteImport.update({
@@ -90,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/dados': typeof DadosRoute
   '/home': typeof HomeRoute
   '/mines': typeof MinesRoute
+  '/mis-recargas': typeof MisRecargasRoute
   '/pay': typeof PayRoute
   '/perfil': typeof PerfilRoute
   '/slot': typeof SlotRoute
@@ -104,6 +111,7 @@ export interface FileRoutesByTo {
   '/dados': typeof DadosRoute
   '/home': typeof HomeRoute
   '/mines': typeof MinesRoute
+  '/mis-recargas': typeof MisRecargasRoute
   '/pay': typeof PayRoute
   '/perfil': typeof PerfilRoute
   '/slot': typeof SlotRoute
@@ -119,6 +127,7 @@ export interface FileRoutesById {
   '/dados': typeof DadosRoute
   '/home': typeof HomeRoute
   '/mines': typeof MinesRoute
+  '/mis-recargas': typeof MisRecargasRoute
   '/pay': typeof PayRoute
   '/perfil': typeof PerfilRoute
   '/slot': typeof SlotRoute
@@ -135,6 +144,7 @@ export interface FileRouteTypes {
     | '/dados'
     | '/home'
     | '/mines'
+    | '/mis-recargas'
     | '/pay'
     | '/perfil'
     | '/slot'
@@ -149,6 +159,7 @@ export interface FileRouteTypes {
     | '/dados'
     | '/home'
     | '/mines'
+    | '/mis-recargas'
     | '/pay'
     | '/perfil'
     | '/slot'
@@ -163,6 +174,7 @@ export interface FileRouteTypes {
     | '/dados'
     | '/home'
     | '/mines'
+    | '/mis-recargas'
     | '/pay'
     | '/perfil'
     | '/slot'
@@ -178,6 +190,7 @@ export interface RootRouteChildren {
   DadosRoute: typeof DadosRoute
   HomeRoute: typeof HomeRoute
   MinesRoute: typeof MinesRoute
+  MisRecargasRoute: typeof MisRecargasRoute
   PayRoute: typeof PayRoute
   PerfilRoute: typeof PerfilRoute
   SlotRoute: typeof SlotRoute
@@ -221,6 +234,13 @@ declare module '@tanstack/react-router' {
       path: '/pay'
       fullPath: '/pay'
       preLoaderRoute: typeof PayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mis-recargas': {
+      id: '/mis-recargas'
+      path: '/mis-recargas'
+      fullPath: '/mis-recargas'
+      preLoaderRoute: typeof MisRecargasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mines': {
@@ -282,6 +302,7 @@ const rootRouteChildren: RootRouteChildren = {
   DadosRoute: DadosRoute,
   HomeRoute: HomeRoute,
   MinesRoute: MinesRoute,
+  MisRecargasRoute: MisRecargasRoute,
   PayRoute: PayRoute,
   PerfilRoute: PerfilRoute,
   SlotRoute: SlotRoute,
