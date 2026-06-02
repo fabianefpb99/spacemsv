@@ -1,3 +1,4 @@
+import { AuthControl } from "@/components/auth/AuthControl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, Settings, Minus, Plus, Volume2, VolumeX } from "lucide-react";

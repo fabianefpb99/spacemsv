@@ -1,3 +1,4 @@
+import { AuthControl } from "@/components/auth/AuthControl";
 import { useEffect, useRef, useState, useCallback } from "react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Link } from "@tanstack/react-router";
