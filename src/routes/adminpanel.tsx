@@ -842,7 +842,7 @@ function UserDetailDrawer({ userId, onClose }: { userId: string; onClose: () => 
                 <Loader2 className="mx-auto h-5 w-5 animate-spin text-purple-300" />
               ) : (
                 <ul className="space-y-1">
-                  {txs.data?.map((t) => (
+                  {txs.data?.map((t: { id: string; type: string; amount: number; created_at: string; game?: string | null }) => (
                     <li
                       key={t.id}
                       className="flex items-center justify-between rounded-md border border-purple-500/15 bg-[#150830]/50 px-2 py-1.5 text-[11px]"
@@ -939,7 +939,7 @@ function RtpSection() {
         <Loader2 className="mx-auto h-5 w-5 animate-spin text-purple-300" />
       ) : (
         <div className="space-y-2">
-          {q.data?.map((row) => {
+          {q.data?.map((row: { game: string; rtp_target: number; rtp_live: number | null; is_active: boolean; updated_at?: string | null; updated_by_label?: string | null }) => {
             const draft = drafts[row.game] ?? String(row.rtp_target);
             const dirty = Number(draft) !== Number(row.rtp_target);
             return (
