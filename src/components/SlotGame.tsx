@@ -2,6 +2,12 @@ import { AuthControl } from "@/components/auth/AuthControl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { Link } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { spinSlot, type SpinResult } from "@/lib/games/slot.functions";
+import { useMe } from "@/hooks/useMe";
+import { useAuth } from "@/hooks/useAuth";
+import { AuthDialog } from "@/components/auth/AuthDialog";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Menu, Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "lucide-react";
 import { setMuted as setAudioMuted, playCashoutSound, playCoinsSound, isMuted, setBackgroundTrack, clearBackgroundTrack, getBackgroundTrack, stopAllGameAudio } from "@/lib/gameAudio";
@@ -837,7 +843,23 @@ function MegaOrnament() {
 const LINES = PAYLINES.length;
 
 export function SlotGame() {
-  const [balance, setBalance] = useState(100000);
+  const { user } = useAuth();
+  const me = useMe();
+  const queryClient = useQueryClient();
+  const callSpin = useServerFn(spinSlot);
+  const isAuthed = !!user;
+  // Source of truth = Supabase. While the query is loading we show 0 to avoid
+  // accidentally enabling Spin against a stale local value.
+  const balance = me.data?.balance ?? 0;
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [spinError, setSpinError] = useState<string | null>(null);
+  // Holds the official outcome returned by the server until the visual
+  // animation finishes. Reading it inside the "all reels stopped" effect
+  // lets us paint wins exactly as the backend decided.
+  const pendingResultRef = useRef<SpinResult | null>(null);
+  // Prevents a second spin from racing while the previous round is
+  // in-flight (network + reel animation).
+  const inFlightRef = useRef(false);
   const [bet, setBet] = useState(2000);
   const [muted, setMuted] = useState(false);
   const [online] = useState(263);
@@ -922,36 +944,63 @@ export function SlotGame() {
 
   const lineBet = useMemo(() => Math.max(1, Math.floor(bet / LINES)), [bet]);
 
-  const spin = useCallback(() => {
-    if (spinning) return;
+  const spin = useCallback(async () => {
+    if (spinning || inFlightRef.current) return;
+    if (!isAuthed) {
+      setAuthDialogOpen(true);
+      return;
+    }
     if (bet < MIN_BET || bet > balance) return;
-    startReelLoop();
-    setBalance((b) => b - bet);
-    setLastWin(0);
-    setDisplayedWin(0);
-    setTotalWonRound(0);
-    setWins([]);
-    const newGrid = generateGrid();
-    setGrid(newGrid);
-    setSpinning(true);
-    setReelsStopped(0);
-  }, [spinning, bet, balance]);
+    inFlightRef.current = true;
+    setSpinError(null);
+    const clientActionId =
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(16).slice(2)}-${Math.random().toString(16).slice(2)}`;
+    try {
+      const result = await callSpin({
+        data: { bet_amount: bet, client_action_id: clientActionId },
+      });
+      pendingResultRef.current = result;
+      // Refresh balance from Supabase so the HUD shows the post-bet value
+      // (the count-up of `displayedWin` runs separately when reels stop).
+      queryClient.invalidateQueries({ queryKey: ["me"] });
+      startReelLoop();
+      setLastWin(0);
+      setDisplayedWin(0);
+      setTotalWonRound(0);
+      setWins([]);
+      setGrid(result.grid);
+      setSpinning(true);
+      setReelsStopped(0);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      setSpinError(msg || "No se pudo girar");
+      setAutoSpin(false);
+    } finally {
+      inFlightRef.current = false;
+    }
+  }, [spinning, bet, balance, isAuthed, callSpin, queryClient]);
 
   // Triggered when last reel reports stop
   const handleReelStop = useCallback(() => {
     setReelsStopped((n) => n + 1);
   }, []);
 
-  // When all reels stopped → evaluate
+  // When all reels stopped → apply the server-decided outcome.
   useEffect(() => {
     if (!spinning || reelsStopped < REELS) return;
     stopReelLoop();
-    const { wins: w, total } = evaluateGrid(grid, lineBet);
+    const result = pendingResultRef.current;
+    pendingResultRef.current = null;
+    const w: WinLine[] = (result?.wins ?? []) as WinLine[];
+    const total = result?.total ?? 0;
     setWins(w);
     setLastWin(total);
     setTotalWonRound(total);
     if (total > 0) {
-      setBalance((b) => b + total);
+      // Pull the freshly-credited balance from Supabase.
+      queryClient.invalidateQueries({ queryKey: ["me"] });
       const bestPayout = Math.max(...w.map((x) => x.payout));
       const tier = getWinTier(bestPayout, bet);
       if (tier === "mega") playMegaWinSound();
@@ -964,7 +1013,7 @@ export function SlotGame() {
     }
     setSpinning(false);
     setReelsStopped(0);
-  }, [reelsStopped, spinning, grid, lineBet, bet]);
+  }, [reelsStopped, spinning, bet, queryClient]);
 
   // Auto-spin: re-trigger spin after each round when enabled
   useEffect(() => {
