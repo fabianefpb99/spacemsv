@@ -129,7 +129,7 @@ function PerfilPage() {
       <div className="mx-auto flex min-h-screen max-w-md flex-col px-3 pb-10 pt-4 sm:max-w-lg sm:px-4">
         {/* Header */}
         <header
-          className="-mx-3 flex items-center justify-between border-b border-purple-500/20 bg-[#060210] px-3 pb-3"
+          className="-mx-3 -mt-4 flex items-center justify-between border-b border-purple-500/20 bg-[#060210] px-3 pb-3"
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <button
@@ -137,10 +137,10 @@ function PerfilPage() {
             aria-label="Atrás"
             className="rounded-md p-2 text-purple-100 hover:bg-white/5"
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-7 w-7" strokeWidth={3} />
           </button>
-          <h1 className="font-display text-sm font-bold uppercase tracking-widest">Mi Perfil</h1>
-          <div className="w-9" />
+          <h1 className="font-display text-base font-bold uppercase tracking-widest">Mi Perfil</h1>
+          <div className="h-7 w-11" />
         </header>
 
         {/* Identity card */}
