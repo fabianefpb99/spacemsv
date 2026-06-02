@@ -1,4 +1,5 @@
 import { AuthControl } from "@/components/auth/AuthControl";
+import { FitText } from "@/components/ui/fit-text";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
@@ -510,11 +511,12 @@ export function DiceGame() {
                 >
                   <Minus className="h-5 w-5" />
                 </button>
-                <input
-                  readOnly
-                  value={formatCOP(bet)}
-                  className="no-spinner h-10 w-full cursor-default rounded-lg border border-purple-500/30 bg-[#160830]/60 text-center font-display text-lg font-bold text-white outline-none"
-                />
+                <div
+                  className="h-10 w-full min-w-0 flex-1 cursor-default rounded-lg border border-purple-500/30 bg-[#160830]/60 px-2 font-display text-lg font-bold text-white"
+                  aria-label="Apuesta"
+                >
+                  <FitText>{formatCOP(bet)}</FitText>
+                </div>
                 <button
                   onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b + BET_STEP))}
                   disabled={phase !== "betting"}
