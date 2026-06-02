@@ -341,6 +341,22 @@ export type Database = {
       }
     }
     Functions: {
+      _credit_win: {
+        Args: { p_amount: number; p_user_id: string }
+        Returns: {
+          new_balance: number
+          new_bonus: number
+        }[]
+      }
+      _debit_bet: {
+        Args: { p_amount: number; p_user_id: string }
+        Returns: {
+          from_bonus: number
+          from_real: number
+          new_balance: number
+          new_bonus: number
+        }[]
+      }
       _spaceman_gen_crash: { Args: { p_server_seed: string }; Returns: number }
       adjust_balance: {
         Args: {
