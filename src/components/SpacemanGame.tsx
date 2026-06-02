@@ -1180,14 +1180,12 @@ export function SpacemanGame() {
             >
               <Minus className="h-6 w-6" strokeWidth={3} />
             </button>
-            <input
-              type="text"
-              value={formatCOP(bet)}
-              readOnly
-              disabled={!!activeBet}
-              inputMode="numeric"
-              className="no-spinner min-w-0 flex-1 rounded-lg border border-purple-500/30 bg-black/40 px-2 text-center font-display text-2xl font-bold text-white outline-none disabled:opacity-70 sm:text-3xl cursor-default"
-            />
+            <div
+              className={`min-w-0 flex-1 h-14 sm:h-16 rounded-lg border border-purple-500/30 bg-black/40 px-2 font-display text-2xl font-bold text-white sm:text-3xl ${activeBet ? "opacity-70" : ""}`}
+              aria-label="Apuesta"
+            >
+              <FitText>{formatCOP(bet)}</FitText>
+            </div>
             <button
               className="btn-bet flex h-14 w-14 shrink-0 items-center justify-center rounded-lg text-2xl font-black sm:h-16 sm:w-16"
               onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b + BET_STEP))}
