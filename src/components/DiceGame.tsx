@@ -561,6 +561,11 @@ export function DiceGame() {
               </button>
             </div>
           </div>
+          {error && (
+            <div className="mt-1.5 rounded-md border border-rose-500/40 bg-rose-950/30 px-2 py-1 text-center text-[11px] font-semibold text-rose-200">
+              {error}
+            </div>
+          )}
         </section>
 
         <div className="h-1" />
