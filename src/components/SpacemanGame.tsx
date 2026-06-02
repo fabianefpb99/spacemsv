@@ -717,7 +717,7 @@ export function SpacemanGame() {
         // Confirmar con datos reales del servidor
         setCashedOutAt(Number(res.cashout_multiplier));
         setLastWin(Number(res.payout) - (activeBet ?? 0));
-        queryClient.setQueryData(["me", user.id], (old: typeof me) =>
+        queryClient.setQueryData(["me", user.id], (old: { balance: number } | null | undefined) =>
           old ? { ...old, balance: Number(res.new_balance) } : old,
         );
       } catch (err) {
@@ -738,7 +738,7 @@ export function SpacemanGame() {
       // Optimista: bloquear apuesta visualmente y descontar saldo
       setActiveBet(bet);
       setActiveBetRoundId(r.id);
-      queryClient.setQueryData(["me", user.id], (old: typeof me) =>
+        queryClient.setQueryData(["me", user.id], (old: { balance: number } | null | undefined) =>
         old ? { ...old, balance: Math.max(0, old.balance - bet) } : old,
       );
       try {
@@ -749,7 +749,7 @@ export function SpacemanGame() {
         });
         if (error) throw error;
         const res = data as { new_balance: number };
-        queryClient.setQueryData(["me", user.id], (old: typeof me) =>
+        queryClient.setQueryData(["me", user.id], (old: { balance: number } | null | undefined) =>
           old ? { ...old, balance: Number(res.new_balance) } : old,
         );
       } catch (err) {
