@@ -396,6 +396,10 @@ function Reel({
   // Tracks the symbols currently shown in the visible window, so a new spin
   // can start from them (no visual jump when fillers get inserted).
   const displayedRef = useRef<string[]>(finalSyms);
+  // Latest finalSyms (kept in a ref so finishSpin reads the most recent value,
+  // even when the server result arrived after the spin animation started).
+  const finalSymsRef = useRef<string[]>(finalSyms);
+  useEffect(() => { finalSymsRef.current = finalSyms; }, [finalSyms]);
 
   // Sync strip with finalSyms when not spinning (e.g. initial render).
   useEffect(() => {
@@ -454,8 +458,9 @@ function Reel({
       if (!e) return;
       e.style.transition = "none";
       e.style.transform = "translateY(0)";
-      setStrip(finalSyms);
-      displayedRef.current = finalSyms;
+      const latest = finalSymsRef.current;
+      setStrip(latest);
+      displayedRef.current = latest;
       playReelStop();
       onStop();
     }
