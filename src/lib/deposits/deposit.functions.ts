@@ -224,6 +224,7 @@ export const adminListDeposits = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((i: unknown) => adminListInput.parse(i))
   .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     await assertAdmin(context.userId);
     const from = (data.page - 1) * data.pageSize;
     const to = from + data.pageSize - 1;
@@ -258,6 +259,7 @@ export const adminGetDeposit = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((i: unknown) => z.object({ id: z.string().uuid() }).parse(i))
   .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     await assertAdmin(context.userId);
     const { data: row, error } = await supabaseAdmin
       .from("deposit_requests").select("*").eq("id", data.id).maybeSingle();
@@ -295,6 +297,7 @@ export const adminRejectDeposit = createServerFn({ method: "POST" })
 export const adminPendingDepositsCount = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     await assertAdmin(context.userId);
     const { count, error } = await supabaseAdmin
       .from("deposit_requests").select("id", { count: "exact", head: true })
