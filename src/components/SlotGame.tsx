@@ -396,6 +396,10 @@ function Reel({
   // Tracks the symbols currently shown in the visible window, so a new spin
   // can start from them (no visual jump when fillers get inserted).
   const displayedRef = useRef<string[]>(finalSyms);
+  // Latest finalSyms (kept in a ref so finishSpin reads the most recent value,
+  // even when the server result arrived after the spin animation started).
+  const finalSymsRef = useRef<string[]>(finalSyms);
+  useEffect(() => { finalSymsRef.current = finalSyms; }, [finalSyms]);
 
   // Sync strip with finalSyms when not spinning (e.g. initial render).
   useEffect(() => {
@@ -454,8 +458,9 @@ function Reel({
       if (!e) return;
       e.style.transition = "none";
       e.style.transform = "translateY(0)";
-      setStrip(finalSyms);
-      displayedRef.current = finalSyms;
+      const latest = finalSymsRef.current;
+      setStrip(latest);
+      displayedRef.current = latest;
       playReelStop();
       onStop();
     }
@@ -476,6 +481,27 @@ function Reel({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spinning]);
+
+  // If the server result arrives AFTER the spin animation has already started,
+  // patch the bottom `ROWS` tiles of the strip so the reel lands on the
+  // correct (server-decided) symbols. Without this, starting the reels
+  // optimistically (before awaiting the server) would land on whatever
+  // placeholder symbols we started with.
+  useEffect(() => {
+    if (!spinning) return;
+    setStrip((prev) => {
+      if (prev.length < ROWS) return prev;
+      const head = prev.slice(0, prev.length - ROWS);
+      // already correct → no state update
+      let same = true;
+      for (let i = 0; i < ROWS; i++) {
+        if (prev[prev.length - ROWS + i] !== finalSyms[i]) { same = false; break; }
+      }
+      if (same) return prev;
+      return [...head, ...finalSyms];
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [finalSyms]);
 
   const visibleRows = ROWS;
   return (
@@ -857,6 +883,9 @@ export function SlotGame() {
   // animation finishes. Reading it inside the "all reels stopped" effect
   // lets us paint wins exactly as the backend decided.
   const pendingResultRef = useRef<SpinResult | null>(null);
+  // Bumped whenever a server result lands. Included in the settle effect's
+  // deps so it re-runs if the network was slower than the spin animation.
+  const [resultTick, setResultTick] = useState(0);
   // Prevents a second spin from racing while the previous round is
   // in-flight (network + reel animation).
   const inFlightRef = useRef(false);
@@ -955,34 +984,41 @@ export function SlotGame() {
       typeof crypto !== "undefined" && "randomUUID" in crypto
         ? crypto.randomUUID()
         : `${Date.now()}-${Math.random().toString(16).slice(2)}-${Math.random().toString(16).slice(2)}`;
+    // 1) Kick the reels off IMMEDIATELY so the click feels instant. The
+    //    reels spin on a placeholder grid; when the server result lands
+    //    (almost always before the animation ends), we swap the target
+    //    symbols in-place via the finalSyms patch effect inside <Reel/>.
+    pendingResultRef.current = null;
+    queryClient.setQueryData(
+      ["me", user?.id ?? null],
+      (old: { balance: number; bonus_balance: number; profile: unknown } | null | undefined) =>
+        old ? { ...old, balance: Math.max(0, Number(old.balance) - bet) } : old,
+    );
+    startReelLoop();
+    setLastWin(0);
+    setDisplayedWin(0);
+    setTotalWonRound(0);
+    setWins([]);
+    setReelsStopped(0);
+    setSpinning(true);
+
+    // 2) Server call runs in parallel with the reel animation.
     try {
       const result = await callSpin({
         data: { bet_amount: bet, client_action_id: clientActionId },
       });
       pendingResultRef.current = result;
-      // Optimistic UI: subtract ONLY the bet immediately so the HUD reflects
-      // the debit at the moment of clicking Girar. The win (if any) is
-      // applied when the reels settle, where we invalidate and refetch the
-      // authoritative balance from the server. The server already debited
-      // and credited atomically — this is purely cosmetic.
-      queryClient.setQueryData(
-        ["me", user?.id ?? null],
-        (old: { balance: number; bonus_balance: number; profile: unknown } | null | undefined) =>
-          old ? { ...old, balance: Math.max(0, Number(old.balance) - bet) } : old,
-      );
-      startReelLoop();
-      setLastWin(0);
-      setDisplayedWin(0);
-      setTotalWonRound(0);
-      setWins([]);
       setGrid(result.grid);
-      setSpinning(true);
-      setReelsStopped(0);
+      setResultTick((n) => n + 1);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       setSpinError(msg || "No se pudo girar");
       setAutoSpin(false);
-      // Revert any optimistic state by refetching the real balance.
+      // Revert: abort the visual spin and resync balance with the server.
+      pendingResultRef.current = null;
+      setSpinning(false);
+      setReelsStopped(0);
+      stopReelLoop();
       queryClient.invalidateQueries({ queryKey: ["me"] });
     } finally {
       inFlightRef.current = false;
@@ -997,6 +1033,11 @@ export function SlotGame() {
   // When all reels stopped → apply the server-decided outcome.
   useEffect(() => {
     if (!spinning || reelsStopped < REELS) return;
+    // If the network was slower than the spin animation, wait for the server
+    // response before finalising. The effect will re-run when pendingResultRef
+    // gets set via setGrid → no extra state needed because setGrid changes
+    // `grid`, which is already part of the render cycle.
+    if (!pendingResultRef.current) return;
     stopReelLoop();
     const result = pendingResultRef.current;
     pendingResultRef.current = null;
@@ -1021,7 +1062,7 @@ export function SlotGame() {
     }
     setSpinning(false);
     setReelsStopped(0);
-  }, [reelsStopped, spinning, bet, queryClient]);
+  }, [reelsStopped, spinning, bet, queryClient, resultTick]);
 
   // Auto-spin: re-trigger spin after each round when enabled
   useEffect(() => {
