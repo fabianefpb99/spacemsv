@@ -58,6 +58,7 @@ export function FitText({
         alignItems: "center",
         justifyContent: "center",
         minWidth: 0,
+        height: "100%",
       }}
     >
       <span
