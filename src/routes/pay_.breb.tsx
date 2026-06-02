@@ -68,6 +68,7 @@ function PayBrebPage() {
   const [cancelling, setCancelling] = useState(false);
   const [cancelErr, setCancelErr] = useState<string | null>(null);
   const [confirmCancel, setConfirmCancel] = useState(false);
+  const shouldPollDeposit = submitting;
 
   const q = useQuery({
     queryKey: ["my-deposit", id],
@@ -75,7 +76,7 @@ function PayBrebPage() {
     queryFn: () => getFn({ data: { id } }),
     refetchInterval: (query) => {
       const s = (query.state.data as { status?: string } | undefined)?.status;
-      if (submitting) return 2000;
+      if (shouldPollDeposit) return 2000;
       return s === "pendiente_revision" || s === "aprobada" || s === "rechazada" ? 5000 : false;
     },
   });
