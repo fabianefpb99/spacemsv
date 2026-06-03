@@ -72,7 +72,7 @@ function VipPage() {
           style={{ boxShadow: `0 0 16px ${RANK_META[progress.rank].glow}` }}
         >
           <div className="flex items-center gap-4">
-            <VipBadge rank={progress.rank} sub={progress.sub} size="lg" />
+            <VipBadge rank={progress.rank} sub={progress.sub} size="lg" art />
             <div className="min-w-0 flex-1">
               <div className="text-[10px] font-semibold uppercase tracking-widest text-purple-200/70">
                 Tu rango actual
@@ -224,7 +224,7 @@ function RankSection({
                 isCurrent && "bg-purple-500/10",
               )}
             >
-              <VipBadge rank={rank} sub={sub} size="sm" />
+              <VipBadge rank={rank} sub={sub} size="sm" art />
               <div className="min-w-0 flex-1">
                 <div className={cn("text-xs font-bold", reached ? meta.text : "text-purple-200/60")}>
                   {meta.label} {sub}
