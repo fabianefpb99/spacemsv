@@ -263,6 +263,7 @@ export const bjDeal = createServerFn({ method: "POST" })
     // 3. Build shoe + initial deal.
     const serverSeed = newServerSeed();
     const serverSeedHash = sha256Hex(serverSeed);
+    const bias = await loadBjBias();
     let shoe = makeShoe();
 
     const draws: Card[] = [];
@@ -271,7 +272,7 @@ export const bjDeal = createServerFn({ method: "POST" })
       shoe = r.shoe;
       draws.push(r.card);
     }
-    const hole = drawHoleBiased(shoe);
+    const hole = drawHoleBiased(shoe, bias);
     shoe = hole.shoe;
 
     const player: Card[] = [draws[0], draws[2]];
@@ -290,7 +291,7 @@ export const bjDeal = createServerFn({ method: "POST" })
 
     // 4. Natural blackjack → resolve immediately.
     if (isBlackjack(player)) {
-      const resolved = resolveHand(shoe, player, dealer, bet);
+      const resolved = resolveHand(shoe, player, dealer, bet, bias);
       shoe = resolved.shoe;
       publicState = {
         player,
