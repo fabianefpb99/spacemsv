@@ -315,9 +315,8 @@ export const adminUpdateRtp = createServerFn({ method: "POST" })
       .parse(input)
   )
   .handler(async ({ data, context }) => {
-    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
-    const { data: row, error } = await supabaseAdmin.rpc("admin_update_rtp", {
+    const { data: row, error } = await context.supabase.rpc("admin_update_rtp", {
       p_game: data.game,
       p_rtp_target: data.rtp_target,
       p_is_active: data.is_active ?? undefined,
