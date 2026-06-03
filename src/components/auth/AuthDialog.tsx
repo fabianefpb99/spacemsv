@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { PersonalDataForm } from "@/components/profile/PersonalDataForm";
 
 const signUpSchema = z.object({
   email: z.string().email("Email inválido"),
