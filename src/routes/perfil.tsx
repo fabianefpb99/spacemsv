@@ -107,6 +107,25 @@ function PerfilPage() {
   const navigate = useNavigate();
   const isAdminQ = useIsAdmin();
   const vip = useVip();
+  const queryClient = useQueryClient();
+  const [dataDialogOpen, setDataDialogOpen] = useState(false);
+
+  const fullProfile = useQuery({
+    queryKey: ["perfil-full", user?.id ?? null],
+    enabled: !!user,
+    staleTime: 30_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select(
+          "first_name, second_name, last_name, second_last_name, gender, birth_date, phone, document_type, document_number, document_issue_date, terms_accepted_at, profile_completed",
+        )
+        .eq("id", user!.id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
 
   if (!loading && !user) {
     return (
