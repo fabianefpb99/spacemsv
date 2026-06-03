@@ -1,14 +1,8 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { AVATAR_OPTIONS, type AvatarKey } from "@/lib/avatars";
@@ -31,6 +25,29 @@ export function AvatarPickerDialog({ open, onOpenChange, userId, currentKey }: P
     if (open) setSelected((currentKey as AvatarKey) ?? null);
   }, [open, currentKey]);
 
+  // Lock scroll + ESC to close while open (mirrors AuthDialog pattern so the
+  // page doesn't shift sideways when the scrollbar gutter disappears).
+  useEffect(() => {
+    if (!open || typeof document === "undefined") return;
+    const { body, documentElement } = document;
+    const prevBody = body.style.overflow;
+    const prevHtml = documentElement.style.overflow;
+    const prevTouch = body.style.touchAction;
+    body.style.overflow = "hidden";
+    documentElement.style.overflow = "hidden";
+    body.style.touchAction = "none";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onOpenChange(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      body.style.overflow = prevBody;
+      documentElement.style.overflow = prevHtml;
+      body.style.touchAction = prevTouch;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open, onOpenChange]);
+
   const save = useMutation({
     mutationFn: async (key: AvatarKey) => {
       if (!userId) throw new Error("Sin sesión");
@@ -49,19 +66,41 @@ export function AvatarPickerDialog({ open, onOpenChange, userId, currentKey }: P
     onError: (e: Error) => toast.error(e.message || "No se pudo guardar"),
   });
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md border-fuchsia-400/30 bg-[#0c0620] text-white sm:rounded-2xl">
-        <DialogHeader>
-          <DialogTitle className="text-base font-bold uppercase tracking-wide text-fuchsia-200">
-            Elige tu avatar
-          </DialogTitle>
-          <DialogDescription className="text-xs text-purple-200/70">
-            Selecciona una imagen y guarda los cambios.
-          </DialogDescription>
-        </DialogHeader>
+  if (!open || typeof document === "undefined") return null;
 
-        <div className="grid grid-cols-4 gap-3">
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[120] overflow-hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Elige tu avatar"
+    >
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={() => onOpenChange(false)}
+        aria-hidden="true"
+      />
+      <div className="relative flex min-h-dvh items-center justify-center overflow-y-auto overflow-x-hidden px-4 py-6 sm:px-6">
+        <div className="relative box-border w-full max-w-md overflow-x-hidden overflow-y-auto rounded-2xl border border-fuchsia-400/30 bg-[#0c0620] p-4 text-white shadow-2xl sm:p-6 max-h-[calc(100dvh-2rem)]">
+          <button
+            type="button"
+            onClick={() => onOpenChange(false)}
+            aria-label="Cerrar"
+            className="absolute right-4 top-4 text-purple-200/80 transition-colors hover:text-white"
+          >
+            ×
+          </button>
+
+          <div className="flex flex-col space-y-1 pr-8">
+            <h2 className="text-base font-bold uppercase tracking-wide text-fuchsia-200">
+              Elige tu avatar
+            </h2>
+            <p className="text-xs text-purple-200/70">
+              Selecciona una imagen y guarda los cambios.
+            </p>
+          </div>
+
+          <div className="mt-4 grid grid-cols-4 gap-3">
           {AVATAR_OPTIONS.map((opt) => {
             const isSelected = selected === opt.key;
             return (
@@ -97,9 +136,9 @@ export function AvatarPickerDialog({ open, onOpenChange, userId, currentKey }: P
               </button>
             );
           })}
-        </div>
+          </div>
 
-        <div className="mt-2 flex justify-end gap-2">
+          <div className="mt-4 flex justify-end gap-2">
           <Button
             variant="ghost"
             onClick={() => onOpenChange(false)}
@@ -120,8 +159,10 @@ export function AvatarPickerDialog({ open, onOpenChange, userId, currentKey }: P
               "Guardar"
             )}
           </Button>
+          </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>,
+    document.body,
   );
 }
