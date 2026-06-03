@@ -5,6 +5,77 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ------------------------------------------------------------------
+ * VIP Frame — futuristic HUD card with beveled corners.
+ * Two layered shapes (outer gradient border + inner dark fill) sharing
+ * the same notched clip-path. Color tokens are passed via CSS vars so
+ * each rank can theme its own frame.
+ * ------------------------------------------------------------------ */
+.vip-frame {
+  --vip-notch: 16px;
+  --vip-border: 1.5px;
+  --vip-c1: rgba(168, 85, 247, 0.9);   /* rank accent 1 */
+  --vip-c2: rgba(217, 70, 239, 0.7);   /* mid */
+  --vip-c3: rgba(168, 85, 247, 0.4);   /* rank accent 2 */
+  --vip-fill: linear-gradient(135deg, #1a0a2e 0%, #0c0620 60%, #1a0a2e 100%);
+  position: relative;
+  padding: var(--vip-border);
+  background: linear-gradient(
+    135deg,
+    var(--vip-c1) 0%,
+    var(--vip-c2) 35%,
+    var(--vip-c3) 65%,
+    var(--vip-c1) 100%
+  );
+  clip-path: polygon(
+    var(--vip-notch) 0,
+    calc(100% - var(--vip-notch)) 0,
+    100% var(--vip-notch),
+    100% calc(100% - var(--vip-notch)),
+    calc(100% - var(--vip-notch)) 100%,
+    var(--vip-notch) 100%,
+    0 calc(100% - var(--vip-notch)),
+    0 var(--vip-notch)
+  );
+}
+.vip-frame > .vip-frame-inner {
+  position: relative;
+  background: var(--vip-fill);
+  clip-path: polygon(
+    var(--vip-notch) 0,
+    calc(100% - var(--vip-notch)) 0,
+    100% var(--vip-notch),
+    100% calc(100% - var(--vip-notch)),
+    calc(100% - var(--vip-notch)) 100%,
+    var(--vip-notch) 100%,
+    0 calc(100% - var(--vip-notch)),
+    0 var(--vip-notch)
+  );
+}
+/* Bright corner accents along the bevels (4 short bars). */
+.vip-frame-inner::before,
+.vip-frame-inner::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 2px;
+  background: var(--vip-c1);
+  box-shadow: 0 0 6px var(--vip-c1);
+  pointer-events: none;
+}
+.vip-frame-inner::before {
+  top: 6px;
+  left: 12px;
+  transform: rotate(-45deg);
+  transform-origin: left center;
+}
+.vip-frame-inner::after {
+  bottom: 6px;
+  right: 12px;
+  transform: rotate(-45deg);
+  transform-origin: right center;
+}
+
+/* ------------------------------------------------------------------
  * App-wide touch & selection hardening
  *
  * - Disables long-press "Save image" / drag on every <img>.
