@@ -214,8 +214,8 @@ export const adminAdjustXp = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     const row = Array.isArray(res) ? res[0] : res;
     return {
-      total_xp: Number(row?.total_xp ?? 0),
-      current_level: Number(row?.current_level ?? 0),
+      total_xp: Number(row?.out_total_xp ?? 0),
+      current_level: Number(row?.out_current_level ?? 0),
     };
   });
 
