@@ -163,9 +163,8 @@ export const adminAdjustBalance = createServerFn({ method: "POST" })
       .parse(input)
   )
   .handler(async ({ data, context }) => {
-    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
-    const { data: res, error } = await supabaseAdmin.rpc("admin_adjust_balance", {
+    const { data: res, error } = await context.supabase.rpc("admin_adjust_balance", {
       p_target_user_id: data.userId,
       p_delta: data.amount,
       p_target: data.target,
@@ -185,9 +184,8 @@ export const adminSetBlock = createServerFn({ method: "POST" })
     z.object({ userId: z.string().uuid(), blocked: z.boolean() }).parse(input)
   )
   .handler(async ({ data, context }) => {
-    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
-    const { error } = await supabaseAdmin.rpc("admin_set_block", {
+    const { error } = await context.supabase.rpc("admin_set_block", {
       p_target_user_id: data.userId,
       p_blocked: data.blocked,
     });
@@ -207,9 +205,8 @@ export const adminAdjustXp = createServerFn({ method: "POST" })
       .parse(input)
   )
   .handler(async ({ data, context }) => {
-    const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
-    const { data: res, error } = await supabaseAdmin.rpc("admin_adjust_xp", {
+    const { data: res, error } = await context.supabase.rpc("admin_adjust_xp", {
       p_target_user_id: data.userId,
       p_delta: data.delta,
       p_reason: data.reason ?? undefined,
