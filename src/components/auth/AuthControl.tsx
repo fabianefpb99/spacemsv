@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
 import { AuthDialog } from "./AuthDialog";
+import { getAvatarUrl } from "@/lib/avatars";
 
 function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
@@ -60,8 +61,12 @@ export function AuthControl({ className }: { className?: string }) {
         className="z-50 w-[min(16rem,calc(100vw-1.5rem))] max-w-[calc(100vw-1.5rem)] border-purple-500/40 bg-[#0c0620] text-white"
       >
         <div className="flex items-center gap-2 border-b border-purple-500/20 pb-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-600/30 ring-1 ring-purple-400/30">
-            <UserIcon className="h-4 w-4 text-purple-200" />
+          <div className="h-10 w-10 overflow-hidden rounded-full border border-fuchsia-400/40 bg-purple-900/40 ring-1 ring-purple-400/30">
+            <img
+              src={getAvatarUrl(me.data?.profile?.avatar_key)}
+              alt=""
+              className="h-full w-full object-cover"
+            />
           </div>
           <div className="min-w-0">
             <div className="truncate text-sm font-semibold">
