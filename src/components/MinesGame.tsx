@@ -15,6 +15,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useMe, type MeData } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
 import { toFriendlyError } from "@/lib/friendly-error";
+import { withTimeout } from "@/lib/async/with-timeout";
 import { minesDeal, minesReveal, minesCashout, minesResume, type MinesSessionView } from "@/lib/games/mines.functions";
 import { clampBetToStep } from "@/lib/games/bet-helpers";
 import {
@@ -156,7 +157,7 @@ function relativeTime(ts: number, now: number): string {
 }
 
 export function MinesGame() {
-  const { user } = useAuth();
+  const { user, refreshSession } = useAuth();
   const me = useMe();
   const queryClient = useQueryClient();
   const realBalance = me.data?.balance ?? 0;
@@ -287,18 +288,74 @@ export function MinesGame() {
     }
   }, [applyBalance, resetRound]);
 
+  const syncFromServer = useCallback(async () => {
+    if (!user) {
+      resetRound();
+      return false;
+    }
+
+    try {
+      const view = await withTimeout(resumeFn(), 5000, "mines_resume_timeout");
+      if (!view) {
+        resetRound();
+        await queryClient.invalidateQueries({ queryKey: ["me", user.id] });
+        return false;
+      }
+
+      setBet(view.public_state.bet);
+      setMines(view.public_state.mines);
+      applyServerView(view);
+      return true;
+    } catch (error) {
+      console.warn("[mines] syncFromServer failed", error);
+      resetRound();
+      await queryClient.invalidateQueries({ queryKey: ["me", user.id] });
+      return false;
+    }
+  }, [applyServerView, queryClient, resetRound, resumeFn, user]);
+
+  const recoverAfterActionError = useCallback(async (error: unknown) => {
+    const raw = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
+    const looksAuthError =
+      raw.includes("unauthorized") ||
+      raw.includes("not authenticated") ||
+      raw.includes("auth_get_session_timeout") ||
+      raw.includes("auth_get_user_timeout");
+
+    if (looksAuthError) {
+      await refreshSession().catch((refreshError) => {
+        console.warn("[mines] auth refresh failed", refreshError);
+        return null;
+      });
+    }
+
+    const shouldResync =
+      looksAuthError ||
+      raw.includes("stale_nonce") ||
+      raw.includes("session_closed") ||
+      raw.includes("session_not_found") ||
+      raw.includes("not_playing") ||
+      raw.includes("already_revealed") ||
+      raw.includes("timeout") ||
+      raw.includes("failed to fetch") ||
+      raw.includes("load failed");
+
+    return shouldResync ? syncFromServer() : false;
+  }, [refreshSession, syncFromServer]);
+
   // Resume any open server-side session on mount.
   useEffect(() => {
     if (!user) return;
     let cancelled = false;
     (async () => {
       try {
-        const view = await resumeFn();
+        const view = await withTimeout(resumeFn(), 5000, "mines_resume_timeout");
         if (cancelled || !view) return;
         setBet(view.public_state.bet);
         setMines(view.public_state.mines);
         applyServerView(view);
-      } catch {
+      } catch (error) {
+        console.warn("[mines] initial resume failed", error);
         // best-effort; ignore
       }
     })();
@@ -361,23 +418,29 @@ export function MinesGame() {
     try {
       const actionId = uuid();
       actionIdRef.current = actionId;
-      const view = await dealFn({ data: { bet, mines, client_action_id: actionId } });
+      const view = await withTimeout(
+        dealFn({ data: { bet, mines, client_action_id: actionId } }),
+        7000,
+        "mines_deal_timeout",
+      );
       applyServerView(view);
       // Drain any clicks the user made between APOSTAR and the deal response.
       void processQueue();
     } catch (e) {
-      setError(toFriendlyError(e, "No se pudo iniciar la partida."));
-      // Rollback optimistic UI.
-      applyBalance(prevBalance);
-      pendingQueueRef.current = [];
-      setPendingTiles(new Set());
-      setPhase("betting");
+      const recovered = await recoverAfterActionError(e);
+      if (!recovered) {
+        setError(toFriendlyError(e, "No se pudo iniciar la partida."));
+        applyBalance(prevBalance);
+        pendingQueueRef.current = [];
+        setPendingTiles(new Set());
+        setPhase("betting");
+      }
     } finally {
       dealInFlightRef.current = false;
       startingRef.current = false;
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase, bet, balance, mines, dealFn, applyServerView, applyBalance]);
+  }, [phase, bet, balance, mines, dealFn, applyServerView, applyBalance, recoverAfterActionError]);
 
   const cashout = useCallback(async () => {
     if (phase !== "playing" || picks === 0 || actionInFlightRef.current) return;
@@ -386,16 +449,23 @@ export function MinesGame() {
     actionInFlightRef.current = true;
     setError(null);
     try {
-      const view = await cashoutFn({
-        data: { session_id: sess.id, nonce: sess.nonce, client_action_id: uuid() },
-      });
+      const view = await withTimeout(
+        cashoutFn({
+          data: { session_id: sess.id, nonce: sess.nonce, client_action_id: uuid() },
+        }),
+        7000,
+        "mines_cashout_timeout",
+      );
       applyServerView(view);
     } catch (e) {
-      setError(toFriendlyError(e, "No se pudo cobrar."));
+      const recovered = await recoverAfterActionError(e);
+      if (!recovered) {
+        setError(toFriendlyError(e, "No se pudo cobrar."));
+      }
     } finally {
       actionInFlightRef.current = false;
     }
-  }, [phase, picks, cashoutFn, applyServerView]);
+  }, [phase, picks, cashoutFn, applyServerView, recoverAfterActionError]);
 
   /**
    * Drain queued tile clicks one at a time. Runs only one network call in
@@ -418,14 +488,18 @@ export function MinesGame() {
       }
       actionInFlightRef.current = true;
       try {
-        const view = await revealFn({
-          data: {
-            session_id: sess.id,
-            nonce: sess.nonce,
-            tile_idx: idx,
-            client_action_id: uuid(),
-          },
-        });
+        const view = await withTimeout(
+          revealFn({
+            data: {
+              session_id: sess.id,
+              nonce: sess.nonce,
+              tile_idx: idx,
+              client_action_id: uuid(),
+            },
+          }),
+          7000,
+          "mines_reveal_timeout",
+        );
         // Sound matches the confirmed outcome — no diamond-then-bomb flash.
         if (view.public_state.phase === "playing") playReveal();
         applyServerView(view);
@@ -438,7 +512,10 @@ export function MinesGame() {
           if (!prev.has(idx)) return prev;
           const n = new Set(prev); n.delete(idx); return n;
         });
-        setError(toFriendlyError(e, "No se pudo realizar la jugada."));
+        const recovered = await recoverAfterActionError(e);
+        if (!recovered) {
+          setError(toFriendlyError(e, "No se pudo realizar la jugada."));
+        }
         // Drop the rest of the queue — the nonce likely drifted.
         pendingQueueRef.current = [];
         break;
@@ -446,7 +523,7 @@ export function MinesGame() {
         actionInFlightRef.current = false;
       }
     }
-  }, [revealFn, applyServerView]);
+  }, [revealFn, applyServerView, recoverAfterActionError]);
 
   const handleTile = useCallback((idx: number) => {
     if (phase !== "playing") return;
