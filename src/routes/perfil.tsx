@@ -539,6 +539,12 @@ function PerfilPage() {
           }}
         />
       )}
+      <AvatarPickerDialog
+        open={avatarDialogOpen}
+        onOpenChange={setAvatarDialogOpen}
+        userId={user?.id}
+        currentKey={me.data?.profile?.avatar_key ?? null}
+      />
     </div>
   );
 }
