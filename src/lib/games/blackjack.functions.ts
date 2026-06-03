@@ -477,11 +477,13 @@ export const bjStand = createServerFn({ method: "POST" })
     const doubled = session.public_state.doubled;
     const effectiveBet = doubled ? bet * 2 : bet;
 
+    const bias = await loadBjBias();
     const resolved = resolveHand(
       session.state.shoe,
       session.public_state.player,
       session.public_state.dealer,
       effectiveBet,
+      bias,
     );
 
     const publicState: BJPublicState = {
@@ -567,13 +569,15 @@ export const bjDouble = createServerFn({ method: "POST" })
     });
     let newBalance = debit.new_balance;
 
+    const bias = await loadBjBias();
     let shoe = session.state.shoe;
-    const drawn = drawCard(shoe);
+    const currentScore = handScore(session.public_state.player);
+    const drawn = drawForPlayerHit(shoe, currentScore, bias);
     shoe = drawn.shoe;
     const player = [...session.public_state.player, drawn.card];
     const effectiveBet = bet * 2;
 
-    const resolved = resolveHand(shoe, player, session.public_state.dealer, effectiveBet);
+    const resolved = resolveHand(shoe, player, session.public_state.dealer, effectiveBet, bias);
 
     const publicState: BJPublicState = {
       player,
