@@ -215,7 +215,11 @@ export const adminResetPassword = createServerFn({ method: "POST" })
       target_user_id: data.userId,
       meta: { email },
     });
-    return { ok: true, action_link: link.properties?.action_link ?? null };
+    // Do NOT return the action_link to the client. The recovery link is a
+    // single-use credential that grants account takeover; rely on the email
+    // delivery only. We keep `link` invocation so Supabase sends the email.
+    void link;
+    return { ok: true };
   });
 
 /* ------------------------------- RTP config ------------------------------- */
