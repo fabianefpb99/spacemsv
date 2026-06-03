@@ -767,7 +767,11 @@ export function SpacemanGame() {
   };
 
   const addToBet = (amount: number) => {
-    setBet((b) => Math.min(Math.min(balance, MAX_BET), b + amount));
+    setBet((b) => {
+      const cap = Math.min(balance, MAX_BET);
+      const next = Math.min(cap, b + amount);
+      return Math.max(MIN_BET, Math.floor(next / BET_STEP) * BET_STEP);
+    });
   };
 
   const countdownLabel = Math.min(BETTING_MS / 1000, Math.max(1, Math.ceil(countdown)));
@@ -1192,7 +1196,13 @@ export function SpacemanGame() {
             </div>
             <button
               className="btn-bet flex h-14 w-14 shrink-0 items-center justify-center rounded-lg text-2xl font-black sm:h-16 sm:w-16"
-              onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b + BET_STEP))}
+              onClick={() =>
+                setBet((b) => {
+                  const cap = Math.min(balance, MAX_BET);
+                  const next = Math.min(cap, b + BET_STEP);
+                  return Math.max(MIN_BET, Math.floor(next / BET_STEP) * BET_STEP);
+                })
+              }
               disabled={!!activeBet}
               aria-label="Sumar 500"
             >
@@ -1202,7 +1212,13 @@ export function SpacemanGame() {
           <div className="mt-2 flex items-center justify-center gap-2">
             <button
               className="btn-bet rounded-md px-3 py-1.5 text-xs font-bold"
-              onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b * 2))}
+              onClick={() =>
+                setBet((b) => {
+                  const cap = Math.min(balance, MAX_BET);
+                  const next = Math.min(cap, b * 2);
+                  return Math.max(MIN_BET, Math.floor(next / BET_STEP) * BET_STEP);
+                })
+              }
               disabled={!!activeBet}
               aria-label="Doblar apuesta"
               title="Doblar apuesta"
