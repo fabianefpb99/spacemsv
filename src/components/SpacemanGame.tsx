@@ -1229,7 +1229,7 @@ export function SpacemanGame() {
             key={buttonState.key}
             onClick={handleBetClick}
             disabled={buttonState.disabled}
-            className={`btn-primary-action btn-pop-in mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-2 font-display text-lg font-black uppercase sm:py-2.5 sm:text-xl ${buttonState.cls} disabled:cursor-not-allowed`}
+            className={`btn-primary-action btn-pop-in mt-3 flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-xl py-2 font-display text-sm font-black uppercase sm:py-2.5 sm:text-base ${buttonState.cls} disabled:cursor-not-allowed`}
           >
             <span>{buttonState.label}</span>
             <span className="grid h-5 w-5 place-items-center rounded-full border-2 border-white/80">
