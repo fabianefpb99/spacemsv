@@ -25,7 +25,6 @@ import { useMe } from "@/hooks/useMe";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import astronaut from "@/assets/astronaut.svg";
-import { VipCard } from "@/components/vip/VipCard";
 import { VipLevelUpToast } from "@/components/vip/VipLevelUpToast";
 import { VipBadge } from "@/components/vip/VipBadge";
 import { useVip } from "@/hooks/useVip";
