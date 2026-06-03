@@ -920,6 +920,8 @@ export function SlotGame() {
   useEffect(() => {
     // Garantiza que ningún audio de un juego previo siga vivo.
     stopAllGameAudio();
+    const onStopAll = () => stopReelLoop();
+    window.addEventListener(AUDIO_STOP_ALL_EVENT, onStopAll);
     const audio = setBackgroundTrack(mafiaJazzUrl, { volume: 0.05, loop: true });
     if (!audio) return;
     const onFirst = () => {
@@ -933,6 +935,8 @@ export function SlotGame() {
       window.removeEventListener("pointerdown", onFirst);
       window.removeEventListener("keydown", onFirst);
       clearBackgroundTrack();
+      stopReelLoop();
+      window.removeEventListener(AUDIO_STOP_ALL_EVENT, onStopAll);
     };
   }, []);
   useEffect(() => {
