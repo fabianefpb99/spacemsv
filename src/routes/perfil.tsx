@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import {
   ArrowLeft,
   BadgeCheck,
@@ -19,6 +20,8 @@ import {
   Settings as SettingsIcon,
   IdCard,
   Gamepad2,
+  UserCircle2,
+  AlertCircle,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
@@ -31,6 +34,7 @@ import { useVip } from "@/hooks/useVip";
 import { computeProgress, formatXp, RANK_META, rankLabel } from "@/lib/vip/vip.shared";
 import { cn } from "@/lib/utils";
 import { Sparkles } from "lucide-react";
+import { PersonalDataDialog } from "@/components/profile/PersonalDataDialog";
 
 export const Route = createFileRoute("/perfil")({
   head: () => ({
@@ -103,6 +107,25 @@ function PerfilPage() {
   const navigate = useNavigate();
   const isAdminQ = useIsAdmin();
   const vip = useVip();
+  const queryClient = useQueryClient();
+  const [dataDialogOpen, setDataDialogOpen] = useState(false);
+
+  const fullProfile = useQuery({
+    queryKey: ["perfil-full", user?.id ?? null],
+    enabled: !!user,
+    staleTime: 30_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select(
+          "first_name, second_name, last_name, second_last_name, gender, birth_date, phone, document_type, document_number, document_issue_date, terms_accepted_at, profile_completed",
+        )
+        .eq("id", user!.id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
 
   if (!loading && !user) {
     return (
@@ -370,6 +393,65 @@ function PerfilPage() {
           <LinkRow icon={<SettingsIcon className="h-4 w-4 text-purple-200" />} label="Configuración" />
         </div>
 
+        {/* Banner: completar datos */}
+        {fullProfile.data && !fullProfile.data.profile_completed && (
+          <button
+            type="button"
+            onClick={() => setDataDialogOpen(true)}
+            className="mt-4 flex w-full items-center gap-3 rounded-xl border border-amber-400/60 bg-amber-500/10 px-3 py-3 text-left hover:bg-amber-500/15"
+          >
+            <AlertCircle className="h-5 w-5 shrink-0 text-amber-300" />
+            <div className="min-w-0 flex-1">
+              <div className="text-xs font-bold uppercase tracking-wider text-amber-200">
+                Completa tus datos personales
+              </div>
+              <div className="text-[10px] text-amber-100/80">
+                Necesarios para depósitos, retiros y verificación.
+              </div>
+            </div>
+            <ChevronRight className="h-4 w-4 text-amber-300" />
+          </button>
+        )}
+
+        {/* Mis Datos */}
+        <SectionTitle>Mis Datos</SectionTitle>
+        <section className="rounded-2xl border border-purple-500/30 bg-[#0c0620]/80 p-3">
+          {fullProfile.isLoading ? (
+            <div className="text-xs text-purple-200/60">Cargando…</div>
+          ) : fullProfile.data?.profile_completed ? (
+            <>
+              <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-[11px]">
+                <DataItem label="Nombres" value={[fullProfile.data.first_name, fullProfile.data.second_name].filter(Boolean).join(" ") || "—"} />
+                <DataItem label="Apellidos" value={[fullProfile.data.last_name, fullProfile.data.second_last_name].filter(Boolean).join(" ") || "—"} />
+                <DataItem label="Género" value={genderLabel(fullProfile.data.gender)} />
+                <DataItem label="Nacimiento" value={fullProfile.data.birth_date ?? "—"} />
+                <DataItem label="Teléfono" value={fullProfile.data.phone ?? "—"} />
+                <DataItem label="Documento" value={`${docLabel(fullProfile.data.document_type)} ${fullProfile.data.document_number ?? ""}`.trim()} />
+                <DataItem label="Expedición" value={fullProfile.data.document_issue_date ?? "—"} />
+              </div>
+              <button
+                type="button"
+                onClick={() => setDataDialogOpen(true)}
+                className="mt-3 w-full rounded-md border border-purple-500/40 bg-purple-500/10 py-2 text-[11px] font-bold uppercase tracking-wider text-purple-100 hover:bg-purple-500/20"
+              >
+                Editar datos
+              </button>
+            </>
+          ) : (
+            <div className="flex flex-col items-center gap-2 py-2 text-center">
+              <UserCircle2 className="h-8 w-8 text-purple-300/70" />
+              <div className="text-xs text-purple-200/80">Aún no has registrado tus datos personales.</div>
+              <button
+                type="button"
+                onClick={() => setDataDialogOpen(true)}
+                className="mt-1 rounded-md bg-purple-600 px-4 py-1.5 text-[11px] font-bold uppercase tracking-wider text-white hover:bg-purple-500"
+              >
+                Completar ahora
+              </button>
+            </div>
+          )}
+        </section>
+
         {/* Logout */}
         <button
           onClick={async () => {
@@ -382,6 +464,40 @@ function PerfilPage() {
           Cerrar Sesión
         </button>
       </div>
+      {user && (
+        <PersonalDataDialog
+          open={dataDialogOpen}
+          onOpenChange={setDataDialogOpen}
+          userId={user.id}
+          initial={fullProfile.data ?? undefined}
+          onSaved={() => {
+            queryClient.invalidateQueries({ queryKey: ["perfil-full", user.id] });
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function genderLabel(g: string | null | undefined) {
+  if (g === "masculino") return "Masculino";
+  if (g === "femenino") return "Femenino";
+  if (g === "otro") return "Otro";
+  return "—";
+}
+
+function docLabel(t: string | null | undefined) {
+  if (t === "CC") return "CC";
+  if (t === "CE") return "CE";
+  if (t === "PA") return "PA";
+  return "";
+}
+
+function DataItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0">
+      <div className="text-[9px] font-semibold uppercase tracking-widest text-purple-200/60">{label}</div>
+      <div className="truncate text-xs font-medium text-white">{value}</div>
     </div>
   );
 }

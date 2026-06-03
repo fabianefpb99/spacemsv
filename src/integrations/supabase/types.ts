@@ -307,10 +307,16 @@ export type Database = {
           document_type: string | null
           email: string | null
           first_name: string | null
+          gender: string | null
           id: string
           is_blocked: boolean
           last_name: string | null
           phone: string | null
+          phone_verified: boolean
+          profile_completed: boolean
+          second_last_name: string | null
+          second_name: string | null
+          terms_accepted_at: string | null
           updated_at: string
           username: string | null
           verification_status: Database["public"]["Enums"]["verification_status"]
@@ -324,10 +330,16 @@ export type Database = {
           document_type?: string | null
           email?: string | null
           first_name?: string | null
+          gender?: string | null
           id: string
           is_blocked?: boolean
           last_name?: string | null
           phone?: string | null
+          phone_verified?: boolean
+          profile_completed?: boolean
+          second_last_name?: string | null
+          second_name?: string | null
+          terms_accepted_at?: string | null
           updated_at?: string
           username?: string | null
           verification_status?: Database["public"]["Enums"]["verification_status"]
@@ -341,10 +353,16 @@ export type Database = {
           document_type?: string | null
           email?: string | null
           first_name?: string | null
+          gender?: string | null
           id?: string
           is_blocked?: boolean
           last_name?: string | null
           phone?: string | null
+          phone_verified?: boolean
+          profile_completed?: boolean
+          second_last_name?: string | null
+          second_name?: string | null
+          terms_accepted_at?: string | null
           updated_at?: string
           username?: string | null
           verification_status?: Database["public"]["Enums"]["verification_status"]
