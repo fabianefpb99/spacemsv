@@ -14,6 +14,9 @@ export function toFriendlyError(err: unknown, fallback = "Algo salió mal. Inten
     msg.includes("networkerror") ||
     msg.includes("network request failed") ||
     msg.includes("err_network") ||
+    msg.includes("request_timeout") ||
+    msg.includes("auth_get_session_timeout") ||
+    msg.includes("auth_get_user_timeout") ||
     msg.includes("timeout") ||
     msg.includes("aborted")
   ) {
