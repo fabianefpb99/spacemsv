@@ -25,6 +25,8 @@ import { useMe } from "@/hooks/useMe";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import astronaut from "@/assets/astronaut.svg";
+import { VipCard } from "@/components/vip/VipCard";
+import { VipLevelUpToast } from "@/components/vip/VipLevelUpToast";
 
 export const Route = createFileRoute("/perfil")({
   head: () => ({
@@ -128,6 +130,7 @@ function PerfilPage() {
 
   return (
     <div className="min-h-screen bg-[#060210] text-white">
+      <VipLevelUpToast />
       <div className="mx-auto flex min-h-screen max-w-md flex-col px-3 pb-10 pt-4 sm:max-w-lg sm:px-4">
         {/* Header */}
         <header
@@ -222,6 +225,10 @@ function PerfilPage() {
             </button>
           </div>
         </section>
+
+        {/* VIP */}
+        <SectionTitle>Programa VIP</SectionTitle>
+        <VipCard />
 
         {/* Seguridad */}
         <SectionTitle>Seguridad de la cuenta</SectionTitle>
