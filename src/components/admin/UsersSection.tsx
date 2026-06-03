@@ -405,6 +405,58 @@ function UserDetailDrawer({ userId, onClose }: { userId: string; onClose: () => 
               )}
             </Panel>
 
+            {/* XP / VIP actions */}
+            <Panel title="Ajustar XP (VIP)">
+              <div className="mb-2 flex flex-wrap items-center gap-2 text-[11px] text-purple-200/80">
+                <Sparkles className="h-3.5 w-3.5 text-fuchsia-300" />
+                <span>Nivel actual recalculado automáticamente.</span>
+              </div>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <input
+                  inputMode="numeric"
+                  value={xpAmount}
+                  onChange={(e) => setXpAmount(e.target.value.replace(/[^0-9]/g, ""))}
+                  placeholder="Cantidad de XP"
+                  className="flex-1 rounded-md border border-purple-500/30 bg-[#150830] px-2 py-2 text-xs text-white placeholder:text-purple-300/40"
+                />
+                <input
+                  value={xpReason}
+                  onChange={(e) => setXpReason(e.target.value)}
+                  placeholder="Motivo (opcional)"
+                  className="flex-1 rounded-md border border-purple-500/30 bg-[#150830] px-2 py-2 text-xs text-white placeholder:text-purple-300/40"
+                />
+              </div>
+              <div className="mt-2 flex gap-2">
+                <button
+                  onClick={() => submitXp(1)}
+                  disabled={adjustXp.isPending || !xpAmount}
+                  className="flex flex-1 items-center justify-center gap-1 rounded-md bg-fuchsia-600 px-3 py-2 text-xs font-bold uppercase tracking-wider text-white hover:bg-fuchsia-500 disabled:opacity-50"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  Otorgar XP
+                </button>
+                <button
+                  onClick={() => submitXp(-1)}
+                  disabled={adjustXp.isPending || !xpAmount}
+                  className="flex flex-1 items-center justify-center gap-1 rounded-md bg-purple-700 px-3 py-2 text-xs font-bold uppercase tracking-wider text-white hover:bg-purple-600 disabled:opacity-50"
+                >
+                  <Minus className="h-3.5 w-3.5" />
+                  Quitar XP
+                </button>
+              </div>
+              {adjustXp.data && (
+                <div className="mt-2 rounded-md border border-fuchsia-500/30 bg-fuchsia-500/5 p-2 text-[11px] text-fuchsia-200">
+                  XP total: <b>{adjustXp.data.total_xp.toLocaleString("es-CO")}</b> · Nivel:{" "}
+                  <b>{adjustXp.data.current_level}</b>
+                </div>
+              )}
+              {adjustXp.isError && (
+                <div className="mt-2 text-[11px] text-rose-300">
+                  Error: {(adjustXp.error as Error).message}
+                </div>
+              )}
+            </Panel>
+
             {/* Actions */}
             <Panel title="Acciones administrativas">
               <div className="grid grid-cols-2 gap-2">
