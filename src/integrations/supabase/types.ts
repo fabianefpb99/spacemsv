@@ -651,8 +651,8 @@ export type Database = {
       admin_adjust_xp: {
         Args: { p_delta: number; p_reason?: string; p_target_user_id: string }
         Returns: {
-          current_level: number
-          total_xp: number
+          out_current_level: number
+          out_total_xp: number
         }[]
       }
       admin_approve_deposit: {
