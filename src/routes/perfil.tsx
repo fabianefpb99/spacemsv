@@ -25,8 +25,12 @@ import { useMe } from "@/hooks/useMe";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import astronaut from "@/assets/astronaut.svg";
-import { VipCard } from "@/components/vip/VipCard";
 import { VipLevelUpToast } from "@/components/vip/VipLevelUpToast";
+import { VipBadge } from "@/components/vip/VipBadge";
+import { useVip } from "@/hooks/useVip";
+import { computeProgress, formatXp, RANK_META, rankLabel } from "@/lib/vip/vip.shared";
+import { cn } from "@/lib/utils";
+import { Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/perfil")({
   head: () => ({
@@ -98,6 +102,7 @@ function PerfilPage() {
   const stats = useStats(user?.id);
   const navigate = useNavigate();
   const isAdminQ = useIsAdmin();
+  const vip = useVip();
 
   if (!loading && !user) {
     return (
@@ -127,6 +132,11 @@ function PerfilPage() {
   const bonusText = me.data ? formatCOP(me.data.bonus_balance) : "—";
   const verification = me.data?.profile?.verification_status ?? "unverified";
   const verified = verification === "verified";
+
+  const vipProgress = vip.data
+    ? computeProgress(vip.data.user_vip?.total_xp ?? 0, vip.data.levels)
+    : null;
+  const vipMeta = vipProgress ? RANK_META[vipProgress.rank] : null;
 
   return (
     <div className="min-h-screen bg-[#060210] text-white">
@@ -160,10 +170,30 @@ function PerfilPage() {
         </header>
 
         {/* Identity card */}
-        <section className="mt-4 rounded-2xl border border-fuchsia-500/60 bg-gradient-to-b from-[#1a0b3a] to-[#0c0620] p-4 shadow-[0_0_14px_rgba(217,70,239,0.25)]">
+        <section
+          className={cn(
+            "mt-4 rounded-2xl border bg-gradient-to-b from-[#1a0b3a] to-[#0c0620] p-4 transition",
+            vipMeta ? vipMeta.border : "border-fuchsia-500/60",
+          )}
+          style={{
+            boxShadow: vipMeta
+              ? `0 0 14px ${vipMeta.glow}`
+              : "0 0 14px rgba(217,70,239,0.25)",
+          }}
+        >
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-2 border-fuchsia-400/70 bg-purple-900/40 shadow-[0_0_18px_rgba(217,70,239,0.45)]">
+              <div
+                className={cn(
+                  "flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-2 bg-purple-900/40 transition",
+                  vipMeta ? vipMeta.border : "border-fuchsia-400/70",
+                )}
+                style={{
+                  boxShadow: vipMeta
+                    ? `0 0 18px ${vipMeta.glow}`
+                    : "0 0 18px rgba(217,70,239,0.45)",
+                }}
+              >
                 <img src={astronaut} alt="" className="h-12 w-12 object-contain" />
               </div>
               <button
@@ -174,7 +204,12 @@ function PerfilPage() {
               </button>
             </div>
             <div className="min-w-0 flex-1">
-              <div className="font-display truncate text-lg font-black uppercase tracking-wide text-white">
+              <div
+                className={cn(
+                  "font-display truncate text-lg font-black uppercase tracking-wide",
+                  vipMeta ? vipMeta.text : "text-white",
+                )}
+              >
                 {username}
               </div>
               <div className="text-[11px] text-purple-200/70">Usuario #{user ? shortId(user.id) : "00000"}</div>
@@ -192,6 +227,46 @@ function PerfilPage() {
           </div>
 
         </section>
+
+        {/* VIP progress (compact, ties to identity card above) */}
+        {vipProgress && vipMeta && (
+          <Link
+            to="/vip"
+            className={cn(
+              "mt-2 flex items-center gap-2.5 rounded-xl border bg-[#0c0620]/70 px-3 py-2 transition hover:brightness-110",
+              vipMeta.border,
+            )}
+          >
+            <VipBadge rank={vipProgress.rank} sub={vipProgress.sub} size="sm" />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-2">
+                <div className={cn("font-display truncate text-[11px] font-bold uppercase tracking-wider", vipMeta.text)}>
+                  {rankLabel(vipProgress.rank, vipProgress.sub)}
+                </div>
+                <div className="flex items-center gap-1 text-[9px] font-semibold uppercase tracking-widest text-purple-200/70">
+                  <Sparkles className="h-2.5 w-2.5" />
+                  Nivel {vipProgress.displayLevel}
+                </div>
+              </div>
+              <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-purple-500/20">
+                <div
+                  className={cn("h-full bg-gradient-to-r transition-all", vipMeta.gradient)}
+                  style={{ width: `${vipProgress.isMax ? 100 : vipProgress.pct.toFixed(1)}%` }}
+                />
+              </div>
+              <div className="mt-0.5 flex items-center justify-between text-[9px] text-purple-200/70">
+                {vipProgress.isMax ? (
+                  <span className="font-semibold text-amber-300">★ Nivel Máximo</span>
+                ) : (
+                  <span>
+                    {formatXp(vipProgress.xpIntoLevel)} / {formatXp(vipProgress.xpForNextLevel)} XP
+                  </span>
+                )}
+                <span className="font-semibold text-fuchsia-300">Ver VIP →</span>
+              </div>
+            </div>
+          </Link>
+        )}
 
         {/* Balances */}
         <section className="mt-3 grid grid-cols-2 gap-3">
@@ -225,10 +300,6 @@ function PerfilPage() {
             </button>
           </div>
         </section>
-
-        {/* VIP */}
-        <SectionTitle>Programa VIP</SectionTitle>
-        <VipCard />
 
         {/* Seguridad */}
         <SectionTitle>Seguridad de la cuenta</SectionTitle>
