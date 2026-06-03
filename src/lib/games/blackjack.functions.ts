@@ -17,6 +17,10 @@ import {
   drawHoleBiased,
   makeShoe,
   resolveHand,
+  drawForPlayerHit,
+  biasFromRtpTarget,
+  BJ_DEFAULT_BIAS,
+  type BJBias,
 } from "./blackjack.server";
 import {
   adjustBalance,
@@ -25,6 +29,21 @@ import {
   newServerSeed,
   sha256Hex,
 } from "./engine.server";
+
+/** Load the configured RTP target for blackjack and derive bias. */
+async function loadBjBias(): Promise<BJBias> {
+  try {
+    const { data } = await supabaseAdmin
+      .from("game_rtp_config")
+      .select("rtp_target, is_active")
+      .eq("game", "blackjack")
+      .maybeSingle();
+    if (!data || data.is_active === false) return BJ_DEFAULT_BIAS;
+    return biasFromRtpTarget(Number(data.rtp_target));
+  } catch {
+    return BJ_DEFAULT_BIAS;
+  }
+}
 
 /* ------------------------------------------------------------------ */
 /* Schemas                                                             */
