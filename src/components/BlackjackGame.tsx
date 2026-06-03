@@ -652,7 +652,7 @@ export function BlackjackGame() {
                   }
                   className="rounded-md border border-fuchsia-400/60 bg-fuchsia-900/40 px-2.5 py-1 text-[11px] font-black text-fuchsia-100 active:scale-95"
                 >
-                  x2
+                  X2
                 </button>
                 {QUICK.map((q) => (
                   <button
