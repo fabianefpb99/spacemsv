@@ -301,7 +301,7 @@ function startReelLoop() {
 }
 
 function stopReelLoop() {
-  const c = actx;
+  const c = getCtx();
   if (!c || !reelLoopNodes) return;
   const { whirSrc, whirGain, tickTimer } = reelLoopNodes;
   clearInterval(tickTimer);
