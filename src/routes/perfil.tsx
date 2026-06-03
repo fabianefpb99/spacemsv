@@ -111,6 +111,7 @@ function PerfilPage() {
   const vip = useVip();
   const queryClient = useQueryClient();
   const [dataDialogOpen, setDataDialogOpen] = useState(false);
+  const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
 
   const fullProfile = useQuery({
     queryKey: ["perfil-full", user?.id ?? null],
@@ -247,11 +248,16 @@ function PerfilPage() {
                       : "0 0 18px rgba(217,70,239,0.45)",
                   }}
                 >
-                  <img src={astronaut} alt="" className="h-12 w-12 object-contain" />
+                  <img
+                    src={getAvatarUrl(me.data?.profile?.avatar_key)}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
                 </div>
                 <button
                   aria-label="Cambiar foto"
-                  className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full border border-fuchsia-400/60 bg-[#0c0620] text-fuchsia-200 shadow"
+                  onClick={() => setAvatarDialogOpen(true)}
+                  className="absolute -bottom-1 -right-1 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-fuchsia-400/60 bg-[#0c0620] text-fuchsia-200 shadow transition hover:bg-fuchsia-500/20"
                 >
                   <Camera className="h-3 w-3" />
                 </button>
