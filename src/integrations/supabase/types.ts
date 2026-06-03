@@ -300,6 +300,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_key: string | null
           birth_date: string | null
           created_at: string
           document_issue_date: string | null
@@ -323,6 +324,7 @@ export type Database = {
           vip_last_seen_level: number
         }
         Insert: {
+          avatar_key?: string | null
           birth_date?: string | null
           created_at?: string
           document_issue_date?: string | null
@@ -346,6 +348,7 @@ export type Database = {
           vip_last_seen_level?: number
         }
         Update: {
+          avatar_key?: string | null
           birth_date?: string | null
           created_at?: string
           document_issue_date?: string | null
