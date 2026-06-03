@@ -201,119 +201,110 @@ function PerfilPage() {
           )}
         </header>
 
-        {/* Identity card — premium, rank-themed */}
-        <section
-          className={cn(
-            "relative mt-4 overflow-hidden rounded-2xl border bg-gradient-to-br p-4 transition",
-            vipTheme ? vipTheme.cardBg : "from-[#1a0b3a] to-[#0c0620]",
-            vipTheme ? vipTheme.borderClass : "border-fuchsia-500/60",
-          )}
-          style={{
-            boxShadow: vipTheme
-              ? `0 0 22px ${vipTheme.glow}, inset 0 1px 0 rgba(255,255,255,0.06)`
-              : "0 0 14px rgba(217,70,239,0.25)",
-          }}
+        {/* Identity card — futuristic HUD frame, rank-themed */}
+        <div
+          className="vip-frame mt-4"
+          style={
+            {
+              "--vip-c1": vipTheme?.frameC1 ?? "rgba(217,70,239,0.9)",
+              "--vip-c2": vipTheme?.frameC2 ?? "rgba(168,85,247,0.65)",
+              "--vip-c3": vipTheme?.frameC3 ?? "rgba(126,34,206,0.5)",
+              filter: `drop-shadow(0 0 14px ${vipTheme?.glow ?? "rgba(217,70,239,0.35)"})`,
+            } as React.CSSProperties
+          }
         >
-          {/* Decorative halo behind insignia */}
-          {vipTheme && (
+          <section className="vip-frame-inner relative px-4 py-4">
+            {/* Decorative halo behind insignia */}
+            {vipTheme && (
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full blur-3xl"
+                style={{ background: vipTheme.haloColor }}
+              />
+            )}
+            {/* Top hairline */}
             <div
               aria-hidden
-              className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full blur-3xl"
-              style={{ background: vipTheme.haloColor }}
+              className="pointer-events-none absolute inset-x-6 top-0 h-px"
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)",
+              }}
             />
-          )}
-          {/* Top hairline */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-x-4 top-0 h-px"
-            style={{
-              background:
-                "linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent)",
-            }}
-          />
 
-          <div className="relative flex items-center gap-3">
-            {/* Avatar */}
-            <div className="relative shrink-0">
-              <div
-                className={cn(
-                  "flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-2 bg-purple-900/40",
-                  vipTheme ? vipTheme.borderClass : "border-fuchsia-400/70",
-                )}
-                style={{
-                  boxShadow: vipTheme
-                    ? `0 0 18px ${vipTheme.glow}`
-                    : "0 0 18px rgba(217,70,239,0.45)",
-                }}
-              >
-                <img src={astronaut} alt="" className="h-12 w-12 object-contain" />
-              </div>
-              <button
-                aria-label="Cambiar foto"
-                className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full border border-fuchsia-400/60 bg-[#0c0620] text-fuchsia-200 shadow"
-              >
-                <Camera className="h-3 w-3" />
-              </button>
-            </div>
-
-            {/* Identity text */}
-            <div className="min-w-0 flex-1">
-              <div
-                className={cn(
-                  "font-display truncate text-lg font-black uppercase tracking-wide",
-                  vipTheme ? vipTheme.accentText : "text-white",
-                )}
-              >
-                {username}
-              </div>
-              {fullName && (
-                <div className="truncate text-[12px] font-semibold text-white/90">
-                  {fullName}
-                </div>
-              )}
-              <div className="mt-0.5 truncate text-[10px] text-purple-200/70">
-                Usuario #{user ? shortId(user.id) : "00000"}
-                {vipProgress && (
-                  <>
-                    {" • "}
-                    <span className={cn("font-bold", vipTheme?.accentText)}>
-                      {rankLabel(vipProgress.rank, vipProgress.sub)}
-                    </span>
-                  </>
-                )}
-              </div>
-              <div
-                className={`mt-1.5 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${
-                  verified
-                    ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
-                    : "border-amber-500/40 bg-amber-500/10 text-amber-300"
-                }`}
-              >
-                <BadgeCheck className="h-3 w-3" />
-                {verified ? "Cuenta Verificada" : "Sin Verificar"}
-              </div>
-            </div>
-
-            {/* Rank insignia (right) */}
-            {vipProgress && (
-              <Link
-                to="/vip"
-                aria-label="Ver programa VIP"
-                className="relative shrink-0 transition hover:scale-105"
-              >
-                <img
-                  src={RANK_ART[vipProgress.rank]}
-                  alt={`Insignia ${RANK_META[vipProgress.rank].label}`}
-                  className="h-20 w-20 object-contain"
+            <div className="relative flex items-center gap-3">
+              {/* Avatar */}
+              <div className="relative shrink-0">
+                <div
+                  className={cn(
+                    "flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-2 bg-purple-900/40",
+                    vipTheme ? vipTheme.borderClass : "border-fuchsia-400/70",
+                  )}
                   style={{
-                    filter: `drop-shadow(0 0 14px ${vipMeta?.glow ?? "rgba(168,85,247,0.5)"})`,
+                    boxShadow: vipTheme
+                      ? `0 0 18px ${vipTheme.glow}`
+                      : "0 0 18px rgba(217,70,239,0.45)",
                   }}
-                  draggable={false}
-                />
-              </Link>
-            )}
-          </div>
-        </section>
+                >
+                  <img src={astronaut} alt="" className="h-12 w-12 object-contain" />
+                </div>
+                <button
+                  aria-label="Cambiar foto"
+                  className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full border border-fuchsia-400/60 bg-[#0c0620] text-fuchsia-200 shadow"
+                >
+                  <Camera className="h-3 w-3" />
+                </button>
+              </div>
+
+              {/* Identity text */}
+              <div className="min-w-0 flex-1">
+                <div
+                  className={cn(
+                    "font-display truncate text-lg font-black uppercase tracking-wide",
+                    vipTheme ? vipTheme.accentText : "text-white",
+                  )}
+                >
+                  {username}
+                </div>
+                {fullName && (
+                  <div className="truncate text-[12px] font-semibold text-white/90">
+                    {fullName}
+                  </div>
+                )}
+                <div className="mt-0.5 truncate text-[10px] text-purple-200/70">
+                  Usuario #{user ? shortId(user.id) : "00000"}
+                  {vipProgress && (
+                    <>
+                      {" • "}
+                      <span className={cn("font-bold", vipTheme?.accentText)}>
+                        {rankLabel(vipProgress.rank, vipProgress.sub)}
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Rank insignia (right) */}
+              {vipProgress && (
+                <Link
+                  to="/vip"
+                  aria-label="Ver programa VIP"
+                  className="relative shrink-0 transition hover:scale-105"
+                >
+                  <img
+                    src={RANK_ART[vipProgress.rank]}
+                    alt={`Insignia ${RANK_META[vipProgress.rank].label}`}
+                    className="h-20 w-20 object-contain"
+                    style={{
+                      filter: `drop-shadow(0 0 14px ${vipMeta?.glow ?? "rgba(168,85,247,0.5)"})`,
+                    }}
+                    draggable={false}
+                  />
+                </Link>
+              )}
+            </div>
+          </section>
+        </div>
 
         {/* VIP progress (compact, ties to identity card above) */}
         {vipProgress && vipMeta && vipTheme && (
