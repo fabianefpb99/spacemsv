@@ -252,18 +252,20 @@ function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
     e.preventDefault();
     setError(null);
     setInfo(null);
-    const parsed = signUpSchema.safeParse({ email, username, password });
+    const cleanEmail = email.trim();
+    const cleanUsername = username.trim();
+    const parsed = signUpSchema.safeParse({ email: cleanEmail, username: cleanUsername, password });
     if (!parsed.success) {
       setError(parsed.error.issues[0].message);
       return;
     }
     setLoading(true);
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: cleanEmail,
       password,
       options: {
         emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
-        data: { username },
+        data: { username: cleanUsername },
       },
     });
     setLoading(false);
