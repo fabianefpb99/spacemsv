@@ -183,6 +183,23 @@ export function computeProgress(
 ): VipProgress {
   const sorted = [...levels].sort((a, b) => a.level - b.level);
   const capLvl = Math.min(cap, sorted.length);
+  // Defensive: if levels haven't loaded yet, return a safe zero-progress state
+  // instead of crashing downstream consumers with undefined lookups.
+  if (sorted.length === 0 || capLvl === 0) {
+    return {
+      currentLevel: 0,
+      displayLevel: 1,
+      rank: "bronce",
+      sub: "V",
+      totalXp,
+      currentLevelXp: 0,
+      nextLevelXp: 0,
+      xpIntoLevel: 0,
+      xpForNextLevel: 1,
+      pct: 0,
+      isMax: false,
+    };
+  }
   let current = 0;
   for (const row of sorted) {
     if (row.level > capLvl) break;
