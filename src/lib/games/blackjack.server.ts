@@ -111,22 +111,43 @@ export function drawForDealerHit(
   shoe: Card[],
   currentScore: number,
   bias: BJBias = BJ_DEFAULT_BIAS,
+  playerScore?: number,
 ): { card: Card; shoe: Card[] } {
   if (shoe.length < RESHUFFLE_THRESHOLD) {
     shoe = makeShoe();
   }
   if (cryptoRandomInt(100) < bias.dealerHitPct) {
     const lookback = Math.min(16, shoe.length);
+    // Preferred range: tie-or-beat the player when we know their score,
+    // otherwise just "land safely in 17-21".
+    const targetMin =
+      playerScore && playerScore <= 21
+        ? Math.max(17, playerScore)
+        : 17;
     const need = (v: number) => {
       const total = currentScore + v;
-      return total >= 17 && total <= 21;
+      return total >= targetMin && total <= 21;
     };
+    // First pass: look for a card that ties or beats the player.
     for (let k = shoe.length - 1; k >= shoe.length - lookback; k--) {
       const c = shoe[k];
       const v = c.rank === "A" ? (currentScore + 11 <= 21 ? 11 : 1) : c.value;
       if (need(v)) {
         shoe.splice(k, 1);
         return { card: c, shoe };
+      }
+    }
+    // Fallback: if we couldn't find a tie-or-beat card, accept any
+    // card that keeps the dealer in [17,21] (better than busting).
+    if (targetMin > 17) {
+      for (let k = shoe.length - 1; k >= shoe.length - lookback; k--) {
+        const c = shoe[k];
+        const v = c.rank === "A" ? (currentScore + 11 <= 21 ? 11 : 1) : c.value;
+        const total = currentScore + v;
+        if (total >= 17 && total <= 21) {
+          shoe.splice(k, 1);
+          return { card: c, shoe };
+        }
       }
     }
   }
@@ -191,7 +212,7 @@ export function resolveHand(
   if (pScore <= 21) {
     while (handScore(revealedDealer) < 17) {
       const score = handScore(revealedDealer);
-      const { card, shoe: nextShoe } = drawForDealerHit(shoe, score, bias);
+      const { card, shoe: nextShoe } = drawForDealerHit(shoe, score, bias, pScore);
       shoe = nextShoe;
       revealedDealer.push(card);
       dealerSequence.push(card);
