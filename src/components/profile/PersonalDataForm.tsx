@@ -170,7 +170,7 @@ export function PersonalDataForm({
           <SelectTrigger>
             <SelectValue placeholder="Selecciona" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="z-[200]">
             <SelectItem value="masculino">Masculino</SelectItem>
             <SelectItem value="femenino">Femenino</SelectItem>
             <SelectItem value="otro">Otro</SelectItem>
@@ -201,7 +201,7 @@ export function PersonalDataForm({
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-[200]">
               <SelectItem value="CC">Cédula</SelectItem>
               <SelectItem value="CE">C. Extranjería</SelectItem>
               <SelectItem value="PA">Pasaporte</SelectItem>
