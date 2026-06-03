@@ -10,12 +10,14 @@ import {
   Plus,
   RefreshCw,
   Search,
+  Sparkles,
   Wallet as WalletIcon,
   X,
 } from "lucide-react";
 import astronaut from "@/assets/astronaut.svg";
 import {
   adminAdjustBalance,
+  adminAdjustXp,
   adminGetUserDetail,
   adminGetUserTransactions,
   adminListUsers,
@@ -176,6 +178,7 @@ function UserDetailDrawer({ userId, onClose }: { userId: string; onClose: () => 
   const detailFn = useServerFn(adminGetUserDetail);
   const txFn = useServerFn(adminGetUserTransactions);
   const adjustFn = useServerFn(adminAdjustBalance);
+  const adjustXpFn = useServerFn(adminAdjustXp);
   const blockFn = useServerFn(adminSetBlock);
   const resetFn = useServerFn(adminResetPassword);
   const qc = useQueryClient();
@@ -198,6 +201,14 @@ function UserDetailDrawer({ userId, onClose }: { userId: string; onClose: () => 
       qc.invalidateQueries({ queryKey: ["admin-users"] });
     },
   });
+  const adjustXp = useMutation({
+    mutationFn: (vars: { delta: number; reason?: string }) =>
+      adjustXpFn({ data: { userId, ...vars } }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-user", userId] });
+      qc.invalidateQueries({ queryKey: ["admin-users"] });
+    },
+  });
   const blockMut = useMutation({
     mutationFn: (blocked: boolean) => blockFn({ data: { userId, blocked } }),
     onSuccess: () => {
@@ -212,6 +223,8 @@ function UserDetailDrawer({ userId, onClose }: { userId: string; onClose: () => 
   const [amount, setAmount] = useState("");
   const [target, setTarget] = useState<"real" | "bonus">("real");
   const [reason, setReason] = useState("");
+  const [xpAmount, setXpAmount] = useState("");
+  const [xpReason, setXpReason] = useState("");
 
   const submitAdjust = (sign: 1 | -1) => {
     const n = Math.floor(Number(amount));
@@ -219,6 +232,14 @@ function UserDetailDrawer({ userId, onClose }: { userId: string; onClose: () => 
     adjust.mutate({ amount: sign * Math.abs(n), target, reason: reason || undefined });
     setAmount("");
     setReason("");
+  };
+
+  const submitXp = (sign: 1 | -1) => {
+    const n = Math.floor(Number(xpAmount));
+    if (!n || isNaN(n)) return;
+    adjustXp.mutate({ delta: sign * Math.abs(n), reason: xpReason || undefined });
+    setXpAmount("");
+    setXpReason("");
   };
 
   return (
