@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { X, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMarkVipLevelSeen, useVip } from "@/hooks/useVip";
@@ -306,7 +306,7 @@ function ShatterReveal({
               {
                 animationDelay: `${s.delay}ms`,
                 ["--vip-shard-end" as never]: s.end,
-              } as React.CSSProperties
+              } as CSSProperties
             }
           />
         ))}
