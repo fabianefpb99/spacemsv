@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useRef, useState, type ReactNode 
 import type { Session, User } from "@supabase/supabase-js";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { withTimeout } from "@/lib/async/with-timeout";
 
 type AuthContextValue = {
   user: User | null;
@@ -46,24 +47,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           await new Promise((resolve) => window.setTimeout(resolve, delay));
         }
 
-        const {
-          data: { session: nextSession },
-        } = await supabase.auth.getSession();
+        let nextSession: Session | null = null;
+
+        try {
+          const sessionRes = await withTimeout(supabase.auth.getSession(), 4000, "auth_get_session_timeout");
+          nextSession = sessionRes.data.session;
+        } catch (error) {
+          console.warn("[auth] getSession recovery failed", error);
+        }
 
         if (nextSession) {
           applySession(nextSession);
           return nextSession;
         }
 
-        const { data: userData, error: userError } = await supabase.auth.getUser();
-        if (!userError && userData.user) {
-          continue;
+        try {
+          const { data: userData, error: userError } = await withTimeout(
+            supabase.auth.getUser(),
+            4000,
+            "auth_get_user_timeout",
+          );
+          if (!userError && userData.user) {
+            continue;
+          }
+        } catch (error) {
+          console.warn("[auth] getUser recovery failed", error);
         }
       }
 
       bootstrappedRef.current = true;
       if (!hadSession) {
         setSession(null);
+      } else {
+        setSession(sessionRef.current);
       }
       setLoading(false);
       return hadSession ? sessionRef.current : null;
