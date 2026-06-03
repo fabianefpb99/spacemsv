@@ -642,6 +642,18 @@ export function BlackjackGame() {
                 </button>
               </div>
               <div className="mt-2 flex items-center justify-center gap-2">
+                <button
+                  onClick={() =>
+                    setBet((b) => {
+                      const doubled = Math.min(BJ_MAX_BET, b * 2);
+                      const snapped = Math.floor(doubled / BJ_BET_STEP) * BJ_BET_STEP;
+                      return Math.max(BJ_MIN_BET, snapped);
+                    })
+                  }
+                  className="rounded-md border border-fuchsia-400/60 bg-fuchsia-900/40 px-2.5 py-1 text-[11px] font-black text-fuchsia-100 active:scale-95"
+                >
+                  x2
+                </button>
                 {QUICK.map((q) => (
                   <button
                     key={q}
