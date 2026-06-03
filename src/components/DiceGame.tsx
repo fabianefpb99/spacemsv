@@ -13,6 +13,7 @@ import { useMe, type MeData } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
 import { toFriendlyError } from "@/lib/friendly-error";
 import { diceRoll } from "@/lib/games/dice.functions";
+import { clampBetToStep } from "@/lib/games/bet-helpers";
 import {
   DICE_BET_STEP,
   DICE_MAX_BET,
@@ -522,7 +523,7 @@ export function DiceGame() {
                   <BetAmount bet={bet} bonusBalance={bonusBalance} />
                 </div>
                 <button
-                  onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b + BET_STEP))}
+                  onClick={() => setBet((b) => clampBetToStep(b + BET_STEP, balance, MAX_BET, BET_STEP, MIN_BET))}
                   disabled={phase !== "betting"}
                   className="btn-bet flex h-10 w-11 items-center justify-center rounded-lg disabled:opacity-50"
                   aria-label="Aumentar apuesta"
@@ -533,7 +534,7 @@ export function DiceGame() {
 
               <div className="mt-1.5 flex items-center gap-1.5">
                 <button
-                  onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b * 2))}
+                  onClick={() => setBet((b) => clampBetToStep(b * 2, balance, MAX_BET, BET_STEP, MIN_BET))}
                   disabled={phase !== "betting"}
                   className="btn-bet flex h-7 flex-1 items-center justify-center rounded-md text-[11px] font-bold disabled:opacity-50"
                 >
@@ -542,7 +543,7 @@ export function DiceGame() {
                 {QUICK_ADDS.map((amt) => (
                   <button
                     key={amt}
-                    onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b + amt))}
+                    onClick={() => setBet((b) => clampBetToStep(b + amt, balance, MAX_BET, BET_STEP, MIN_BET))}
                     disabled={phase !== "betting"}
                     className="btn-bet flex h-7 flex-1 items-center justify-center rounded-md text-[11px] font-bold disabled:opacity-50"
                   >

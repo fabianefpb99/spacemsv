@@ -16,6 +16,7 @@ import { useMe, type MeData } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
 import { toFriendlyError } from "@/lib/friendly-error";
 import { minesDeal, minesReveal, minesCashout, minesResume, type MinesSessionView } from "@/lib/games/mines.functions";
+import { clampBetToStep } from "@/lib/games/bet-helpers";
 import {
   MINES_TILES,
   MINES_MIN, MINES_MAX,
@@ -687,7 +688,7 @@ export function MinesGame() {
             </div>
             <button
               type="button"
-              onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b + BET_STEP))}
+              onClick={() => setBet((b) => clampBetToStep(b + BET_STEP, balance, MAX_BET, BET_STEP, MIN_BET))}
               disabled={phase !== "betting"}
               className="btn-bet flex h-11 w-12 items-center justify-center rounded-lg disabled:opacity-50"
               aria-label="Aumentar apuesta"
@@ -699,7 +700,7 @@ export function MinesGame() {
           <div className="mt-2 flex items-center gap-1.5">
             <button
               type="button"
-              onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b * 2))}
+              onClick={() => setBet((b) => clampBetToStep(b * 2, balance, MAX_BET, BET_STEP, MIN_BET))}
               disabled={phase !== "betting"}
               className="btn-bet flex h-8 flex-1 items-center justify-center rounded-md text-xs font-bold disabled:opacity-50"
             >
@@ -709,7 +710,7 @@ export function MinesGame() {
               <button
                 key={amt}
                 type="button"
-                onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b + amt))}
+                onClick={() => setBet((b) => clampBetToStep(b + amt, balance, MAX_BET, BET_STEP, MIN_BET))}
                 disabled={phase !== "betting"}
                 className="btn-bet flex h-8 flex-1 items-center justify-center rounded-md text-xs font-bold disabled:opacity-50"
               >

@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useMe } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
+import { clampBetToStep } from "@/lib/games/bet-helpers";
 
 type Phase = "betting" | "running" | "crashed";
 type HistoryItem = { id: number; value: number };
@@ -767,7 +768,7 @@ export function SpacemanGame() {
   };
 
   const addToBet = (amount: number) => {
-    setBet((b) => Math.min(Math.min(balance, MAX_BET), b + amount));
+    setBet((b) => clampBetToStep(b + amount, balance, MAX_BET, BET_STEP, MIN_BET));
   };
 
   const countdownLabel = Math.min(BETTING_MS / 1000, Math.max(1, Math.ceil(countdown)));
@@ -1192,7 +1193,7 @@ export function SpacemanGame() {
             </div>
             <button
               className="btn-bet flex h-14 w-14 shrink-0 items-center justify-center rounded-lg text-2xl font-black sm:h-16 sm:w-16"
-              onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b + BET_STEP))}
+              onClick={() => setBet((b) => clampBetToStep(b + BET_STEP, balance, MAX_BET, BET_STEP, MIN_BET))}
               disabled={!!activeBet}
               aria-label="Sumar 500"
             >
@@ -1202,7 +1203,7 @@ export function SpacemanGame() {
           <div className="mt-2 flex items-center justify-center gap-2">
             <button
               className="btn-bet rounded-md px-3 py-1.5 text-xs font-bold"
-              onClick={() => setBet((b) => Math.min(Math.min(balance, MAX_BET), b * 2))}
+              onClick={() => setBet((b) => clampBetToStep(b * 2, balance, MAX_BET, BET_STEP, MIN_BET))}
               disabled={!!activeBet}
               aria-label="Doblar apuesta"
               title="Doblar apuesta"
