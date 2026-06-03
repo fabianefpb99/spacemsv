@@ -244,6 +244,8 @@ function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
+  const [step, setStep] = useState<1 | 2>(1);
+  const [userId, setUserId] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -270,10 +272,37 @@ function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
     }
     if (data.session) {
       await refreshSession();
-      onSuccess();
+      if (data.user) {
+        setUserId(data.user.id);
+        setStep(2);
+      } else {
+        onSuccess();
+      }
     } else {
       setInfo("Cuenta creada. Revisa tu email para confirmarla y luego inicia sesión.");
     }
+  }
+
+  if (step === 2 && userId) {
+    return (
+      <div className="space-y-3 pt-3">
+        <div className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-200">
+          Cuenta creada. Completa tus datos personales para finalizar el registro.
+        </div>
+        <PersonalDataForm
+          userId={userId}
+          onSaved={onSuccess}
+          submitLabel="Finalizar registro"
+        />
+        <button
+          type="button"
+          onClick={onSuccess}
+          className="w-full text-center text-[11px] text-purple-200/70 hover:text-purple-100"
+        >
+          Completar después
+        </button>
+      </div>
+    );
   }
 
   return (
