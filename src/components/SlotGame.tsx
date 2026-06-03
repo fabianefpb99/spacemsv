@@ -13,7 +13,7 @@ import { toFriendlyError } from "@/lib/friendly-error";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Menu, Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "lucide-react";
-import { setMuted as setAudioMuted, playCashoutSound, playCoinsSound, isMuted, setBackgroundTrack, clearBackgroundTrack, getBackgroundTrack, stopAllGameAudio } from "@/lib/gameAudio";
+import { setMuted as setAudioMuted, playCashoutSound, playCoinsSound, isMuted, setBackgroundTrack, clearBackgroundTrack, getBackgroundTrack, stopAllGameAudio, getCtx, getMasterGain, AUDIO_STOP_ALL_EVENT } from "@/lib/gameAudio";
 import pageBg from "@/assets/mines-page-bg.png";
 import mafiaJazzUrl from "@/assets/mafia-jazz.mp3";
 
@@ -228,16 +228,8 @@ function relativeTime(ts: number, now: number): string {
 /* ============================================================
    Audio: simple spin tick + win chime via Web Audio
    ============================================================ */
-let actx: AudioContext | null = null;
 function ctx() {
-  if (typeof window === "undefined") return null;
-  if (!actx) {
-    const AC = (window.AudioContext || (window as any).webkitAudioContext) as typeof AudioContext | undefined;
-    if (!AC) return null;
-    actx = new AC();
-  }
-  if (actx.state === "suspended") actx.resume().catch(() => {});
-  return actx;
+  return getCtx();
 }
 function playReelStop() {
   if (isMuted()) return;
@@ -250,7 +242,8 @@ function playReelStop() {
   g.gain.setValueAtTime(0, c.currentTime);
   g.gain.linearRampToValueAtTime(0.08, c.currentTime + 0.005);
   g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 0.12);
-  o.connect(g).connect(c.destination);
+  const dest = getMasterGain() || c.destination;
+  o.connect(g).connect(dest);
   o.start(); o.stop(c.currentTime + 0.13);
 }
 
@@ -284,7 +277,8 @@ function startReelLoop() {
   const g = c.createGain();
   g.gain.setValueAtTime(0.0001, c.currentTime);
   g.gain.linearRampToValueAtTime(0.08, c.currentTime + 0.08);
-  src.connect(bp).connect(g).connect(c.destination);
+  const dest = getMasterGain() || c.destination;
+  src.connect(bp).connect(g).connect(dest);
   src.start();
 
   // Rhythmic high tick like reel pegs
@@ -298,7 +292,8 @@ function startReelLoop() {
     og.gain.setValueAtTime(0.0001, t);
     og.gain.linearRampToValueAtTime(0.025, t + 0.002);
     og.gain.exponentialRampToValueAtTime(0.0001, t + 0.04);
-    o.connect(og).connect(cc.destination);
+    const dest = getMasterGain() || cc.destination;
+    o.connect(og).connect(dest);
     o.start(t); o.stop(t + 0.05);
   };
   const tickTimer = window.setInterval(tick, 70);
@@ -306,7 +301,7 @@ function startReelLoop() {
 }
 
 function stopReelLoop() {
-  const c = actx;
+  const c = getCtx();
   if (!c || !reelLoopNodes) return;
   const { whirSrc, whirGain, tickTimer } = reelLoopNodes;
   clearInterval(tickTimer);
@@ -332,7 +327,8 @@ function playFireWinSound() {
     g.gain.setValueAtTime(0, t0 + i * 0.08);
     g.gain.linearRampToValueAtTime(0.12, t0 + i * 0.08 + 0.015);
     g.gain.exponentialRampToValueAtTime(0.0001, t0 + i * 0.08 + 0.45);
-    o.connect(g).connect(c.destination);
+    const dest = getMasterGain() || c.destination;
+  o.connect(g).connect(dest);
     o.start(t0 + i * 0.08); o.stop(t0 + i * 0.08 + 0.5);
   });
 }
@@ -364,7 +360,8 @@ function playMegaWinSound() {
     g.gain.setValueAtTime(0, t0 + 0.1 + i * 0.07);
     g.gain.linearRampToValueAtTime(0.08, t0 + 0.1 + i * 0.07 + 0.01);
     g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.1 + i * 0.07 + 0.35);
-    o.connect(g).connect(c.destination);
+    const dest = getMasterGain() || c.destination;
+  o.connect(g).connect(dest);
     o.start(t0 + 0.1 + i * 0.07); o.stop(t0 + 0.1 + i * 0.07 + 0.4);
   });
 }
@@ -923,6 +920,15 @@ export function SlotGame() {
   useEffect(() => {
     // Garantiza que ningún audio de un juego previo siga vivo.
     stopAllGameAudio();
+    const onStopAll = () => stopReelLoop();
+    const stopOnBackground = () => {
+      clearBackgroundTrack();
+      stopReelLoop();
+    };
+    window.addEventListener(AUDIO_STOP_ALL_EVENT, onStopAll);
+    window.addEventListener("pagehide", stopOnBackground);
+    window.addEventListener("blur", stopOnBackground);
+    document.addEventListener("visibilitychange", stopOnBackground);
     const audio = setBackgroundTrack(mafiaJazzUrl, { volume: 0.05, loop: true });
     if (!audio) return;
     const onFirst = () => {
@@ -935,7 +941,12 @@ export function SlotGame() {
     return () => {
       window.removeEventListener("pointerdown", onFirst);
       window.removeEventListener("keydown", onFirst);
+      window.removeEventListener("pagehide", stopOnBackground);
+      window.removeEventListener("blur", stopOnBackground);
+      document.removeEventListener("visibilitychange", stopOnBackground);
       clearBackgroundTrack();
+      stopReelLoop();
+      window.removeEventListener(AUDIO_STOP_ALL_EVENT, onStopAll);
     };
   }, []);
   useEffect(() => {

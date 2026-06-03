@@ -101,7 +101,11 @@ let flightFilter: BiquadFilterNode | null = null;
 let flightLfo: OscillatorNode | null = null;
 let flightLfoGain: GainNode | null = null;
 
-function getCtx(): AudioContext | null {
+export function getMasterGain(): GainNode | null {
+  getCtx();
+  return masterGain;
+}
+export function getCtx(): AudioContext | null {
   if (typeof window === "undefined") return null;
   if (!ctx) {
     const AC = (window.AudioContext || (window as any).webkitAudioContext) as typeof AudioContext | undefined;
