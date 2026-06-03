@@ -32,6 +32,7 @@ import { VipLevelUpToast } from "@/components/vip/VipLevelUpToast";
 import { VipBadge } from "@/components/vip/VipBadge";
 import { useVip } from "@/hooks/useVip";
 import { computeProgress, formatXp, RANK_META, rankLabel } from "@/lib/vip/vip.shared";
+import { VIP_CARD_THEME, RANK_ART } from "@/lib/vip/vip-art";
 import { cn } from "@/lib/utils";
 import { Sparkles } from "lucide-react";
 import { PersonalDataDialog } from "@/components/profile/PersonalDataDialog";
@@ -160,6 +161,14 @@ function PerfilPage() {
     ? computeProgress(vip.data.user_vip?.total_xp ?? 0, vip.data.levels)
     : null;
   const vipMeta = vipProgress ? RANK_META[vipProgress.rank] : null;
+  const vipTheme = vipProgress ? VIP_CARD_THEME[vipProgress.rank] : null;
+
+  const fullName = [
+    fullProfile.data?.first_name,
+    fullProfile.data?.last_name,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <div className="min-h-screen bg-[#060210] text-white">
@@ -192,28 +201,48 @@ function PerfilPage() {
           )}
         </header>
 
-        {/* Identity card */}
+        {/* Identity card — premium, rank-themed */}
         <section
           className={cn(
-            "mt-4 rounded-2xl border bg-gradient-to-b from-[#1a0b3a] to-[#0c0620] p-4 transition",
-            vipMeta ? vipMeta.border : "border-fuchsia-500/60",
+            "relative mt-4 overflow-hidden rounded-2xl border bg-gradient-to-br p-4 transition",
+            vipTheme ? vipTheme.cardBg : "from-[#1a0b3a] to-[#0c0620]",
+            vipTheme ? vipTheme.borderClass : "border-fuchsia-500/60",
           )}
           style={{
-            boxShadow: vipMeta
-              ? `0 0 14px ${vipMeta.glow}`
+            boxShadow: vipTheme
+              ? `0 0 22px ${vipTheme.glow}, inset 0 1px 0 rgba(255,255,255,0.06)`
               : "0 0 14px rgba(217,70,239,0.25)",
           }}
         >
-          <div className="flex items-center gap-3">
-            <div className="relative">
+          {/* Decorative halo behind insignia */}
+          {vipTheme && (
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full blur-3xl"
+              style={{ background: vipTheme.haloColor }}
+            />
+          )}
+          {/* Top hairline */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-4 top-0 h-px"
+            style={{
+              background:
+                "linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent)",
+            }}
+          />
+
+          <div className="relative flex items-center gap-3">
+            {/* Avatar */}
+            <div className="relative shrink-0">
               <div
                 className={cn(
-                  "flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-2 bg-purple-900/40 transition",
-                  vipMeta ? vipMeta.border : "border-fuchsia-400/70",
+                  "flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-2 bg-purple-900/40",
+                  vipTheme ? vipTheme.borderClass : "border-fuchsia-400/70",
                 )}
                 style={{
-                  boxShadow: vipMeta
-                    ? `0 0 18px ${vipMeta.glow}`
+                  boxShadow: vipTheme
+                    ? `0 0 18px ${vipTheme.glow}`
                     : "0 0 18px rgba(217,70,239,0.45)",
                 }}
               >
@@ -226,16 +255,33 @@ function PerfilPage() {
                 <Camera className="h-3 w-3" />
               </button>
             </div>
+
+            {/* Identity text */}
             <div className="min-w-0 flex-1">
               <div
                 className={cn(
                   "font-display truncate text-lg font-black uppercase tracking-wide",
-                  vipMeta ? vipMeta.text : "text-white",
+                  vipTheme ? vipTheme.accentText : "text-white",
                 )}
               >
                 {username}
               </div>
-              <div className="text-[11px] text-purple-200/70">Usuario #{user ? shortId(user.id) : "00000"}</div>
+              {fullName && (
+                <div className="truncate text-[12px] font-semibold text-white/90">
+                  {fullName}
+                </div>
+              )}
+              <div className="mt-0.5 truncate text-[10px] text-purple-200/70">
+                Usuario #{user ? shortId(user.id) : "00000"}
+                {vipProgress && (
+                  <>
+                    {" • "}
+                    <span className={cn("font-bold", vipTheme?.accentText)}>
+                      {rankLabel(vipProgress.rank, vipProgress.sub)}
+                    </span>
+                  </>
+                )}
+              </div>
               <div
                 className={`mt-1.5 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${
                   verified
@@ -247,23 +293,43 @@ function PerfilPage() {
                 {verified ? "Cuenta Verificada" : "Sin Verificar"}
               </div>
             </div>
-          </div>
 
+            {/* Rank insignia (right) */}
+            {vipProgress && (
+              <Link
+                to="/vip"
+                aria-label="Ver programa VIP"
+                className="relative shrink-0 transition hover:scale-105"
+              >
+                <img
+                  src={RANK_ART[vipProgress.rank]}
+                  alt={`Insignia ${RANK_META[vipProgress.rank].label}`}
+                  className="h-20 w-20 object-contain"
+                  style={{
+                    filter: `drop-shadow(0 0 14px ${vipMeta?.glow ?? "rgba(168,85,247,0.5)"})`,
+                  }}
+                  draggable={false}
+                />
+              </Link>
+            )}
+          </div>
         </section>
 
         {/* VIP progress (compact, ties to identity card above) */}
-        {vipProgress && vipMeta && (
+        {vipProgress && vipMeta && vipTheme && (
           <Link
             to="/vip"
             className={cn(
-              "mt-2 flex items-center gap-2.5 rounded-xl border bg-[#0c0620]/70 px-3 py-2 transition hover:brightness-110",
-              vipMeta.border,
+              "mt-2 flex items-center gap-2.5 rounded-xl border bg-gradient-to-r px-3 py-2 transition hover:brightness-110",
+              vipTheme.cardBg,
+              vipTheme.borderClass,
             )}
+            style={{ boxShadow: `0 0 10px ${vipTheme.glow}` }}
           >
-            <VipBadge rank={vipProgress.rank} sub={vipProgress.sub} size="sm" />
+            <VipBadge rank={vipProgress.rank} sub={vipProgress.sub} size="sm" art />
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between gap-2">
-                <div className={cn("font-display truncate text-[11px] font-bold uppercase tracking-wider", vipMeta.text)}>
+                <div className={cn("font-display truncate text-[11px] font-bold uppercase tracking-wider", vipTheme.accentText)}>
                   {rankLabel(vipProgress.rank, vipProgress.sub)}
                 </div>
                 <div className="flex items-center gap-1 text-[9px] font-semibold uppercase tracking-widest text-purple-200/70">
@@ -273,7 +339,7 @@ function PerfilPage() {
               </div>
               <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-purple-500/20">
                 <div
-                  className={cn("h-full bg-gradient-to-r transition-all", vipMeta.gradient)}
+                  className={cn("h-full bg-gradient-to-r transition-all", vipTheme.barGradient)}
                   style={{ width: `${vipProgress.isMax ? 100 : vipProgress.pct.toFixed(1)}%` }}
                 />
               </div>
