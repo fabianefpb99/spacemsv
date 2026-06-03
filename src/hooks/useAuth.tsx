@@ -3,6 +3,7 @@ import type { Session, User } from "@supabase/supabase-js";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { withTimeout } from "@/lib/async/with-timeout";
+import { readStoredSession } from "@/lib/auth/session-storage";
 
 type AuthContextValue = {
   user: User | null;
@@ -15,8 +16,8 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [session, setSession] = useState<Session | null>(() => readStoredSession());
+  const [loading, setLoading] = useState(() => !readStoredSession());
   const queryClient = useQueryClient();
   const bootstrappedRef = useRef(false);
   const sessionRef = useRef<Session | null>(null);
@@ -35,10 +36,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (refreshPromiseRef.current) return refreshPromiseRef.current;
 
     const promise = (async () => {
-      const hadSession = !!sessionRef.current;
+      const storedSession = readStoredSession();
+      const hadSession = !!(sessionRef.current ?? storedSession);
       const delays = [0, 150, 400, 900];
 
-      if (!hadSession) {
+      if (!sessionRef.current && storedSession) {
+        applySession(storedSession);
+      } else if (!hadSession) {
         setLoading(true);
       }
 
@@ -79,10 +83,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!hadSession) {
         setSession(null);
       } else {
-        setSession(sessionRef.current);
+        setSession(sessionRef.current ?? storedSession);
       }
       setLoading(false);
-      return hadSession ? sessionRef.current : null;
+      return hadSession ? (sessionRef.current ?? storedSession) : null;
     })().finally(() => {
       refreshPromiseRef.current = null;
     });
@@ -124,7 +128,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const recoverOnForeground = () => {
       if (document.visibilityState === "hidden") return;
-      if (!sessionRef.current) {
+      if (!sessionRef.current || readStoredSession()) {
         void refreshSession();
       }
     };
