@@ -648,6 +648,13 @@ export type Database = {
           new_bonus: number
         }[]
       }
+      admin_adjust_xp: {
+        Args: { p_delta: number; p_reason?: string; p_target_user_id: string }
+        Returns: {
+          current_level: number
+          total_xp: number
+        }[]
+      }
       admin_approve_deposit: {
         Args: { p_id: string }
         Returns: {
