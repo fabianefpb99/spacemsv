@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VipRouteImport } from './routes/vip'
 import { Route as SpacemanRouteImport } from './routes/spaceman'
 import { Route as SlotpruebasRouteImport } from './routes/slotpruebas'
 import { Route as SlotRouteImport } from './routes/slot'
@@ -23,6 +24,11 @@ import { Route as AdminpanelRouteImport } from './routes/adminpanel'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PayBrebRouteImport } from './routes/pay_.breb'
 
+const VipRoute = VipRouteImport.update({
+  id: '/vip',
+  path: '/vip',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SpacemanRoute = SpacemanRouteImport.update({
   id: '/spaceman',
   path: '/spaceman',
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/slot': typeof SlotRoute
   '/slotpruebas': typeof SlotpruebasRoute
   '/spaceman': typeof SpacemanRoute
+  '/vip': typeof VipRoute
   '/pay/breb': typeof PayBrebRoute
 }
 export interface FileRoutesByTo {
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/slot': typeof SlotRoute
   '/slotpruebas': typeof SlotpruebasRoute
   '/spaceman': typeof SpacemanRoute
+  '/vip': typeof VipRoute
   '/pay/breb': typeof PayBrebRoute
 }
 export interface FileRoutesById {
@@ -133,6 +141,7 @@ export interface FileRoutesById {
   '/slot': typeof SlotRoute
   '/slotpruebas': typeof SlotpruebasRoute
   '/spaceman': typeof SpacemanRoute
+  '/vip': typeof VipRoute
   '/pay_/breb': typeof PayBrebRoute
 }
 export interface FileRouteTypes {
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/slot'
     | '/slotpruebas'
     | '/spaceman'
+    | '/vip'
     | '/pay/breb'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
     | '/slot'
     | '/slotpruebas'
     | '/spaceman'
+    | '/vip'
     | '/pay/breb'
   id:
     | '__root__'
@@ -180,6 +191,7 @@ export interface FileRouteTypes {
     | '/slot'
     | '/slotpruebas'
     | '/spaceman'
+    | '/vip'
     | '/pay_/breb'
   fileRoutesById: FileRoutesById
 }
@@ -196,11 +208,19 @@ export interface RootRouteChildren {
   SlotRoute: typeof SlotRoute
   SlotpruebasRoute: typeof SlotpruebasRoute
   SpacemanRoute: typeof SpacemanRoute
+  VipRoute: typeof VipRoute
   PayBrebRoute: typeof PayBrebRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/vip': {
+      id: '/vip'
+      path: '/vip'
+      fullPath: '/vip'
+      preLoaderRoute: typeof VipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/spaceman': {
       id: '/spaceman'
       path: '/spaceman'
@@ -308,8 +328,19 @@ const rootRouteChildren: RootRouteChildren = {
   SlotRoute: SlotRoute,
   SlotpruebasRoute: SlotpruebasRoute,
   SpacemanRoute: SpacemanRoute,
+  VipRoute: VipRoute,
   PayBrebRoute: PayBrebRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
