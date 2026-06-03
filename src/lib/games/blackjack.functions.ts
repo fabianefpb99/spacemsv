@@ -17,6 +17,10 @@ import {
   drawHoleBiased,
   makeShoe,
   resolveHand,
+  drawForPlayerHit,
+  biasFromRtpTarget,
+  BJ_DEFAULT_BIAS,
+  type BJBias,
 } from "./blackjack.server";
 import {
   adjustBalance,
@@ -25,6 +29,21 @@ import {
   newServerSeed,
   sha256Hex,
 } from "./engine.server";
+
+/** Load the configured RTP target for blackjack and derive bias. */
+async function loadBjBias(): Promise<BJBias> {
+  try {
+    const { data } = await supabaseAdmin
+      .from("game_rtp_config")
+      .select("rtp_target, is_active")
+      .eq("game", "blackjack")
+      .maybeSingle();
+    if (!data || data.is_active === false) return BJ_DEFAULT_BIAS;
+    return biasFromRtpTarget(Number(data.rtp_target));
+  } catch {
+    return BJ_DEFAULT_BIAS;
+  }
+}
 
 /* ------------------------------------------------------------------ */
 /* Schemas                                                             */
@@ -244,6 +263,7 @@ export const bjDeal = createServerFn({ method: "POST" })
     // 3. Build shoe + initial deal.
     const serverSeed = newServerSeed();
     const serverSeedHash = sha256Hex(serverSeed);
+    const bias = await loadBjBias();
     let shoe = makeShoe();
 
     const draws: Card[] = [];
@@ -252,7 +272,7 @@ export const bjDeal = createServerFn({ method: "POST" })
       shoe = r.shoe;
       draws.push(r.card);
     }
-    const hole = drawHoleBiased(shoe);
+    const hole = drawHoleBiased(shoe, bias);
     shoe = hole.shoe;
 
     const player: Card[] = [draws[0], draws[2]];
@@ -271,7 +291,7 @@ export const bjDeal = createServerFn({ method: "POST" })
 
     // 4. Natural blackjack → resolve immediately.
     if (isBlackjack(player)) {
-      const resolved = resolveHand(shoe, player, dealer, bet);
+      const resolved = resolveHand(shoe, player, dealer, bet, bias);
       shoe = resolved.shoe;
       publicState = {
         player,
@@ -367,8 +387,10 @@ export const bjHit = createServerFn({ method: "POST" })
       throw new Error("bj_not_playing");
     }
 
+    const bias = await loadBjBias();
     let shoe = session.state.shoe;
-    const drawn = drawCard(shoe);
+    const currentScore = handScore(session.public_state.player);
+    const drawn = drawForPlayerHit(shoe, currentScore, bias);
     shoe = drawn.shoe;
     const player = [...session.public_state.player, drawn.card];
     const score = handScore(player);
@@ -384,7 +406,7 @@ export const bjHit = createServerFn({ method: "POST" })
 
     if (score >= 21) {
       // Bust or natural 21 → resolve.
-      const resolved = resolveHand(shoe, player, session.public_state.dealer, effectiveBet);
+      const resolved = resolveHand(shoe, player, session.public_state.dealer, effectiveBet, bias);
       shoe = resolved.shoe;
       publicState = {
         player,
@@ -455,11 +477,13 @@ export const bjStand = createServerFn({ method: "POST" })
     const doubled = session.public_state.doubled;
     const effectiveBet = doubled ? bet * 2 : bet;
 
+    const bias = await loadBjBias();
     const resolved = resolveHand(
       session.state.shoe,
       session.public_state.player,
       session.public_state.dealer,
       effectiveBet,
+      bias,
     );
 
     const publicState: BJPublicState = {
@@ -545,13 +569,15 @@ export const bjDouble = createServerFn({ method: "POST" })
     });
     let newBalance = debit.new_balance;
 
+    const bias = await loadBjBias();
     let shoe = session.state.shoe;
-    const drawn = drawCard(shoe);
+    const currentScore = handScore(session.public_state.player);
+    const drawn = drawForPlayerHit(shoe, currentScore, bias);
     shoe = drawn.shoe;
     const player = [...session.public_state.player, drawn.card];
     const effectiveBet = bet * 2;
 
-    const resolved = resolveHand(shoe, player, session.public_state.dealer, effectiveBet);
+    const resolved = resolveHand(shoe, player, session.public_state.dealer, effectiveBet, bias);
 
     const publicState: BJPublicState = {
       player,
