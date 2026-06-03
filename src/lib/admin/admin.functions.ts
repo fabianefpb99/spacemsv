@@ -195,6 +195,33 @@ export const adminSetBlock = createServerFn({ method: "POST" })
     return { ok: true, blocked: data.blocked };
   });
 
+export const adminAdjustXp = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        userId: z.string().uuid(),
+        delta: z.number().int().refine((n) => n !== 0, "delta_required"),
+        reason: z.string().max(200).optional(),
+      })
+      .parse(input)
+  )
+  .handler(async ({ data, context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
+    await assertAdmin(context.userId);
+    const { data: res, error } = await supabaseAdmin.rpc("admin_adjust_xp", {
+      p_target_user_id: data.userId,
+      p_delta: data.delta,
+      p_reason: data.reason ?? undefined,
+    });
+    if (error) throw new Error(error.message);
+    const row = Array.isArray(res) ? res[0] : res;
+    return {
+      total_xp: Number(row?.total_xp ?? 0),
+      current_level: Number(row?.current_level ?? 0),
+    };
+  });
+
 export const adminResetPassword = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ userId: z.string().uuid() }).parse(input))

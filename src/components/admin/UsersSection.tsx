@@ -10,12 +10,14 @@ import {
   Plus,
   RefreshCw,
   Search,
+  Sparkles,
   Wallet as WalletIcon,
   X,
 } from "lucide-react";
 import astronaut from "@/assets/astronaut.svg";
 import {
   adminAdjustBalance,
+  adminAdjustXp,
   adminGetUserDetail,
   adminGetUserTransactions,
   adminListUsers,
@@ -176,6 +178,7 @@ function UserDetailDrawer({ userId, onClose }: { userId: string; onClose: () => 
   const detailFn = useServerFn(adminGetUserDetail);
   const txFn = useServerFn(adminGetUserTransactions);
   const adjustFn = useServerFn(adminAdjustBalance);
+  const adjustXpFn = useServerFn(adminAdjustXp);
   const blockFn = useServerFn(adminSetBlock);
   const resetFn = useServerFn(adminResetPassword);
   const qc = useQueryClient();
@@ -198,6 +201,14 @@ function UserDetailDrawer({ userId, onClose }: { userId: string; onClose: () => 
       qc.invalidateQueries({ queryKey: ["admin-users"] });
     },
   });
+  const adjustXp = useMutation({
+    mutationFn: (vars: { delta: number; reason?: string }) =>
+      adjustXpFn({ data: { userId, ...vars } }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-user", userId] });
+      qc.invalidateQueries({ queryKey: ["admin-users"] });
+    },
+  });
   const blockMut = useMutation({
     mutationFn: (blocked: boolean) => blockFn({ data: { userId, blocked } }),
     onSuccess: () => {
@@ -212,6 +223,8 @@ function UserDetailDrawer({ userId, onClose }: { userId: string; onClose: () => 
   const [amount, setAmount] = useState("");
   const [target, setTarget] = useState<"real" | "bonus">("real");
   const [reason, setReason] = useState("");
+  const [xpAmount, setXpAmount] = useState("");
+  const [xpReason, setXpReason] = useState("");
 
   const submitAdjust = (sign: 1 | -1) => {
     const n = Math.floor(Number(amount));
@@ -219,6 +232,14 @@ function UserDetailDrawer({ userId, onClose }: { userId: string; onClose: () => 
     adjust.mutate({ amount: sign * Math.abs(n), target, reason: reason || undefined });
     setAmount("");
     setReason("");
+  };
+
+  const submitXp = (sign: 1 | -1) => {
+    const n = Math.floor(Number(xpAmount));
+    if (!n || isNaN(n)) return;
+    adjustXp.mutate({ delta: sign * Math.abs(n), reason: xpReason || undefined });
+    setXpAmount("");
+    setXpReason("");
   };
 
   return (
@@ -380,6 +401,58 @@ function UserDetailDrawer({ userId, onClose }: { userId: string; onClose: () => 
               {adjust.isError && (
                 <div className="mt-2 text-[11px] text-rose-300">
                   Error: {(adjust.error as Error).message}
+                </div>
+              )}
+            </Panel>
+
+            {/* XP / VIP actions */}
+            <Panel title="Ajustar XP (VIP)">
+              <div className="mb-2 flex flex-wrap items-center gap-2 text-[11px] text-purple-200/80">
+                <Sparkles className="h-3.5 w-3.5 text-fuchsia-300" />
+                <span>Nivel actual recalculado automáticamente.</span>
+              </div>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <input
+                  inputMode="numeric"
+                  value={xpAmount}
+                  onChange={(e) => setXpAmount(e.target.value.replace(/[^0-9]/g, ""))}
+                  placeholder="Cantidad de XP"
+                  className="flex-1 rounded-md border border-purple-500/30 bg-[#150830] px-2 py-2 text-xs text-white placeholder:text-purple-300/40"
+                />
+                <input
+                  value={xpReason}
+                  onChange={(e) => setXpReason(e.target.value)}
+                  placeholder="Motivo (opcional)"
+                  className="flex-1 rounded-md border border-purple-500/30 bg-[#150830] px-2 py-2 text-xs text-white placeholder:text-purple-300/40"
+                />
+              </div>
+              <div className="mt-2 flex gap-2">
+                <button
+                  onClick={() => submitXp(1)}
+                  disabled={adjustXp.isPending || !xpAmount}
+                  className="flex flex-1 items-center justify-center gap-1 rounded-md bg-fuchsia-600 px-3 py-2 text-xs font-bold uppercase tracking-wider text-white hover:bg-fuchsia-500 disabled:opacity-50"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  Otorgar XP
+                </button>
+                <button
+                  onClick={() => submitXp(-1)}
+                  disabled={adjustXp.isPending || !xpAmount}
+                  className="flex flex-1 items-center justify-center gap-1 rounded-md bg-purple-700 px-3 py-2 text-xs font-bold uppercase tracking-wider text-white hover:bg-purple-600 disabled:opacity-50"
+                >
+                  <Minus className="h-3.5 w-3.5" />
+                  Quitar XP
+                </button>
+              </div>
+              {adjustXp.data && (
+                <div className="mt-2 rounded-md border border-fuchsia-500/30 bg-fuchsia-500/5 p-2 text-[11px] text-fuchsia-200">
+                  XP total: <b>{adjustXp.data.total_xp.toLocaleString("es-CO")}</b> · Nivel:{" "}
+                  <b>{adjustXp.data.current_level}</b>
+                </div>
+              )}
+              {adjustXp.isError && (
+                <div className="mt-2 text-[11px] text-rose-300">
+                  Error: {(adjustXp.error as Error).message}
                 </div>
               )}
             </Panel>
