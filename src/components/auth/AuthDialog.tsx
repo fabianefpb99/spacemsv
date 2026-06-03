@@ -13,21 +13,22 @@ import { useAuth } from "@/hooks/useAuth";
 import { PersonalDataForm } from "@/components/profile/PersonalDataForm";
 
 const signUpSchema = z.object({
-  email: z.string().email("Email inválido"),
+  email: z.string().trim().email("Email inválido"),
   username: z
     .string()
-    .min(3, "Mínimo 3 caracteres")
-    .max(20, "Máximo 20 caracteres")
-    .regex(/^[a-zA-Z0-9_]+$/, "Solo letras, números y guion bajo"),
+    .trim()
+    .min(3, "Usuario: mínimo 3 caracteres")
+    .max(20, "Usuario: máximo 20 caracteres")
+    .regex(/^[a-zA-Z0-9_.-]+$/, "Usuario: solo letras, números, punto, guion y guion bajo"),
   password: z
     .string()
-    .min(6, "Mínimo 6 caracteres")
-    .regex(/[A-Za-z]/, "Debe incluir al menos una letra")
-    .regex(/[0-9]/, "Debe incluir al menos un número"),
+    .min(6, "Contraseña: mínimo 6 caracteres")
+    .regex(/[A-Za-z]/, "Contraseña: debe incluir al menos una letra")
+    .regex(/[0-9]/, "Contraseña: debe incluir al menos un número"),
 });
 
 const signInSchema = z.object({
-  email: z.string().email("Email inválido"),
+  email: z.string().trim().email("Email inválido"),
   password: z.string().min(1, "Requerido"),
 });
 
@@ -251,18 +252,20 @@ function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
     e.preventDefault();
     setError(null);
     setInfo(null);
-    const parsed = signUpSchema.safeParse({ email, username, password });
+    const cleanEmail = email.trim();
+    const cleanUsername = username.trim();
+    const parsed = signUpSchema.safeParse({ email: cleanEmail, username: cleanUsername, password });
     if (!parsed.success) {
       setError(parsed.error.issues[0].message);
       return;
     }
     setLoading(true);
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: cleanEmail,
       password,
       options: {
         emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
-        data: { username },
+        data: { username: cleanUsername },
       },
     });
     setLoading(false);
