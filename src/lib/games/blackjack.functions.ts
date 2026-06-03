@@ -387,8 +387,10 @@ export const bjHit = createServerFn({ method: "POST" })
       throw new Error("bj_not_playing");
     }
 
+    const bias = await loadBjBias();
     let shoe = session.state.shoe;
-    const drawn = drawCard(shoe);
+    const currentScore = handScore(session.public_state.player);
+    const drawn = drawForPlayerHit(shoe, currentScore, bias);
     shoe = drawn.shoe;
     const player = [...session.public_state.player, drawn.card];
     const score = handScore(player);
@@ -404,7 +406,7 @@ export const bjHit = createServerFn({ method: "POST" })
 
     if (score >= 21) {
       // Bust or natural 21 → resolve.
-      const resolved = resolveHand(shoe, player, session.public_state.dealer, effectiveBet);
+      const resolved = resolveHand(shoe, player, session.public_state.dealer, effectiveBet, bias);
       shoe = resolved.shoe;
       publicState = {
         player,
