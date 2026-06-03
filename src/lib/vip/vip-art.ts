@@ -41,6 +41,10 @@ export type VipCardTheme = {
   barGradient: string;
   /** Subtle radial highlight color used behind the insignia. */
   haloColor: string;
+  /** CSS gradient stops for the frame border (rank metallic look). */
+  frameC1: string;
+  frameC2: string;
+  frameC3: string;
 };
 
 export const VIP_CARD_THEME: Record<VipRank, VipCardTheme> = {
@@ -53,6 +57,9 @@ export const VIP_CARD_THEME: Record<VipRank, VipCardTheme> = {
     chipBg: "bg-amber-600/15 border-amber-500/40 text-amber-200",
     barGradient: "from-purple-600 via-amber-500 to-amber-300",
     haloColor: "rgba(217, 119, 6, 0.35)",
+    frameC1: "rgba(217, 119, 6, 0.95)",
+    frameC2: "rgba(146, 64, 14, 0.7)",
+    frameC3: "rgba(120, 53, 15, 0.5)",
   },
   plata: {
     cardBg: "from-[#2a0f3d] via-[#1a0a2e] to-[#2b3340]",
@@ -63,6 +70,9 @@ export const VIP_CARD_THEME: Record<VipRank, VipCardTheme> = {
     chipBg: "bg-slate-300/15 border-slate-300/40 text-slate-100",
     barGradient: "from-purple-600 via-slate-300 to-white",
     haloColor: "rgba(203, 213, 225, 0.35)",
+    frameC1: "rgba(226, 232, 240, 0.95)",
+    frameC2: "rgba(148, 163, 184, 0.6)",
+    frameC3: "rgba(100, 116, 139, 0.5)",
   },
   oro: {
     cardBg: "from-[#2a0f3d] via-[#1a0a2e] to-[#3d2f0a]",
@@ -73,6 +83,9 @@ export const VIP_CARD_THEME: Record<VipRank, VipCardTheme> = {
     chipBg: "bg-yellow-500/15 border-yellow-400/50 text-yellow-200",
     barGradient: "from-purple-600 via-yellow-400 to-yellow-200",
     haloColor: "rgba(250, 204, 21, 0.4)",
+    frameC1: "rgba(250, 204, 21, 0.95)",
+    frameC2: "rgba(202, 138, 4, 0.7)",
+    frameC3: "rgba(133, 77, 14, 0.55)",
   },
   platino: {
     cardBg: "from-[#2a0f3d] via-[#1a0a2e] to-[#0a3340]",
@@ -83,6 +96,9 @@ export const VIP_CARD_THEME: Record<VipRank, VipCardTheme> = {
     chipBg: "bg-cyan-400/15 border-cyan-300/50 text-cyan-100",
     barGradient: "from-purple-600 via-cyan-300 to-white",
     haloColor: "rgba(103, 232, 249, 0.4)",
+    frameC1: "rgba(165, 243, 252, 0.95)",
+    frameC2: "rgba(34, 211, 238, 0.65)",
+    frameC3: "rgba(14, 116, 144, 0.55)",
   },
   diamante: {
     cardBg: "from-[#2a0f3d] via-[#1a0a2e] to-[#0a2540]",
@@ -93,6 +109,9 @@ export const VIP_CARD_THEME: Record<VipRank, VipCardTheme> = {
     chipBg: "bg-sky-400/15 border-sky-300/50 text-sky-100",
     barGradient: "from-purple-600 via-sky-300 to-fuchsia-200",
     haloColor: "rgba(125, 211, 252, 0.45)",
+    frameC1: "rgba(186, 230, 253, 0.95)",
+    frameC2: "rgba(56, 189, 248, 0.7)",
+    frameC3: "rgba(192, 132, 252, 0.55)",
   },
   maestro: {
     cardBg: "from-[#2a0f3d] via-[#1a0a2e] to-[#3a0a4d]",
@@ -103,6 +122,9 @@ export const VIP_CARD_THEME: Record<VipRank, VipCardTheme> = {
     chipBg: "bg-fuchsia-500/15 border-fuchsia-400/50 text-fuchsia-100",
     barGradient: "from-purple-600 via-fuchsia-400 to-pink-200",
     haloColor: "rgba(232, 121, 249, 0.45)",
+    frameC1: "rgba(240, 171, 252, 0.95)",
+    frameC2: "rgba(192, 38, 211, 0.7)",
+    frameC3: "rgba(126, 34, 206, 0.55)",
   },
   leyenda: {
     cardBg: "from-[#2a0f3d] via-[#1a0a2e] to-[#3d2400]",
@@ -113,5 +135,8 @@ export const VIP_CARD_THEME: Record<VipRank, VipCardTheme> = {
     chipBg: "bg-amber-400/15 border-amber-300/60 text-amber-100",
     barGradient: "from-purple-600 via-amber-400 to-yellow-200",
     haloColor: "rgba(251, 191, 36, 0.5)",
+    frameC1: "rgba(253, 224, 71, 0.98)",
+    frameC2: "rgba(234, 88, 12, 0.75)",
+    frameC3: "rgba(146, 64, 14, 0.6)",
   },
 };
