@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import {
   ArrowLeft,
   BadgeCheck,
@@ -19,6 +20,8 @@ import {
   Settings as SettingsIcon,
   IdCard,
   Gamepad2,
+  UserCircle2,
+  AlertCircle,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
@@ -31,6 +34,7 @@ import { useVip } from "@/hooks/useVip";
 import { computeProgress, formatXp, RANK_META, rankLabel } from "@/lib/vip/vip.shared";
 import { cn } from "@/lib/utils";
 import { Sparkles } from "lucide-react";
+import { PersonalDataDialog } from "@/components/profile/PersonalDataDialog";
 
 export const Route = createFileRoute("/perfil")({
   head: () => ({
