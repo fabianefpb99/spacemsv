@@ -314,6 +314,7 @@ export type Database = {
           updated_at: string
           username: string | null
           verification_status: Database["public"]["Enums"]["verification_status"]
+          vip_last_seen_level: number
         }
         Insert: {
           birth_date?: string | null
@@ -330,6 +331,7 @@ export type Database = {
           updated_at?: string
           username?: string | null
           verification_status?: Database["public"]["Enums"]["verification_status"]
+          vip_last_seen_level?: number
         }
         Update: {
           birth_date?: string | null
@@ -346,6 +348,7 @@ export type Database = {
           updated_at?: string
           username?: string | null
           verification_status?: Database["public"]["Enums"]["verification_status"]
+          vip_last_seen_level?: number
         }
         Relationships: []
       }
@@ -427,6 +430,87 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_vip: {
+        Row: {
+          current_level: number
+          total_xp: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          current_level?: number
+          total_xp?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          current_level?: number
+          total_xp?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      vip_config: {
+        Row: {
+          cap_level: number
+          id: boolean
+          is_active: boolean
+          min_bet_for_xp: number
+          updated_at: string
+          updated_by: string | null
+          xp_log_factor: number
+          xp_log_scale: number
+          xp_per_bet_base: number
+        }
+        Insert: {
+          cap_level?: number
+          id?: boolean
+          is_active?: boolean
+          min_bet_for_xp?: number
+          updated_at?: string
+          updated_by?: string | null
+          xp_log_factor?: number
+          xp_log_scale?: number
+          xp_per_bet_base?: number
+        }
+        Update: {
+          cap_level?: number
+          id?: boolean
+          is_active?: boolean
+          min_bet_for_xp?: number
+          updated_at?: string
+          updated_by?: string | null
+          xp_log_factor?: number
+          xp_log_scale?: number
+          xp_per_bet_base?: number
+        }
+        Relationships: []
+      }
+      vip_levels: {
+        Row: {
+          level: number
+          rank: Database["public"]["Enums"]["vip_rank"]
+          reward_amount: number
+          sub_division: Database["public"]["Enums"]["vip_sub"]
+          xp_required: number
+        }
+        Insert: {
+          level: number
+          rank: Database["public"]["Enums"]["vip_rank"]
+          reward_amount?: number
+          sub_division: Database["public"]["Enums"]["vip_sub"]
+          xp_required: number
+        }
+        Update: {
+          level?: number
+          rank?: Database["public"]["Enums"]["vip_rank"]
+          reward_amount?: number
+          sub_division?: Database["public"]["Enums"]["vip_sub"]
+          xp_required?: number
         }
         Relationships: []
       }
@@ -641,6 +725,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      award_xp: {
+        Args: { p_bet_amount: number; p_user_id: string }
+        Returns: undefined
+      }
       bj_apply_action: {
         Args: {
           p_expected_nonce: number
@@ -805,6 +893,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      mark_vip_level_seen: { Args: never; Returns: number }
       spaceman_cashout: {
         Args: {
           p_client_action_id: string
@@ -859,6 +948,15 @@ export type Database = {
         | "bonus"
         | "adjustment"
       verification_status: "unverified" | "pending" | "verified" | "rejected"
+      vip_rank:
+        | "bronce"
+        | "plata"
+        | "oro"
+        | "platino"
+        | "diamante"
+        | "maestro"
+        | "leyenda"
+      vip_sub: "V" | "IV" | "III" | "II" | "I"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1014,6 +1112,16 @@ export const Constants = {
         "adjustment",
       ],
       verification_status: ["unverified", "pending", "verified", "rejected"],
+      vip_rank: [
+        "bronce",
+        "plata",
+        "oro",
+        "platino",
+        "diamante",
+        "maestro",
+        "leyenda",
+      ],
+      vip_sub: ["V", "IV", "III", "II", "I"],
     },
   },
 } as const
