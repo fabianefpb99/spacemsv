@@ -829,9 +829,9 @@ function UserDetailDrawer({ userId, onClose }: { userId: string; onClose: () => 
                   Reset contraseña
                 </button>
               </div>
-              {resetMut.data?.action_link && (
-                <div className="mt-2 break-all rounded-md border border-amber-500/30 bg-amber-500/5 p-2 text-[10px] text-amber-200">
-                  Enlace de recuperación enviado al correo. URL: {resetMut.data.action_link}
+              {resetMut.data?.ok && (
+                <div className="mt-2 rounded-md border border-emerald-500/30 bg-emerald-500/5 p-2 text-[10px] text-emerald-200">
+                  Enlace de recuperación enviado al correo del usuario.
                 </div>
               )}
             </Panel>
