@@ -336,247 +336,200 @@ export function RouletteGame() {
   const canSpin = phase === "idle" && balanceReady && bet <= balance;
 
   return (
-    <div className="min-h-screen bg-[#06010f] text-white relative overflow-hidden">
-      {/* Cosmic backdrop */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(120,40,200,0.25),transparent_55%),radial-gradient(ellipse_at_bottom,rgba(60,10,120,0.35),transparent_60%)]" />
-
+    <div className="relative min-h-[100dvh] w-full overflow-hidden bg-[#06010f] text-white">
+      {/* ───────────────── ESCENA (fondo + rueda alineada al centro pintado) ───────────────── */}
       <div
-        className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pt-4 sm:max-w-lg sm:px-4"
-        style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) * 0.85 + 1.05rem)" }}
+        className="relative mx-auto w-full"
+        style={{ aspectRatio: "941 / 1672", maxWidth: "min(100vw, calc(100dvh * 941 / 1672))" }}
       >
-        {/* Header */}
-        <header
-          className="flex items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
-          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
+        <img
+          src={rouletteScene.url}
+          alt=""
+          draggable={false}
+          className="pointer-events-none absolute inset-0 h-full w-full select-none object-cover object-top"
+        />
+
+        {/* Rueda funcional: SVG plano alineado EXACTAMENTE con la ruleta del fondo */}
+        <div
+          className="absolute"
+          style={{
+            left: `${WHEEL_CX_PCT}%`,
+            top: `${WHEEL_CY_PCT}%`,
+            width: `${WHEEL_DIAM_PCT}%`,
+            aspectRatio: "1 / 1",
+            transform: "translate(-50%, -50%)",
+          }}
         >
-          <div className="flex items-center gap-1">
-            <button className="rounded-md p-2 text-white hover:bg-white/10" aria-label="Menú">
-              <Menu className="h-7 w-7" strokeWidth={3} />
-            </button>
-            <Link to="/">
-              <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7 cursor-pointer" />
-            </Link>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="text-right">
-              <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
-              <div className="font-display text-[11px] font-bold sm:text-xs text-white">
-                <span className="text-emerald-400 mr-0.5">$</span>
-                {balanceReady ? formatCOP(balance) : "—"} COP
-              </div>
-            </div>
-            <AuthControl />
-          </div>
-        </header>
+          <RouletteWheel rotation={rotation} spinning={phase === "spinning"} />
+        </div>
+      </div>
 
-        {/* Top bar: online + mute */}
-        <div className="mt-3 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs">
-            <span className="relative inline-flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-            </span>
-            <span className="font-semibold text-white/90">{online} ONLINE</span>
-          </div>
-          <button
-            onClick={() => setMuted((m) => !m)}
-            aria-label={muted ? "Activar sonido" : "Silenciar"}
-            className="rounded-md p-1 text-purple-200/80 hover:bg-white/5"
-          >
-            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+      {/* ───────────────── HEADER overlay (translúcido sobre la escena) ───────────────── */}
+      <header
+        className="absolute inset-x-0 top-0 z-30 flex items-center justify-between px-3"
+        style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)", paddingBottom: "0.4rem" }}
+      >
+        <div className="flex items-center gap-1">
+          <button className="rounded-md p-1.5 text-white/95 hover:bg-white/10" aria-label="Menú">
+            <Menu className="h-6 w-6" strokeWidth={2.5} />
           </button>
+          <Link to="/">
+            <img src={betspaceLogo} alt="BETSPACE" className="h-5 w-auto cursor-pointer drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]" />
+          </Link>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="rounded-lg bg-black/50 px-2 py-1 text-right backdrop-blur-sm ring-1 ring-purple-400/30">
+            <div className="text-[8px] uppercase tracking-wider text-purple-200/80 leading-none">Balance</div>
+            <div className="font-display text-[11px] font-bold text-white leading-tight">
+              <span className="text-emerald-400 mr-0.5">$</span>
+              {balanceReady ? formatCOP(balance) : "—"}
+            </div>
+          </div>
+          <AuthControl />
+        </div>
+      </header>
+
+      {/* ───────────────── Mini-barra (online + mute + último resultado) ───────────────── */}
+      <div
+        className="absolute inset-x-0 z-20 flex items-center justify-between px-3"
+        style={{ top: "calc(env(safe-area-inset-top, 0px) + 3.2rem)" }}
+      >
+        <div className="flex items-center gap-1.5 rounded-full bg-black/50 px-2 py-0.5 text-[10px] backdrop-blur-sm ring-1 ring-white/10">
+          <span className="relative inline-flex h-1.5 w-1.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+          </span>
+          <span className="font-semibold text-white/90">{online}</span>
         </div>
 
-        {/* Title */}
-        <div className="mt-2 text-center">
-          <h1 className="font-display text-4xl font-black tracking-wider bg-gradient-to-b from-rose-300 via-red-500 to-red-700 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(239,68,68,0.5)]">
-            RULETA
-          </h1>
-          <div className="mt-0.5 text-[11px] font-semibold tracking-wide">
-            <span className="text-rose-400">ROJO</span>
-            <span className="text-white/40 mx-1.5">/</span>
-            <span className="text-white/80">NEGRO</span>
-            <span className="text-white/40 mx-1.5">/</span>
-            <span className="text-emerald-400">0</span>
-          </div>
+        {/* Historial compacto inline */}
+        <div className="flex items-center gap-1 rounded-full bg-black/50 px-2 py-0.5 backdrop-blur-sm ring-1 ring-white/10">
+          {history.length === 0 ? (
+            <span className="text-[9px] text-white/40 italic">sin giros</span>
+          ) : (
+            history.slice(0, 6).map((h, i) => (
+              <div
+                key={i}
+                className={`h-3 w-3 rounded-full ring-1 ring-black/50 ${
+                  h.color === "red"
+                    ? "bg-rose-500"
+                    : h.color === "black"
+                      ? "bg-zinc-900"
+                      : "bg-emerald-500"
+                }`}
+                title={`${h.segment} ${h.color}`}
+              />
+            ))
+          )}
         </div>
 
-        {/* Wheel */}
-        <div className="relative mx-auto mt-3 aspect-square w-full max-w-[360px]">
-          <img
-            src={rouletteFrame}
-            alt=""
-            className="absolute inset-0 h-full w-full pointer-events-none select-none"
-            draggable={false}
-          />
-          {/* Inner wheel disc, sized to fit inside the gold ring (~63% of frame) */}
-          <div className="absolute left-1/2 top-1/2 aspect-square w-[63%] -translate-x-1/2 -translate-y-1/2">
-            <RouletteWheel rotation={rotation} spinning={phase === "spinning"} />
-            {/* Central hub overlay (small golden cap) */}
-            <div className="pointer-events-none absolute left-1/2 top-1/2 h-[22%] w-[22%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-amber-300 via-yellow-600 to-amber-800 shadow-[inset_0_2px_6px_rgba(255,255,255,0.4),0_0_12px_rgba(0,0,0,0.6)] ring-2 ring-fuchsia-500/60" />
-          </div>
-          {/* Pointer (top, fixed) */}
-          <div className="pointer-events-none absolute left-1/2 top-[6%] z-20 -translate-x-1/2">
-            <div
-              className={`h-0 w-0 transition-all ${phase === "spinning" ? "drop-shadow-[0_0_8px_rgba(251,191,36,1)]" : ""}`}
-              style={{
-                borderLeft: "10px solid transparent",
-                borderRight: "10px solid transparent",
-                borderTop: "18px solid #fbbf24",
-                filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.8))",
-              }}
-            />
-          </div>
-        </div>
+        <button
+          onClick={() => setMuted((m) => !m)}
+          aria-label={muted ? "Activar sonido" : "Silenciar"}
+          className="rounded-full bg-black/50 p-1.5 text-white/90 backdrop-blur-sm ring-1 ring-white/10 hover:bg-black/70"
+        >
+          {muted ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
+        </button>
+      </div>
 
-        {/* Últimos resultados */}
-        <div className="mt-3 rounded-2xl border border-purple-500/30 bg-[#150828]/60 px-3 py-2">
-          <div className="text-center text-[10px] font-bold uppercase tracking-wider text-purple-200/80">
-            Últimos resultados
+      {/* ───────────────── HUD inferior (compacto, sobre la tarima morada) ───────────────── */}
+      <div
+        className="absolute inset-x-0 bottom-0 z-30 px-3"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 0.5rem)" }}
+      >
+        <div className="mx-auto max-w-md space-y-2">
+          {/* Botones de elección — 3 en una fila */}
+          <div className="grid grid-cols-3 gap-1.5">
+            <button
+              onClick={() => setChoice("red")}
+              disabled={phase !== "idle"}
+              className={`flex flex-col items-center justify-center gap-0 rounded-xl border-2 py-1.5 transition-all disabled:opacity-60 ${
+                choice === "red"
+                  ? "border-red-300 bg-gradient-to-br from-red-600 to-red-800 shadow-[0_0_14px_rgba(239,68,68,0.6)]"
+                  : "border-red-500/40 bg-red-950/50 backdrop-blur-sm hover:bg-red-900/50"
+              }`}
+            >
+              <span className="font-display text-sm font-black leading-tight">ROJO</span>
+              <span className="text-[10px] font-bold text-rose-100/90 leading-none">1.95x</span>
+            </button>
+            <button
+              onClick={() => setChoice("black")}
+              disabled={phase !== "idle"}
+              className={`flex flex-col items-center justify-center gap-0 rounded-xl border-2 py-1.5 transition-all disabled:opacity-60 ${
+                choice === "black"
+                  ? "border-white/70 bg-gradient-to-br from-zinc-700 to-zinc-950 shadow-[0_0_14px_rgba(255,255,255,0.25)]"
+                  : "border-white/30 bg-zinc-900/60 backdrop-blur-sm hover:bg-zinc-800/70"
+              }`}
+            >
+              <span className="font-display text-sm font-black leading-tight">NEGRO</span>
+              <span className="text-[10px] font-bold text-white/80 leading-none">1.95x</span>
+            </button>
+            <button
+              onClick={() => setChoice("green")}
+              disabled={phase !== "idle"}
+              className={`flex flex-col items-center justify-center gap-0 rounded-xl border-2 py-1.5 transition-all disabled:opacity-60 ${
+                choice === "green"
+                  ? "border-emerald-300 bg-gradient-to-br from-emerald-600 to-emerald-800 shadow-[0_0_14px_rgba(16,185,129,0.6)]"
+                  : "border-emerald-500/40 bg-emerald-950/50 backdrop-blur-sm hover:bg-emerald-900/50"
+              }`}
+            >
+              <span className="font-display text-sm font-black leading-tight">VERDE 0</span>
+              <span className="text-[10px] font-bold text-emerald-100/90 leading-none">14.00x</span>
+            </button>
           </div>
-          <div className="mt-1.5 flex items-center justify-center gap-1.5 overflow-x-auto">
-            {history.length === 0 ? (
-              <span className="text-[11px] text-white/40 italic py-1">Aún no hay giros</span>
-            ) : (
-              history.slice(0, 10).map((h, i) => (
-                <div
-                  key={i}
-                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white ring-1 ring-black/40 ${
-                    h.color === "red"
-                      ? "bg-gradient-to-br from-red-500 to-red-800"
-                      : h.color === "black"
-                        ? "bg-gradient-to-br from-zinc-700 to-zinc-950"
-                        : "bg-gradient-to-br from-emerald-500 to-emerald-800"
-                  }`}
-                  title={`${h.segment} ${h.color}`}
-                >
-                  {h.segment}
-                </div>
-              ))
-            )}
-          </div>
-        </div>
 
-        {/* Bet panel */}
-        <div className="mt-3 rounded-2xl border border-purple-500/30 bg-[#150828]/60 p-3">
-          <div className="text-center text-[10px] font-bold uppercase tracking-wider text-purple-200/80">
-            Apuesta (COP)
-          </div>
-          <div className="mt-2 flex items-stretch gap-2">
+          {/* Stepper + GIRAR — una sola fila compacta */}
+          <div className="flex items-stretch gap-1.5">
             <button
               onClick={() => adjustBet(-BET_STEP)}
               disabled={phase !== "idle"}
-              className="flex h-14 w-14 items-center justify-center rounded-xl border border-purple-500/40 bg-purple-950/40 text-2xl font-bold text-white hover:bg-purple-900/50 disabled:opacity-50"
+              className="flex h-12 w-11 items-center justify-center rounded-xl border border-purple-400/40 bg-purple-950/60 text-2xl font-bold text-white backdrop-blur-sm hover:bg-purple-900/60 disabled:opacity-50"
+              aria-label="Disminuir"
             >
               −
             </button>
-            <div className="flex h-14 flex-1 items-center justify-center rounded-xl border border-purple-500/40 bg-black/50 px-3">
+            <div className="flex h-12 min-w-0 flex-1 items-center justify-center rounded-xl border border-purple-400/40 bg-black/60 px-2 backdrop-blur-sm">
               <BetAmount
                 bet={bet}
                 bonusBalance={bonusBalance}
-                amountClassName="font-display text-2xl font-bold tracking-wide text-white"
+                amountClassName="font-display text-lg font-bold tracking-wide text-white"
               />
             </div>
             <button
               onClick={() => adjustBet(BET_STEP)}
               disabled={phase !== "idle"}
-              className="flex h-14 w-14 items-center justify-center rounded-xl border border-purple-500/40 bg-purple-950/40 text-2xl font-bold text-white hover:bg-purple-900/50 disabled:opacity-50"
+              className="flex h-12 w-11 items-center justify-center rounded-xl border border-purple-400/40 bg-purple-950/60 text-2xl font-bold text-white backdrop-blur-sm hover:bg-purple-900/60 disabled:opacity-50"
+              aria-label="Aumentar"
             >
               +
             </button>
-          </div>
-          <div className="mt-2 grid grid-cols-4 gap-1.5">
-            {QUICK_ADDS.map((q) => (
-              <button
-                key={q}
-                onClick={() => adjustBet(q)}
-                disabled={phase !== "idle"}
-                className="rounded-lg border border-purple-500/40 bg-purple-950/30 py-1.5 text-[11px] font-bold text-white hover:bg-purple-900/40 disabled:opacity-50"
-              >
-                +{formatCOP(q)}
-              </button>
-            ))}
-          </div>
-          <div className="mt-1.5 text-center text-[10px] text-purple-200/60">
-            MÍNIMO: {formatCOP(MIN_BET)} COP &nbsp;·&nbsp; PASO: {formatCOP(BET_STEP)}
+            <button
+              onClick={handleSpin}
+              disabled={!canSpin}
+              className={`h-12 flex-[1.6] rounded-xl font-display text-base font-black uppercase tracking-wider transition-all ${
+                canSpin
+                  ? "bg-gradient-to-b from-emerald-400 to-emerald-700 text-white shadow-[0_3px_14px_rgba(16,185,129,0.55)] active:scale-[0.98]"
+                  : "bg-zinc-800/80 text-white/40 cursor-not-allowed"
+              }`}
+            >
+              {phase === "spinning" ? "GIRANDO…" : "GIRAR"}
+            </button>
           </div>
         </div>
 
-        {/* Choice buttons */}
-        <div className="mt-2.5 grid grid-cols-2 gap-2">
-          <button
-            onClick={() => setChoice("red")}
-            disabled={phase !== "idle"}
-            className={`flex items-center justify-center gap-2 rounded-xl border-2 p-3 transition-all disabled:opacity-60 ${
-              choice === "red"
-                ? "border-red-400 bg-gradient-to-br from-red-600 to-red-800 shadow-[0_0_18px_rgba(239,68,68,0.55)]"
-                : "border-red-500/40 bg-red-950/30 hover:bg-red-900/40"
-            }`}
-          >
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-red-400 to-red-700 ring-2 ring-white/30 text-xs font-bold">●</div>
-            <div className="text-left">
-              <div className="font-display text-base font-bold leading-none">ROJO</div>
-              <div className="text-[10px] font-bold text-rose-100/90">1.95x</div>
-            </div>
-          </button>
-          <button
-            onClick={() => setChoice("black")}
-            disabled={phase !== "idle"}
-            className={`flex items-center justify-center gap-2 rounded-xl border-2 p-3 transition-all disabled:opacity-60 ${
-              choice === "black"
-                ? "border-white/70 bg-gradient-to-br from-zinc-700 to-zinc-950 shadow-[0_0_18px_rgba(255,255,255,0.25)]"
-                : "border-white/30 bg-zinc-900/50 hover:bg-zinc-800/60"
-            }`}
-          >
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-zinc-700 to-black ring-2 ring-amber-400/50 text-xs font-bold">●</div>
-            <div className="text-left">
-              <div className="font-display text-base font-bold leading-none">NEGRO</div>
-              <div className="text-[10px] font-bold text-white/80">1.95x</div>
-            </div>
-          </button>
-          <button
-            onClick={() => setChoice("green")}
-            disabled={phase !== "idle"}
-            className={`col-span-2 flex items-center justify-center gap-3 rounded-xl border-2 p-2.5 transition-all disabled:opacity-60 ${
-              choice === "green"
-                ? "border-emerald-400 bg-gradient-to-br from-emerald-600 to-emerald-800 shadow-[0_0_18px_rgba(16,185,129,0.55)]"
-                : "border-emerald-500/40 bg-emerald-950/30 hover:bg-emerald-900/40"
-            }`}
-          >
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-emerald-700 ring-2 ring-white/40 text-xs font-bold">0</div>
-            <div className="font-display text-base font-bold">VERDE (0)</div>
-            <div className="ml-auto text-sm font-bold text-emerald-200">14.00x</div>
-          </button>
-        </div>
-
-        {/* Spin button */}
-        <button
-          onClick={handleSpin}
-          disabled={!canSpin}
-          className={`mt-3 h-14 w-full rounded-2xl font-display text-xl font-black uppercase tracking-wider transition-all ${
-            canSpin
-              ? "bg-gradient-to-b from-emerald-400 to-emerald-700 text-white shadow-[0_4px_18px_rgba(16,185,129,0.55)] hover:from-emerald-300 hover:to-emerald-600 active:scale-[0.98]"
-              : "bg-zinc-800 text-white/40 cursor-not-allowed"
-          }`}
-        >
-          {phase === "spinning" ? "GIRANDO…" : phase === "revealing" ? "RESULTADO" : "GIRAR RULETA"}
-        </button>
-
-        {/* Last result banner */}
+        {/* Toast resultado (flotante sobre el HUD) */}
         {lastResult && phase === "revealing" && (
           <div
-            className={`mt-2 rounded-xl border-2 px-3 py-2 text-center font-bold animate-[scale-in_.3s_ease-out] ${
+            className={`pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-full border-2 px-4 py-1.5 text-center text-sm font-bold backdrop-blur-md animate-[scale-in_.3s_ease-out] ${
               lastResult.won
-                ? "border-emerald-400 bg-emerald-950/50 text-emerald-200 shadow-[0_0_18px_rgba(16,185,129,0.5)]"
-                : "border-rose-500/50 bg-rose-950/40 text-rose-200"
+                ? "border-emerald-300 bg-emerald-950/80 text-emerald-100 shadow-[0_0_22px_rgba(16,185,129,0.7)]"
+                : "border-rose-400/60 bg-rose-950/80 text-rose-100"
             }`}
           >
             {lastResult.won ? (
-              <>
-                🎉 Ganaste <FitText className="inline-block">+{formatCOP(lastResult.payout)} COP</FitText>
-              </>
+              <>🎉 +<FitText className="inline-block">{formatCOP(lastResult.payout)}</FitText> COP</>
             ) : (
-              <>Salió {lastResult.segment} ({lastResult.color === "red" ? "rojo" : lastResult.color === "black" ? "negro" : "verde"})</>
+              <>Salió {lastResult.segment} {lastResult.color === "red" ? "rojo" : lastResult.color === "black" ? "negro" : "verde"}</>
             )}
           </div>
         )}
