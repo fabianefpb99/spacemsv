@@ -103,8 +103,8 @@ function formatCOP(n: number) {
 }
 
 function colorFor(mult: number) {
-  if (mult < 1.95) return "text-rose-400 border-rose-500/50 bg-rose-950/40";
-  if (mult < 2.95) return "text-purple-300 border-purple-500/50 bg-purple-950/40";
+  if (mult < 1.70) return "text-rose-400 border-rose-500/50 bg-rose-950/40";
+  if (mult < 2.92) return "text-purple-300 border-purple-500/50 bg-purple-950/40";
   if (mult < 15) return "text-emerald-300 border-emerald-500/50 bg-emerald-950/40";
   return "text-amber-300 border-amber-400/60 bg-amber-950/40 shadow-[0_0_10px_rgba(251,191,36,0.45)]";
 }
