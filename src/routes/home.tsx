@@ -16,6 +16,7 @@ import heroMinesImg from "@/assets/home-hero-mines.jpg";
 import heroSlotImg from "@/assets/home-hero-slot.jpg";
 import heroDiceImg from "@/assets/home-hero-dice.jpg";
 import heroBlackjackImg from "@/assets/home-hero-blackjack.jpg";
+import heroRuletaImg from "@/assets/home-hero-ruleta.jpg";
 import gameSpaceman from "@/assets/game-spaceman.jpg";
 import gameSlotMafia from "@/assets/game-slot-mafia.jpg";
 import gameMines from "@/assets/game-mines.jpg";
@@ -109,6 +110,14 @@ const SLIDES = [
     desc: "Llega a 21\ny vence a la banca.",
     cta: "Jugar Blackjack",
     to: "/blackjack" as const,
+  },
+  {
+    img: heroRuletaImg,
+    eyebrow: "GIRA LA",
+    title: "RULETA",
+    desc: "Rojo, negro o verde:\napuesta y multiplica.",
+    cta: "Jugar Ruleta",
+    to: "/ruleta" as const,
   },
 ];
 
