@@ -257,7 +257,7 @@ function PerfilPage() {
               <div className="relative shrink-0">
                 <div
                   className={cn(
-                    "flex h-[4.5rem] w-[4.5rem] items-center justify-center overflow-hidden rounded-full border-2 bg-purple-900/40",
+                    "flex h-[69px] w-[69px] items-center justify-center overflow-hidden rounded-full border-2 bg-purple-900/40",
                     vipTheme ? vipTheme.borderClass : "border-fuchsia-400/70",
                   )}
                   style={{
