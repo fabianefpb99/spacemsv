@@ -234,7 +234,7 @@ export function RouletteGame() {
     if (typeof window === "undefined") return;
     const a = new Audio(congratulationsAudio.url);
     a.preload = "auto";
-    a.volume = 0.45;
+    a.volume = 0.44;
     a.playbackRate = 1.21;
     winAudioRef.current = a;
     return () => {
@@ -331,7 +331,7 @@ export function RouletteGame() {
     window.addEventListener("pagehide", stopOnBackground);
     window.addEventListener("blur", stopOnBackground);
     document.addEventListener("visibilitychange", stopOnBackground);
-    const audio = setBackgroundTrack(mafiaJazzUrl, { volume: 0.009, loop: true });
+    const audio = setBackgroundTrack(mafiaJazzUrl, { volume: 0.004, loop: true });
     if (!audio) {
       return () => {
         window.removeEventListener(AUDIO_STOP_ALL_EVENT, onStopAll);
