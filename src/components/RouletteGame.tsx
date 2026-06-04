@@ -212,7 +212,19 @@ export function RouletteGame() {
   useEffect(() => {
     try {
       const raw = localStorage.getItem("betspaceman:roulette:history");
-      if (raw) setHistory(JSON.parse(raw));
+      if (raw) {
+        const parsed = JSON.parse(raw) as HistoryEntry[];
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setHistory(parsed);
+          return;
+        }
+      }
+      // Sin historial real: pre-llenar con tiros simulados para que no se vea vacío
+      const seeded: HistoryEntry[] = Array.from({ length: 12 }, () => {
+        const segment = WHEEL_ORDER[Math.floor(Math.random() * WHEEL_ORDER.length)];
+        return { segment, color: colorOf(segment) };
+      });
+      setHistory(seeded);
     } catch {}
   }, []);
   useEffect(() => {
