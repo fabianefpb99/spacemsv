@@ -4,7 +4,7 @@ import { Menu, Volume2, VolumeX } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import rouletteFrame from "@/assets/roulette-frame.png";
+import rouletteScene from "@/assets/roulette-scene.png.asset.json";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { BetAmount } from "@/components/games/BetAmount";
 import { FitText } from "@/components/ui/fit-text";
@@ -20,7 +20,12 @@ type HistoryEntry = { segment: number; color: Choice };
 const MIN_BET = 500;
 const MAX_BET = 500000;
 const BET_STEP = 500;
-const QUICK_ADDS = [1000, 2000, 5000, 10000];
+
+// Calibración de la rueda sobre el fondo (escena 941x1672, ratio 9:16)
+// Centro de la ruleta del fondo y diámetro útil (segmentos R/N/V)
+const WHEEL_CX_PCT = 50;       // % del ancho del fondo
+const WHEEL_CY_PCT = 44.9;     // % del alto del fondo
+const WHEEL_DIAM_PCT = 59.5;   // % del ancho del fondo (zona de segmentos)
 
 // European single-zero wheel order, clockwise starting at 0 (top)
 const WHEEL_ORDER = [
