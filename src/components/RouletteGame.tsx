@@ -349,12 +349,12 @@ export function RouletteGame() {
 
   return (
     <div
-      className="relative mx-auto flex min-h-[100dvh] max-w-md flex-col px-3 pt-4 sm:max-w-lg sm:px-4 bg-[#060210] text-white"
+      className="relative mx-auto flex h-[100dvh] max-w-md flex-col px-3 pt-4 sm:max-w-lg sm:px-4 bg-[#06010f] text-white overflow-hidden"
       style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) * 0.85 + 0.6rem)" }}
     >
       {/* ───────────────── HEADER GLOBAL (idéntico a Spaceman) ───────────────── */}
       <header
-        className="flex items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
+        className="flex items-center justify-between bg-[#06010f] border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
         style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
       >
         <div className="flex items-center gap-1">
@@ -395,10 +395,10 @@ export function RouletteGame() {
         </button>
       </div>
 
-      {/* ───────────────── ESCENA: fondo + rueda alineada ───────────────── */}
-      <div className="mt-2 flex items-center justify-center">
+      {/* ───────────────── ESCENA: fondo + rueda — ocupa el alto disponible ───────────────── */}
+      <div className="mt-2 flex flex-1 min-h-0 items-center justify-center">
         <div
-          className="relative w-full"
+          className="relative h-full"
           style={{ aspectRatio: "942 / 1672" }}
         >
           <img
