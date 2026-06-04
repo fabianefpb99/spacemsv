@@ -562,7 +562,7 @@ function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boole
     : tier === "fire" ? "slot-win-fire 0.55s ease-in-out infinite"
     : "slot-win-pulse 0.9s ease-in-out infinite";
   const showFlames = highlight && (tier === "fire" || tier === "mega");
-  const showGreenAura = highlight && tier === "normal";
+  const showGreenAura = highlight && (tier === "normal" || tier === "nice");
   return (
     <div
       className="relative flex items-center justify-center"
