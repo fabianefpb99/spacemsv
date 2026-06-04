@@ -33,7 +33,7 @@ export function BrandLoader({ active, minMs = 400 }: { active: boolean; minMs?: 
       <img
         src={logo}
         alt="BetSpace"
-        className="w-56 max-w-[60vw] select-none"
+        className="w-36 max-w-[40vw] select-none"
         draggable={false}
         style={{ animation: "brandLoaderPulse 1.1s ease-in-out infinite" }}
       />
