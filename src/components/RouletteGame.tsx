@@ -499,7 +499,7 @@ export function RouletteGame() {
               className={`flex flex-col items-center justify-center gap-0.5 rounded-xl border-2 py-2.5 transition-all disabled:opacity-60 ${
                 choice === "red"
                   ? "border-red-300 bg-gradient-to-br from-red-600 to-red-800 shadow-[0_0_14px_rgba(239,68,68,0.6)]"
-                  : "border-red-500/40 bg-red-950/50 backdrop-blur-sm hover:bg-red-900/50"
+                  : "border-red-500/15 bg-red-950/20 opacity-55 grayscale-[35%] backdrop-blur-sm hover:opacity-80 hover:bg-red-900/30"
               }`}
             >
               <span className="font-display text-base font-black leading-tight">ROJO</span>
@@ -511,7 +511,7 @@ export function RouletteGame() {
               className={`flex flex-col items-center justify-center gap-0.5 rounded-xl border-2 py-2.5 transition-all disabled:opacity-60 ${
                 choice === "black"
                   ? "border-white/70 bg-gradient-to-br from-zinc-700 to-zinc-950 shadow-[0_0_14px_rgba(255,255,255,0.25)]"
-                  : "border-white/30 bg-zinc-900/60 backdrop-blur-sm hover:bg-zinc-800/70"
+                  : "border-white/10 bg-zinc-900/25 opacity-55 grayscale-[35%] backdrop-blur-sm hover:opacity-80 hover:bg-zinc-800/40"
               }`}
             >
               <span className="font-display text-base font-black leading-tight">NEGRO</span>
@@ -523,10 +523,10 @@ export function RouletteGame() {
               className={`flex flex-col items-center justify-center gap-0.5 rounded-xl border-2 py-2.5 transition-all disabled:opacity-60 ${
                 choice === "green"
                   ? "border-emerald-300 bg-gradient-to-br from-emerald-600 to-emerald-800 shadow-[0_0_14px_rgba(16,185,129,0.6)]"
-                  : "border-emerald-500/40 bg-emerald-950/50 backdrop-blur-sm hover:bg-emerald-900/50"
+                  : "border-emerald-500/15 bg-emerald-950/20 opacity-55 grayscale-[35%] backdrop-blur-sm hover:opacity-80 hover:bg-emerald-900/30"
               }`}
             >
-              <span className="font-display text-base font-black leading-tight">VERDE 0</span>
+              <span className="font-display text-base font-black leading-tight">VERDE</span>
               <span className="text-[11px] font-bold text-emerald-100/90 leading-none">14.00x</span>
             </button>
           </div>
