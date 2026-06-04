@@ -4,7 +4,7 @@ import { Menu, Volume2, VolumeX } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import rouletteScene from "@/assets/roulette-scene.png.asset.json";
+import rouletteScene from "@/assets/roulette-scene-v2.png.asset.json";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { BetAmount } from "@/components/games/BetAmount";
 import { FitText } from "@/components/ui/fit-text";
@@ -21,12 +21,12 @@ const MIN_BET = 500;
 const MAX_BET = 500000;
 const BET_STEP = 500;
 
-// Calibración de la rueda sobre el fondo (escena 941x1672, ratio 9:16)
-// Medidas extraídas pixel-perfect del PNG pintado.
-const WHEEL_CX_PCT = 50.21;    // % del ancho — centro horizontal pintado
-const WHEEL_CY_PCT = 46.29;    // % del alto  — centro vertical pintado
-const WHEEL_DIAM_PCT = 71.31;  // % del ancho — diámetro exterior de los segmentos pintados
-const WHEEL_INNER_RATIO = 0.713; // r/R — borde interior de los segmentos pintados
+// Calibración de la rueda sobre el fondo v2 (escena 942x1672, ratio 9:16)
+// El fondo v2 tiene un hueco circular vacío donde encaja la rueda funcional.
+// Medidas extraídas pixel-perfect del PNG.
+const WHEEL_CX_PCT = 49.84;    // % del ancho — centro horizontal del hueco
+const WHEEL_CY_PCT = 43.99;    // % del alto  — centro vertical del hueco
+const WHEEL_DIAM_PCT = 65.5;   // % del ancho — diámetro del hueco (encaja con el aro dorado)
 
 // European single-zero wheel order, clockwise starting at 0 (top)
 const WHEEL_ORDER = [
@@ -67,8 +67,8 @@ function segmentPath(cx: number, cy: number, R: number, r: number, startDeg: num
 function RouletteWheel({ rotation, spinning }: { rotation: number; spinning: boolean }) {
   const cx = 200;
   const cy = 200;
-  const R = 195; // outer (≈ extiende todo el viewBox)
-  const r = Math.round(R * WHEEL_INNER_RATIO); // inner (alineado con borde interior pintado)
+  const R = 195; // outer (llena el hueco del aro dorado del fondo)
+  const r = 70;  // inner (espacio para el eje/hub central de la rueda)
   const textR = (R + r) / 2;
 
   const segments = useMemo(() => {
@@ -132,6 +132,17 @@ function RouletteWheel({ rotation, spinning }: { rotation: number; spinning: boo
           </text>
         ))}
       </g>
+      {/* Hub central fijo (no rota) */}
+      <circle cx={cx} cy={cy} r={r - 4} fill="url(#hubGrad)" stroke="#d4a017" strokeWidth={1.2} />
+      <circle cx={cx} cy={cy} r={r - 18} fill="#1a0a2e" stroke="#a78bfa" strokeWidth={0.8} opacity={0.9} />
+      <defs>
+        <radialGradient id="hubGrad" cx="50%" cy="50%" r="60%">
+          <stop offset="0%" stopColor="#3b1f5e" />
+          <stop offset="100%" stopColor="#0d0420" />
+        </radialGradient>
+      </defs>
+      {/* Puntero/flecha arriba (fija) */}
+      <polygon points="200,2 192,22 208,22" fill="#facc15" stroke="#7c2d12" strokeWidth={1} />
     </svg>
   );
 }
@@ -403,27 +414,6 @@ export function RouletteGame() {
           <span className="font-semibold text-white/90">{online}</span>
         </div>
 
-        {/* Historial compacto inline */}
-        <div className="flex items-center gap-1 rounded-full bg-black/50 px-2 py-0.5 backdrop-blur-sm ring-1 ring-white/10">
-          {history.length === 0 ? (
-            <span className="text-[9px] text-white/40 italic">sin giros</span>
-          ) : (
-            history.slice(0, 6).map((h, i) => (
-              <div
-                key={i}
-                className={`h-3 w-3 rounded-full ring-1 ring-black/50 ${
-                  h.color === "red"
-                    ? "bg-rose-500"
-                    : h.color === "black"
-                      ? "bg-zinc-900"
-                      : "bg-emerald-500"
-                }`}
-                title={`${h.segment} ${h.color}`}
-              />
-            ))
-          )}
-        </div>
-
         <button
           onClick={() => setMuted((m) => !m)}
           aria-label={muted ? "Activar sonido" : "Silenciar"}
@@ -439,6 +429,34 @@ export function RouletteGame() {
         style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 0.5rem)" }}
       >
         <div className="mx-auto max-w-md space-y-2">
+          {/* Historial — debajo de la rueda, sobre el contenedor HUD */}
+          <div className="flex items-center gap-2 rounded-full border border-purple-400/30 bg-black/55 px-3 py-1 backdrop-blur-sm">
+            <span className="text-[9px] font-semibold uppercase tracking-wider text-purple-200/80">Últimos</span>
+            <div className="flex flex-1 items-center gap-1 overflow-hidden">
+              {history.length === 0 ? (
+                <span className="text-[10px] italic text-white/40">sin giros aún</span>
+              ) : (
+                history.slice(0, 10).map((h, i) => (
+                  <div
+                    key={i}
+                    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[9px] font-bold ring-1 ring-black/60 ${
+                      h.color === "red"
+                        ? "bg-rose-600 text-white"
+                        : h.color === "black"
+                          ? "bg-zinc-900 text-white"
+                          : "bg-emerald-600 text-white"
+                    }`}
+                    title={`${h.segment} ${h.color}`}
+                  >
+                    {h.segment}
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* Contenedor HUD — panel con borde y fondo, no flotante */}
+          <div className="rounded-2xl border border-purple-400/30 bg-gradient-to-b from-[#1a0833]/85 to-[#0a0118]/90 p-2.5 shadow-[0_-4px_20px_rgba(124,58,237,0.25)] backdrop-blur-md space-y-2">
           {/* Botones de elección — 3 en una fila */}
           <div className="grid grid-cols-3 gap-1.5">
             <button
@@ -515,6 +533,7 @@ export function RouletteGame() {
             >
               {phase === "spinning" ? "GIRANDO…" : "GIRAR"}
             </button>
+          </div>
           </div>
         </div>
 
