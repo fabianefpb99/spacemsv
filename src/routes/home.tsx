@@ -23,6 +23,7 @@ import gift3d from "@/assets/gift-3d.png";
 import trophy3d from "@/assets/trophy-3d.png";
 import blackjackPromo from "@/assets/blackjack-promo.png.asset.json";
 import blackjackBanner from "@/assets/blackjack-banner.jpg";
+import jackpotBanner from "@/assets/jackpot-banner.jpg";
 
 const LAST_WINS = [
   { user: "Usuario123", game: "Spaceman", amount: 252413, mult: 1.85 },
@@ -325,35 +326,34 @@ function HomePage() {
           </div>
         </Link>
 
-        {/* Jackpot */}
-        <section className="relative mt-3 flex items-center gap-3 overflow-hidden rounded-xl border border-amber-400/60 bg-gradient-to-r from-[#2a1405] via-[#1a0b3a] to-[#0c0620] p-3 shadow-[0_0_18px_rgba(251,191,36,0.35)] sm:p-4">
-          {/* Glow ambiental ámbar */}
-          <div className="pointer-events-none absolute -left-10 -top-10 h-32 w-32 rounded-full bg-amber-500/25 blur-2xl" />
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_left,rgba(251,191,36,0.18),transparent_60%)]" />
-          <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-amber-400/80 bg-amber-500/10 shadow-[0_0_16px_rgba(251,191,36,0.65),inset_0_0_10px_rgba(251,191,36,0.35)] sm:h-14 sm:w-14">
-            <SkeletonImage
-              src={trophy3d}
-              alt="Trofeo"
-              loading="lazy"
-              width={128}
-              height={128}
-              wrapperClassName="h-9 w-9 rounded-md sm:h-11 sm:w-11"
-              className="h-9 w-9 object-contain drop-shadow-[0_0_14px_rgba(251,191,36,0.85)] sm:h-11 sm:w-11"
-            />
-          </div>
-          <div className="relative min-w-0 flex-1">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-amber-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-              Jackpot activo
+        {/* Jackpot — banner estilo BlackJack */}
+        <div className="relative mt-3 block h-24 overflow-hidden rounded-xl border border-amber-400/70 shadow-[0_0_12px_rgba(251,191,36,0.3)] transition hover:shadow-[0_0_22px_rgba(251,191,36,0.6)] sm:h-28">
+          <SkeletonImage
+            src={jackpotBanner}
+            alt="Jackpot"
+            loading="lazy"
+            wrapperClassName="absolute inset-0 h-full w-full"
+            className="h-full w-full object-cover"
+          />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent" />
+          <div className="relative z-10 flex h-full items-center justify-between gap-3 px-4 sm:px-5">
+            <div className="min-w-0 flex-1">
+              <div className="text-[10px] font-semibold uppercase tracking-widest text-amber-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+                Jackpot activo
+              </div>
+              <div className="mt-0.5 font-display text-lg font-black leading-none tracking-wide text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] sm:text-xl">
+                <span className="neon-green mr-1">$</span>
+                {formatCOP(25000000)} COP
+              </div>
+              <div className="mt-1 inline-block rounded-sm bg-amber-500/80 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-black shadow-[0_0_8px_rgba(251,191,36,0.6)]">
+                Premio acumulado
+              </div>
             </div>
-            <div className="font-display text-lg font-black tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] sm:text-xl">
-              <span className="neon-green mr-1">$</span>
-              <span className="text-white">{formatCOP(25000000)} COP</span>
-            </div>
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-amber-400/70 bg-black/50 text-amber-100 backdrop-blur-sm shadow-[0_0_10px_rgba(251,191,36,0.5)]">
+              <ChevronRight className="h-4 w-4" />
+            </span>
           </div>
-          <button className="relative rounded-full border border-amber-400/70 bg-black/40 p-2 text-amber-100 shadow-[0_0_10px_rgba(251,191,36,0.5)] backdrop-blur-sm hover:bg-amber-500/20">
-            <ChevronRight className="h-4 w-4" />
-          </button>
-        </section>
+        </div>
 
         {/* Últimas ganancias */}
         <section className="mt-5 rounded-xl border border-purple-500/30 bg-[#0c0620]/80 p-3 sm:p-4">
