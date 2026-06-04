@@ -238,6 +238,7 @@ export function RouletteGame() {
     const url = WIN_AUDIO_URLS[Math.floor(Math.random() * WIN_AUDIO_URLS.length)];
     const audio = new Audio(url);
     audio.volume = 0.7;
+    audio.playbackRate = 1.2;
     winAudioRef.current = audio;
     audio.play().catch(() => {});
   }, [muted, stopWinAudio]);
@@ -391,7 +392,7 @@ export function RouletteGame() {
     if (won) osc.frequency.exponentialRampToValueAtTime(1480, now + 0.25);
     else osc.frequency.exponentialRampToValueAtTime(120, now + 0.4);
     gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(0.16, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(won ? 0.05 : 0.16, now + 0.02);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + (won ? 0.45 : 0.5));
     osc.connect(gain);
     gain.connect(ctx.destination);
@@ -486,6 +487,12 @@ export function RouletteGame() {
         tickTimersRef.current.push(at);
       }
 
+      // Disparar el audio de victoria un poco antes de que termine el giro
+      if (result.won) {
+        const winAt = window.setTimeout(playWinAudio, Math.max(0, SPIN_DURATION_MS - 700));
+        tickTimersRef.current.push(winAt);
+      }
+
       // Al terminar la animación
       window.setTimeout(() => {
         setPhase("revealing");
@@ -498,7 +505,6 @@ export function RouletteGame() {
         setHistory((h) => [{ segment: result.winning_segment, color: result.winning_color }, ...h].slice(0, 30));
         playResult(result.won);
         if (result.won) {
-          playWinAudio();
           toast.success(`¡Ganaste! +${formatCOP(Number(result.payout) || 0)} COP`);
         } else {
           toast(`Salió ${result.winning_segment} ${result.winning_color === "red" ? "rojo" : result.winning_color === "black" ? "negro" : "verde"}`, {
