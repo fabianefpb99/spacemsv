@@ -3,6 +3,7 @@ import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Menu, Settings, ChevronRight, ChevronLeft, Gift, Home, Gamepad2, Wallet, User } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { PromoPopup } from "@/components/PromoPopup";
+import { BrandLoader } from "@/components/BrandLoader";
 import { SkeletonImage } from "@/components/SkeletonImage";
 import { stopAllGameAudio } from "@/lib/gameAudio";
 import { AuthControl } from "@/components/auth/AuthControl";
@@ -122,6 +123,30 @@ function HomePage() {
   const slides = SLIDES.length;
   const [arrowsVisible, setArrowsVisible] = useState(true);
   const arrowsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [showBrandLoader, setShowBrandLoader] = useState(false);
+
+  // Mostrar el BrandLoader la primera vez que se entra al sitio y
+  // al menos una vez por hora, para reforzar la marca.
+  useEffect(() => {
+    const KEY = "betspaceman:brand-loader:last-shown";
+    const ONE_HOUR = 60 * 60 * 1000;
+    let last = 0;
+    try {
+      last = Number(localStorage.getItem(KEY) || 0);
+    } catch {
+      last = 0;
+    }
+    if (!last || Date.now() - last >= ONE_HOUR) {
+      setShowBrandLoader(true);
+      try {
+        localStorage.setItem(KEY, String(Date.now()));
+      } catch {
+        /* ignore */
+      }
+      const t = setTimeout(() => setShowBrandLoader(false), 1060);
+      return () => clearTimeout(t);
+    }
+  }, []);
 
   // Al entrar al home, cualquier juego previo queda completamente cerrado.
   useEffect(() => { stopAllGameAudio(); }, []);
@@ -150,6 +175,7 @@ function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#060210] text-white">
+      <BrandLoader active={showBrandLoader} minMs={1060} />
       <PromoPopup />
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4">
         {/* Header — must match SpacemanGame header exactly, sin icono de sonido */}
