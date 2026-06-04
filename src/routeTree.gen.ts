@@ -14,6 +14,7 @@ import { Route as TerminosRouteImport } from './routes/terminos'
 import { Route as SpacemanRouteImport } from './routes/spaceman'
 import { Route as SlotpruebasRouteImport } from './routes/slotpruebas'
 import { Route as SlotRouteImport } from './routes/slot'
+import { Route as RuletaRouteImport } from './routes/ruleta'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as PayRouteImport } from './routes/pay'
 import { Route as MisRecargasRouteImport } from './routes/mis-recargas'
@@ -48,6 +49,11 @@ const SlotpruebasRoute = SlotpruebasRouteImport.update({
 const SlotRoute = SlotRouteImport.update({
   id: '/slot',
   path: '/slot',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RuletaRoute = RuletaRouteImport.update({
+  id: '/ruleta',
+  path: '/ruleta',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PerfilRoute = PerfilRouteImport.update({
@@ -111,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/mis-recargas': typeof MisRecargasRoute
   '/pay': typeof PayRoute
   '/perfil': typeof PerfilRoute
+  '/ruleta': typeof RuletaRoute
   '/slot': typeof SlotRoute
   '/slotpruebas': typeof SlotpruebasRoute
   '/spaceman': typeof SpacemanRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByTo {
   '/mis-recargas': typeof MisRecargasRoute
   '/pay': typeof PayRoute
   '/perfil': typeof PerfilRoute
+  '/ruleta': typeof RuletaRoute
   '/slot': typeof SlotRoute
   '/slotpruebas': typeof SlotpruebasRoute
   '/spaceman': typeof SpacemanRoute
@@ -146,6 +154,7 @@ export interface FileRoutesById {
   '/mis-recargas': typeof MisRecargasRoute
   '/pay': typeof PayRoute
   '/perfil': typeof PerfilRoute
+  '/ruleta': typeof RuletaRoute
   '/slot': typeof SlotRoute
   '/slotpruebas': typeof SlotpruebasRoute
   '/spaceman': typeof SpacemanRoute
@@ -165,6 +174,7 @@ export interface FileRouteTypes {
     | '/mis-recargas'
     | '/pay'
     | '/perfil'
+    | '/ruleta'
     | '/slot'
     | '/slotpruebas'
     | '/spaceman'
@@ -182,6 +192,7 @@ export interface FileRouteTypes {
     | '/mis-recargas'
     | '/pay'
     | '/perfil'
+    | '/ruleta'
     | '/slot'
     | '/slotpruebas'
     | '/spaceman'
@@ -199,6 +210,7 @@ export interface FileRouteTypes {
     | '/mis-recargas'
     | '/pay'
     | '/perfil'
+    | '/ruleta'
     | '/slot'
     | '/slotpruebas'
     | '/spaceman'
@@ -217,6 +229,7 @@ export interface RootRouteChildren {
   MisRecargasRoute: typeof MisRecargasRoute
   PayRoute: typeof PayRoute
   PerfilRoute: typeof PerfilRoute
+  RuletaRoute: typeof RuletaRoute
   SlotRoute: typeof SlotRoute
   SlotpruebasRoute: typeof SlotpruebasRoute
   SpacemanRoute: typeof SpacemanRoute
@@ -260,6 +273,13 @@ declare module '@tanstack/react-router' {
       path: '/slot'
       fullPath: '/slot'
       preLoaderRoute: typeof SlotRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ruleta': {
+      id: '/ruleta'
+      path: '/ruleta'
+      fullPath: '/ruleta'
+      preLoaderRoute: typeof RuletaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/perfil': {
@@ -345,6 +365,7 @@ const rootRouteChildren: RootRouteChildren = {
   MisRecargasRoute: MisRecargasRoute,
   PayRoute: PayRoute,
   PerfilRoute: PerfilRoute,
+  RuletaRoute: RuletaRoute,
   SlotRoute: SlotRoute,
   SlotpruebasRoute: SlotpruebasRoute,
   SpacemanRoute: SpacemanRoute,
@@ -355,3 +376,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
