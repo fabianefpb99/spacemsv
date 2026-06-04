@@ -132,6 +132,17 @@ function RouletteWheel({ rotation, spinning }: { rotation: number; spinning: boo
           </text>
         ))}
       </g>
+      {/* Hub central fijo (no rota) */}
+      <circle cx={cx} cy={cy} r={r - 4} fill="url(#hubGrad)" stroke="#d4a017" strokeWidth={1.2} />
+      <circle cx={cx} cy={cy} r={r - 18} fill="#1a0a2e" stroke="#a78bfa" strokeWidth={0.8} opacity={0.9} />
+      <defs>
+        <radialGradient id="hubGrad" cx="50%" cy="50%" r="60%">
+          <stop offset="0%" stopColor="#3b1f5e" />
+          <stop offset="100%" stopColor="#0d0420" />
+        </radialGradient>
+      </defs>
+      {/* Puntero/flecha arriba (fija) */}
+      <polygon points="200,2 192,22 208,22" fill="#facc15" stroke="#7c2d12" strokeWidth={1} />
     </svg>
   );
 }
