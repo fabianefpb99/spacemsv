@@ -146,6 +146,34 @@ function RouletteWheel({ rotation, spinning }: { rotation: number; spinning: boo
         opacity={0.7}
         style={{ filter: "drop-shadow(0 1px 0 rgba(0,0,0,0.85))", pointerEvents: "none" }}
       />
+      {/* Destello periódico recorriendo el logo */}
+      <defs>
+        <mask id="bsLogoMask" maskUnits="userSpaceOnUse">
+          <image
+            href={betspaceLogo}
+            x={cx - 46}
+            y={cy - 12}
+            width={92}
+            height={24}
+          />
+        </mask>
+        <linearGradient id="bsShimmer" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#fff" stopOpacity="0" />
+          <stop offset="50%" stopColor="#fff" stopOpacity="0.95" />
+          <stop offset="100%" stopColor="#fff" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <g mask="url(#bsLogoMask)" style={{ mixBlendMode: "screen", pointerEvents: "none" }}>
+        <rect y={cy - 12} width={26} height={24} fill="url(#bsShimmer)">
+          <animate
+            attributeName="x"
+            dur="4s"
+            repeatCount="indefinite"
+            values={`${cx - 72};${cx + 46};${cx + 46}`}
+            keyTimes="0;0.35;1"
+          />
+        </rect>
+      </g>
       <defs>
         <radialGradient id="hubGrad" cx="50%" cy="50%" r="60%">
           <stop offset="0%" stopColor="#3b1f5e" />
