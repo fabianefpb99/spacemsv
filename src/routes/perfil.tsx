@@ -113,6 +113,11 @@ function PerfilPage() {
   const queryClient = useQueryClient();
   const [dataDialogOpen, setDataDialogOpen] = useState(false);
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
+  const [minElapsed, setMinElapsed] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setMinElapsed(true), 280);
+    return () => clearTimeout(t);
+  }, []);
 
   const fullProfile = useQuery({
     queryKey: ["perfil-full", user?.id ?? null],
@@ -178,11 +183,6 @@ function PerfilPage() {
   // rank frame, then snap to the real data a moment later. Show a skeleton
   // version of the page instead so the first paint matches the final layout.
   const isHydrating = loading || !me.data || vip.isLoading || !vip.data;
-  const [minElapsed, setMinElapsed] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setMinElapsed(true), 280);
-    return () => clearTimeout(t);
-  }, []);
   const showLoader = !!user && (isHydrating || !minElapsed);
 
   if (isHydrating && user) {
