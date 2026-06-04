@@ -257,7 +257,7 @@ function PerfilPage() {
               <div className="relative shrink-0">
                 <div
                   className={cn(
-                    "flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-2 bg-purple-900/40",
+                    "flex h-[4.5rem] w-[4.5rem] items-center justify-center overflow-hidden rounded-full border-2 bg-purple-900/40",
                     vipTheme ? vipTheme.borderClass : "border-fuchsia-400/70",
                   )}
                   style={{
@@ -285,9 +285,12 @@ function PerfilPage() {
               <div className="min-w-0 flex-1">
                 <div
                   className={cn(
-                    "font-display truncate text-lg font-black uppercase tracking-wide",
+                    "font-display truncate text-sm font-black uppercase tracking-wide sm:text-base",
                     vipTheme ? vipTheme.accentText : "text-white",
                   )}
+                  style={{
+                    fontSize: `clamp(0.78rem, ${Math.max(0.6, 1 - Math.max(0, username.length - 10) * 0.04)}rem, 1rem)`,
+                  }}
                 >
                   {username}
                 </div>
