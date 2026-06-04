@@ -493,29 +493,6 @@ export function RouletteGame() {
             </button>
           </div>
 
-          {/* Atajos rápidos: X2 + sumas frecuentes */}
-          <div className="grid grid-cols-5 gap-1.5">
-            <button
-              onClick={() => setBet((b) => clampBetToStep(b * 2, balance, MAX_BET, BET_STEP, MIN_BET))}
-              disabled={phase !== "idle"}
-              className="rounded-lg border border-purple-400/40 bg-purple-950/60 py-1.5 text-[11px] font-black uppercase tracking-wide text-white backdrop-blur-sm hover:bg-purple-900/60 disabled:opacity-50"
-              aria-label="Doblar apuesta"
-              title="Doblar apuesta"
-            >
-              X2
-            </button>
-            {QUICK_ADDS.map((amt) => (
-              <button
-                key={amt}
-                onClick={() => adjustBet(amt)}
-                disabled={phase !== "idle"}
-                className="rounded-lg border border-purple-400/40 bg-purple-950/60 py-1.5 text-[11px] font-bold text-white backdrop-blur-sm hover:bg-purple-900/60 disabled:opacity-50"
-              >
-                +{amt >= 1000 ? `${amt / 1000}K` : amt}
-              </button>
-            ))}
-          </div>
-
           {/* Stepper + GIRAR — una sola fila compacta */}
           <div className="flex items-stretch gap-2">
             <button
@@ -552,6 +529,29 @@ export function RouletteGame() {
             >
               {phase === "spinning" ? "GIRANDO…" : "GIRAR"}
             </button>
+          </div>
+
+          {/* Atajos rápidos: X2 + sumas frecuentes */}
+          <div className="grid grid-cols-5 gap-1.5">
+            <button
+              onClick={() => setBet((b) => clampBetToStep(b * 2, balance, MAX_BET, BET_STEP, MIN_BET))}
+              disabled={phase !== "idle"}
+              className="rounded-lg border border-purple-400/40 bg-purple-950/60 py-1.5 text-[11px] font-black uppercase tracking-wide text-white backdrop-blur-sm hover:bg-purple-900/60 disabled:opacity-50"
+              aria-label="Doblar apuesta"
+              title="Doblar apuesta"
+            >
+              X2
+            </button>
+            {QUICK_ADDS.map((amt) => (
+              <button
+                key={amt}
+                onClick={() => adjustBet(amt)}
+                disabled={phase !== "idle"}
+                className="rounded-lg border border-purple-400/40 bg-purple-950/60 py-1.5 text-[11px] font-bold text-white backdrop-blur-sm hover:bg-purple-900/60 disabled:opacity-50"
+              >
+                +{amt >= 1000 ? `${amt / 1000}K` : amt}
+              </button>
+            ))}
           </div>
 
       </div>
