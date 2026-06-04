@@ -67,8 +67,8 @@ function segmentPath(cx: number, cy: number, R: number, r: number, startDeg: num
 function RouletteWheel({ rotation, spinning }: { rotation: number; spinning: boolean }) {
   const cx = 200;
   const cy = 200;
-  const R = 195; // outer (≈ extiende todo el viewBox)
-  const r = Math.round(R * WHEEL_INNER_RATIO); // inner (alineado con borde interior pintado)
+  const R = 195; // outer (llena el hueco del aro dorado del fondo)
+  const r = 70;  // inner (espacio para el eje/hub central de la rueda)
   const textR = (R + r) / 2;
 
   const segments = useMemo(() => {
