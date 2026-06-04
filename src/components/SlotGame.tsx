@@ -920,6 +920,39 @@ export function SlotGame() {
 
   useEffect(() => { setAudioMuted(muted); }, [muted]);
 
+  // Sonidos por umbral de premio (HTMLAudio precargado, controlado y silenciable).
+  const winSampleRef = useRef<HTMLAudioElement | null>(null);
+  const stopWinSample = useCallback(() => {
+    const a = winSampleRef.current;
+    if (!a) return;
+    try { a.pause(); a.currentTime = 0; } catch {}
+  }, []);
+  const playWinSample = useCallback((url: string, volume: number) => {
+    if (isMuted()) return;
+    if (typeof window === "undefined") return;
+    stopWinSample();
+    const audio = new Audio(url);
+    audio.volume = volume;
+    winSampleRef.current = audio;
+    audio.play().catch(() => {});
+  }, [stopWinSample]);
+  useEffect(() => {
+    const onHide = () => stopWinSample();
+    const onStopAll = () => stopWinSample();
+    window.addEventListener("pagehide", onHide);
+    window.addEventListener("blur", onHide);
+    document.addEventListener("visibilitychange", onHide);
+    window.addEventListener(AUDIO_STOP_ALL_EVENT, onStopAll);
+    return () => {
+      window.removeEventListener("pagehide", onHide);
+      window.removeEventListener("blur", onHide);
+      document.removeEventListener("visibilitychange", onHide);
+      window.removeEventListener(AUDIO_STOP_ALL_EVENT, onStopAll);
+      stopWinSample();
+    };
+  }, [stopWinSample]);
+  useEffect(() => { if (muted) stopWinSample(); }, [muted, stopWinSample]);
+
   // Música de fondo — jazz suave temática mafia/imperio. Se inicia tras
   // el primer gesto del usuario (requisito de los navegadores) y respeta
   // el botón de mute del HUD.
@@ -1074,8 +1107,9 @@ export function SlotGame() {
     if (total > 0) {
       const bestPayout = Math.max(...w.map((x) => x.payout));
       const tier = getWinTier(bestPayout, bet);
-      if (tier === "mega") playMegaWinSound();
-      else if (tier === "fire") playFireWinSound();
+      if (tier === "mega") playWinSample(bonusMegaAsset.url, 0.85);
+      else if (tier === "fire") playWinSample(bonusBigAsset.url, 0.8);
+      else if (tier === "nice") playWinSample(bonusNiceAsset.url, 0.75);
       else playCashoutSound();
       const best = [...w].sort((a, b) => b.payout - a.payout)[0];
       setHistory((h) =>
