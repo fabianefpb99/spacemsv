@@ -459,6 +459,9 @@ export function RouletteGame() {
     inFlightRef.current = true;
     setPhase("spinning");
     setLastResult(null);
+    // Desbloquear el <audio> de victoria dentro del gesto del usuario
+    // para que el play() diferido (9.8s después) no sea bloqueado por iOS.
+    primeWinAudio();
 
     const actionId = crypto.randomUUID();
     try {
@@ -556,7 +559,7 @@ export function RouletteGame() {
       setPhase("idle");
       inFlightRef.current = false;
     }
-  }, [user, bet, balance, choice, phase, rotation, queryClient, playTick, playResult]);
+  }, [user, bet, balance, choice, phase, rotation, queryClient, playTick, playResult, playWinAudio, primeWinAudio]);
 
   const canSpin = phase === "idle" && balanceReady && bet <= balance;
 
