@@ -349,12 +349,38 @@ export function RouletteGame() {
 
   return (
     <div
-      className="relative mx-auto flex h-[100dvh] max-w-md flex-col px-3 pt-4 sm:max-w-lg sm:px-4 bg-[#06010f] text-white overflow-hidden"
+      className="relative mx-auto flex h-[100dvh] max-w-md flex-col px-3 pt-4 sm:max-w-lg sm:px-4 text-white overflow-hidden"
       style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) * 0.85 + 0.6rem)" }}
     >
-      {/* ───────────────── HEADER GLOBAL (idéntico a Spaceman) ───────────────── */}
+      {/* ───────────────── FONDO COMPLETO DE LA ESCENA (idéntico patrón Spaceman) ───────────────── */}
+      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#06010f]">
+        <img
+          src={rouletteScene.url}
+          alt=""
+          draggable={false}
+          className="absolute inset-0 h-full w-full select-none object-cover"
+        />
+      </div>
+
+      {/* ───────────────── RUEDA FUNCIONAL anclada al aro pintado ─────────────────
+          El fondo usa object-cover y en mobile (viewport más estrecho que 942/1672)
+          se escala por altura. Eso fija matemáticamente el centro vertical al 43.99%
+          del alto del viewport, el centro horizontal al 50% (recorte simétrico),
+          y el diámetro a 65.5% del ancho renderizado del PNG = 100dvh × (942/1672) × 0.655 */}
+      <div
+        className="pointer-events-none fixed left-1/2 -translate-x-1/2 -translate-y-1/2 z-0"
+        style={{
+          top: `${WHEEL_CY_PCT}dvh`,
+          width: `calc(100dvh * (942 / 1672) * ${WHEEL_DIAM_PCT / 100})`,
+          aspectRatio: "1 / 1",
+        }}
+      >
+        <RouletteWheel rotation={rotation} spinning={phase === "spinning"} />
+      </div>
+
+      {/* ───────────────── HEADER GLOBAL ───────────────── */}
       <header
-        className="flex items-center justify-between bg-[#06010f] border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
+        className="relative z-10 flex items-center justify-between bg-[#06010f]/85 backdrop-blur-sm border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
         style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
       >
         <div className="flex items-center gap-1">
@@ -377,8 +403,8 @@ export function RouletteGame() {
         </div>
       </header>
 
-      {/* ───────────────── ONLINE + MUTE (idéntico a Spaceman) ───────────────── */}
-      <div className="mt-3 flex items-center justify-between">
+      {/* ───────────────── ONLINE + MUTE ───────────────── */}
+      <div className="relative z-10 mt-3 flex items-center justify-between">
         <div className="flex items-center gap-2 text-xs">
           <span className="relative inline-flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
@@ -395,35 +421,11 @@ export function RouletteGame() {
         </button>
       </div>
 
-      {/* ───────────────── ESCENA: fondo + rueda — ocupa el alto disponible ───────────────── */}
-      <div className="mt-2 flex flex-1 min-h-0 items-center justify-center">
-        <div
-          className="relative h-full"
-          style={{ aspectRatio: "942 / 1672" }}
-        >
-          <img
-            src={rouletteScene.url}
-            alt=""
-            draggable={false}
-            className="pointer-events-none absolute inset-0 h-full w-full select-none object-contain"
-          />
-          <div
-            className="absolute"
-            style={{
-              left: `${WHEEL_CX_PCT}%`,
-              top: `${WHEEL_CY_PCT}%`,
-              width: `${WHEEL_DIAM_PCT}%`,
-              aspectRatio: "1 / 1",
-              transform: "translate(-50%, -50%)",
-            }}
-          >
-            <RouletteWheel rotation={rotation} spinning={phase === "spinning"} />
-          </div>
-        </div>
-      </div>
+      {/* Espaciador flexible: deja ver el fondo y la rueda */}
+      <div className="flex-1 min-h-0" />
 
-      {/* ───────────────── HISTORIAL — debajo de la rueda ───────────────── */}
-      <div className="mt-2 flex items-center gap-2 rounded-full border border-purple-400/30 bg-black/55 px-3 py-1.5 backdrop-blur-sm">
+      {/* ───────────────── HISTORIAL — encima del HUD ───────────────── */}
+      <div className="relative z-10 mt-2 flex items-center gap-2 rounded-full border border-purple-400/30 bg-black/55 px-3 py-1.5 backdrop-blur-sm">
         <span className="text-[10px] font-semibold uppercase tracking-wider text-purple-200/80">Últimos</span>
         <div className="flex flex-1 items-center gap-1.5 overflow-hidden">
           {history.length === 0 ? (
@@ -448,8 +450,8 @@ export function RouletteGame() {
         </div>
       </div>
 
-      {/* ───────────────── HUD inferior (contenedor sólido, tamaño cómodo) ───────────────── */}
-      <div className="relative mt-2 space-y-2.5 rounded-2xl border border-purple-400/30 bg-gradient-to-b from-[#1a0833]/85 to-[#0a0118]/90 p-3 shadow-[0_-4px_20px_rgba(124,58,237,0.25)] backdrop-blur-md">
+      {/* ───────────────── HUD inferior ───────────────── */}
+      <div className="relative z-10 mt-2 space-y-2.5 rounded-2xl border border-purple-400/30 bg-gradient-to-b from-[#1a0833]/85 to-[#0a0118]/90 p-3 shadow-[0_-4px_20px_rgba(124,58,237,0.25)] backdrop-blur-md">
         {/* Botones de elección — 3 en una fila */}
         <div className="grid grid-cols-3 gap-2">
             <button
