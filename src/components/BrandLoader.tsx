@@ -6,7 +6,7 @@ import logo from "@/assets/betspace-logo.svg";
  * and enforces a minimum visible duration (default 280ms) so a fast load
  * doesn't flash a cut-off animation.
  */
-export function BrandLoader({ active, minMs = 400 }: { active: boolean; minMs?: number }) {
+export function BrandLoader({ active, minMs = 950 }: { active: boolean; minMs?: number }) {
   const [show, setShow] = useState(active);
   const [shownAt] = useState(() => Date.now());
 
