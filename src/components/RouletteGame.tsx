@@ -227,21 +227,54 @@ export function RouletteGame() {
       a.pause();
       a.currentTime = 0;
     } catch {}
-    winAudioRef.current = null;
+  }, []);
+
+  // Pre-construir el <audio> al montar para poder "desbloquearlo" dentro del
+  // gesto de SPIN (iOS/Android exigen que play() ocurra cerca del gesto; un
+  // setTimeout de 9.8s lo invalida si el elemento no se ha tocado antes).
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const a = new Audio(congratulationsAudio.url);
+    a.preload = "auto";
+    a.volume = 0.45;
+    a.playbackRate = 1.21;
+    winAudioRef.current = a;
+    return () => {
+      try { a.pause(); } catch {}
+      winAudioRef.current = null;
+    };
+  }, []);
+
+  // Llamar durante el gesto del usuario para "armar" el audio: en algunos
+  // navegadores basta con un play()+pause() inmediato para permitir un play()
+  // diferido más tarde sin requerir nuevo gesto.
+  const primeWinAudio = useCallback(() => {
+    const a = winAudioRef.current;
+    if (!a) return;
+    try {
+      a.muted = true;
+      const p = a.play();
+      if (p && typeof p.then === "function") {
+        p.then(() => { a.pause(); a.currentTime = 0; a.muted = false; }).catch(() => { a.muted = false; });
+      } else {
+        a.pause(); a.currentTime = 0; a.muted = false;
+      }
+    } catch {}
   }, []);
 
   const playWinAudio = useCallback(() => {
     if (muted) return;
     if (typeof window === "undefined") return;
-    if (WIN_AUDIO_URLS.length === 0) return;
-    stopWinAudio();
-    const url = WIN_AUDIO_URLS[Math.floor(Math.random() * WIN_AUDIO_URLS.length)];
-    const audio = new Audio(url);
-    audio.volume = 0.45;
-    audio.playbackRate = 1.21;
-    winAudioRef.current = audio;
-    audio.play().catch(() => {});
-  }, [muted, stopWinAudio]);
+    const audio = winAudioRef.current;
+    if (!audio) return;
+    try {
+      audio.pause();
+      audio.currentTime = 0;
+      audio.volume = 0.45;
+      audio.playbackRate = 1.21;
+      audio.play().catch(() => {});
+    } catch {}
+  }, [muted]);
 
   // Detener el audio de victoria al salir / cambiar pestaña / desmontar
   useEffect(() => {
