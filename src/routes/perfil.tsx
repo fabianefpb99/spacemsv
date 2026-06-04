@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   BadgeCheck,
@@ -178,13 +178,20 @@ function PerfilPage() {
   // rank frame, then snap to the real data a moment later. Show a skeleton
   // version of the page instead so the first paint matches the final layout.
   const isHydrating = loading || !me.data || vip.isLoading || !vip.data;
+  const [minElapsed, setMinElapsed] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setMinElapsed(true), 280);
+    return () => clearTimeout(t);
+  }, []);
+  const showLoader = !!user && (isHydrating || !minElapsed);
+
   if (isHydrating && user) {
     return <BrandLoader active />;
   }
 
   return (
     <div className="min-h-screen bg-[#060210] text-white">
-      <BrandLoader active={false} />
+      <BrandLoader active={showLoader} />
       <VipLevelUpToast />
       <div className="mx-auto flex min-h-screen max-w-md flex-col px-3 pb-10 pt-4 sm:max-w-lg sm:px-4">
         {/* Header */}
