@@ -526,29 +526,6 @@ export function RouletteGame() {
         </button>
       </div>
 
-      {/* ───────────────── TÍTULO RULETA (fixed, sobre la rueda, no empuja nada) ───────────────── */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none fixed left-1/2 -translate-x-1/2 z-[5] select-none"
-        style={{ top: "13.6dvh", marginLeft: "2px" }}
-      >
-        <span
-          className="block whitespace-nowrap text-[42px] sm:text-[52px] font-black uppercase leading-none tracking-[0.22em]"
-          style={{
-            fontFamily: "'Cinzel', serif",
-            backgroundImage:
-              "linear-gradient(180deg, #fff3b0 0%, #f8d76e 30%, #d4af37 55%, #8a5a1a 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-            filter:
-              "drop-shadow(0 2px 3px rgba(0,0,0,0.85)) drop-shadow(0 4px 8px rgba(0,0,0,0.7)) drop-shadow(0 0 14px rgba(212,175,55,0.45))",
-          }}
-        >
-          Ruleta
-        </span>
-      </div>
-
       {/* Espaciador flexible: deja ver el fondo y la rueda */}
       <div className="flex-1 min-h-0" />
 
