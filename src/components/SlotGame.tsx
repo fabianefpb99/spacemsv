@@ -26,6 +26,10 @@ import carImg from "@/assets/slot/car.png";
 import chipImg from "@/assets/slot/chip.png";
 import cardImg from "@/assets/slot/card.png";
 
+import bonusMegaAsset from "@/assets/audio/slot-win/bonus-1.mp3.asset.json";
+import bonusBigAsset from "@/assets/audio/slot-win/bonus-2.mp3.asset.json";
+import bonusNiceAsset from "@/assets/audio/slot-win/bonus-3.mp3.asset.json";
+
 /* ============================================================
    Symbols — Mafia Royale (Peaky Blinders theme)
    Index 0 = highest-paying.
@@ -53,18 +57,20 @@ const SYMBOLS: SymbolDef[] = [
 const SYMBOL_INDEX = new Map(SYMBOLS.map((s, i) => [s.id, i]));
 
 /* Win tiers — visual + sonoro según qué tan grande es la victoria de cada línea */
-export type WinTier = "normal" | "fire" | "mega";
+export type WinTier = "normal" | "nice" | "fire" | "mega";
 function getWinTier(payout: number, totalBet: number): WinTier {
   if (totalBet <= 0) return "normal";
   const mult = payout / totalBet;
-  if (mult >= 10) return "mega";
-  if (mult >= 1) return "fire";
+  if (mult >= 20) return "mega";
+  if (mult >= 6) return "fire";
+  if (mult >= 2) return "nice";
   return "normal";
 }
 
 /* Colores de marco por tier (rgb sin alpha para inyectar en gradients) */
 const TIER_GLOW: Record<WinTier, string> = {
   normal: "46,255,161", // verde neón (el actual)
+  nice:   "120,200,255", // cian suave para "nice win"
   fire:   "255,120,30",  // naranja-rojo fuego
   mega:   "255,215,0",   // dorado mega
 };
