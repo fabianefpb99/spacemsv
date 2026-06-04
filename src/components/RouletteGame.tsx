@@ -734,13 +734,15 @@ export function RouletteGame() {
             <button
               onClick={handleSpin}
               disabled={!canSpin}
-              className={`h-14 flex-[1.6] rounded-xl font-display text-lg font-black uppercase tracking-wider transition-all ${
+              className={`h-14 flex-[1.6] min-w-0 overflow-hidden whitespace-nowrap rounded-xl px-2 font-display text-base font-black uppercase tracking-wide transition-all sm:text-lg sm:tracking-wider ${
                 canSpin
                   ? "bg-gradient-to-b from-emerald-400 to-emerald-700 text-white shadow-[0_3px_14px_rgba(16,185,129,0.55)] active:scale-[0.98]"
                   : "bg-zinc-800/80 text-white/40 cursor-not-allowed"
               }`}
             >
-              {phase === "spinning" ? "GIRANDO…" : "GIRAR"}
+              <span className="block truncate">
+                {phase === "spinning" ? "GIRANDO…" : "GIRAR"}
+              </span>
             </button>
           </div>
 
