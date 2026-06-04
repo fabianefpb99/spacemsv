@@ -13,6 +13,7 @@ import { useMe } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
 import { clampBetToStep } from "@/lib/games/bet-helpers";
 import mafiaJazzUrl from "@/assets/mafia-jazz.mp3";
+import congratulationsAudio from "@/assets/audio/roulette-win/congratulations.mp3.asset.json";
 import {
   setBackgroundTrack,
   clearBackgroundTrack,
@@ -47,6 +48,8 @@ const SEG_COUNT = 37;
 const SEG_DEG = 360 / SEG_COUNT;
 const SPIN_DURATION_MS = 10500;
 const EXTRA_SPINS = 4;
+
+const WIN_AUDIO_URLS = [congratulationsAudio.url];
 
 function colorOf(n: number): Choice {
   if (n === 0) return "green";
@@ -215,6 +218,50 @@ export function RouletteGame() {
   const inFlightRef = useRef(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const tickTimersRef = useRef<number[]>([]);
+  const winAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  const stopWinAudio = useCallback(() => {
+    const a = winAudioRef.current;
+    if (!a) return;
+    try {
+      a.pause();
+      a.currentTime = 0;
+    } catch {}
+    winAudioRef.current = null;
+  }, []);
+
+  const playWinAudio = useCallback(() => {
+    if (muted) return;
+    if (typeof window === "undefined") return;
+    if (WIN_AUDIO_URLS.length === 0) return;
+    stopWinAudio();
+    const url = WIN_AUDIO_URLS[Math.floor(Math.random() * WIN_AUDIO_URLS.length)];
+    const audio = new Audio(url);
+    audio.volume = 0.7;
+    winAudioRef.current = audio;
+    audio.play().catch(() => {});
+  }, [muted, stopWinAudio]);
+
+  // Detener el audio de victoria al salir / cambiar pestaña / desmontar
+  useEffect(() => {
+    const onHide = () => stopWinAudio();
+    window.addEventListener("pagehide", onHide);
+    window.addEventListener("blur", onHide);
+    document.addEventListener("visibilitychange", onHide);
+    const onStopAll = () => stopWinAudio();
+    window.addEventListener(AUDIO_STOP_ALL_EVENT, onStopAll);
+    return () => {
+      window.removeEventListener("pagehide", onHide);
+      window.removeEventListener("blur", onHide);
+      document.removeEventListener("visibilitychange", onHide);
+      window.removeEventListener(AUDIO_STOP_ALL_EVENT, onStopAll);
+      stopWinAudio();
+    };
+  }, [stopWinAudio]);
+
+  useEffect(() => {
+    if (muted) stopWinAudio();
+  }, [muted, stopWinAudio]);
 
   // Hydrate history from localStorage
   useEffect(() => {
@@ -451,6 +498,7 @@ export function RouletteGame() {
         setHistory((h) => [{ segment: result.winning_segment, color: result.winning_color }, ...h].slice(0, 30));
         playResult(result.won);
         if (result.won) {
+          playWinAudio();
           toast.success(`¡Ganaste! +${formatCOP(Number(result.payout) || 0)} COP`);
         } else {
           toast(`Salió ${result.winning_segment} ${result.winning_color === "red" ? "rojo" : result.winning_color === "black" ? "negro" : "verde"}`, {
