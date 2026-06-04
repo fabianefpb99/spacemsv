@@ -414,27 +414,6 @@ export function RouletteGame() {
           <span className="font-semibold text-white/90">{online}</span>
         </div>
 
-        {/* Historial compacto inline */}
-        <div className="flex items-center gap-1 rounded-full bg-black/50 px-2 py-0.5 backdrop-blur-sm ring-1 ring-white/10">
-          {history.length === 0 ? (
-            <span className="text-[9px] text-white/40 italic">sin giros</span>
-          ) : (
-            history.slice(0, 6).map((h, i) => (
-              <div
-                key={i}
-                className={`h-3 w-3 rounded-full ring-1 ring-black/50 ${
-                  h.color === "red"
-                    ? "bg-rose-500"
-                    : h.color === "black"
-                      ? "bg-zinc-900"
-                      : "bg-emerald-500"
-                }`}
-                title={`${h.segment} ${h.color}`}
-              />
-            ))
-          )}
-        </div>
-
         <button
           onClick={() => setMuted((m) => !m)}
           aria-label={muted ? "Activar sonido" : "Silenciar"}
@@ -450,6 +429,34 @@ export function RouletteGame() {
         style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 0.5rem)" }}
       >
         <div className="mx-auto max-w-md space-y-2">
+          {/* Historial — debajo de la rueda, sobre el contenedor HUD */}
+          <div className="flex items-center gap-2 rounded-full border border-purple-400/30 bg-black/55 px-3 py-1 backdrop-blur-sm">
+            <span className="text-[9px] font-semibold uppercase tracking-wider text-purple-200/80">Últimos</span>
+            <div className="flex flex-1 items-center gap-1 overflow-hidden">
+              {history.length === 0 ? (
+                <span className="text-[10px] italic text-white/40">sin giros aún</span>
+              ) : (
+                history.slice(0, 10).map((h, i) => (
+                  <div
+                    key={i}
+                    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[9px] font-bold ring-1 ring-black/60 ${
+                      h.color === "red"
+                        ? "bg-rose-600 text-white"
+                        : h.color === "black"
+                          ? "bg-zinc-900 text-white"
+                          : "bg-emerald-600 text-white"
+                    }`}
+                    title={`${h.segment} ${h.color}`}
+                  >
+                    {h.segment}
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* Contenedor HUD — panel con borde y fondo, no flotante */}
+          <div className="rounded-2xl border border-purple-400/30 bg-gradient-to-b from-[#1a0833]/85 to-[#0a0118]/90 p-2.5 shadow-[0_-4px_20px_rgba(124,58,237,0.25)] backdrop-blur-md space-y-2">
           {/* Botones de elección — 3 en una fila */}
           <div className="grid grid-cols-3 gap-1.5">
             <button
@@ -526,6 +533,7 @@ export function RouletteGame() {
             >
               {phase === "spinning" ? "GIRANDO…" : "GIRAR"}
             </button>
+          </div>
           </div>
         </div>
 
