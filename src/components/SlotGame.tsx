@@ -26,6 +26,10 @@ import carImg from "@/assets/slot/car.png";
 import chipImg from "@/assets/slot/chip.png";
 import cardImg from "@/assets/slot/card.png";
 
+import bonusMegaAsset from "@/assets/audio/slot-win/bonus-1.mp3.asset.json";
+import bonusBigAsset from "@/assets/audio/slot-win/bonus-2.mp3.asset.json";
+import bonusNiceAsset from "@/assets/audio/slot-win/bonus-3.mp3.asset.json";
+
 /* ============================================================
    Symbols — Mafia Royale (Peaky Blinders theme)
    Index 0 = highest-paying.
@@ -53,18 +57,20 @@ const SYMBOLS: SymbolDef[] = [
 const SYMBOL_INDEX = new Map(SYMBOLS.map((s, i) => [s.id, i]));
 
 /* Win tiers — visual + sonoro según qué tan grande es la victoria de cada línea */
-export type WinTier = "normal" | "fire" | "mega";
+export type WinTier = "normal" | "nice" | "fire" | "mega";
 function getWinTier(payout: number, totalBet: number): WinTier {
   if (totalBet <= 0) return "normal";
   const mult = payout / totalBet;
-  if (mult >= 10) return "mega";
-  if (mult >= 1) return "fire";
+  if (mult >= 20) return "mega";
+  if (mult >= 6) return "fire";
+  if (mult >= 2) return "nice";
   return "normal";
 }
 
 /* Colores de marco por tier (rgb sin alpha para inyectar en gradients) */
 const TIER_GLOW: Record<WinTier, string> = {
   normal: "46,255,161", // verde neón (el actual)
+  nice:   "120,200,255", // cian suave para "nice win"
   fire:   "255,120,30",  // naranja-rojo fuego
   mega:   "255,215,0",   // dorado mega
 };
@@ -556,7 +562,7 @@ function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boole
     : tier === "fire" ? "slot-win-fire 0.55s ease-in-out infinite"
     : "slot-win-pulse 0.9s ease-in-out infinite";
   const showFlames = highlight && (tier === "fire" || tier === "mega");
-  const showGreenAura = highlight && tier === "normal";
+  const showGreenAura = highlight && (tier === "normal" || tier === "nice");
   return (
     <div
       className="relative flex items-center justify-center"
@@ -914,6 +920,39 @@ export function SlotGame() {
 
   useEffect(() => { setAudioMuted(muted); }, [muted]);
 
+  // Sonidos por umbral de premio (HTMLAudio precargado, controlado y silenciable).
+  const winSampleRef = useRef<HTMLAudioElement | null>(null);
+  const stopWinSample = useCallback(() => {
+    const a = winSampleRef.current;
+    if (!a) return;
+    try { a.pause(); a.currentTime = 0; } catch {}
+  }, []);
+  const playWinSample = useCallback((url: string, volume: number) => {
+    if (isMuted()) return;
+    if (typeof window === "undefined") return;
+    stopWinSample();
+    const audio = new Audio(url);
+    audio.volume = volume;
+    winSampleRef.current = audio;
+    audio.play().catch(() => {});
+  }, [stopWinSample]);
+  useEffect(() => {
+    const onHide = () => stopWinSample();
+    const onStopAll = () => stopWinSample();
+    window.addEventListener("pagehide", onHide);
+    window.addEventListener("blur", onHide);
+    document.addEventListener("visibilitychange", onHide);
+    window.addEventListener(AUDIO_STOP_ALL_EVENT, onStopAll);
+    return () => {
+      window.removeEventListener("pagehide", onHide);
+      window.removeEventListener("blur", onHide);
+      document.removeEventListener("visibilitychange", onHide);
+      window.removeEventListener(AUDIO_STOP_ALL_EVENT, onStopAll);
+      stopWinSample();
+    };
+  }, [stopWinSample]);
+  useEffect(() => { if (muted) stopWinSample(); }, [muted, stopWinSample]);
+
   // Música de fondo — jazz suave temática mafia/imperio. Se inicia tras
   // el primer gesto del usuario (requisito de los navegadores) y respeta
   // el botón de mute del HUD.
@@ -1068,8 +1107,9 @@ export function SlotGame() {
     if (total > 0) {
       const bestPayout = Math.max(...w.map((x) => x.payout));
       const tier = getWinTier(bestPayout, bet);
-      if (tier === "mega") playMegaWinSound();
-      else if (tier === "fire") playFireWinSound();
+      if (tier === "mega") playWinSample(bonusMegaAsset.url, 0.85);
+      else if (tier === "fire") playWinSample(bonusBigAsset.url, 0.8);
+      else if (tier === "nice") playWinSample(bonusNiceAsset.url, 0.75);
       else playCashoutSound();
       const best = [...w].sort((a, b) => b.payout - a.payout)[0];
       setHistory((h) =>
@@ -1078,7 +1118,7 @@ export function SlotGame() {
     }
     setSpinning(false);
     setReelsStopped(0);
-  }, [reelsStopped, spinning, bet, queryClient, resultTick]);
+  }, [reelsStopped, spinning, bet, queryClient, resultTick, playWinSample]);
 
   // Auto-spin: re-trigger spin after each round when enabled
   useEffect(() => {
