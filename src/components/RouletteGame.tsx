@@ -395,11 +395,11 @@ export function RouletteGame() {
         </button>
       </div>
 
-      {/* ───────────────── ESCENA: fondo + rueda alineada, ocupa el alto disponible ───────────────── */}
-      <div className="mt-2 flex flex-1 min-h-0 items-center justify-center">
+      {/* ───────────────── ESCENA: fondo + rueda alineada ───────────────── */}
+      <div className="mt-2 flex items-center justify-center">
         <div
-          className="relative h-full"
-          style={{ aspectRatio: "942 / 1672", maxWidth: "100%" }}
+          className="relative w-full"
+          style={{ aspectRatio: "942 / 1672" }}
         >
           <img
             src={rouletteScene.url}
