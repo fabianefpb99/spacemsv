@@ -49,8 +49,6 @@ const SEG_DEG = 360 / SEG_COUNT;
 const SPIN_DURATION_MS = 10500;
 const EXTRA_SPINS = 4;
 
-const WIN_AUDIO_URLS = [congratulationsAudio.url];
-
 function colorOf(n: number): Choice {
   if (n === 0) return "green";
   return RED_NUMBERS.has(n) ? "red" : "black";
