@@ -45,7 +45,7 @@ const WHEEL_ORDER = [
 const RED_NUMBERS = new Set([1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36]);
 const SEG_COUNT = 37;
 const SEG_DEG = 360 / SEG_COUNT;
-const SPIN_DURATION_MS = 6500;
+const SPIN_DURATION_MS = 10500;
 const EXTRA_SPINS = 8;
 
 function colorOf(n: number): Choice {
@@ -116,7 +116,7 @@ function RouletteWheel({ rotation, spinning }: { rotation: number; spinning: boo
           transform: `rotate(${rotation}deg)`,
           transformOrigin: "200px 200px",
           transition: spinning
-            ? `transform ${SPIN_DURATION_MS}ms cubic-bezier(0.15, 0.85, 0.25, 1)`
+            ? `transform ${SPIN_DURATION_MS}ms cubic-bezier(0.22, 0.55, 0.18, 1)`
             : "none",
           willChange: "transform",
         }}
