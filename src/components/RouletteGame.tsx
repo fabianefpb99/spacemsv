@@ -136,6 +136,16 @@ function RouletteWheel({ rotation, spinning }: { rotation: number; spinning: boo
       {/* Hub central fijo (no rota) */}
       <circle cx={cx} cy={cy} r={r - 4} fill="url(#hubGrad)" stroke="#d4a017" strokeWidth={1.2} />
       <circle cx={cx} cy={cy} r={r - 18} fill="#1a0a2e" stroke="#a78bfa" strokeWidth={0.8} opacity={0.9} />
+      {/* Logo BETSPACE tallado en el hub central */}
+      <image
+        href={betspaceLogo}
+        x={cx - 46}
+        y={cy - 12}
+        width={92}
+        height={24}
+        opacity={0.7}
+        style={{ filter: "drop-shadow(0 1px 0 rgba(0,0,0,0.85))", pointerEvents: "none" }}
+      />
       <defs>
         <radialGradient id="hubGrad" cx="50%" cy="50%" r="60%">
           <stop offset="0%" stopColor="#3b1f5e" />
