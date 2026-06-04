@@ -4,6 +4,9 @@ import { useNavigate } from "@tanstack/react-router";
 import comboImg from "@/assets/combo-starter.png";
 
 const STORAGE_KEY = "betspaceman:promo-starter:deadline";
+const SHOWS_KEY = "betspaceman:promo-starter:shows";
+const MAX_SHOWS_PER_HOUR = 2;
+const ONE_HOUR_MS = 60 * 60 * 1000;
 const DURATION_MS = 60 * 60 * 1000; // 1 hora
 
 function pad(n: number) {
@@ -12,11 +15,27 @@ function pad(n: number) {
 
 export function PromoPopup() {
   const [open, setOpen] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
+  const [allowed, setAllowed] = useState(false);
   const [remaining, setRemaining] = useState(DURATION_MS);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    let shows: number[] = [];
+    try {
+      shows = JSON.parse(localStorage.getItem(SHOWS_KEY) || "[]");
+    } catch {
+      shows = [];
+    }
+    const nowTs = Date.now();
+    shows = shows.filter((ts) => nowTs - ts < ONE_HOUR_MS);
+    if (shows.length >= MAX_SHOWS_PER_HOUR) {
+      localStorage.setItem(SHOWS_KEY, JSON.stringify(shows));
+      return;
+    }
+    setAllowed(true);
 
     let deadline = Number(localStorage.getItem(STORAGE_KEY));
     const now = Date.now();
@@ -37,16 +56,31 @@ export function PromoPopup() {
     };
     tick();
 
-    const t = setTimeout(() => setOpen(true), 450);
     const id = setInterval(tick, 1000);
 
+    const img = new Image();
+    img.src = comboImg;
+    const handleReady = () => {
+      setImgLoaded(true);
+      shows.push(Date.now());
+      localStorage.setItem(SHOWS_KEY, JSON.stringify(shows));
+      setOpen(true);
+    };
+    if (img.complete && img.naturalWidth > 0) {
+      handleReady();
+    } else {
+      img.onload = handleReady;
+      img.onerror = () => {};
+    }
+
     return () => {
-      clearTimeout(t);
       clearInterval(id);
+      img.onload = null;
+      img.onerror = null;
     };
   }, []);
 
-  if (!open) return null;
+  if (!allowed || !open || !imgLoaded) return null;
 
   const totalSec = Math.floor(remaining / 1000);
   const h = Math.floor(totalSec / 3600);
