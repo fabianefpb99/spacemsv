@@ -61,7 +61,8 @@ export type WinTier = "normal" | "nice" | "fire" | "mega";
 function getWinTier(payout: number, totalBet: number): WinTier {
   if (totalBet <= 0) return "normal";
   const mult = payout / totalBet;
-  if (mult >= 6) return "mega";
+  if (mult >= 20) return "mega";
+  if (mult >= 6) return "fire";
   if (mult >= 1.4) return "nice";
   return "normal";
 }
