@@ -487,6 +487,12 @@ export function RouletteGame() {
         tickTimersRef.current.push(at);
       }
 
+      // Disparar el audio de victoria un poco antes de que termine el giro
+      if (result.won) {
+        const winAt = window.setTimeout(playWinAudio, Math.max(0, SPIN_DURATION_MS - 700));
+        tickTimersRef.current.push(winAt);
+      }
+
       // Al terminar la animación
       window.setTimeout(() => {
         setPhase("revealing");
@@ -499,7 +505,6 @@ export function RouletteGame() {
         setHistory((h) => [{ segment: result.winning_segment, color: result.winning_color }, ...h].slice(0, 30));
         playResult(result.won);
         if (result.won) {
-          playWinAudio();
           toast.success(`¡Ganaste! +${formatCOP(Number(result.payout) || 0)} COP`);
         } else {
           toast(`Salió ${result.winning_segment} ${result.winning_color === "red" ? "rojo" : result.winning_color === "black" ? "negro" : "verde"}`, {
