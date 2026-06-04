@@ -25,6 +25,7 @@ import trophy3d from "@/assets/trophy-3d.png";
 import blackjackPromo from "@/assets/blackjack-promo.png.asset.json";
 import blackjackBanner from "@/assets/blackjack-banner.jpg";
 import jackpotBanner from "@/assets/jackpot-banner.jpg";
+import ruletaBanner from "@/assets/ruleta-banner.jpg";
 
 const LAST_WINS = [
   { user: "Usuario123", game: "Spaceman", amount: 252413, mult: 1.85 },
