@@ -428,11 +428,11 @@ export function RouletteGame() {
       {/* ───────────────── HISTORIAL — encima del HUD ───────────────── */}
       <div className="relative z-10 mt-2 flex items-center gap-2 rounded-full border border-purple-400/30 bg-black/55 px-3 py-1.5 backdrop-blur-sm">
         <span className="text-[10px] font-semibold uppercase tracking-wider text-purple-200/80">Últimos</span>
-        <div className="flex flex-1 items-center gap-1.5 overflow-hidden">
+        <div className="flex flex-1 items-center gap-1.5 overflow-hidden pr-1">
           {history.length === 0 ? (
             <span className="text-[11px] italic text-white/40">sin giros aún</span>
           ) : (
-            history.slice(0, 10).map((h, i) => (
+            history.slice(0, 9).map((h, i) => (
               <div
                 key={i}
                 className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ring-1 ring-black/60 ${
