@@ -115,7 +115,7 @@ function PerfilPage() {
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
   const [minElapsed, setMinElapsed] = useState(false);
   useEffect(() => {
-    const t = setTimeout(() => setMinElapsed(true), 280);
+    const t = setTimeout(() => setMinElapsed(true), 400);
     return () => clearTimeout(t);
   }, []);
 
