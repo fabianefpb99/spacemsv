@@ -22,10 +22,11 @@ const MAX_BET = 500000;
 const BET_STEP = 500;
 
 // Calibración de la rueda sobre el fondo (escena 941x1672, ratio 9:16)
-// Centro de la ruleta del fondo y diámetro útil (segmentos R/N/V)
-const WHEEL_CX_PCT = 50;       // % del ancho del fondo
-const WHEEL_CY_PCT = 44.9;     // % del alto del fondo
-const WHEEL_DIAM_PCT = 59.5;   // % del ancho del fondo (zona de segmentos)
+// Medidas extraídas pixel-perfect del PNG pintado.
+const WHEEL_CX_PCT = 50.21;    // % del ancho — centro horizontal pintado
+const WHEEL_CY_PCT = 46.29;    // % del alto  — centro vertical pintado
+const WHEEL_DIAM_PCT = 71.31;  // % del ancho — diámetro exterior de los segmentos pintados
+const WHEEL_INNER_RATIO = 0.713; // r/R — borde interior de los segmentos pintados
 
 // European single-zero wheel order, clockwise starting at 0 (top)
 const WHEEL_ORDER = [
@@ -66,8 +67,8 @@ function segmentPath(cx: number, cy: number, R: number, r: number, startDeg: num
 function RouletteWheel({ rotation, spinning }: { rotation: number; spinning: boolean }) {
   const cx = 200;
   const cy = 200;
-  const R = 195; // outer
-  const r = 110; // inner (where numbers end)
+  const R = 195; // outer (≈ extiende todo el viewBox)
+  const r = Math.round(R * WHEEL_INNER_RATIO); // inner (alineado con borde interior pintado)
   const textR = (R + r) / 2;
 
   const segments = useMemo(() => {
@@ -120,7 +121,7 @@ function RouletteWheel({ rotation, spinning }: { rotation: number; spinning: boo
             x={s.tx}
             y={s.ty}
             fill="#fff"
-            fontSize={14}
+            fontSize={10}
             fontWeight={700}
             textAnchor="middle"
             dominantBaseline="central"
