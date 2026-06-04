@@ -476,7 +476,7 @@ export function RouletteGame() {
       <div
         aria-hidden="true"
         className="pointer-events-none fixed left-1/2 -translate-x-1/2 z-[5] select-none"
-        style={{ top: "17dvh" }}
+        style={{ top: "12dvh" }}
       >
         <span
           className="block whitespace-nowrap text-[42px] sm:text-[52px] font-black uppercase leading-none tracking-[0.22em]"
