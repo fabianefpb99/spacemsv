@@ -530,23 +530,32 @@ export function RouletteGame() {
             </button>
           </div>
 
-        {/* Toast resultado (flotante sobre el HUD) */}
-        {lastResult && phase === "revealing" && (
-          <div
-            className={`pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-full border-2 px-4 py-1.5 text-center text-sm font-bold backdrop-blur-md animate-[scale-in_.3s_ease-out] ${
-              lastResult.won
-                ? "border-emerald-300 bg-emerald-950/80 text-emerald-100 shadow-[0_0_22px_rgba(16,185,129,0.7)]"
-                : "border-rose-400/60 bg-rose-950/80 text-rose-100"
-            }`}
-          >
-            {lastResult.won ? (
-              <>🎉 +<FitText className="inline-block">{formatCOP(lastResult.payout)}</FitText> COP</>
-            ) : (
-              <>Salió {lastResult.segment} {lastResult.color === "red" ? "rojo" : lastResult.color === "black" ? "negro" : "verde"}</>
-            )}
-          </div>
-        )}
       </div>
+
+      {/* ───────────────── RESULT POPUP (global, flotante, no empuja el layout) ───────────────── */}
+      {lastResult && phase === "revealing" && (
+        <div className="pointer-events-none fixed inset-0 z-[100] flex items-center justify-center">
+          {lastResult.won ? (
+            <div className="result-pop-win rounded-xl border border-emerald-500/60 bg-[#0c0620]/90 px-5 py-3 text-center shadow-2xl">
+              <div className="text-[10px] uppercase tracking-widest text-emerald-200/80">¡Ganaste!</div>
+              <div className="font-display text-2xl font-black neon-green">
+                +<FitText className="inline-block">{formatCOP(lastResult.payout)}</FitText> COP
+              </div>
+              <div className="text-xs font-bold text-emerald-300">
+                {lastResult.segment} {lastResult.color === "red" ? "rojo" : lastResult.color === "black" ? "negro" : "verde"}
+              </div>
+            </div>
+          ) : (
+            <div className="result-pop-win rounded-xl border border-rose-500/60 bg-[#0c0620]/90 px-5 py-3 text-center shadow-2xl">
+              <div className="text-[10px] uppercase tracking-widest text-rose-200/80">Resultado</div>
+              <div className="font-display text-2xl font-black text-rose-300">
+                {lastResult.segment} {lastResult.color === "red" ? "rojo" : lastResult.color === "black" ? "negro" : "verde"}
+              </div>
+              <div className="text-xs font-bold text-rose-200/80">Suerte para la próxima</div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
