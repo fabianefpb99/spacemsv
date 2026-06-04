@@ -172,6 +172,48 @@ function PerfilPage() {
     .filter(Boolean)
     .join(" ");
 
+  // Guard against the "beta flash": until both profile + VIP have loaded we
+  // would otherwise render the card with the fallback astronaut avatar and no
+  // rank frame, then snap to the real data a moment later. Show a skeleton
+  // version of the page instead so the first paint matches the final layout.
+  const isHydrating = loading || !me.data || vip.isLoading || !vip.data;
+  if (isHydrating && user) {
+    return (
+      <div className="min-h-screen bg-[#060210] text-white">
+        <div className="mx-auto flex min-h-screen max-w-md flex-col px-3 pb-10 pt-4 sm:max-w-lg sm:px-4">
+          <header
+            className="-mx-3 -mt-4 flex items-center justify-between border-b border-purple-500/20 bg-[#060210] px-3 pb-3"
+            style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
+          >
+            <button
+              onClick={() => navigate({ to: "/home" })}
+              aria-label="Atrás"
+              className="rounded-md p-2 text-purple-100 hover:bg-white/5"
+            >
+              <ArrowLeft className="h-7 w-7" strokeWidth={3} />
+            </button>
+            <h1 className="font-display text-base font-bold uppercase tracking-widest">Mi Perfil</h1>
+            <div className="h-7 w-11" />
+          </header>
+          <div className="mt-4 animate-pulse space-y-3">
+            <div className="h-28 rounded-2xl border border-purple-500/30 bg-purple-500/10" />
+            <div className="h-14 rounded-xl border border-purple-500/20 bg-purple-500/10" />
+            <div className="grid grid-cols-2 gap-3">
+              <div className="h-24 rounded-2xl border border-purple-500/30 bg-purple-500/10" />
+              <div className="h-24 rounded-2xl border border-amber-400/30 bg-amber-500/10" />
+            </div>
+            <div className="h-4 w-40 rounded bg-purple-500/10" />
+            <div className="h-12 rounded-xl border border-purple-500/20 bg-purple-500/10" />
+            <div className="h-12 rounded-xl border border-purple-500/20 bg-purple-500/10" />
+            <div className="h-12 rounded-xl border border-purple-500/20 bg-purple-500/10" />
+            <div className="h-4 w-32 rounded bg-purple-500/10" />
+            <div className="h-20 rounded-2xl border border-purple-500/30 bg-purple-500/10" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#060210] text-white">
       <VipLevelUpToast />
