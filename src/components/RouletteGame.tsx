@@ -406,15 +406,36 @@ export function RouletteGame() {
       setRotation(finalRotation);
 
       // Programar ticks aproximados a la velocidad angular (sampling cubic-bezier)
-      // velocidad ∝ derivada del easing; aproximamos con sqrt para más ticks al inicio
       tickTimersRef.current.forEach((t) => window.clearTimeout(t));
       tickTimersRef.current = [];
-      const totalTicks = 26;
+      // Sincronizar ticks con la curva real cubic-bezier(0.33, 0.1, 0.25, 1)
+      // Un tick por cada N grados recorridos => muestreamos la bezier y disparamos
+      // cuando el progreso angular cruza cada umbral.
+      const totalRotationDeg = Math.abs(delta);
+      const degPerTick = 26; // ~14 ticks por vuelta — sensación realista
+      const totalTicks = Math.max(6, Math.floor(totalRotationDeg / degPerTick));
+      // Bezier helper (x = tiempo normalizado, y = progreso). Resolvemos x para y dado.
+      const bezier = (t: number, p1: number, p2: number) => {
+        const u = 1 - t;
+        return 3 * u * u * t * p1 + 3 * u * t * t * p2 + t * t * t;
+      };
+      const cx1 = 0.33, cx2 = 0.25, cy1 = 0.1, cy2 = 1;
+      const solveTimeForProgress = (target: number) => {
+        // Bisección en t (0..1) para que bezier_y(t) == target
+        let lo = 0, hi = 1;
+        for (let k = 0; k < 22; k++) {
+          const mid = (lo + hi) / 2;
+          const y = bezier(mid, cy1, cy2);
+          if (y < target) lo = mid; else hi = mid;
+        }
+        const tNorm = (lo + hi) / 2;
+        // Convertir tNorm (param bezier) a tiempo real usando coord x
+        return bezier(tNorm, cx1, cx2);
+      };
       for (let i = 1; i <= totalTicks; i++) {
-        const p = i / totalTicks;
-        // Easing inverso aproximado: ticks más juntos al inicio, separados al final
-        const t = 1 - Math.pow(1 - p, 2.4);
-        const at = window.setTimeout(playTick, t * SPIN_DURATION_MS);
+        const target = i / totalTicks;
+        const tFrac = solveTimeForProgress(target);
+        const at = window.setTimeout(playTick, tFrac * SPIN_DURATION_MS);
         tickTimersRef.current.push(at);
       }
 
