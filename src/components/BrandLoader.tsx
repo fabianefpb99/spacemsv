@@ -33,14 +33,22 @@ export function BrandLoader({ active, minMs = 950 }: { active: boolean; minMs?: 
       <img
         src={logo}
         alt="BetSpace"
-        className="w-36 max-w-[40vw] select-none"
+        className="w-36 max-w-[40vw] select-none brand-loader-reveal"
         draggable={false}
-        style={{ animation: "brandLoaderPulse 1.1s ease-in-out infinite" }}
       />
       <style>{`
-        @keyframes brandLoaderPulse {
-          0%, 100% { opacity: 0.55; transform: scale(0.98); filter: drop-shadow(0 0 12px rgba(217,70,239,0.35)); }
-          50%      { opacity: 1;    transform: scale(1.02); filter: drop-shadow(0 0 22px rgba(217,70,239,0.7)); }
+        .brand-loader-reveal {
+          -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.15) 35%, #000 50%, rgba(0,0,0,0.15) 65%, rgba(0,0,0,0.15) 100%);
+                  mask-image: linear-gradient(90deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.15) 35%, #000 50%, rgba(0,0,0,0.15) 65%, rgba(0,0,0,0.15) 100%);
+          -webkit-mask-size: 300% 100%;
+                  mask-size: 300% 100%;
+          -webkit-mask-repeat: no-repeat;
+                  mask-repeat: no-repeat;
+          animation: brandLoaderReveal 1.6s linear infinite;
+        }
+        @keyframes brandLoaderReveal {
+          0%   { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+          100% { -webkit-mask-position: 0% 0;   mask-position: 0% 0; }
         }
         @keyframes brandLoaderFade {
           to { opacity: 0; }
