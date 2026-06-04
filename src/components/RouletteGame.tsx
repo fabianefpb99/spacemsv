@@ -237,8 +237,8 @@ export function RouletteGame() {
     stopWinAudio();
     const url = WIN_AUDIO_URLS[Math.floor(Math.random() * WIN_AUDIO_URLS.length)];
     const audio = new Audio(url);
-    audio.volume = 0.7;
-    audio.playbackRate = 1.2;
+    audio.volume = 0.45;
+    audio.playbackRate = 1.21;
     winAudioRef.current = audio;
     audio.play().catch(() => {});
   }, [muted, stopWinAudio]);
