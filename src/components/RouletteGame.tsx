@@ -69,7 +69,7 @@ function RouletteWheel({ rotation, spinning }: { rotation: number; spinning: boo
   const cy = 200;
   const R = 195; // outer (llena el hueco del aro dorado del fondo)
   const r = 70;  // inner (espacio para el eje/hub central de la rueda)
-  const textR = (R + r) / 2;
+  const textR = R * 0.86; // números cerca del borde exterior (no en el centro)
 
   const segments = useMemo(() => {
     return WHEEL_ORDER.map((num, i) => {
@@ -121,11 +121,11 @@ function RouletteWheel({ rotation, spinning }: { rotation: number; spinning: boo
             x={s.tx}
             y={s.ty}
             fill="#fff"
-            fontSize={10}
+            fontSize={13}
             fontWeight={700}
             textAnchor="middle"
             dominantBaseline="central"
-            transform={`rotate(${s.mid} ${s.tx} ${s.ty})`}
+            transform={`rotate(${s.mid + 180} ${s.tx} ${s.ty})`}
             style={{ textShadow: "0 1px 2px rgba(0,0,0,0.9)", userSelect: "none" }}
           >
             {s.num}
