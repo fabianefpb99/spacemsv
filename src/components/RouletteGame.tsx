@@ -532,30 +532,50 @@ export function RouletteGame() {
 
       </div>
 
-      {/* ───────────────── RESULT POPUP (global, flotante, no empuja el layout) ───────────────── */}
-      {lastResult && phase === "revealing" && (
-        <div className="pointer-events-none fixed inset-0 z-[100] flex items-center justify-center">
-          {lastResult.won ? (
-            <div className="result-pop-win rounded-xl border border-emerald-500/60 bg-[#0c0620]/90 px-5 py-3 text-center shadow-2xl">
-              <div className="text-[10px] uppercase tracking-widest text-emerald-200/80">¡Ganaste!</div>
-              <div className="font-display text-2xl font-black neon-green">
-                +<FitText className="inline-block">{formatCOP(lastResult.payout)}</FitText> COP
+      {/* ───────────────── RESULT POPUP — centrado en la rueda, 3 filas compactas ───────────────── */}
+      {lastResult && phase === "revealing" && (() => {
+        const colorLabel =
+          lastResult.color === "red" ? "ROJO" : lastResult.color === "black" ? "NEGRO" : "VERDE";
+        const won = lastResult.won;
+        return (
+          <div
+            className="pointer-events-none fixed left-1/2 z-[100] -translate-x-1/2 -translate-y-1/2"
+            style={{ top: `${WHEEL_CY_PCT}dvh` }}
+          >
+            <div
+              className={`result-pop-win min-w-[180px] rounded-xl border px-5 py-2.5 text-center shadow-2xl backdrop-blur-md ${
+                won
+                  ? "border-emerald-400/70 bg-[#0c0620]/90 shadow-[0_0_28px_rgba(16,185,129,0.55)]"
+                  : "border-rose-400/70 bg-[#0c0620]/90 shadow-[0_0_22px_rgba(244,63,94,0.45)]"
+              }`}
+            >
+              <div
+                className={`text-[11px] font-bold uppercase tracking-[0.2em] ${
+                  won ? "text-emerald-300/90" : "text-rose-300/90"
+                }`}
+              >
+                {won ? "¡GANASTE!" : "RESULTADO"}
               </div>
-              <div className="text-xs font-bold text-emerald-300">
-                {lastResult.segment} {lastResult.color === "red" ? "rojo" : lastResult.color === "black" ? "negro" : "verde"}
+              <div
+                className={`font-display text-xl font-black leading-tight ${
+                  won ? "neon-green" : "text-rose-200"
+                }`}
+              >
+                {lastResult.segment} {colorLabel}
               </div>
+              {won ? (
+                <div className="text-[11px] font-semibold text-emerald-200/85">
+                  +<FitText className="inline-block">{formatCOP(lastResult.payout)}</FitText> COP · ¡Vamos a ganar de nuevo!
+                </div>
+              ) : (
+                <div className="text-[11px] font-semibold text-rose-100/80">
+                  ¡Haz tu próxima apuesta!
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="result-pop-win rounded-xl border border-rose-500/60 bg-[#0c0620]/90 px-5 py-3 text-center shadow-2xl">
-              <div className="text-[10px] uppercase tracking-widest text-rose-200/80">Resultado</div>
-              <div className="font-display text-2xl font-black text-rose-300">
-                {lastResult.segment} {lastResult.color === "red" ? "rojo" : lastResult.color === "black" ? "negro" : "verde"}
-              </div>
-              <div className="text-xs font-bold text-rose-200/80">Suerte para la próxima</div>
-            </div>
-          )}
-        </div>
-      )}
+          </div>
+        );
+      })()}
     </div>
   );
 }
