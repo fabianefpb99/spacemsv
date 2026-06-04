@@ -1,63 +1,115 @@
-## Resumen
-Sistema VIP visual (sin recompensas monetarias por ahora) con 100 niveles distribuidos en 7 rangos, subdivisiones V→I, curva de XP configurable desde Supabase, tarjeta en /perfil, ruta /vip dedicada, e insignia animada al subir de nivel que solo aparece en /perfil.
+## Ruleta BetSpace — Plan de implementación
 
-## Decisiones tomadas
-- **XP**: premia número de apuestas más que monto. Fórmula: `xp = 1 + floor(log10(bet/1000 + 1))`. Una apuesta de $1.000 = 1 XP, $10.000 = 2 XP, $100.000 = 3 XP. Configurable en `vip_config`.
-- **Curva**: accesible. Tabla `vip_levels` con `xp_required` por nivel; curva por defecto suave (~50k-200k apuestas para llegar a 100, ajustable).
-- **Recompensas**: solo visual. Arquitectura lista para añadir `reward_amount` por nivel después.
-- **Animación**: popup flotante de level-up solo se dispara al abrir `/perfil` (no en juegos), comparando nivel actual vs último visto (guardado en `profiles.vip_last_seen_level`).
+Juego de ruleta europea (37 segmentos: 18 rojos, 18 negros, 1 verde/0) con apuesta única por giro a Rojo, Negro o Verde. Verde paga 14x, Rojo/Negro 1.95x. Arquitectura backend idéntica a Spaceman/Slot.
 
-## Rangos (100 niveles)
-| Rango | Niveles |
-|---|---|
-| Bronce | 1–15 |
-| Plata | 16–30 |
-| Oro | 31–45 |
-| Platino | 46–60 |
-| Diamante | 61–75 |
-| Maestro | 76–90 |
-| Leyenda | 91–100 |
+---
 
-Dentro de cada rango: 5 sub-divisiones romanas V→I (los niveles se dividen en 5 grupos por rango: ej. Bronce V = niveles 1-3, IV = 4-6, III = 7-9, II = 10-12, I = 13-15). Para rangos de 15: 3 niveles por sub. Para Leyenda (10): 2 niveles por sub. Al llegar a 100 se muestra **"LEYENDA I — Nivel Máximo Alcanzado"** y la barra de XP queda llena.
+### 1. Backend (Supabase migration)
 
-## Cambios en Supabase
-**Migración nueva:**
-1. `vip_config` (singleton) — fórmula XP configurable: `xp_per_bet_base`, `xp_log_factor`, `min_bet_for_xp`, `cap_level` (=100), `is_active`.
-2. `vip_levels` — filas 1..100 con: `level`, `rank` (enum), `sub_division` (V/IV/III/II/I), `xp_required` (acumulado), `reward_amount` (0 por ahora, configurable a futuro). Seed inicial calcula curva exponencial suave.
-3. `user_vip` — `user_id`, `total_xp`, `current_level`, `updated_at`.
-4. `profiles.vip_last_seen_level` (col nueva, default 0) — para detectar subidas no vistas y disparar animación.
-5. RPC `award_xp(p_user_id, p_bet_amount)` — security definer, llamada desde los RPC de apuesta existentes (`spin_slot_v1`, `_debit_bet` callers). Suma XP, actualiza `current_level` consultando `vip_levels`, idempotencia natural por monto.
-6. RPC `mark_vip_level_seen(p_user_id)` — actualiza `vip_last_seen_level = current_level`.
+**Nueva config RTP** en `game_rtp_config`:
+- Fila `game = 'ruleta'`, `rtp_target = 97.3` (estándar europeo, configurable).
 
-**Integración XP en juegos:** dentro de cada RPC de apuesta (slot, spaceman bet, blackjack deal, mines, dice) llamar `perform award_xp(...)` justo después del débito exitoso. No revierte si falla — XP es side-effect.
+**Nueva RPC `spin_roulette_v1(p_user_id, p_bet_amount, p_choice, p_client_action_id)`** — security definer, mismo patrón que `spin_slot_v1`:
+- Valida: `choice IN ('red','black','green')`, bet 500–500000 step 500, idempotencia por `client_action_id`.
+- Genera `server_seed` (32 bytes) + `server_seed_hash`.
+- Sortea segmento ganador `0..36` con `gen_random_bytes` (uniforme, rechazo de bytes ≥ 247 para evitar sesgo).
+- Mapeo segmento → color: `0 = green`, números rojos = `[1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]`, resto negros (distribución europea real).
+- Débito vía `_debit_bet` (bonus-first + award_xp automático).
+- Si gana: payout = `bet * 1.95` (R/N) o `bet * 14` (V), crédito vía `_credit_win` (100% real).
+- Transaction `meta` cachea: `{ winning_segment, winning_color, choice, multiplier, payout, server_seed, server_seed_hash }`.
+- Retorna `jsonb`: `{ was_duplicate, new_balance, cached: { winning_segment, winning_color, won, payout, ... } }`.
 
-## Cambios en frontend
-- **`src/lib/vip/vip.shared.ts`** — utilidades: `getRankInfo(level)` → `{rank, subDivision, color, icon}`, `getProgress(totalXp, levels)` → `{currentLevel, currentLevelXp, nextLevelXp, pct, isMax}`.
-- **`src/hooks/useVip.ts`** — query que retorna `{ user_vip, levels, lastSeenLevel }` y mutation `markSeen()`.
-- **`src/components/vip/VipCard.tsx`** — tarjeta para /perfil con: insignia de rango, "RANGO SubDiv" grande, barra de XP con `<Progress>`, XP actual/siguiente, link a /vip.
-- **`src/components/vip/VipLevelUpToast.tsx`** — overlay animado (motion) que se monta solo en /perfil cuando `current_level > last_seen_level`. Muestra "¡Subiste a {Rango Sub}!" con confeti/glow. Al cerrarse llama `markSeen()`.
-- **`src/routes/vip.tsx`** — ruta dedicada con header, progreso del usuario, y lista de los 7 rangos expandibles mostrando los 5 sub-niveles y rango de niveles. Resalta el rango/sub actual del usuario. SEO completo en `head()`.
-- **`src/routes/perfil.tsx`** — agregar `<VipCard />` debajo de balances y `<VipLevelUpToast />` arriba; agregar link "VIP" en navegación.
+**No requiere `game_rounds`** (juego instantáneo, no multiplayer como Spaceman).
 
-## Visual / tokens
-- Colores por rango definidos en `src/styles.css` como tokens semánticos (`--vip-bronze`, `--vip-silver`, etc.) en oklch. Insignias con gradiente + glow estilo premium.
-- Sub-divisiones V→I van de menos a más brillantes dentro de un rango.
+---
 
-## Detalles técnicos
-- `vip_levels` se siembra en la migración con un loop que calcula `xp_required[n] = round(base * pow(growth, n-1))` con `base=100`, `growth≈1.045` (≈100 niveles ≈ 700k XP total — accesible).
-- RLS: `user_vip` y `vip_config` SELECT propio + admin; `vip_levels` SELECT público autenticado.
-- GRANTs explícitos en cada tabla nueva.
-- `award_xp` retorna `{ leveled_up: bool, new_level: int }` (lo ignoramos en frontend porque la animación se basa en `last_seen_level`, no en respuesta del juego — así evitamos errores en los HUDs de juego).
+### 2. Assets visuales
 
-## Orden de implementación
-1. Migración Supabase (tablas, seed, RPCs, integración en RPCs de apuesta existentes).
-2. Tokens de color en `src/styles.css`.
-3. `vip.shared.ts` + `useVip.ts`.
-4. `VipCard`, `VipLevelUpToast`.
-5. Ruta `/vip`.
-6. Actualizar `/perfil`.
+- **`src/assets/roulette-frame.png`** — generado por IA: anillo dorado exterior con luces moradas, eje central metálico dorado con reflejos, fondo púrpura cósmico. Capa decorativa **fija** (no rota). Estilo idéntico al boceto.
+- **`src/assets/roulette-promo.png`** (opcional) — tarjeta para `/home` siguiendo el patrón Blackjack/Jackpot.
 
-## Fuera de alcance
-- Recompensas monetarias por nivel (arquitectura lista, valores en 0).
-- Niveles > 100 (XP se sigue acumulando pero no se muestra).
-- XP retroactivo por apuestas pasadas.
+---
+
+### 3. Frontend
+
+**Ruta nueva:** `src/routes/ruleta.tsx` — clona estructura de `spaceman.tsx` (RequireAuth + LoadingScreen + componente). `head()` con SEO completo.
+
+**Componente nuevo:** `src/components/RouletteGame.tsx`
+
+Estructura visual (mobile-first, mismo layout que Spaceman):
+
+```
+Header (BETSPACE logo + balance + settings) — reutilizado
+─────────────────────────────────────────────
+ONLINE counter | RULETA (título gradient rojo) | audio toggle
+ROJO / NEGRO / 0  (subtítulo)
+─────────────────────────────────────────────
+[ Rueda 360x360 ]
+  ├─ <img> roulette-frame.png (z-0, fija)
+  ├─ <svg> disco con 37 segmentos (z-10, rota)
+  │    └─ 37 <path> calculados con trigonometría
+  │    └─ 37 <text> con números (rotan con su segmento)
+  ├─ <svg> puntero/flecha arriba (z-20, fija)
+─────────────────────────────────────────────
+ÚLTIMOS RESULTADOS (9 bolitas de colores) — localStorage
+─────────────────────────────────────────────
+Panel APUESTA (clonado de Spaceman):
+  ├─ Stepper +/− con FitText
+  ├─ Chips +1k / +2k / +5k / +10k
+  ├─ BetAmount con bonus hint
+─────────────────────────────────────────────
+3 botones de selección:
+  [🔴 ROJO 1.95x]  [⚫ NEGRO 1.95x]
+  [🟢 VERDE (0) 14.00x]
+─────────────────────────────────────────────
+[ GIRAR RULETA ] (verde, full-width)
+─────────────────────────────────────────────
+HISTORIAL COMPLETO | CÓMO JUGAR
+```
+
+**Estados:** `idle | spinning | revealing`. Botón GIRAR deshabilitado durante `spinning`.
+
+**Animación del spin:**
+- Al click: llamada a RPC con `client_action_id` (uuid). Mientras se espera, ya inicia el spin "ficticio" (la rueda empieza a girar visualmente).
+- Cuando llega la respuesta: calcula `rotación_final = (8 vueltas × 360°) + (segmento_ganador × 360/37) + jitter(±3°)`.
+- Aplica `transform: rotate(Xdeg)` con `transition: transform 6.5s cubic-bezier(0.15, 0.85, 0.25, 1)` al `<g>` interno del SVG.
+- `will-change: transform` durante el giro, removido al terminar.
+- **Tick del puntero:** `setTimeout` calculado a partir de la velocidad angular instantánea (derivada de la curva de easing) — cada vez que toca un borde de segmento, micro-flash CSS del puntero + sonido `tick.mp3` via `gameAudio.ts`.
+- **Micro-rebote final:** después del `transitionend`, `transform: rotate((X-8)deg)` con `transition: 0.4s ease-out`, luego vuelve.
+- Al terminar reveal: muestra resultado (toast/overlay), actualiza historial localStorage, refresca balance.
+
+**Audio:** reutilizar `gameAudio.ts`. Sonidos: `roulette-spin.mp3` (loop suave durante giro), `roulette-tick.mp3` (cada borde), `win.mp3` / `lose.mp3` (ya existen).
+
+---
+
+### 4. Integración en navegación
+
+- Agregar tarjeta de Ruleta en `/home` (siguiendo patrón Spaceman/Blackjack).
+- Link de ruleta en menú lateral (si existe).
+
+---
+
+### 5. Detalles técnicos
+
+- **Color tokens nuevos** en `src/styles.css`: `--roulette-red`, `--roulette-black`, `--roulette-green`, `--roulette-gold` (oklch).
+- **Probabilidades reales** (con verde 14x): house edge ≈ 62% en verde, ~2.7% en R/N. RTP global ≈ 95% (el verde "regalado" lo compensa la baja frecuencia de apuesta a verde).
+- **Sin SSR para canvas/svg pesado**: el componente entra dentro de `RequireAuth` que ya es client-only.
+- **Tests visuales:** verificar en iPhone SE (375px) que rueda 360x360 entra cómoda con padding.
+
+---
+
+### Fuera de alcance (futuro)
+
+- Apuestas múltiples simultáneas (R + V a la vez).
+- Apuestas a número específico (paga 36x).
+- Modo multiplayer / ronda compartida.
+- Estadísticas avanzadas (% rojo vs negro últimas 100 rondas).
+
+### Orden de implementación
+
+1. Migración Supabase (`game_rtp_config` row + `spin_roulette_v1` RPC).
+2. Generar `roulette-frame.png` con IA.
+3. Color tokens + `RouletteGame.tsx` (estructura + SVG estático).
+4. Lógica de spin + animación + tick sonoro.
+5. Ruta `/ruleta` + integración en `/home`.
+6. QA visual en mobile.
