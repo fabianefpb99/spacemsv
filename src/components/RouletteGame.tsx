@@ -143,7 +143,7 @@ function RouletteWheel({ rotation, spinning }: { rotation: number; spinning: boo
         y={cy - 12}
         width={92}
         height={24}
-        opacity={0.7}
+        opacity={0.9}
         style={{ filter: "drop-shadow(0 1px 0 rgba(0,0,0,0.85))", pointerEvents: "none" }}
       />
       {/* Destello periódico recorriendo el logo */}
