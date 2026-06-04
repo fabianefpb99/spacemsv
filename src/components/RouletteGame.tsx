@@ -20,6 +20,7 @@ type HistoryEntry = { segment: number; color: Choice };
 const MIN_BET = 500;
 const MAX_BET = 500000;
 const BET_STEP = 500;
+const QUICK_ADDS = [1000, 2000, 5000, 10000];
 
 // Calibración de la rueda sobre el fondo v2 (escena 942x1672, ratio 9:16)
 // El fondo v2 tiene un hueco circular vacío donde encaja la rueda funcional.
@@ -490,6 +491,29 @@ export function RouletteGame() {
               <span className="font-display text-base font-black leading-tight">VERDE 0</span>
               <span className="text-[11px] font-bold text-emerald-100/90 leading-none">14.00x</span>
             </button>
+          </div>
+
+          {/* Atajos rápidos: X2 + sumas frecuentes */}
+          <div className="grid grid-cols-5 gap-1.5">
+            <button
+              onClick={() => setBet((b) => clampBetToStep(b * 2, balance, MAX_BET, BET_STEP, MIN_BET))}
+              disabled={phase !== "idle"}
+              className="rounded-lg border border-purple-400/40 bg-purple-950/60 py-1.5 text-[11px] font-black uppercase tracking-wide text-white backdrop-blur-sm hover:bg-purple-900/60 disabled:opacity-50"
+              aria-label="Doblar apuesta"
+              title="Doblar apuesta"
+            >
+              X2
+            </button>
+            {QUICK_ADDS.map((amt) => (
+              <button
+                key={amt}
+                onClick={() => adjustBet(amt)}
+                disabled={phase !== "idle"}
+                className="rounded-lg border border-purple-400/40 bg-purple-950/60 py-1.5 text-[11px] font-bold text-white backdrop-blur-sm hover:bg-purple-900/60 disabled:opacity-50"
+              >
+                +{amt >= 1000 ? `${amt / 1000}K` : amt}
+              </button>
+            ))}
           </div>
 
           {/* Stepper + GIRAR — una sola fila compacta */}
