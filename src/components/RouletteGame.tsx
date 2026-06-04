@@ -25,7 +25,7 @@ const QUICK_ADDS = [1000, 2000, 5000, 10000];
 // Calibración de la rueda sobre el fondo v2 (escena 942x1672, ratio 9:16)
 // El fondo v2 tiene un hueco circular vacío donde encaja la rueda funcional.
 // Medidas extraídas pixel-perfect del PNG.
-const WHEEL_CX_PCT = 49.4;     // % del ancho — centro horizontal del hueco (ajustado a la flecha del fondo)
+const WHEEL_CX_PCT = 49.0;     // % del ancho — centro horizontal del hueco (ajustado a la flecha del fondo)
 const WHEEL_CY_PCT = 43.99;    // % del alto  — centro vertical del hueco
 const WHEEL_DIAM_PCT = 65.5;   // % del ancho — diámetro del hueco (encaja con el aro dorado)
 
