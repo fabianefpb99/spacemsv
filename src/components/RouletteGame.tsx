@@ -4,7 +4,7 @@ import { Menu, Volume2, VolumeX } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import rouletteScene from "@/assets/roulette-scene.png.asset.json";
+import rouletteScene from "@/assets/roulette-scene-v2.png.asset.json";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { BetAmount } from "@/components/games/BetAmount";
 import { FitText } from "@/components/ui/fit-text";
@@ -21,12 +21,12 @@ const MIN_BET = 500;
 const MAX_BET = 500000;
 const BET_STEP = 500;
 
-// Calibración de la rueda sobre el fondo (escena 941x1672, ratio 9:16)
-// Medidas extraídas pixel-perfect del PNG pintado.
-const WHEEL_CX_PCT = 50.21;    // % del ancho — centro horizontal pintado
-const WHEEL_CY_PCT = 46.29;    // % del alto  — centro vertical pintado
-const WHEEL_DIAM_PCT = 71.31;  // % del ancho — diámetro exterior de los segmentos pintados
-const WHEEL_INNER_RATIO = 0.713; // r/R — borde interior de los segmentos pintados
+// Calibración de la rueda sobre el fondo v2 (escena 942x1672, ratio 9:16)
+// El fondo v2 tiene un hueco circular vacío donde encaja la rueda funcional.
+// Medidas extraídas pixel-perfect del PNG.
+const WHEEL_CX_PCT = 49.84;    // % del ancho — centro horizontal del hueco
+const WHEEL_CY_PCT = 43.99;    // % del alto  — centro vertical del hueco
+const WHEEL_DIAM_PCT = 65.5;   // % del ancho — diámetro del hueco (encaja con el aro dorado)
 
 // European single-zero wheel order, clockwise starting at 0 (top)
 const WHEEL_ORDER = [
