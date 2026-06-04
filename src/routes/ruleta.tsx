@@ -18,7 +18,7 @@ export const Route = createFileRoute("/ruleta")({
 function Page() {
   return (
     <RequireAuth>
-      <LoadingScreen>
+      <LoadingScreen variant="roulette">
         <RouletteGame />
       </LoadingScreen>
     </RequireAuth>
