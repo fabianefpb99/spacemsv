@@ -12,6 +12,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useMe } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
 import { clampBetToStep } from "@/lib/games/bet-helpers";
+import mafiaJazzUrl from "@/assets/mafia-jazz.mp3";
+import {
+  setBackgroundTrack,
+  clearBackgroundTrack,
+  getBackgroundTrack,
+  stopAllGameAudio,
+  AUDIO_STOP_ALL_EVENT,
+} from "@/lib/gameAudio";
 
 type Choice = "red" | "black" | "green";
 type Phase = "idle" | "spinning" | "revealing";
@@ -232,6 +240,52 @@ export function RouletteGame() {
       localStorage.setItem("betspaceman:roulette:history", JSON.stringify(history.slice(0, 30)));
     } catch {}
   }, [history]);
+
+  // Música de fondo (misma pista que SLOT) — volumen bien bajo.
+  useEffect(() => {
+    stopAllGameAudio();
+    const stopOnBackground = () => {
+      clearBackgroundTrack();
+    };
+    const onStopAll = () => {};
+    window.addEventListener(AUDIO_STOP_ALL_EVENT, onStopAll);
+    window.addEventListener("pagehide", stopOnBackground);
+    window.addEventListener("blur", stopOnBackground);
+    document.addEventListener("visibilitychange", stopOnBackground);
+    const audio = setBackgroundTrack(mafiaJazzUrl, { volume: 0.02, loop: true });
+    if (!audio) {
+      return () => {
+        window.removeEventListener(AUDIO_STOP_ALL_EVENT, onStopAll);
+        window.removeEventListener("pagehide", stopOnBackground);
+        window.removeEventListener("blur", stopOnBackground);
+        document.removeEventListener("visibilitychange", stopOnBackground);
+      };
+    }
+    const onFirst = () => {
+      audio.play().catch(() => {});
+      window.removeEventListener("pointerdown", onFirst);
+      window.removeEventListener("keydown", onFirst);
+    };
+    window.addEventListener("pointerdown", onFirst);
+    window.addEventListener("keydown", onFirst);
+    return () => {
+      window.removeEventListener("pointerdown", onFirst);
+      window.removeEventListener("keydown", onFirst);
+      window.removeEventListener("pagehide", stopOnBackground);
+      window.removeEventListener("blur", stopOnBackground);
+      document.removeEventListener("visibilitychange", stopOnBackground);
+      window.removeEventListener(AUDIO_STOP_ALL_EVENT, onStopAll);
+      clearBackgroundTrack();
+    };
+  }, []);
+
+  useEffect(() => {
+    const audio = getBackgroundTrack();
+    if (!audio) return;
+    audio.muted = muted;
+    if (muted) audio.pause();
+    else audio.play().catch(() => {});
+  }, [muted]);
 
   // Unlock audio on first gesture
   useEffect(() => {
