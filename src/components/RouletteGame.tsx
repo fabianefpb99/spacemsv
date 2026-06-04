@@ -456,6 +456,22 @@ export function RouletteGame() {
 
       {/* ───────────────── ONLINE + MUTE ───────────────── */}
       <div className="relative z-10 mt-3 flex items-center justify-between">
+        {/* Título RULETA centrado, absoluto para no empujar nada */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none whitespace-nowrap text-[15px] font-bold uppercase tracking-[0.35em]"
+          style={{
+            fontFamily: "'Cinzel', serif",
+            backgroundImage: "linear-gradient(180deg, #f8e08a 0%, #d4af37 50%, #a87b1f 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+            textShadow: "0 0 10px rgba(212,175,55,0.35)",
+            filter: "drop-shadow(0 1px 0 rgba(0,0,0,0.6))",
+          }}
+        >
+          Ruleta
+        </span>
         <div className="flex items-center gap-2 text-xs">
           <span className="relative inline-flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
