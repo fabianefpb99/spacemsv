@@ -147,19 +147,49 @@ function HomePage() {
     const now = Date.now();
     plays = plays.filter((t) => now - t < ONE_HOUR);
     if (plays.length >= MAX_PER_HOUR) return;
-    plays.push(now);
-    try { localStorage.setItem(KEY, JSON.stringify(plays)); } catch { /* ignore */ }
 
     const audio = new Audio(casinoIntro.url);
     audio.volume = 0.15;
     audio.preload = "auto";
-    const p = audio.play();
-    if (p && typeof p.catch === "function") p.catch(() => { /* autoplay bloqueado */ });
-    const stop = setTimeout(() => {
-      try { audio.pause(); audio.src = ""; } catch { /* ignore */ }
-    }, 12300);
+    let stopTimer: ReturnType<typeof setTimeout> | null = null;
+    let consumed = false;
+    let disposed = false;
+
+    const markConsumed = () => {
+      if (consumed) return;
+      consumed = true;
+      const ts = Date.now();
+      try {
+        const stored = JSON.parse(localStorage.getItem(KEY) || "[]");
+        const arr = Array.isArray(stored) ? stored : [];
+        arr.push(ts);
+        localStorage.setItem(KEY, JSON.stringify(arr));
+      } catch { /* ignore */ }
+      stopTimer = setTimeout(() => {
+        try { audio.pause(); audio.src = ""; } catch { /* ignore */ }
+      }, 12300);
+    };
+
+    const tryPlay = () => {
+      if (disposed || consumed) return;
+      const p = audio.play();
+      if (p && typeof p.then === "function") {
+        p.then(markConsumed).catch(() => { /* esperar gesto */ });
+      } else {
+        markConsumed();
+      }
+    };
+
+    tryPlay();
+
+    const onGesture = () => { tryPlay(); };
+    const events: Array<keyof WindowEventMap> = ["pointerdown", "touchstart", "click", "keydown"];
+    events.forEach((ev) => window.addEventListener(ev, onGesture, { once: false, passive: true } as AddEventListenerOptions));
+
     return () => {
-      clearTimeout(stop);
+      disposed = true;
+      if (stopTimer) clearTimeout(stopTimer);
+      events.forEach((ev) => window.removeEventListener(ev, onGesture));
       try { audio.pause(); audio.src = ""; } catch { /* ignore */ }
     };
   }, []);
