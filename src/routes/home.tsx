@@ -136,15 +136,19 @@ function HomePage() {
   const arrowsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showBrandLoader, setShowBrandLoader] = useState(false);
 
-  // Ambient casino intro — max once per day, plays before everything else.
-  // Audio file ya incluye fade-out al final (5s totales).
+  // Ambient casino intro — máximo 2 veces por hora.
+  // Audio file ya incluye fade-out al final (8s totales).
   useEffect(() => {
-    const KEY = "betspaceman:casino-intro:last-shown";
-    const ONE_DAY = 24 * 60 * 60 * 1000;
-    let last = 0;
-    try { last = Number(localStorage.getItem(KEY) || 0); } catch { last = 0; }
-    if (last && Date.now() - last < ONE_DAY) return;
-    try { localStorage.setItem(KEY, String(Date.now())); } catch { /* ignore */ }
+    const KEY = "betspaceman:casino-intro:plays";
+    const ONE_HOUR = 60 * 60 * 1000;
+    const MAX_PER_HOUR = 2;
+    let plays: number[] = [];
+    try { plays = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch { plays = []; }
+    const now = Date.now();
+    plays = plays.filter((t) => now - t < ONE_HOUR);
+    if (plays.length >= MAX_PER_HOUR) return;
+    plays.push(now);
+    try { localStorage.setItem(KEY, JSON.stringify(plays)); } catch { /* ignore */ }
 
     const audio = new Audio(casinoIntro.url);
     audio.volume = 0.15;
