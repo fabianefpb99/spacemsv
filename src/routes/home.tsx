@@ -136,12 +136,12 @@ function HomePage() {
   const arrowsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showBrandLoader, setShowBrandLoader] = useState(false);
 
-  // Ambient casino intro — máximo 2 veces por hora.
-  // Audio file ya incluye fade-out al final (8s totales).
+  // Ambient casino intro — máximo 5 veces por hora.
+  // Audio file ya incluye fade-in (1.5s) y fade-out (3s) — 10s totales.
   useEffect(() => {
     const KEY = "betspaceman:casino-intro:plays";
     const ONE_HOUR = 60 * 60 * 1000;
-    const MAX_PER_HOUR = 2;
+    const MAX_PER_HOUR = 5;
     let plays: number[] = [];
     try { plays = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch { plays = []; }
     const now = Date.now();
@@ -157,7 +157,7 @@ function HomePage() {
     if (p && typeof p.catch === "function") p.catch(() => { /* autoplay bloqueado */ });
     const stop = setTimeout(() => {
       try { audio.pause(); audio.src = ""; } catch { /* ignore */ }
-    }, 8200);
+    }, 10200);
     return () => {
       clearTimeout(stop);
       try { audio.pause(); audio.src = ""; } catch { /* ignore */ }
@@ -182,7 +182,7 @@ function HomePage() {
       } catch {
         /* ignore */
       }
-      const t = setTimeout(() => setShowBrandLoader(false), 1060);
+      const t = setTimeout(() => setShowBrandLoader(false), 1900);
       return () => clearTimeout(t);
     }
   }, []);
@@ -214,7 +214,7 @@ function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#060210] text-white">
-      <BrandLoader active={showBrandLoader} minMs={1060} />
+      <BrandLoader active={showBrandLoader} minMs={1900} />
       <PromoPopup />
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4">
         {/* Header — must match SpacemanGame header exactly, sin icono de sonido */}
