@@ -968,7 +968,7 @@ export function SlotGame() {
     window.addEventListener("pagehide", stopOnBackground);
     window.addEventListener("blur", stopOnBackground);
     document.addEventListener("visibilitychange", stopOnBackground);
-    const audio = setBackgroundTrack(mafiaJazzUrl, { volume: 0.03, loop: true });
+    const audio = setBackgroundTrack(mafiaJazzUrl, { volume: 0.009, loop: true });
     if (!audio) return;
     const onFirst = () => {
       audio.play().catch(() => {});
