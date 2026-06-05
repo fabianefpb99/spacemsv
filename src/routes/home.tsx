@@ -153,7 +153,7 @@ function HomePage() {
     if (p && typeof p.catch === "function") p.catch(() => { /* autoplay bloqueado */ });
     const stop = setTimeout(() => {
       try { audio.pause(); audio.src = ""; } catch { /* ignore */ }
-    }, 5200);
+    }, 8200);
     return () => {
       clearTimeout(stop);
       try { audio.pause(); audio.src = ""; } catch { /* ignore */ }
