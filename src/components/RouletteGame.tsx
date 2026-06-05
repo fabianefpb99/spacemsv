@@ -331,7 +331,7 @@ export function RouletteGame() {
     window.addEventListener("pagehide", stopOnBackground);
     window.addEventListener("blur", stopOnBackground);
     document.addEventListener("visibilitychange", stopOnBackground);
-    const audio = setBackgroundTrack(mafiaJazzUrl, { volume: 0.004, loop: true });
+    const audio = setBackgroundTrack(mafiaJazzUrl, { volume: 0.03, loop: true });
     if (!audio) {
       return () => {
         window.removeEventListener(AUDIO_STOP_ALL_EVENT, onStopAll);
