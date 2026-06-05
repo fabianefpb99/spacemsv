@@ -602,7 +602,7 @@ export function RouletteGame() {
             <Menu className="h-7 w-7" strokeWidth={3} />
           </button>
           <Link to="/">
-            <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7 cursor-pointer" />
+            <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7 translate-y-px cursor-pointer" />
           </Link>
         </div>
         <div className="flex items-center gap-2">
