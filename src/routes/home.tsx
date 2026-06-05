@@ -165,9 +165,26 @@ function HomePage() {
         arr.push(ts);
         localStorage.setItem(KEY, JSON.stringify(arr));
       } catch { /* ignore */ }
+      // Extiende el desvanecimiento final 1s adicional al fade-out del archivo.
+      const FADE_EXTRA_MS = 1000;
+      const STOP_AT_MS = 12300 + FADE_EXTRA_MS;
+      const FADE_START_MS = STOP_AT_MS - FADE_EXTRA_MS - 5000; // empalma con el fade-out nativo
+      const startVolume = audio.volume;
+      const fadeStart = setTimeout(() => {
+        const steps = 30;
+        const stepMs = (FADE_EXTRA_MS + 5000) / steps;
+        let i = 0;
+        const iv = setInterval(() => {
+          i += 1;
+          const v = Math.max(0, startVolume * (1 - i / steps));
+          try { audio.volume = v; } catch { /* ignore */ }
+          if (i >= steps) clearInterval(iv);
+        }, stepMs);
+      }, Math.max(0, FADE_START_MS));
       stopTimer = setTimeout(() => {
+        clearTimeout(fadeStart);
         try { audio.pause(); audio.src = ""; } catch { /* ignore */ }
-      }, 12300);
+      }, STOP_AT_MS);
     };
 
     const tryPlay = () => {
