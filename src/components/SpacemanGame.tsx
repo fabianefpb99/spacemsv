@@ -910,7 +910,7 @@ export function SpacemanGame() {
               <img
                 src={betspaceLogo}
                 alt="BETSPACE"
-                className="h-6 w-auto sm:h-7 cursor-pointer"
+                className="h-6 w-auto sm:h-7 translate-y-px cursor-pointer"
               />
             </Link>
           </div>
