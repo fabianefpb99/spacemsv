@@ -169,22 +169,17 @@ function HomePage() {
   useEffect(() => {
     const KEY = "betspaceman:brand-loader:last-shown";
     const ONE_HOUR = 60 * 60 * 1000;
-    let last = 0;
-    try {
-      last = Number(localStorage.getItem(KEY) || 0);
-    } catch {
-      last = 0;
-    }
-    if (!last || Date.now() - last >= ONE_HOUR) {
-      setShowBrandLoader(true);
-      try {
-        localStorage.setItem(KEY, String(Date.now()));
-      } catch {
-        /* ignore */
-      }
-      const t = setTimeout(() => setShowBrandLoader(false), 1900);
-      return () => clearTimeout(t);
-    }
+    const MAX_PER_HOUR = 5;
+    let shows: number[] = [];
+    try { shows = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch { shows = []; }
+    const now = Date.now();
+    shows = shows.filter((t) => now - t < ONE_HOUR);
+    if (shows.length >= MAX_PER_HOUR) return;
+    shows.push(now);
+    try { localStorage.setItem(KEY, JSON.stringify(shows)); } catch { /* ignore */ }
+    setShowBrandLoader(true);
+    const t = setTimeout(() => setShowBrandLoader(false), 1900);
+    return () => clearTimeout(t);
   }, []);
 
   // Al entrar al home, cualquier juego previo queda completamente cerrado.

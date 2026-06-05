@@ -523,7 +523,9 @@ button img,
   -webkit-mask-position: 130% 0;
           mask-position: 130% 0;
   opacity: 0;
-  animation: logoShineSweep 8.5s linear 1 forwards;
+  animation:
+    logoShineSweep 8.5s linear 1 forwards,
+    logoShineLoop 8s linear 8.5s infinite;
 }
 @keyframes logoShineSweep {
   0%    { -webkit-mask-position: 130% 0; mask-position: 130% 0; opacity: 0; }
@@ -537,6 +539,14 @@ button img,
   /* Second sweep: 5.5s → 8.5s (3s) */
   65.9% { opacity: 1; }
   98.8% { opacity: 1; }
+  100%  { -webkit-mask-position: -30% 0; mask-position: -30% 0; opacity: 0; }
+}
+@keyframes logoShineLoop {
+  /* Sweep durante los primeros 3s (de 8), luego pausa 5s */
+  0%    { -webkit-mask-position: 130% 0; mask-position: 130% 0; opacity: 0; }
+  1%    { opacity: 1; }
+  36%   { opacity: 1; }
+  37.5% { -webkit-mask-position: -30% 0; mask-position: -30% 0; opacity: 0; }
   100%  { -webkit-mask-position: -30% 0; mask-position: -30% 0; opacity: 0; }
 }
 
