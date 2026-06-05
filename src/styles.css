@@ -504,6 +504,34 @@ button img,
   100% { transform: translateX(120%); }
 }
 
+/* Header logo shine — recorrido brillante de un sweep blanco sobre el logo */
+.logo-shine {
+  position: relative;
+  display: inline-block;
+}
+.logo-shine .logo-shine-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  filter: brightness(2.6) drop-shadow(0 0 6px rgba(255,255,255,0.9));
+  -webkit-mask-image: linear-gradient(115deg, transparent 38%, #000 50%, transparent 62%);
+          mask-image: linear-gradient(115deg, transparent 38%, #000 50%, transparent 62%);
+  -webkit-mask-size: 260% 100%;
+          mask-size: 260% 100%;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-position: 130% 0;
+          mask-position: 130% 0;
+  opacity: 0;
+  animation: logoShineSweep 2.4s cubic-bezier(.22,.61,.36,1) 1.5s 1 forwards;
+}
+@keyframes logoShineSweep {
+  0%   { -webkit-mask-position: 130% 0; mask-position: 130% 0; opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { -webkit-mask-position: -30% 0; mask-position: -30% 0; opacity: 0; }
+}
+
 /* Result panels (win / lose) */
 .result-pop-win {
   animation: result-pop 520ms cubic-bezier(.34,1.56,.64,1),
