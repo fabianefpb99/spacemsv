@@ -137,7 +137,7 @@ function HomePage() {
   const [showBrandLoader, setShowBrandLoader] = useState(false);
 
   // Ambient casino intro — máximo 5 veces por hora.
-  // Audio file ya incluye fade-in (1.5s) y fade-out (3s) — 10s totales.
+  // Audio file ya incluye fade-in (1.5s) y fade-out (5s) — 12s totales.
   useEffect(() => {
     const KEY = "betspaceman:casino-intro:plays";
     const ONE_HOUR = 60 * 60 * 1000;
@@ -157,7 +157,7 @@ function HomePage() {
     if (p && typeof p.catch === "function") p.catch(() => { /* autoplay bloqueado */ });
     const stop = setTimeout(() => {
       try { audio.pause(); audio.src = ""; } catch { /* ignore */ }
-    }, 10200);
+    }, 12300);
     return () => {
       clearTimeout(stop);
       try { audio.pause(); audio.src = ""; } catch { /* ignore */ }
