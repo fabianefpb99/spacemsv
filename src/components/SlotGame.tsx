@@ -1105,8 +1105,10 @@ export function SlotGame() {
     // so the HUD shows the bet debit even when there is no win.
     queryClient.invalidateQueries({ queryKey: ["me"] });
     if (total > 0) {
-      const bestPayout = Math.max(...w.map((x) => x.payout));
-      const tier = getWinTier(bestPayout, bet);
+      // El tier se calcula sobre el multiplicador TOTAL del giro (lo que el
+      // jugador ve en la HUD), no sobre la mejor línea, para que los sonidos
+      // coincidan con la magnitud percibida del premio.
+      const tier = getWinTier(total, bet);
       if (tier === "mega") playWinSample(bonusMegaAsset.url, 0.85);
       else if (tier === "fire") playWinSample(bonusBigAsset.url, 0.8);
       else if (tier === "nice") playWinSample(bonusNiceAsset.url, 0.75);
