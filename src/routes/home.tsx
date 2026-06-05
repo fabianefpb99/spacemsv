@@ -165,14 +165,15 @@ function HomePage() {
         arr.push(ts);
         localStorage.setItem(KEY, JSON.stringify(arr));
       } catch { /* ignore */ }
-      // Extiende el desvanecimiento final 1s adicional al fade-out del archivo.
-      const FADE_EXTRA_MS = 1000;
-      const STOP_AT_MS = 12300 + FADE_EXTRA_MS;
-      const FADE_START_MS = STOP_AT_MS - FADE_EXTRA_MS - 5000; // empalma con el fade-out nativo
+      // El archivo trae fade-out nativo de 5s. Adelantamos el desvanecimiento
+      // 1s aplicando una rampa de volumen JS que empieza 1s antes del fade nativo.
+      const STOP_AT_MS = 12300;
+      const JS_FADE_MS = 6000; // 5s nativo + 1s adelantado
+      const FADE_START_MS = STOP_AT_MS - JS_FADE_MS;
       const startVolume = audio.volume;
       const fadeStart = setTimeout(() => {
         const steps = 30;
-        const stepMs = (FADE_EXTRA_MS + 5000) / steps;
+        const stepMs = JS_FADE_MS / steps;
         let i = 0;
         const iv = setInterval(() => {
           i += 1;
