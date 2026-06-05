@@ -1109,9 +1109,9 @@ export function SlotGame() {
       // jugador ve en la HUD), no sobre la mejor línea, para que los sonidos
       // coincidan con la magnitud percibida del premio.
       const tier = getWinTier(total, bet);
-      if (tier === "mega") playWinSample(bonusMegaAsset.url, 0.85);
-      else if (tier === "fire") playWinSample(bonusBigAsset.url, 0.8);
-      else if (tier === "nice") playWinSample(bonusNiceAsset.url, 0.75);
+      if (tier === "mega") playWinSample(bonusMegaAsset.url, 0.5);
+      else if (tier === "fire") playWinSample(bonusBigAsset.url, 0.45);
+      else if (tier === "nice") playWinSample(bonusNiceAsset.url, 0.4);
       else playCashoutSound();
       const best = [...w].sort((a, b) => b.payout - a.payout)[0];
       setHistory((h) =>
