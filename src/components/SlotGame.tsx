@@ -1109,9 +1109,9 @@ export function SlotGame() {
       // jugador ve en la HUD), no sobre la mejor línea, para que los sonidos
       // coincidan con la magnitud percibida del premio.
       const tier = getWinTier(total, bet);
-      if (tier === "mega") playWinSample(bonusMegaAsset.url, 0.5);
-      else if (tier === "fire") playWinSample(bonusBigAsset.url, 0.45);
-      else if (tier === "nice") playWinSample(bonusNiceAsset.url, 0.4);
+      if (tier === "mega") playWinSample(bonusMegaAsset.url, 0.3);
+      else if (tier === "fire") playWinSample(bonusBigAsset.url, 0.27);
+      else if (tier === "nice") playWinSample(bonusNiceAsset.url, 0.24);
       else playCashoutSound();
       const best = [...w].sort((a, b) => b.payout - a.payout)[0];
       setHistory((h) =>
@@ -1215,7 +1215,7 @@ export function SlotGame() {
               <Menu className="h-7 w-7" strokeWidth={3} />
             </Link>
             <Link to="/home">
-              <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7" />
+              <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7 translate-y-px" />
             </Link>
           </div>
           <div className="flex items-center gap-2">

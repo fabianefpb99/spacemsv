@@ -893,7 +893,7 @@ export function SlotGameTest() {
               <Menu className="h-7 w-7" strokeWidth={3} />
             </Link>
             <Link to="/home">
-              <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7" />
+              <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7 translate-y-px" />
             </Link>
           </div>
           <div className="flex items-center gap-2">
