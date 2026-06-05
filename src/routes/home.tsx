@@ -227,11 +227,17 @@ function HomePage() {
               <button className="rounded-md p-2 text-white hover:bg-white/10">
                 <Menu className="h-7 w-7" strokeWidth={3} />
               </button>
-              <Link to="/home">
+              <Link to="/home" className="logo-shine">
                 <img
                   src={betspaceLogo}
                   alt="BETSPACE"
                   className="h-6 w-auto sm:h-7 translate-y-px"
+                />
+                <img
+                  src={betspaceLogo}
+                  alt=""
+                  aria-hidden="true"
+                  className="logo-shine-overlay h-6 w-auto sm:h-7 translate-y-px"
                 />
               </Link>
             </div>
