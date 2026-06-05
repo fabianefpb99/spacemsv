@@ -574,22 +574,20 @@ export function RouletteGame() {
           draggable={false}
           className="absolute inset-0 h-full w-full select-none object-cover"
         />
-      </div>
-
-      {/* ───────────────── RUEDA FUNCIONAL anclada al aro pintado ─────────────────
-          El fondo usa object-cover y en mobile (viewport más estrecho que 942/1672)
-          se escala por altura. Eso fija matemáticamente el centro vertical al 43.99%
-          del alto del viewport, el centro horizontal al 50% (recorte simétrico),
-          y el diámetro a 65.5% del ancho renderizado del PNG = 100dvh × (942/1672) × 0.655 */}
-      <div
-        className="pointer-events-none fixed left-1/2 -translate-x-1/2 -translate-y-1/2 z-0"
-        style={{
-          top: `${WHEEL_CY_PCT}dvh`,
-          width: `calc(100dvh * (942 / 1672) * ${WHEEL_DIAM_PCT / 100})`,
-          aspectRatio: "1 / 1",
-        }}
-      >
-        <RouletteWheel rotation={rotation} spinning={phase === "spinning"} />
+        {/* RUEDA FUNCIONAL anclada al aro pintado — vive DENTRO del mismo contenedor
+            que el fondo para compartir su sistema de coordenadas. Así, en PWA standalone
+            (donde inset-0 incluye safe-area y dvh puede no hacerlo), la rueda nunca
+            se desincroniza del aro pintado: ambos se mueven juntos. */}
+        <div
+          className="pointer-events-none absolute left-1/2 -translate-x-1/2 -translate-y-1/2"
+          style={{
+            top: `${WHEEL_CY_PCT}%`,
+            height: `calc(100% * (942 / 1672) * ${WHEEL_DIAM_PCT / 100})`,
+            aspectRatio: "1 / 1",
+          }}
+        >
+          <RouletteWheel rotation={rotation} spinning={phase === "spinning"} />
+        </div>
       </div>
 
       {/* ───────────────── HEADER GLOBAL ───────────────── */}
