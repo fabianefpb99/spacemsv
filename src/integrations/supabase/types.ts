@@ -41,6 +41,57 @@ export type Database = {
         }
         Relationships: []
       }
+      arena_rounds: {
+        Row: {
+          bet_amount: number
+          character_bet: string
+          client_action_id: string | null
+          combat_log: Json
+          created_at: string
+          id: string
+          multiplier: number
+          odds_snapshot: Json
+          payout: number
+          server_seed: string
+          server_seed_hash: string
+          user_id: string
+          winner: string
+          won: boolean
+        }
+        Insert: {
+          bet_amount: number
+          character_bet: string
+          client_action_id?: string | null
+          combat_log: Json
+          created_at?: string
+          id?: string
+          multiplier: number
+          odds_snapshot: Json
+          payout?: number
+          server_seed: string
+          server_seed_hash: string
+          user_id: string
+          winner: string
+          won: boolean
+        }
+        Update: {
+          bet_amount?: number
+          character_bet?: string
+          client_action_id?: string | null
+          combat_log?: Json
+          created_at?: string
+          id?: string
+          multiplier?: number
+          odds_snapshot?: Json
+          payout?: number
+          server_seed?: string
+          server_seed_hash?: string
+          user_id?: string
+          winner?: string
+          won?: boolean
+        }
+        Relationships: []
+      }
       deposit_requests: {
         Row: {
           amount: number
@@ -922,6 +973,15 @@ export type Database = {
         Returns: boolean
       }
       mark_vip_level_seen: { Args: never; Returns: number }
+      play_arena_v1: {
+        Args: {
+          p_bet_amount: number
+          p_character: string
+          p_client_action_id: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
       spaceman_cashout: {
         Args: {
           p_client_action_id: string
