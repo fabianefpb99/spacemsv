@@ -171,7 +171,10 @@ function HomePage() {
     const ONE_HOUR = 60 * 60 * 1000;
     const MAX_PER_HOUR = 5;
     let shows: number[] = [];
-    try { shows = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch { shows = []; }
+    try {
+      const parsed = JSON.parse(localStorage.getItem(KEY) || "[]");
+      shows = Array.isArray(parsed) ? parsed : [];
+    } catch { shows = []; }
     const now = Date.now();
     shows = shows.filter((t) => now - t < ONE_HOUR);
     if (shows.length >= MAX_PER_HOUR) return;
