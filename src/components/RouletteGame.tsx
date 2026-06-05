@@ -777,7 +777,7 @@ export function RouletteGame() {
         return (
           <div
             className="pointer-events-none fixed left-1/2 z-[100] -translate-x-1/2 -translate-y-1/2"
-            style={{ top: `${WHEEL_CY_PCT}dvh` }}
+            style={{ top: `${WHEEL_CY_PCT}%` }}
           >
             <div
               className={`result-pop-win min-w-[180px] rounded-xl border px-5 py-2.5 text-center shadow-2xl backdrop-blur-md ${
