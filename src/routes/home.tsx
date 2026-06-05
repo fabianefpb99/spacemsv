@@ -27,6 +27,7 @@ import blackjackPromo from "@/assets/blackjack-promo.png.asset.json";
 import blackjackBanner from "@/assets/blackjack-banner.jpg";
 import jackpotBanner from "@/assets/jackpot-banner.jpg";
 import ruletaBanner from "@/assets/ruleta-banner.jpg";
+import casinoIntro from "@/assets/audio/casino-intro.mp3.asset.json";
 
 const LAST_WINS = [
   { user: "Usuario123", game: "Spaceman", amount: 252413, mult: 1.85 },
@@ -134,6 +135,30 @@ function HomePage() {
   const [arrowsVisible, setArrowsVisible] = useState(true);
   const arrowsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showBrandLoader, setShowBrandLoader] = useState(false);
+
+  // Ambient casino intro — max once per day, plays before everything else.
+  // Audio file ya incluye fade-out al final (5s totales).
+  useEffect(() => {
+    const KEY = "betspaceman:casino-intro:last-shown";
+    const ONE_DAY = 24 * 60 * 60 * 1000;
+    let last = 0;
+    try { last = Number(localStorage.getItem(KEY) || 0); } catch { last = 0; }
+    if (last && Date.now() - last < ONE_DAY) return;
+    try { localStorage.setItem(KEY, String(Date.now())); } catch { /* ignore */ }
+
+    const audio = new Audio(casinoIntro.url);
+    audio.volume = 0.15;
+    audio.preload = "auto";
+    const p = audio.play();
+    if (p && typeof p.catch === "function") p.catch(() => { /* autoplay bloqueado */ });
+    const stop = setTimeout(() => {
+      try { audio.pause(); audio.src = ""; } catch { /* ignore */ }
+    }, 5200);
+    return () => {
+      clearTimeout(stop);
+      try { audio.pause(); audio.src = ""; } catch { /* ignore */ }
+    };
+  }, []);
 
   // Mostrar el BrandLoader la primera vez que se entra al sitio y
   // al menos una vez por hora, para reforzar la marca.
