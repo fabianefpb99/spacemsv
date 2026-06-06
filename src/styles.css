@@ -4,6 +4,50 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Hero slider — rotating neon glow sweep around the border */
+.slider-neon-frame {
+  position: relative;
+  isolation: isolate;
+}
+.slider-neon-frame::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--neon-angle, 0deg),
+    transparent 0deg,
+    transparent 220deg,
+    rgba(217, 70, 239, 0.0) 240deg,
+    rgba(217, 70, 239, 0.9) 310deg,
+    #f0abfc 340deg,
+    rgba(217, 70, 239, 0.9) 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+  animation: slider-neon-sweep 4.2s ease-in-out 2s infinite;
+  filter: drop-shadow(0 0 6px rgba(217, 70, 239, 0.85))
+          drop-shadow(0 0 14px rgba(217, 70, 239, 0.55));
+}
+@property --neon-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes slider-neon-sweep {
+  0%   { opacity: 0; --neon-angle: 0deg; }
+  10%  { opacity: 1; }
+  85%  { opacity: 1; --neon-angle: 360deg; }
+  100% { opacity: 0; --neon-angle: 360deg; }
+}
+
 /* Arena title glitch — TV-static-style RGB split + clip flicker */
 .arena-glitch {
   animation: arena-glitch-shake 600ms steps(2, end);
