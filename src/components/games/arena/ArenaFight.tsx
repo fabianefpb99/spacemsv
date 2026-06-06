@@ -209,7 +209,7 @@ export function ArenaFight({
               x={slotPos.x + lunge.dx}
               y={slotPos.y + lunge.dy}
               heightPct={heightPct}
-              zIndex={slot.startsWith("front") ? 10 : 5}
+              zIndex={isAttacking ? 15 : slot.startsWith("front") ? 10 : 5}
               phase={dead ? "damage" : phases[id]}
               dead={dead}
               shake={shakeId === id}
