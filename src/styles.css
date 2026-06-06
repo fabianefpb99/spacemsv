@@ -83,6 +83,27 @@
   0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(1); }
   50%      { opacity: 1;    transform: translate(-50%, -50%) scale(1.08); }
 }
+
+/* Pulsing colored halo around the post-fight CTA. The color is supplied
+ * inline via --cta-glow so the same class works for win/lose variants. */
+.arena-cta-glow {
+  box-shadow:
+    0 0 0 0 color-mix(in oklab, var(--cta-glow, rgba(255,255,255,0.6)) 60%, transparent),
+    0 0 18px 2px color-mix(in oklab, var(--cta-glow, rgba(255,255,255,0.6)) 55%, transparent);
+  animation: arena-cta-pulse 2s ease-in-out infinite;
+}
+@keyframes arena-cta-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 12px 1px color-mix(in oklab, var(--cta-glow, rgba(255,255,255,0.6)) 45%, transparent),
+      0 0 22px 4px color-mix(in oklab, var(--cta-glow, rgba(255,255,255,0.6)) 25%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 0 18px 2px color-mix(in oklab, var(--cta-glow, rgba(255,255,255,0.6)) 75%, transparent),
+      0 0 36px 8px color-mix(in oklab, var(--cta-glow, rgba(255,255,255,0.6)) 45%, transparent);
+  }
+}
 @keyframes arena-stadium-sweep {
   0%   { opacity: 0;   --stadium-x: 15%; --stadium-color: rgba(168, 85, 247, 0.32); }
   15%  { opacity: 0.9; }

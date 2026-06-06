@@ -100,8 +100,18 @@ export function ArenaResult({
           size="lg"
           onClick={onPlayAgain}
           variant="outline"
-          className="h-11 w-full max-w-[260px] rounded-full border-2 border-white/85 bg-black/40 text-[13px] font-extrabold uppercase tracking-[0.22em] text-white backdrop-blur-sm hover:bg-white/15 hover:text-white active:bg-white/25 active:text-white animate-fade-in"
-          style={{ animationDelay: "740ms" }}
+          className={cn(
+            "h-11 w-full max-w-[260px] rounded-full border-2 bg-black/45 text-[13px] font-extrabold uppercase tracking-[0.22em] text-white backdrop-blur-sm animate-fade-in arena-cta-glow",
+            won
+              ? "border-emerald-300/90 hover:bg-emerald-400/15 hover:text-white active:bg-emerald-400/25 active:text-white"
+              : "border-rose-300/90 hover:bg-rose-400/15 hover:text-white active:bg-rose-400/25 active:text-white",
+          )}
+          style={
+            {
+              animationDelay: "740ms",
+              ["--cta-glow" as never]: won ? "rgba(52,211,153,0.85)" : "rgba(244,114,182,0.85)",
+            } as React.CSSProperties
+          }
         >
           Apostar de nuevo
         </Button>
