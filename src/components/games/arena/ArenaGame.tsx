@@ -120,7 +120,7 @@ export function ArenaGame() {
         </header>
 
         {/* Stage — fills available vertical space; bg image lives here */}
-        <div className="relative mt-2 flex-1 min-h-0">
+        <div className="relative mt-2 min-h-[29rem] flex-1">
           {phase === "lobby" && (
             <ArenaLobby selected={selected} onSelect={setSelected} disabled={isPlaying} />
           )}
@@ -139,7 +139,7 @@ export function ArenaGame() {
 
         {/* Compact betting HUD */}
         {phase === "lobby" && (
-          <div className="mt-2">
+          <div className="mt-2 pb-[calc(env(safe-area-inset-bottom,0px)+0.25rem)]">
             <BettingPanel
               bet={bet}
               bonusBalance={bonusBalance}
