@@ -59,7 +59,7 @@ export const playArena = createServerFn({ method: "POST" })
       p_bet_amount: bet,
       p_character: character,
       p_client_action_id: client_action_id,
-      p_odds_perm: odds_perm ?? null,
+      p_odds_perm: odds_perm ?? undefined,
     });
 
     if (error) {
