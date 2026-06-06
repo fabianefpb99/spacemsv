@@ -351,7 +351,8 @@ export function ArenaFight({
   }, [eventIdx, combatLog, onComplete, showFightBanner]);
 
   return (
-    <div className="absolute inset-0 overflow-visible">
+    <div className="absolute inset-y-0 -inset-x-3 overflow-visible">
+      <div className="absolute inset-y-0 left-3 right-3 overflow-visible">
       {/* Current event banner — 3 líneas centradas (atacante / acción / objetivo) */}
       <div className="absolute inset-x-0 top-[7%] z-20 flex justify-center px-2">
         {currentEvent ? (
@@ -533,6 +534,7 @@ export function ArenaFight({
         </div>
       </div>
     </div>
+    </div>
   );
 }
 
@@ -600,6 +602,7 @@ function FighterSlot({
   isWinner: boolean;
   isBet: boolean;
 }) {
+  const needsHorizontalBleed = slot === "frontLeft" || slot === "frontRight";
   return (
     <div
       className="absolute flex items-end justify-center transition-[left,top] duration-300 ease-out"
@@ -607,10 +610,7 @@ function FighterSlot({
         left: `${x}%`,
         top: `${y}%`,
         height: `${heightPct}%`,
-        width:
-          phase === "damage" && (slot === "frontLeft" || slot === "frontRight")
-            ? `calc(${heightPct}% + 22vw)`
-            : `${heightPct}%`,
+        width: `${heightPct}%`,
         transform: "translate(-50%, -50%)",
         zIndex,
       }}
@@ -629,14 +629,20 @@ function FighterSlot({
           }}
         />
       )}
-      <CharacterSprite
-        characterId={id}
-        phase={phase}
-        alpha={dead ? 0.3 : 1}
-        shake={shake}
-        mirror={mirror}
-        className="h-full w-full"
-      />
+      <div
+        className="pointer-events-none flex h-full items-end justify-center overflow-visible"
+        style={{ width: needsHorizontalBleed ? "calc(100% + 20vw)" : "100%" }}
+      >
+        <CharacterSprite
+          characterId={id}
+          phase={phase}
+          alpha={dead ? 0.3 : 1}
+          shake={shake}
+          mirror={mirror}
+          fit="height"
+          className="h-full"
+        />
+      </div>
     </div>
   );
 }

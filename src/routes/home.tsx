@@ -1,14 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import { Menu, Settings, ChevronRight, ChevronLeft, Gift, Home, Gamepad2, Wallet, User } from "lucide-react";
+import { Menu, ChevronRight, ChevronLeft, Gift, Home, Gamepad2, Wallet, User } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { PromoPopup } from "@/components/PromoPopup";
 import { BrandLoader } from "@/components/BrandLoader";
 import { SkeletonImage } from "@/components/SkeletonImage";
 import { stopAllGameAudio } from "@/lib/gameAudio";
 import { AuthControl } from "@/components/auth/AuthControl";
-import { AuthDialog } from "@/components/auth/AuthDialog";
-import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
 import heroImg from "@/assets/home-hero.jpg";
@@ -132,12 +130,10 @@ const SLIDES = [
 ];
 
 function HomePage() {
-  const { user } = useAuth();
   const me = useMe();
   // Never show a fake demo amount. If not logged in, show a dash; if logged
   // in but balance hasn't arrived yet, also show a dash so we don't flash $0.
-  const balanceText =
-    user && me.data ? formatCOP(me.data.balance + me.data.bonus_balance) : user ? "—" : "—";
+  const balanceText = me.data ? formatCOP(me.data.balance + me.data.bonus_balance) : "—";
   const [online] = useState(219);
   const [slide, setSlide] = useState(0);
   const slides = SLIDES.length;
@@ -297,16 +293,12 @@ function HomePage() {
               </Link>
             </div>
             <div className="flex items-center gap-2">
-              {user ? (
-                <div className="text-right">
-                  <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
-                  <div className="font-display text-[11px] font-bold sm:text-xs text-white">
-                    <span className="neon-green mr-0.5">$</span>{balanceText} COP
-                  </div>
+              <div className="text-right">
+                <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
+                <div className="font-display text-[11px] font-bold sm:text-xs text-white">
+                  <span className="neon-green mr-0.5">$</span>{balanceText} COP
                 </div>
-              ) : (
-                <AuthCta />
-              )}
+              </div>
               <AuthControl />
             </div>
           </div>
@@ -604,25 +596,6 @@ function HomePage() {
         </div>
       </nav>
     </div>
-  );
-}
-
-function AuthCta() {
-  const [open, setOpen] = useState(false);
-  return (
-    <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="group relative inline-flex items-center gap-1.5 overflow-hidden rounded-full bg-gradient-to-r from-fuchsia-600 via-purple-600 to-indigo-600 px-3 py-1.5 font-display text-[10px] font-semibold uppercase tracking-wide text-white shadow-[0_4px_14px_-4px_rgba(168,85,247,0.6)] ring-1 ring-white/15 transition-all hover:shadow-[0_6px_18px_-4px_rgba(217,70,239,0.7)] active:scale-95"
-      >
-        <User className="h-3 w-3" strokeWidth={2.5} />
-        <span>Ingresar</span>
-        <span className="ml-0.5 hidden text-white/70 sm:inline">·</span>
-        <span className="hidden sm:inline">Registro</span>
-      </button>
-      <AuthDialog open={open} onOpenChange={setOpen} />
-    </>
   );
 }
 
