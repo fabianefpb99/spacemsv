@@ -317,9 +317,9 @@ export function ArenaFight({
       </div>
 
       {/* Stage — slot-positioned fighters */}
-      <div className="absolute inset-x-0 top-[9%] bottom-[22%]">
+      <div className="absolute inset-x-0 top-[9%] bottom-[-4%] overflow-visible">
         {/* Speed streak — aura detrás del atacante mientras avanza al golpe. */}
-        {currentEvent && lungeId && (() => {
+        {currentEvent && lungeId === characterBet && (() => {
           const aSlot = slotOf[lungeId];
           const tSlot = slotOf[currentEvent.target];
           const start = SLOT_POSITIONS[aSlot];
@@ -554,11 +554,12 @@ function FighterSlot({
           aria-hidden
           className="pointer-events-none absolute left-1/2 top-[58%] -translate-x-1/2 -translate-y-1/2 animate-pulse"
           style={{
-            width: "78%",
-            height: "78%",
+            width: "62%",
+            height: "24%",
             background:
-              "radial-gradient(circle, rgba(250,204,21,0.55) 0%, rgba(250,204,21,0.25) 35%, rgba(250,204,21,0) 65%)",
-            filter: "blur(2px)",
+              "radial-gradient(ellipse at center, rgba(250,204,21,0.7) 0%, rgba(250,204,21,0.32) 42%, rgba(250,204,21,0) 78%)",
+            borderRadius: "9999px",
+            filter: "blur(8px)",
           }}
         />
       )}
@@ -568,10 +569,7 @@ function FighterSlot({
         alpha={dead ? 0.3 : 1}
         shake={shake}
         mirror={mirror}
-        className={cn(
-          "h-full w-full",
-          isWinner && !dead && "drop-shadow-[0_0_24px_rgba(250,204,21,0.9)]",
-        )}
+        className="h-full w-full"
       />
     </div>
   );
