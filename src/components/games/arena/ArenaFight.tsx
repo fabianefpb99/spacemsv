@@ -612,7 +612,7 @@ export function ArenaFight({
               id={id}
               slot={slot}
               x={resultMode ? 50 : slotPos.x + lunge.dx}
-              y={resultMode ? 56 : slotPos.y + lunge.dy}
+              y={resultMode ? 48 : slotPos.y + lunge.dy}
               heightPct={resultMode ? 88 : heightPct}
               zIndex={resultMode ? 24 : zIndex}
               phase={resultMode ? "stance" : dead ? "damage" : phases[id]}
