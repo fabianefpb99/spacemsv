@@ -71,21 +71,21 @@ export function BettingPanel({
         <div className="text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-purple-100/85">
           Apuesta (COP)
         </div>
-        <div className="mt-3 grid grid-cols-[88px_minmax(0,1fr)_88px] gap-3">
+        <div className="mt-3 grid grid-cols-[72px_minmax(0,1fr)_72px] gap-2 sm:grid-cols-[88px_minmax(0,1fr)_88px] sm:gap-3">
           <button
             type="button"
             onClick={() => onBetChange(clamp(bet - ARENA_BET_STEP))}
             disabled={isPlaying}
-            className="h-16 rounded-[18px] border border-purple-400/20 bg-purple-500/12 text-4xl font-light text-purple-100 transition hover:bg-purple-500/18 disabled:opacity-50"
+            className="h-14 rounded-[18px] border border-purple-400/20 bg-purple-500/12 text-4xl font-light text-purple-100 transition hover:bg-purple-500/18 disabled:opacity-50 sm:h-16"
           >
             −
           </button>
-          <div className="flex h-16 items-center justify-center rounded-[18px] border border-white/10 bg-black/65 px-3">
+          <div className="flex h-14 items-center justify-center rounded-[18px] border border-white/10 bg-black/65 px-2 sm:h-16 sm:px-3">
             <BetAmount
               bet={bet}
               bonusBalance={bonusBalance}
               className="flex h-full min-h-0 flex-col justify-center"
-              amountClassName="text-[2.35rem] font-black tracking-[0.03em] text-white"
+              amountClassName="text-[2rem] font-black tracking-[0.03em] text-white sm:text-[2.35rem]"
               bonusClassName="mt-0.5 text-center text-[9px] font-bold leading-none text-yellow-300/95"
               minScale={0.65}
             >
@@ -96,7 +96,7 @@ export function BettingPanel({
             type="button"
             onClick={() => onBetChange(clamp(bet + ARENA_BET_STEP))}
             disabled={isPlaying}
-            className="h-16 rounded-[18px] border border-purple-400/20 bg-purple-500/12 text-4xl font-light text-purple-100 transition hover:bg-purple-500/18 disabled:opacity-50"
+            className="h-14 rounded-[18px] border border-purple-400/20 bg-purple-500/12 text-4xl font-light text-purple-100 transition hover:bg-purple-500/18 disabled:opacity-50 sm:h-16"
           >
             +
           </button>
@@ -120,7 +120,7 @@ export function BettingPanel({
           Mínimo: {formatCOP(ARENA_MIN_BET)} COP · Paso: {formatCOP(ARENA_BET_STEP)}
         </div>
 
-        <div className="mt-4 grid grid-cols-4 gap-2.5">
+        <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
           {ARENA_CHARACTERS.map((id) => {
             const fighter = ARENA_CHARACTER_META[id];
             const active = id === selected;
