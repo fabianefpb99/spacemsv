@@ -47,8 +47,6 @@ export function ArenaLobby({
             key={id}
             id={id}
             selected={selected === id}
-            disabled={disabled}
-            onSelect={onSelect}
           />
         ))}
       </div>
