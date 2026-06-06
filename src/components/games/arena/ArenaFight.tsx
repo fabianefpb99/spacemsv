@@ -84,9 +84,12 @@ function getLungeOffset(
     return { dx: dir * 10, dy: 0 };
   }
   if (sameCol) {
-    // 10% vertical toward target
-    const dir = targetSlot.startsWith("front") ? 1 : -1;
-    return { dx: 0, dy: dir * 10 };
+    // Misma columna: lunge DIAGONAL hacia el centro del ring para que el
+    // ataque se lea como un golpe lateral y no como "teletransporte" encima
+    // del personaje de la misma línea vertical.
+    const dirY = targetSlot.startsWith("front") ? 1 : -1;
+    const dirX = attackerSlot.endsWith("Left") ? 1 : -1;
+    return { dx: dirX * 9, dy: dirY * 8 };
   }
   // Diagonal → lunge ~80% of the way toward ring center
   const a = SLOT_POSITIONS[attackerSlot];
@@ -116,38 +119,23 @@ function permutations<T>(arr: T[]): T[][] {
   return out;
 }
 
-function planSlotMap(combatLog: ArenaCombatEvent[]): Record<SlotId, ArenaCharacterId> {
-  const ids = [...ARENA_CHARACTERS] as ArenaCharacterId[];
-  let best: { map: Record<SlotId, ArenaCharacterId>; score: number } | null = null;
-  for (const perm of permutations(ids)) {
-    const map = {} as Record<SlotId, ArenaCharacterId>;
-    SLOT_IDS.forEach((s, i) => (map[s] = perm[i]));
-    const slotOf = {} as Record<ArenaCharacterId, SlotId>;
-    SLOT_IDS.forEach((s) => (slotOf[map[s]] = s));
-
-    let conflicts = 0;
-    for (const ev of combatLog) {
-      const a = slotOf[ev.attacker];
-      const t = slotOf[ev.target];
-      const sameCol = a.endsWith("Left") === t.endsWith("Left");
-      // Sólo nos importa evitar que un personaje de atrás ataque al del frente
-      // de su misma columna (no tiene ángulo). El caso inverso (front → back
-      // misma columna) se permite.
-      if (sameCol && a.startsWith("back") && t.startsWith("front")) conflicts++;
-    }
-    let naturalSide = 0;
-    for (const s of SLOT_IDS) {
-      const side = s.endsWith("Left") ? "Left" : "Right";
-      if (NATURAL_SIDE[map[s]] === side) naturalSide++;
-    }
-    let bocetoMatches = 0;
-    for (const s of SLOT_IDS) if (map[s] === FIXED_SLOT_MAP[s]) bocetoMatches++;
-
-    // score: minimiza conflictos; en empate, prefiere lado natural y boceto.
-    const score = conflicts * 1000 - naturalSide * 10 - bocetoMatches;
-    if (!best || score < best.score) best = { map, score };
-  }
-  return best!.map;
+function planSlotMap(): Record<SlotId, ArenaCharacterId> {
+  // No sesgamos por el log de combate: como el ganador es quien más ataca,
+  // cualquier heurística basada en "minimizar conflictos de columna" empuja
+  // sistemáticamente al ganador hacia el frente (y los de atrás nunca ganan).
+  // En vez de eso: respetamos el lado natural de cada personaje
+  // (Shadow/Nova → izquierda, Titan/Blaze → derecha) y aleatorizamos quién
+  // queda atrás y quién al frente en cada lado. Así cualquiera puede ganar
+  // desde cualquier fila, y el ataque misma-columna se resuelve visualmente
+  // con un lunge diagonal (ver getLungeOffset).
+  const leftPair: ArenaCharacterId[] = Math.random() < 0.5 ? ["shadow", "nova"] : ["nova", "shadow"];
+  const rightPair: ArenaCharacterId[] = Math.random() < 0.5 ? ["titan", "blaze"] : ["blaze", "titan"];
+  return {
+    frontLeft: leftPair[0],
+    backLeft: leftPair[1],
+    frontRight: rightPair[0],
+    backRight: rightPair[1],
+  };
 }
 
 export function ArenaFight({
@@ -172,7 +160,7 @@ export function ArenaFight({
   // Slot map planeado ANTES de iniciar la pelea: se elige la disposición que
   // evita que algún golpe quede en la misma columna (sin ángulo). Una vez
   // empezada la pelea ya nadie se mueve de slot.
-  const slotMap = useMemo(() => planSlotMap(combatLog), [combatLog]);
+  const slotMap = useMemo(() => planSlotMap(), [combatLog]);
   const slotOf = useMemo(() => {
     const map = {} as Record<ArenaCharacterId, SlotId>;
     (Object.keys(slotMap) as SlotId[]).forEach((s) => {
