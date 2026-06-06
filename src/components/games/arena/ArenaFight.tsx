@@ -130,8 +130,10 @@ function planSlotMap(combatLog: ArenaCombatEvent[]): Record<SlotId, ArenaCharact
       const a = slotOf[ev.attacker];
       const t = slotOf[ev.target];
       const sameCol = a.endsWith("Left") === t.endsWith("Left");
-      const sameRow = a.startsWith("front") === t.startsWith("front");
-      if (sameCol && !sameRow) conflicts++;
+      // Sólo nos importa evitar que un personaje de atrás ataque al del frente
+      // de su misma columna (no tiene ángulo). El caso inverso (front → back
+      // misma columna) se permite.
+      if (sameCol && a.startsWith("back") && t.startsWith("front")) conflicts++;
     }
     let naturalSide = 0;
     for (const s of SLOT_IDS) {
