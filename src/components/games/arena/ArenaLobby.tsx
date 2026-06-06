@@ -19,10 +19,31 @@ export function ArenaLobby({
 }) {
   return (
     <div className="absolute inset-0 overflow-hidden">
-      {/* Fighters standing on the 4 platforms in the backdrop.
-          The platforms sit roughly in the lower-middle of the artwork;
-          fighters are large and their feet land on the platform line. */}
-      <div className="absolute inset-x-0 top-[8%] bottom-[18%] grid grid-cols-4 gap-0 px-1">
+      <div className="absolute left-0 right-0 top-2 flex items-center justify-between px-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/90 sm:px-4">
+        <div className="flex items-center gap-1.5 text-white/85">
+          <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(74,222,128,0.7)]" />
+          152 ONLINE
+        </div>
+        <div className="text-white/70">ARENA DE CAMPEONES</div>
+      </div>
+
+      <div className="absolute inset-x-0 top-[9%] text-center">
+        <h1 className="text-balance font-display text-[clamp(2.4rem,8vw,3.6rem)] font-black uppercase leading-none text-white [text-shadow:0_0_24px_rgba(255,255,255,0.35)]">
+          Arena
+        </h1>
+        <div className="mt-1 text-[clamp(1rem,3.6vw,1.35rem)] font-extrabold uppercase tracking-[0.18em] text-fuchsia-300 [text-shadow:0_0_16px_rgba(217,70,239,0.5)]">
+          de campeones
+        </div>
+      </div>
+
+      <div className="absolute inset-x-[14%] top-[22%] rounded-[18px] border border-white/10 bg-black/28 px-4 py-2 text-center backdrop-blur-[6px]">
+        <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/80">
+          La batalla comienza en
+        </div>
+        <div className="font-display text-[clamp(2rem,8vw,2.8rem)] font-black leading-none text-white">00:07</div>
+      </div>
+
+      <div className="absolute inset-x-0 top-[31%] bottom-[23%] grid grid-cols-4 gap-0 px-1">
         {ARENA_CHARACTERS.map((id) => (
           <FighterCard
             key={id}
@@ -32,12 +53,6 @@ export function ArenaLobby({
             onSelect={onSelect}
           />
         ))}
-      </div>
-
-      <div className="absolute inset-x-0 top-1 text-center">
-        <div className="text-[10px] uppercase tracking-[0.3em] text-purple-200/90 drop-shadow">
-          Elige tu peleador
-        </div>
       </div>
     </div>
   );
@@ -61,34 +76,50 @@ function FighterCard({
       onClick={() => !disabled && onSelect(id)}
       disabled={disabled}
       className={cn(
-        "group relative flex h-full w-full flex-col items-center justify-end gap-1 transition disabled:opacity-50",
+        "group relative flex h-full w-full flex-col items-center justify-end gap-2 transition disabled:opacity-50",
         selected && "z-10",
       )}
     >
+      <div
+        className="absolute bottom-[19%] left-1/2 h-7 w-[78%] -translate-x-1/2 rounded-full blur-md transition-all duration-300"
+        style={{ backgroundColor: meta.glow, opacity: selected ? 0.95 : 0.55 }}
+      />
       <CharacterSprite
         characterId={id}
         phase="idle"
         className={cn(
-          "h-[88%] w-full transition-transform",
-          selected ? "scale-110" : "opacity-90 group-hover:scale-105 group-hover:opacity-100",
+          "relative z-10 h-[97%] w-[138%] max-w-none transition-transform duration-300",
+          selected ? "scale-[1.12]" : "scale-105 opacity-95 group-hover:scale-[1.09] group-hover:opacity-100",
         )}
       />
       <div
         className={cn(
-          "w-full rounded-md border px-1 py-0.5 text-center backdrop-blur-sm transition",
+          "relative z-10 w-full rounded-[14px] border px-1 py-2 text-center backdrop-blur-md transition",
           selected
-            ? "border-2 bg-black/70 shadow-[0_0_18px_currentColor]"
-            : "border-white/10 bg-black/40",
+            ? "border-white/40 shadow-[0_0_30px_rgba(255,255,255,0.08)]"
+            : "border-white/10",
         )}
-        style={selected ? { borderColor: meta.color, color: meta.color } : undefined}
+        style={{
+          borderColor: selected ? meta.color : undefined,
+          background: selected
+            ? `linear-gradient(180deg, ${meta.panelTone} 0%, rgba(6,2,16,0.84) 100%)`
+            : `linear-gradient(180deg, rgba(10,6,24,0.84) 0%, rgba(6,2,16,0.88) 100%)`,
+          boxShadow: selected ? `0 0 24px ${meta.glow}` : undefined,
+        }}
       >
-        <div
-          className="text-[9px] font-extrabold leading-tight"
-          style={!selected ? { color: meta.color } : undefined}
-        >
+        <div className="text-[11px] font-black uppercase leading-tight" style={{ color: meta.color }}>
           {meta.name}
         </div>
-        <div className="font-mono text-[11px] font-bold text-white">{meta.odds.toFixed(2)}×</div>
+        <div className="mt-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-white/70">
+          Victorias
+        </div>
+        <div className="text-[14px] font-black text-white">{meta.wins}</div>
+        <div className="mt-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-white/55">
+          Cuota
+        </div>
+        <div className="text-[18px] font-black leading-none" style={{ color: meta.color }}>
+          {meta.odds.toFixed(2)}x
+        </div>
       </div>
     </button>
   );
