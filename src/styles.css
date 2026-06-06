@@ -61,26 +61,31 @@
 .arena-stadium-lights {
   background:
     radial-gradient(
-      ellipse 55% 70% at var(--stadium-x, 30%) -10%,
-      rgba(255, 245, 220, 0.22) 0%,
-      rgba(255, 230, 180, 0.12) 30%,
-      rgba(255, 220, 160, 0) 65%
+      ellipse 70% 110% at var(--stadium-x, 30%) -5%,
+      var(--stadium-color, rgba(168, 85, 247, 0.32)) 0%,
+      color-mix(in oklab, var(--stadium-color, rgba(168, 85, 247, 0.32)) 60%, transparent) 35%,
+      transparent 80%
     );
   mix-blend-mode: screen;
   animation: arena-stadium-sweep 11s ease-in-out infinite;
-  will-change: opacity, background-position;
+  will-change: opacity;
 }
 @keyframes arena-stadium-sweep {
-  0%   { opacity: 0;   --stadium-x: 15%; }
+  0%   { opacity: 0;   --stadium-x: 15%; --stadium-color: rgba(168, 85, 247, 0.32); }
   15%  { opacity: 0.9; }
-  50%  { opacity: 1;   --stadium-x: 85%; }
+  50%  { opacity: 1;   --stadium-x: 85%; --stadium-color: rgba(217, 70, 239, 0.34); }
   85%  { opacity: 0.9; }
-  100% { opacity: 0;   --stadium-x: 15%; }
+  100% { opacity: 0;   --stadium-x: 15%; --stadium-color: rgba(168, 85, 247, 0.32); }
 }
 @property --stadium-x {
   syntax: "<percentage>";
   inherits: false;
   initial-value: 30%;
+}
+@property --stadium-color {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: rgba(168, 85, 247, 0.32);
 }
 .arena-glitch::before,
 .arena-glitch::after {
