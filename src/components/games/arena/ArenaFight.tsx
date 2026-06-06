@@ -757,7 +757,7 @@ function FighterSlot({
         {!dead && (
           <div
             aria-hidden
-            className="pointer-events-none absolute left-1/2 bottom-[10%] -translate-x-1/2"
+            className="pointer-events-none absolute left-1/2 bottom-[17%] -translate-x-1/2"
             style={{
               width: "26%",
               height: "3.2%",
