@@ -4,21 +4,29 @@ import logo from "@/assets/betspace-logo.svg";
 /**
  * Full-screen branded loading overlay. Always renders while `active` is true,
  * and enforces a minimum visible duration (default 280ms) so a fast load
- * doesn't flash a cut-off animation.
+ * doesn't flash a cut-off animation. When `active` flips to false, the
+ * loader fades out over ~320ms instead of disappearing instantly.
  */
 export function BrandLoader({ active, minMs = 1060 }: { active: boolean; minMs?: number }) {
   const [show, setShow] = useState(active);
+  const [fading, setFading] = useState(false);
   const [shownAt] = useState(() => Date.now());
+  const FADE_MS = 320;
 
   useEffect(() => {
     if (active) {
+      setFading(false);
       setShow(true);
       return;
     }
     const elapsed = Date.now() - shownAt;
     const remaining = Math.max(0, minMs - elapsed);
-    const t = setTimeout(() => setShow(false), remaining);
-    return () => clearTimeout(t);
+    const tFade = setTimeout(() => setFading(true), remaining);
+    const tHide = setTimeout(() => setShow(false), remaining + FADE_MS);
+    return () => {
+      clearTimeout(tFade);
+      clearTimeout(tHide);
+    };
   }, [active, minMs, shownAt]);
 
   if (!show) return null;
@@ -28,7 +36,11 @@ export function BrandLoader({ active, minMs = 1060 }: { active: boolean; minMs?:
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#060210]"
       aria-live="polite"
       aria-busy="true"
-      style={{ animation: !active ? "brandLoaderFade 200ms ease-out forwards" : undefined }}
+      style={{
+        opacity: fading ? 0 : 1,
+        transition: `opacity ${FADE_MS}ms ease-out`,
+        pointerEvents: fading ? "none" : undefined,
+      }}
     >
       <img
         src={logo}
