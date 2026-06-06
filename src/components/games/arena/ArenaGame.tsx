@@ -19,7 +19,15 @@ import { ArenaLobby } from "./ArenaLobby";
 import { ArenaFight } from "./ArenaFight";
 import { ArenaResult } from "./ArenaResult";
 import { BettingPanel } from "./BettingPanel";
-import { ARENA_BACKGROUNDS } from "./characters";
+import { ARENA_BACKGROUNDS, ARENA_CHARACTER_META } from "./characters";
+import arenaFightAudio from "@/assets/audio/arena/arena-fight.mp3.asset.json";
+import fightStartAudio from "@/assets/audio/arena/fight-start.mp3.asset.json";
+import hit1Audio from "@/assets/audio/arena/hit-1.mp3.asset.json";
+import hit2Audio from "@/assets/audio/arena/hit-2.mp3.asset.json";
+import hit3Audio from "@/assets/audio/arena/hit-3.mp3.asset.json";
+import hit4Audio from "@/assets/audio/arena/hit-4.mp3.asset.json";
+import hit5Audio from "@/assets/audio/arena/hit-5.mp3.asset.json";
+import hitFinalAudio from "@/assets/audio/arena/hit-final.mp3.asset.json";
 
 type Phase = "lobby" | "fighting" | "result";
 
@@ -65,6 +73,48 @@ export function ArenaGame() {
       return DEFAULTS;
     }
   });
+
+  // Preload every sprite / background / SFX as soon as the player lands on
+  // the arena, so by the time the fight starts the browser cache has the
+  // assets ready and the scene paints in a single frame instead of trickling
+  // in piece-by-piece.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const imageUrls: string[] = [
+      ARENA_BACKGROUNDS.lobby,
+      ARENA_BACKGROUNDS.fight,
+      ...Object.values(ARENA_CHARACTER_META).flatMap((c) => Object.values(c.sprites)),
+    ];
+    const audioUrls: string[] = [
+      arenaFightAudio.url,
+      fightStartAudio.url,
+      hit1Audio.url,
+      hit2Audio.url,
+      hit3Audio.url,
+      hit4Audio.url,
+      hit5Audio.url,
+      hitFinalAudio.url,
+    ];
+    const imgs = imageUrls.map((src) => {
+      const i = new Image();
+      i.decoding = "async";
+      i.src = src;
+      return i;
+    });
+    const auds = audioUrls.map((src) => {
+      const a = new Audio();
+      a.preload = "auto";
+      a.src = src;
+      return a;
+    });
+    return () => {
+      imgs.length = 0;
+      auds.forEach((a) => {
+        a.pause();
+        a.src = "";
+      });
+    };
+  }, []);
 
   useEffect(() => {
     try {
@@ -123,7 +173,11 @@ export function ArenaGame() {
       />
       <div className="pointer-events-none fixed inset-0 -z-0 bg-gradient-to-b from-black/55 via-black/15 to-black/80" />
       {/* Stadium light sweep — subtle, on a loop, on top of the backdrop */}
-      <div className="arena-stadium-lights pointer-events-none fixed inset-0 -z-0" />
+      <div
+        className={`arena-stadium-lights pointer-events-none fixed inset-0 -z-0 ${
+          phase === "result" ? "is-result" : ""
+        }`}
+      />
 
       <div className="relative z-10 mx-auto flex h-screen max-w-md flex-col px-3 pb-2 pt-2 sm:max-w-lg sm:px-4">
         {/* Header (matches Mines/Spaceman/Dados) */}

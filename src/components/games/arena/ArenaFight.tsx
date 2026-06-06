@@ -468,17 +468,33 @@ export function ArenaFight({
       {/* Stage — slot-positioned fighters */}
       <div className="absolute inset-x-0 top-[9%] bottom-[22%] overflow-visible [@media(min-height:880px)]:-translate-y-[3%]">
         {resultMode && (
-          <div
-            aria-hidden
-            className="pointer-events-none absolute left-1/2 top-[58%] z-[3] -translate-x-1/2 -translate-y-1/2 animate-fade-in"
-            style={{
-              width: "58%",
-              height: "18%",
-              borderRadius: "9999px",
-              background: `radial-gradient(ellipse at center, ${ARENA_CHARACTER_META[winner].color}88 0%, ${ARENA_CHARACTER_META[winner].color}33 42%, transparent 78%)`,
-              filter: "blur(20px)",
-            }}
-          />
+          <>
+            {/* Floor glow under the winner */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute left-1/2 top-[52%] z-[3] -translate-x-1/2 -translate-y-1/2 animate-fade-in"
+              style={{
+                width: "70%",
+                height: "22%",
+                borderRadius: "9999px",
+                background: `radial-gradient(ellipse at center, ${ARENA_CHARACTER_META[winner].color}aa 0%, ${ARENA_CHARACTER_META[winner].color}44 45%, transparent 80%)`,
+                filter: "blur(22px)",
+              }}
+            />
+            {/* Backlight burst behind the winner */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute left-1/2 top-[40%] z-[2] -translate-x-1/2 -translate-y-1/2 animate-fade-in"
+              style={{
+                width: "120%",
+                height: "120%",
+                borderRadius: "9999px",
+                background: `radial-gradient(circle at center, ${ARENA_CHARACTER_META[winner].color}55 0%, ${ARENA_CHARACTER_META[winner].color}1a 35%, transparent 65%)`,
+                filter: "blur(40px)",
+                animation: "arena-winner-pulse 2.2s ease-in-out infinite",
+              }}
+            />
+          </>
         )}
         {/* Speed streak — aura detrás del atacante mientras avanza al golpe. */}
         {!resultMode && currentEvent && lungeId && (() => {
@@ -596,7 +612,7 @@ export function ArenaFight({
               id={id}
               slot={slot}
               x={resultMode ? 50 : slotPos.x + lunge.dx}
-              y={resultMode ? 56 : slotPos.y + lunge.dy}
+              y={resultMode ? 48 : slotPos.y + lunge.dy}
               heightPct={resultMode ? 88 : heightPct}
               zIndex={resultMode ? 24 : zIndex}
               phase={resultMode ? "stance" : dead ? "damage" : phases[id]}

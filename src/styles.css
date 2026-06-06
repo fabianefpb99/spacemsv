@@ -70,6 +70,19 @@
   animation: arena-stadium-sweep 11s ease-in-out infinite;
   will-change: opacity;
 }
+.arena-stadium-lights.is-result {
+  animation: arena-stadium-sweep-result 3.2s ease-in-out infinite;
+  filter: brightness(1.6) saturate(1.25);
+}
+@keyframes arena-stadium-sweep-result {
+  0%   { opacity: 0.55; --stadium-x: 18%; --stadium-color: rgba(250, 204, 21, 0.55); }
+  50%  { opacity: 1;    --stadium-x: 82%; --stadium-color: rgba(244, 114, 182, 0.6); }
+  100% { opacity: 0.55; --stadium-x: 18%; --stadium-color: rgba(250, 204, 21, 0.55); }
+}
+@keyframes arena-winner-pulse {
+  0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(1); }
+  50%      { opacity: 1;    transform: translate(-50%, -50%) scale(1.08); }
+}
 @keyframes arena-stadium-sweep {
   0%   { opacity: 0;   --stadium-x: 15%; --stadium-color: rgba(168, 85, 247, 0.32); }
   15%  { opacity: 0.9; }
