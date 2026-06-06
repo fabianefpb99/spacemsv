@@ -223,7 +223,7 @@ export function ArenaFight({
   return (
     <div className="absolute inset-0 overflow-hidden">
       {/* Current event banner — 3 líneas centradas (atacante / acción / objetivo) */}
-      <div className="absolute inset-x-0 top-[14%] z-20 flex justify-center px-4">
+      <div className="absolute inset-x-0 top-[7%] z-20 flex justify-center px-4">
         {currentEvent ? (
           <div
             key={eventIdx}
