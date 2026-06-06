@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -46,6 +46,25 @@ export function ArenaGame() {
   const [phase, setPhase] = useState<Phase>("lobby");
   const [result, setResult] = useState<ArenaRoundResult | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [recentWinners, setRecentWinners] = useState<ArenaCharacterId[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const raw = window.localStorage.getItem("arena:recent-winners");
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? (parsed.slice(0, 8) as ArenaCharacterId[]) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem("arena:recent-winners", JSON.stringify(recentWinners));
+    } catch {
+      // ignore
+    }
+  }, [recentWinners]);
 
   const balance = (me.data?.balance ?? 0) + (me.data?.bonus_balance ?? 0);
   const bonusBalance = me.data?.bonus_balance ?? 0;
@@ -71,9 +90,12 @@ export function ArenaGame() {
 
   const handleFightComplete = useCallback(() => {
     setPhase("result");
+    if (result?.winner) {
+      setRecentWinners((prev) => [result.winner, ...prev].slice(0, 8));
+    }
     // Refresh balance after the round settles.
     queryClient.invalidateQueries({ queryKey: ["me"] });
-  }, [queryClient]);
+  }, [queryClient, result?.winner]);
 
   const handlePlayAgain = useCallback(() => {
     setResult(null);
@@ -147,6 +169,7 @@ export function ArenaGame() {
               bonusBalance={bonusBalance}
               balance={balance}
               selected={selected}
+              recentWinners={recentWinners}
               onBetChange={setBet}
               onSelect={setSelected}
               onPlay={handlePlay}
