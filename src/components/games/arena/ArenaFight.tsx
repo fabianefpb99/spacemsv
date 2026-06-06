@@ -554,11 +554,12 @@ function FighterSlot({
           aria-hidden
           className="pointer-events-none absolute left-1/2 top-[58%] -translate-x-1/2 -translate-y-1/2 animate-pulse"
           style={{
-            width: "78%",
-            height: "78%",
+            width: "62%",
+            height: "24%",
             background:
-              "radial-gradient(circle, rgba(250,204,21,0.55) 0%, rgba(250,204,21,0.25) 35%, rgba(250,204,21,0) 65%)",
-            filter: "blur(2px)",
+              "radial-gradient(ellipse at center, rgba(250,204,21,0.7) 0%, rgba(250,204,21,0.32) 42%, rgba(250,204,21,0) 78%)",
+            borderRadius: "9999px",
+            filter: "blur(8px)",
           }}
         />
       )}
