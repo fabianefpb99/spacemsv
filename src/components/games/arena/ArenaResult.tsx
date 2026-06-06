@@ -25,9 +25,12 @@ export function ArenaResult({
   const won = result.won;
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-20 flex flex-col justify-between p-4 animate-fade-in">
+    <div className="pointer-events-none absolute inset-0 z-20 flex flex-col justify-between p-4">
       {/* Top — verdict headline */}
-      <div className="flex flex-col items-center pt-2">
+      <div
+        className="flex flex-col items-center pt-2 animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+        style={{ animationDelay: "120ms" }}
+      >
         <div className="h-px w-40 bg-gradient-to-r from-transparent via-white/60 to-transparent" />
         <h2
           className={cn(
@@ -48,7 +51,10 @@ export function ArenaResult({
 
       {/* Bottom — winner + payout + CTA */}
       <div className="pointer-events-auto flex flex-col items-center gap-3 pb-2">
-        <div className="text-center leading-[0.95]">
+        <div
+          className="text-center leading-[0.95] animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+          style={{ animationDelay: "320ms" }}
+        >
           <div
             className="font-extrabold italic uppercase tracking-tight text-[52px] sm:text-[60px]"
             style={{
@@ -66,7 +72,10 @@ export function ArenaResult({
           </div>
         </div>
 
-        <div className="text-center">
+        <div
+          className="text-center animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+          style={{ animationDelay: "560ms" }}
+        >
           <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/75">
             Tu apuesta
           </div>
@@ -91,7 +100,8 @@ export function ArenaResult({
           size="lg"
           onClick={onPlayAgain}
           variant="outline"
-          className="h-12 w-full max-w-[280px] rounded-full border-2 border-white/85 bg-black/35 text-base font-extrabold uppercase tracking-[0.2em] text-white backdrop-blur-sm hover:bg-white/10"
+          className="h-12 w-full max-w-[280px] rounded-full border-2 border-white/85 bg-black/35 text-base font-extrabold uppercase tracking-[0.2em] text-white backdrop-blur-sm hover:bg-white/10 animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+          style={{ animationDelay: "800ms" }}
         >
           Apostar de nuevo
         </Button>
