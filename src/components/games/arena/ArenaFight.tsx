@@ -556,17 +556,16 @@ export function ArenaFight({
             </svg>
           );
         })()}
-        {(resultMode ? ([winner] as ArenaCharacterId[]) : (Object.keys(slotMap) as SlotId[]).map((slot) => slotMap[slot])).map((idOrWinner, index) => {
-          const id = resultMode ? idOrWinner : idOrWinner;
-          const slot = resultMode ? "frontRight" as SlotId : (Object.keys(slotMap) as SlotId[]).find((candidate) => slotMap[candidate] === id)!;
-          const id = slotMap[slot];
+        {(resultMode
+          ? [{ id: winner, slot: "frontRight" as SlotId }]
+          : (Object.keys(slotMap) as SlotId[]).map((slot) => ({ id: slotMap[slot], slot }))).map(({ id, slot }, index) => {
           const slotPos = SLOT_POSITIONS[slot];
-          const dead = hp[id] <= 0;
-          const isAttacking = lungeId === id;
-          const targetSlot = isAttacking && currentEvent ? slotOf[currentEvent.target] : null;
+          const dead = resultMode ? false : hp[id] <= 0;
+          const isAttacking = !resultMode && lungeId === id;
+          const targetSlot = !resultMode && isAttacking && currentEvent ? slotOf[currentEvent.target] : null;
           const lunge = targetSlot ? getLungeOffset(slot, targetSlot) : { dx: 0, dy: 0 };
           // Mirror sprite so it faces this slot's direction.
-          const mirror = NATURAL_FACING[id] !== slotPos.facing;
+          const mirror = resultMode ? false : NATURAL_FACING[id] !== slotPos.facing;
           // Mismo tamaño en front y back — la profundidad la da la posición Y,
           // no el escalado (si encogemos atrás, al avanzar parecen enanos).
           const heightPct = 65;
@@ -590,8 +589,6 @@ export function ArenaFight({
             // del atacante que invade la zona delantera.
             zIndex = 12;
           }
-
-          if (resultMode && id !== winner) return null;
 
           return (
             <FighterSlot
