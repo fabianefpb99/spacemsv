@@ -207,8 +207,9 @@ export function ArenaFight({
           // por encima de los personajes del lado opuesto de la fila delantera
           // (eso lo haría ver "más cerca de la cámara" de lo que está).
           const attackerSlot = lungeId ? slotOf[lungeId] : null;
+          const currentTargetSlot = currentEvent ? slotOf[currentEvent.target] : null;
           const attackerIsBack = attackerSlot?.startsWith("back") ?? false;
-          const targetIsFront = targetSlotGlobal(currentEvent, slotOf)?.startsWith("front") ?? false;
+          const targetIsFront = currentTargetSlot?.startsWith("front") ?? false;
           const baseZ = slot.startsWith("front") ? 10 : 5;
           let zIndex = baseZ;
           if (isAttacking) {
