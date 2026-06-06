@@ -19,31 +19,24 @@ export function ArenaLobby({
 }) {
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <div className="absolute left-0 right-0 top-2 flex items-center justify-between px-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/90 sm:px-4">
+      <div className="absolute left-0 right-0 top-1 flex items-center justify-between px-3 text-[9px] font-semibold uppercase tracking-[0.18em] text-white/90 sm:px-4">
         <div className="flex items-center gap-1.5 text-white/85">
-          <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(74,222,128,0.7)]" />
+          <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(74,222,128,0.7)]" />
           152 ONLINE
         </div>
-        <div className="text-white/70">ARENA DE CAMPEONES</div>
+        <div className="rounded-md border border-white/15 bg-black/45 px-2 py-0.5 text-white/85">
+          <span className="text-white/55">Inicio en </span>
+          <span className="font-mono text-white">00:07</span>
+        </div>
       </div>
 
-      <div className="absolute inset-x-0 top-[9%] text-center">
-        <h1 className="text-balance font-display text-[clamp(2.4rem,8vw,3.6rem)] font-black uppercase leading-none text-white [text-shadow:0_0_24px_rgba(255,255,255,0.35)]">
-          Arena
+      <div className="absolute inset-x-0 top-[7%] text-center">
+        <h1 className="font-display text-[clamp(1.4rem,5vw,2rem)] font-black uppercase leading-none tracking-[0.08em] text-white [text-shadow:0_0_18px_rgba(255,255,255,0.35)]">
+          Arena <span className="text-fuchsia-300">de Campeones</span>
         </h1>
-        <div className="mt-1 text-[clamp(1rem,3.6vw,1.35rem)] font-extrabold uppercase tracking-[0.18em] text-fuchsia-300 [text-shadow:0_0_16px_rgba(217,70,239,0.5)]">
-          de campeones
-        </div>
       </div>
 
-      <div className="absolute inset-x-[14%] top-[22%] rounded-[18px] border border-white/10 bg-black/28 px-4 py-2 text-center backdrop-blur-[6px]">
-        <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/80">
-          La batalla comienza en
-        </div>
-        <div className="font-display text-[clamp(2rem,8vw,2.8rem)] font-black leading-none text-white">00:07</div>
-      </div>
-
-      <div className="absolute inset-x-0 top-[31%] bottom-[23%] grid grid-cols-4 gap-0 px-1">
+      <div className="absolute inset-x-0 top-[16%] bottom-[4%] grid grid-cols-4 gap-0 px-1">
         {ARENA_CHARACTERS.map((id) => (
           <FighterCard
             key={id}
@@ -81,20 +74,20 @@ function FighterCard({
       )}
     >
       <div
-        className="absolute bottom-[19%] left-1/2 h-7 w-[78%] -translate-x-1/2 rounded-full blur-md transition-all duration-300"
+        className="absolute bottom-[22%] left-1/2 h-5 w-[72%] -translate-x-1/2 rounded-full blur-md transition-all duration-300"
         style={{ backgroundColor: meta.glow, opacity: selected ? 0.95 : 0.55 }}
       />
       <CharacterSprite
         characterId={id}
         phase="idle"
         className={cn(
-          "relative z-10 h-[97%] w-[138%] max-w-none transition-transform duration-300",
-          selected ? "scale-[1.12]" : "scale-105 opacity-95 group-hover:scale-[1.09] group-hover:opacity-100",
+          "relative z-10 h-[78%] w-[140%] max-w-none transition-transform duration-300",
+          selected ? "scale-[1.1]" : "scale-100 opacity-95 group-hover:scale-[1.06] group-hover:opacity-100",
         )}
       />
       <div
         className={cn(
-          "relative z-10 w-full rounded-[14px] border px-1 py-2 text-center backdrop-blur-md transition",
+          "relative z-10 w-[94%] rounded-xl border px-1 py-1 text-center backdrop-blur-md transition",
           selected
             ? "border-white/40 shadow-[0_0_30px_rgba(255,255,255,0.08)]"
             : "border-white/10",
@@ -107,18 +100,16 @@ function FighterCard({
           boxShadow: selected ? `0 0 24px ${meta.glow}` : undefined,
         }}
       >
-        <div className="text-[11px] font-black uppercase leading-tight" style={{ color: meta.color }}>
+        <div className="text-[10px] font-black uppercase leading-tight" style={{ color: meta.color }}>
           {meta.name}
         </div>
-        <div className="mt-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-white/70">
-          Victorias
+        <div className="mt-0.5 flex items-baseline justify-center gap-1 leading-none">
+          <span className="text-[14px] font-black" style={{ color: meta.color }}>
+            {meta.odds.toFixed(2)}x
+          </span>
         </div>
-        <div className="text-[14px] font-black text-white">{meta.wins}</div>
-        <div className="mt-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-white/55">
-          Cuota
-        </div>
-        <div className="text-[18px] font-black leading-none" style={{ color: meta.color }}>
-          {meta.odds.toFixed(2)}x
+        <div className="mt-0.5 text-[8px] font-semibold uppercase tracking-[0.12em] text-white/55">
+          {meta.wins} wins
         </div>
       </div>
     </button>

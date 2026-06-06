@@ -93,7 +93,7 @@ export function ArenaGame() {
       />
       <div className="pointer-events-none fixed inset-0 -z-0 bg-gradient-to-b from-black/55 via-black/15 to-black/80" />
 
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-md flex-col px-3 pb-3 pt-3 sm:max-w-lg sm:px-4">
+      <div className="relative z-10 mx-auto flex h-screen max-w-md flex-col px-3 pb-2 pt-2 sm:max-w-lg sm:px-4">
         {/* Header (matches Mines/Spaceman/Dados) */}
         <header
           className="flex items-center justify-between border-b border-purple-500/20 bg-[#060210]/60 px-3 pb-2 -mx-3 -mt-3 backdrop-blur-sm"
@@ -119,8 +119,8 @@ export function ArenaGame() {
           </div>
         </header>
 
-        {/* Stage — fills available vertical space; bg image lives here */}
-        <div className="relative mt-2 min-h-[29rem] flex-1">
+        {/* Stage — fills all remaining vertical space, no scroll */}
+        <div className="relative mt-2 min-h-0 flex-1">
           {phase === "lobby" && (
             <ArenaLobby selected={selected} onSelect={setSelected} disabled={isPlaying} />
           )}
@@ -139,7 +139,7 @@ export function ArenaGame() {
 
         {/* Compact betting HUD */}
         {phase === "lobby" && (
-          <div className="mt-2 pb-[calc(env(safe-area-inset-bottom,0px)+0.25rem)]">
+          <div className="mt-2 shrink-0 pb-[calc(env(safe-area-inset-bottom,0px)+0.15rem)]">
             <BettingPanel
               bet={bet}
               bonusBalance={bonusBalance}

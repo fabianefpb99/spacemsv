@@ -3,14 +3,12 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
   ARENA_BET_STEP,
-  ARENA_CHARACTERS,
   ARENA_MAX_BET,
   ARENA_MIN_BET,
 } from "@/lib/games/arena.shared";
 import type { ArenaCharacterId } from "@/lib/games/arena.shared";
 import { ARENA_CHARACTER_META } from "./characters";
 
-const QUICK_ADDS = [1000, 2000, 5000, 10000];
 const RECENT_WINNERS: ArenaCharacterId[] = ["titan", "nova", "blaze", "shadow", "titan", "shadow", "nova", "blaze"];
 
 function formatCOP(n: number) {
@@ -23,7 +21,7 @@ export function BettingPanel({
   balance,
   selected,
   onBetChange,
-  onSelect,
+  onSelect: _onSelect,
   onPlay,
   isPlaying,
 }: {
@@ -46,131 +44,80 @@ export function BettingPanel({
   }
 
   return (
-    <div className="space-y-3 rounded-[24px] border border-white/10 bg-black/45 p-3 backdrop-blur-md">
-      <section className="rounded-[18px] border border-white/10 bg-black/28 px-3 py-3">
-        <div className="text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-purple-100/80">
-          Últimos ganadores
-        </div>
-        <div className="mt-3 flex items-center justify-center gap-2 overflow-hidden">
-          {RECENT_WINNERS.map((id, index) => {
-            const winner = ARENA_CHARACTER_META[id];
+    <div className="space-y-1.5 rounded-2xl border border-white/10 bg-black/55 p-2 backdrop-blur-md">
+      {/* Recent winners — single thin row */}
+      <div className="flex items-center gap-1.5 overflow-hidden">
+        <span className="shrink-0 text-[8px] font-bold uppercase tracking-[0.16em] text-white/55">
+          Últimos
+        </span>
+        <div className="flex flex-1 items-center gap-1 overflow-hidden">
+          {RECENT_WINNERS.slice(0, 8).map((id, i) => {
+            const w = ARENA_CHARACTER_META[id];
             return (
               <div
-                key={`${id}-${index}`}
-                className="flex h-11 w-11 items-center justify-center rounded-full border bg-black/45"
-                style={{ borderColor: winner.color, boxShadow: `0 0 16px ${winner.glow}` }}
+                key={`${id}-${i}`}
+                className="h-5 w-5 shrink-0 rounded-full border bg-black/50"
+                style={{ borderColor: w.color, boxShadow: `0 0 6px ${w.glow}` }}
               >
-                <img src={winner.sprites.idle} alt={winner.name} className="h-9 w-9 object-contain" />
+                <img src={w.sprites.idle} alt={w.name} className="h-full w-full object-contain" />
               </div>
             );
           })}
         </div>
-      </section>
+      </div>
 
-      <section className="rounded-[22px] border border-white/10 bg-black/30 px-3 py-3">
-        <div className="text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-purple-100/85">
-          Apuesta (COP)
-        </div>
-        <div className="mt-3 grid grid-cols-[72px_minmax(0,1fr)_72px] gap-2 sm:grid-cols-[88px_minmax(0,1fr)_88px] sm:gap-3">
-          <button
-            type="button"
-            onClick={() => onBetChange(clamp(bet - ARENA_BET_STEP))}
-            disabled={isPlaying}
-            className="h-14 rounded-[18px] border border-purple-400/20 bg-purple-500/12 text-4xl font-light text-purple-100 transition hover:bg-purple-500/18 disabled:opacity-50 sm:h-16"
+      {/* Bet row: − [amount] + */}
+      <div className="grid grid-cols-[44px_minmax(0,1fr)_44px] gap-1.5">
+        <button
+          type="button"
+          onClick={() => onBetChange(clamp(bet - ARENA_BET_STEP))}
+          disabled={isPlaying}
+          className="h-11 rounded-xl border border-purple-400/25 bg-purple-500/15 text-2xl font-light text-purple-100 transition hover:bg-purple-500/25 disabled:opacity-50"
+        >
+          −
+        </button>
+        <div className="flex h-11 flex-col items-center justify-center rounded-xl border border-white/10 bg-black/65 px-2">
+          <BetAmount
+            bet={bet}
+            bonusBalance={bonusBalance}
+            className="flex min-h-0 flex-col justify-center"
+            amountClassName="text-[1.35rem] font-black leading-none tracking-[0.02em] text-white"
+            bonusClassName="text-[8px] font-bold leading-none text-yellow-300/95"
+            minScale={0.7}
           >
-            −
-          </button>
-          <div className="flex h-14 items-center justify-center rounded-[18px] border border-white/10 bg-black/65 px-2 sm:h-16 sm:px-3">
-            <BetAmount
-              bet={bet}
-              bonusBalance={bonusBalance}
-              className="flex h-full min-h-0 flex-col justify-center"
-              amountClassName="text-[2rem] font-black tracking-[0.03em] text-white sm:text-[2.35rem]"
-              bonusClassName="mt-0.5 text-center text-[9px] font-bold leading-none text-yellow-300/95"
-              minScale={0.65}
-            >
-              {formatCOP(bet)}
-            </BetAmount>
-          </div>
-          <button
-            type="button"
-            onClick={() => onBetChange(clamp(bet + ARENA_BET_STEP))}
-            disabled={isPlaying}
-            className="h-14 rounded-[18px] border border-purple-400/20 bg-purple-500/12 text-4xl font-light text-purple-100 transition hover:bg-purple-500/18 disabled:opacity-50 sm:h-16"
-          >
-            +
-          </button>
+            {formatCOP(bet)}
+          </BetAmount>
         </div>
+        <button
+          type="button"
+          onClick={() => onBetChange(clamp(bet + ARENA_BET_STEP))}
+          disabled={isPlaying}
+          className="h-11 rounded-xl border border-purple-400/25 bg-purple-500/15 text-2xl font-light text-purple-100 transition hover:bg-purple-500/25 disabled:opacity-50"
+        >
+          +
+        </button>
+      </div>
 
-        <div className="mt-3 grid grid-cols-4 gap-2">
-          {QUICK_ADDS.map((amt) => (
-            <button
-              key={amt}
-              type="button"
-              onClick={() => onBetChange(clamp(bet + amt))}
-              disabled={isPlaying}
-              className="h-12 rounded-[16px] border border-purple-400/18 bg-purple-500/10 px-1 text-[12px] font-bold text-purple-100 transition hover:bg-purple-500/16 disabled:opacity-50"
-            >
-              +{formatCOP(amt)}
-            </button>
-          ))}
+      {/* CTA + pago en una sola línea */}
+      <div className="flex items-center gap-2">
+        <Button
+          size="default"
+          onClick={onPlay}
+          disabled={!selected || !canBet || isPlaying}
+          className={cn(
+            "h-11 flex-1 rounded-xl text-[13px] font-black uppercase tracking-[0.08em]",
+            "bg-[linear-gradient(180deg,rgba(34,197,94,0.95)_0%,rgba(22,163,74,0.95)_100%)]",
+            "text-white shadow-[0_0_18px_rgba(34,197,94,0.35)] hover:brightness-110",
+          )}
+        >
+          {isPlaying ? "PELEANDO…" : selected ? `APOSTAR ${meta?.name}` : "ELIGE UN LUCHADOR"}
+        </Button>
+        <div className="flex h-11 min-w-[88px] flex-col items-center justify-center rounded-xl border border-yellow-400/40 bg-yellow-400/10 px-2">
+          <span className="text-[8px] font-bold uppercase tracking-[0.14em] text-yellow-200/80">Pago</span>
+          <span className="text-[13px] font-black leading-none text-yellow-300">
+            {meta ? `$${formatCOP(Math.floor(bet * meta.odds))}` : "—"}
+          </span>
         </div>
-
-        <div className="mt-3 text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-white/60">
-          Mínimo: {formatCOP(ARENA_MIN_BET)} COP · Paso: {formatCOP(ARENA_BET_STEP)}
-        </div>
-
-        <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-          {ARENA_CHARACTERS.map((id) => {
-            const fighter = ARENA_CHARACTER_META[id];
-            const active = id === selected;
-            return (
-              <button
-                key={id}
-                type="button"
-                onClick={() => onSelect?.(id)}
-                disabled={isPlaying}
-                className={cn(
-                  "rounded-[18px] border px-2 py-2 text-left transition disabled:opacity-50",
-                  active ? "scale-[1.02]" : "hover:-translate-y-0.5",
-                )}
-                style={{
-                  borderColor: active ? fighter.color : "rgba(255,255,255,0.12)",
-                  background: active
-                    ? `linear-gradient(180deg, ${fighter.panelTone} 0%, rgba(8,3,18,0.94) 100%)`
-                    : "linear-gradient(180deg, rgba(12,5,24,0.9) 0%, rgba(5,2,12,0.92) 100%)",
-                  boxShadow: active ? `0 0 26px ${fighter.glow}` : undefined,
-                }}
-              >
-                <div className="mb-2 flex h-16 items-center justify-center overflow-hidden rounded-[14px] bg-black/35">
-                  <img src={fighter.sprites.idle} alt={fighter.name} className="h-16 w-16 object-contain" />
-                </div>
-                <div className="text-[10px] font-black uppercase leading-tight text-white">{fighter.name}</div>
-                <div className="mt-1 text-[9px] font-bold leading-none" style={{ color: fighter.color }}>
-                  {fighter.odds.toFixed(2)}x
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      <Button
-        size="default"
-        onClick={onPlay}
-        disabled={!selected || !canBet || isPlaying}
-        className={cn(
-          "h-14 w-full rounded-[18px] text-[1.05rem] font-black uppercase tracking-[0.08em]",
-          "bg-[linear-gradient(180deg,rgba(34,197,94,0.95)_0%,rgba(22,163,74,0.95)_100%)]",
-          "text-white shadow-[0_0_30px_rgba(34,197,94,0.34)] hover:brightness-110",
-        )}
-      >
-        {isPlaying ? "PELEANDO…" : "Confirmar apuesta"}
-      </Button>
-
-      <div className="flex items-center justify-between px-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/55">
-        <span>Pago si gana</span>
-        <span className="text-yellow-300">{meta ? `$${formatCOP(Math.floor(bet * meta.odds))}` : "—"}</span>
       </div>
     </div>
   );
