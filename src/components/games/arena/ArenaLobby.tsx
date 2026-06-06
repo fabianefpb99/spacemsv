@@ -277,8 +277,15 @@ function FighterCard({
       )}
     >
       <div
-        className="pointer-events-none absolute bottom-[22%] left-1/2 h-6 w-[80%] -translate-x-1/2 rounded-full blur-md transition-all duration-300"
-        style={{ backgroundColor: meta.glow, opacity: selected ? 0.95 : 0.55 }}
+        className={cn(
+          "pointer-events-none absolute left-1/2 -translate-x-1/2 rounded-full blur-md transition-all duration-300",
+          selected ? "bottom-[34%] h-8 w-[88%]" : "bottom-[32%] h-6 w-[78%]",
+        )}
+        style={{
+          backgroundColor: meta.glow,
+          opacity: selected ? 1 : 0.5,
+          boxShadow: selected ? `0 0 38px 10px ${meta.glow}` : undefined,
+        }}
       />
       <CharacterSprite
         characterId={id}
