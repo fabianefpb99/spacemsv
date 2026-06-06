@@ -22,6 +22,7 @@ export function BettingPanel({
   balance,
   selected,
   recentWinners,
+  odds,
   onBetChange,
   onSelect: _onSelect,
   onPlay,
@@ -32,6 +33,7 @@ export function BettingPanel({
   balance: number;
   selected: ArenaCharacterId | null;
   recentWinners: ArenaCharacterId[];
+  odds: Record<ArenaCharacterId, number>;
   onBetChange: (next: number) => void;
   onSelect?: (id: ArenaCharacterId) => void;
   onPlay: () => void;
@@ -39,6 +41,7 @@ export function BettingPanel({
 }) {
   const canBet = bet >= ARENA_MIN_BET && bet <= Math.min(ARENA_MAX_BET, balance);
   const meta = selected ? ARENA_CHARACTER_META[selected] : null;
+  const selectedOdds = selected ? odds[selected] : null;
 
   function clamp(next: number) {
     if (!Number.isFinite(next)) return ARENA_MIN_BET;
@@ -140,7 +143,9 @@ export function BettingPanel({
         <div className="flex h-12 min-w-[96px] flex-col items-center justify-center rounded-xl border border-yellow-400/40 bg-yellow-400/10 px-2">
           <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-yellow-200/80">Pago</span>
           <span className="text-[14px] font-black leading-none text-yellow-300">
-            {meta ? `$${formatCOP(Math.floor(bet * meta.odds))}` : "—"}
+            {meta && selectedOdds != null
+              ? `$${formatCOP(Math.floor(bet * selectedOdds))}`
+              : "—"}
           </span>
         </div>
       </div>

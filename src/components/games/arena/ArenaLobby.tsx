@@ -31,10 +31,12 @@ export function ArenaLobby({
   selected,
   onSelect,
   disabled,
+  odds,
 }: {
   selected: ArenaCharacterId | null;
   onSelect: (id: ArenaCharacterId) => void;
   disabled?: boolean;
+  odds: Record<ArenaCharacterId, number>;
 }) {
   useLobbyMusic();
   const selectSfxRef = useRef<Record<ArenaCharacterId, HTMLAudioElement | null>>({
@@ -100,6 +102,7 @@ export function ArenaLobby({
             key={id}
             id={id}
             selected={selected === id}
+            odds={odds[id]}
           />
         ))}
       </div>
@@ -276,9 +279,11 @@ function useLobbyMusic() {
 function FighterCard({
   id,
   selected,
+  odds,
 }: {
   id: ArenaCharacterId;
   selected: boolean;
+  odds: number;
 }) {
   const meta = ARENA_CHARACTER_META[id];
   return (
@@ -327,7 +332,7 @@ function FighterCard({
         </div>
         <div className="mt-0.5 flex items-baseline justify-center gap-1 leading-none">
           <span className="text-[14px] font-black" style={{ color: meta.color }}>
-            {meta.odds.toFixed(2)}x
+            {odds.toFixed(2)}x
           </span>
         </div>
         <div className="mt-0.5 text-[8px] font-semibold uppercase tracking-[0.12em] text-white/55">
