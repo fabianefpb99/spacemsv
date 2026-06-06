@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
+  ArrowLeft,
   Gift,
   Loader2,
   Lock,
@@ -15,6 +16,7 @@ import {
   X,
 } from "lucide-react";
 import astronaut from "@/assets/astronaut.svg";
+import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
 import {
   adminAdjustBalance,
   adminAdjustXp,
