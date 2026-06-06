@@ -1,115 +1,47 @@
-## Ruleta BetSpace — Plan de implementación
+# Reorganización dinámica de personajes en la arena
 
-Juego de ruleta europea (37 segmentos: 18 rojos, 18 negros, 1 verde/0) con apuesta única por giro a Rojo, Negro o Verde. Verde paga 14x, Rojo/Negro 1.95x. Arquitectura backend idéntica a Spaceman/Slot.
+## Problema
+Con el `FIXED_SLOT_MAP` actual (Shadow front-left, Nova back-left, Blaze back-right, Titan front-right) hay parejas que nunca pueden atacarse de forma natural:
+- Blaze (back-right) no tiene ángulo para golpear a Titan (front-right) — quedan en la misma columna y se traparían.
+- Nova (back-left) tampoco tiene ángulo para golpear a Shadow (front-left).
 
----
+El boceto fijo se rompe en cuanto el log de combate incluye esas combinaciones, porque no hay animación visible.
 
-### 1. Backend (Supabase migration)
+## Solución
+Calcular el `slotMap` por evento en lugar de mantenerlo fijo. Antes de cada golpe, evaluamos si la pareja atacante→objetivo tiene ángulo válido; si no, intercambiamos a dos personajes para abrir la línea de ataque. Las "permutaciones" se hacen sólo cuando son necesarias y respetando estas reglas:
 
-**Nueva config RTP** en `game_rtp_config`:
-- Fila `game = 'ruleta'`, `rtp_target = 97.3` (estándar europeo, configurable).
+### Reglas de jerarquía
+1. Los 4 slots (`backLeft`, `backRight`, `frontLeft`, `frontRight`) siguen existiendo: siempre 2 atrás y 2 al frente.
+2. Cada personaje mantiene su lado natural por defecto (Shadow/Nova izquierda, Titan/Blaze derecha) para que sigan mirando al centro sin mirror.
+3. Antes de cada evento, si atacante y objetivo están en la misma columna, se hace un swap mínimo:
+   - Si ambos están en el mismo lado (ej. Blaze→Titan, derecha): el atacante sube al frente y el objetivo baja atrás (o viceversa, según quién esté arriba).
+   - Esto garantiza un lunge diagonal limpio hacia el centro.
+4. Después del golpe, el slotMap queda como esté para el siguiente evento (no se "rebobina"). Esto da continuidad visual y evita parpadeos.
+5. Si el siguiente evento ya es atacable con la disposición actual, no se hace ningún swap.
 
-**Nueva RPC `spin_roulette_v1(p_user_id, p_bet_amount, p_choice, p_client_action_id)`** — security definer, mismo patrón que `spin_slot_v1`:
-- Valida: `choice IN ('red','black','green')`, bet 500–500000 step 500, idempotencia por `client_action_id`.
-- Genera `server_seed` (32 bytes) + `server_seed_hash`.
-- Sortea segmento ganador `0..36` con `gen_random_bytes` (uniforme, rechazo de bytes ≥ 247 para evitar sesgo).
-- Mapeo segmento → color: `0 = green`, números rojos = `[1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]`, resto negros (distribución europea real).
-- Débito vía `_debit_bet` (bonus-first + award_xp automático).
-- Si gana: payout = `bet * 1.95` (R/N) o `bet * 14` (V), crédito vía `_credit_win` (100% real).
-- Transaction `meta` cachea: `{ winning_segment, winning_color, choice, multiplier, payout, server_seed, server_seed_hash }`.
-- Retorna `jsonb`: `{ was_duplicate, new_balance, cached: { winning_segment, winning_color, won, payout, ... } }`.
+### Animación del swap
+- El cambio de slot se anima con la misma transición que ya tiene `FighterSlot` (transform suave), así que mover a un personaje de `back` a `front` (o de un lado al otro) se ve como un desplazamiento corto antes del golpe.
+- El swap ocurre ~200ms antes de disparar el `lunge`, dando tiempo a que el personaje "se acomode" en su nueva posición y el ataque salga natural.
 
-**No requiere `game_rounds`** (juego instantáneo, no multiplayer como Spaceman).
+### Jerarquía Z
+Se mantiene la regla actual (atacante back→front sube a z=11, oponente front no involucrado sube a z=12). Como sigue siendo lógica basada en el slot final, funciona igual con la disposición dinámica.
 
----
+## Detalles técnicos
 
-### 2. Assets visuales
+**Archivo:** `src/components/games/arena/ArenaFight.tsx`
 
-- **`src/assets/roulette-frame.png`** — generado por IA: anillo dorado exterior con luces moradas, eje central metálico dorado con reflejos, fondo púrpura cósmico. Capa decorativa **fija** (no rota). Estilo idéntico al boceto.
-- **`src/assets/roulette-promo.png`** (opcional) — tarjeta para `/home` siguiendo el patrón Blackjack/Jackpot.
+1. Reemplazar `const slotMap = FIXED_SLOT_MAP;` por un estado `const [slotMap, setSlotMap] = useState(FIXED_SLOT_MAP)`.
+2. Añadir helper `reorganizeForEvent(currentMap, attacker, target): SlotMap` que:
+   - Calcula los slots actuales de atacante y objetivo.
+   - Si están en columnas distintas o filas distintas (diagonal o misma fila), devuelve `currentMap` sin cambios.
+   - Si están en la misma columna, hace swap entre el objetivo y el otro personaje del lado opuesto en su misma fila (el más cercano), de modo que atacante y objetivo queden en columnas distintas.
+3. En el `useEffect` que avanza eventos, antes de `setLungeId(ev.attacker)`:
+   - Calcular `newMap = reorganizeForEvent(slotMap, ev.attacker, ev.target)`.
+   - Si `newMap !== slotMap`, `setSlotMap(newMap)` y retrasar el lunge ~220ms con un `setTimeout` adicional.
+4. `slotOf` ya es derivado de `slotMap`, así que sigue funcionando.
 
----
+**Sin cambios** en assets, lógica de combate, HP, ni en el banner de eventos.
 
-### 3. Frontend
-
-**Ruta nueva:** `src/routes/ruleta.tsx` — clona estructura de `spaceman.tsx` (RequireAuth + LoadingScreen + componente). `head()` con SEO completo.
-
-**Componente nuevo:** `src/components/RouletteGame.tsx`
-
-Estructura visual (mobile-first, mismo layout que Spaceman):
-
-```
-Header (BETSPACE logo + balance + settings) — reutilizado
-─────────────────────────────────────────────
-ONLINE counter | RULETA (título gradient rojo) | audio toggle
-ROJO / NEGRO / 0  (subtítulo)
-─────────────────────────────────────────────
-[ Rueda 360x360 ]
-  ├─ <img> roulette-frame.png (z-0, fija)
-  ├─ <svg> disco con 37 segmentos (z-10, rota)
-  │    └─ 37 <path> calculados con trigonometría
-  │    └─ 37 <text> con números (rotan con su segmento)
-  ├─ <svg> puntero/flecha arriba (z-20, fija)
-─────────────────────────────────────────────
-ÚLTIMOS RESULTADOS (9 bolitas de colores) — localStorage
-─────────────────────────────────────────────
-Panel APUESTA (clonado de Spaceman):
-  ├─ Stepper +/− con FitText
-  ├─ Chips +1k / +2k / +5k / +10k
-  ├─ BetAmount con bonus hint
-─────────────────────────────────────────────
-3 botones de selección:
-  [🔴 ROJO 1.95x]  [⚫ NEGRO 1.95x]
-  [🟢 VERDE (0) 14.00x]
-─────────────────────────────────────────────
-[ GIRAR RULETA ] (verde, full-width)
-─────────────────────────────────────────────
-HISTORIAL COMPLETO | CÓMO JUGAR
-```
-
-**Estados:** `idle | spinning | revealing`. Botón GIRAR deshabilitado durante `spinning`.
-
-**Animación del spin:**
-- Al click: llamada a RPC con `client_action_id` (uuid). Mientras se espera, ya inicia el spin "ficticio" (la rueda empieza a girar visualmente).
-- Cuando llega la respuesta: calcula `rotación_final = (8 vueltas × 360°) + (segmento_ganador × 360/37) + jitter(±3°)`.
-- Aplica `transform: rotate(Xdeg)` con `transition: transform 6.5s cubic-bezier(0.15, 0.85, 0.25, 1)` al `<g>` interno del SVG.
-- `will-change: transform` durante el giro, removido al terminar.
-- **Tick del puntero:** `setTimeout` calculado a partir de la velocidad angular instantánea (derivada de la curva de easing) — cada vez que toca un borde de segmento, micro-flash CSS del puntero + sonido `tick.mp3` via `gameAudio.ts`.
-- **Micro-rebote final:** después del `transitionend`, `transform: rotate((X-8)deg)` con `transition: 0.4s ease-out`, luego vuelve.
-- Al terminar reveal: muestra resultado (toast/overlay), actualiza historial localStorage, refresca balance.
-
-**Audio:** reutilizar `gameAudio.ts`. Sonidos: `roulette-spin.mp3` (loop suave durante giro), `roulette-tick.mp3` (cada borde), `win.mp3` / `lose.mp3` (ya existen).
-
----
-
-### 4. Integración en navegación
-
-- Agregar tarjeta de Ruleta en `/home` (siguiendo patrón Spaceman/Blackjack).
-- Link de ruleta en menú lateral (si existe).
-
----
-
-### 5. Detalles técnicos
-
-- **Color tokens nuevos** en `src/styles.css`: `--roulette-red`, `--roulette-black`, `--roulette-green`, `--roulette-gold` (oklch).
-- **Probabilidades reales** (con verde 14x): house edge ≈ 62% en verde, ~2.7% en R/N. RTP global ≈ 95% (el verde "regalado" lo compensa la baja frecuencia de apuesta a verde).
-- **Sin SSR para canvas/svg pesado**: el componente entra dentro de `RequireAuth` que ya es client-only.
-- **Tests visuales:** verificar en iPhone SE (375px) que rueda 360x360 entra cómoda con padding.
-
----
-
-### Fuera de alcance (futuro)
-
-- Apuestas múltiples simultáneas (R + V a la vez).
-- Apuestas a número específico (paga 36x).
-- Modo multiplayer / ronda compartida.
-- Estadísticas avanzadas (% rojo vs negro últimas 100 rondas).
-
-### Orden de implementación
-
-1. Migración Supabase (`game_rtp_config` row + `spin_roulette_v1` RPC).
-2. Generar `roulette-frame.png` con IA.
-3. Color tokens + `RouletteGame.tsx` (estructura + SVG estático).
-4. Lógica de spin + animación + tick sonoro.
-5. Ruta `/ruleta` + integración en `/home`.
-6. QA visual en mobile.
+## Verificación
+- Probar con un log que incluya Blaze→Titan, Titan→Blaze, Nova→Shadow, Shadow→Nova: los personajes deben reacomodarse antes del golpe y el ataque debe verse limpio.
+- Probar con un log de ataques diagonales: no debe haber reacomodos innecesarios.
