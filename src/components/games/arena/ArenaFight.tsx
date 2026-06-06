@@ -127,7 +127,6 @@ export function ArenaFight({
               dead={hp[id] <= 0}
               shake={shakeId === id}
               isWinner={id === winner}
-              mirror
             />
           ))}
         </div>
