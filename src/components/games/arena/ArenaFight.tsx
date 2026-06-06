@@ -35,10 +35,10 @@ type PhaseMap = Record<ArenaCharacterId, "stance" | "attack" | "damage">;
  *  Front (Shadow/Titan) m\u00e1s grandes y separados a los extremos;
  *  Back (Nova/Blaze) m\u00e1s peque\u00f1os, justo detr\u00e1s entre ellos. */
 const SLOT_POSITIONS: Record<SlotId, { x: number; y: number; facing: "left" | "right" }> = {
-  backLeft: { x: 33, y: 47, facing: "right" },
-  backRight: { x: 67, y: 47, facing: "left" },
-  frontLeft: { x: 18, y: 64, facing: "right" },
-  frontRight: { x: 82, y: 64, facing: "left" },
+  backLeft: { x: 33, y: 43, facing: "right" },
+  backRight: { x: 67, y: 43, facing: "left" },
+  frontLeft: { x: 18, y: 58, facing: "right" },
+  frontRight: { x: 82, y: 58, facing: "left" },
 };
 
 /** Stage center used for diagonal lunge target. */
