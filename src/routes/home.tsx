@@ -297,16 +297,12 @@ function HomePage() {
               </Link>
             </div>
             <div className="flex items-center gap-2">
-              {user ? (
-                <div className="text-right">
-                  <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
-                  <div className="font-display text-[11px] font-bold sm:text-xs text-white">
-                    <span className="neon-green mr-0.5">$</span>{balanceText} COP
-                  </div>
+              <div className="text-right">
+                <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
+                <div className="font-display text-[11px] font-bold sm:text-xs text-white">
+                  <span className="neon-green mr-0.5">$</span>{balanceText} COP
                 </div>
-              ) : (
-                <AuthCta />
-              )}
+              </div>
               <AuthControl />
             </div>
           </div>
