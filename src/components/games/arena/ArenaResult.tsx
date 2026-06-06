@@ -29,7 +29,7 @@ export function ArenaResult({
       {/* Top — verdict banner with colored backdrop */}
       <div
         className={cn(
-          "w-full animate-fade-in opacity-0 [animation-fill-mode:forwards]",
+          "w-full animate-fade-in",
           "border-y-2 py-2 text-center",
           won
             ? "border-emerald-300/80 bg-gradient-to-r from-emerald-600/0 via-emerald-600/85 to-emerald-600/0"
@@ -51,7 +51,7 @@ export function ArenaResult({
       {/* Bottom — winner + payout + CTA */}
       <div className="pointer-events-auto flex flex-col items-center gap-3 pb-1">
         <div
-          className="flex items-baseline justify-center gap-2 animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+          className="flex items-baseline justify-center gap-2 animate-fade-in"
           style={{ animationDelay: "320ms" }}
         >
           <span
@@ -72,7 +72,7 @@ export function ArenaResult({
         </div>
 
         <div
-          className="flex flex-col items-center gap-0.5 text-center animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+          className="flex flex-col items-center gap-0.5 text-center animate-fade-in"
           style={{ animationDelay: "520ms" }}
         >
           <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/70">
@@ -100,7 +100,7 @@ export function ArenaResult({
           size="lg"
           onClick={onPlayAgain}
           variant="outline"
-          className="h-11 w-full max-w-[260px] rounded-full border-2 border-white/85 bg-black/40 text-[13px] font-extrabold uppercase tracking-[0.22em] text-white backdrop-blur-sm hover:bg-white/10 animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+          className="h-11 w-full max-w-[260px] rounded-full border-2 border-white/85 bg-black/40 text-[13px] font-extrabold uppercase tracking-[0.22em] text-white backdrop-blur-sm hover:bg-white/10 animate-fade-in"
           style={{ animationDelay: "740ms" }}
         >
           Apostar de nuevo
