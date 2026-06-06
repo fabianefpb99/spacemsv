@@ -137,7 +137,7 @@ function useLobbyMusic() {
   const restartRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const TARGET_VOLUME = 0.18;
+    const TARGET_VOLUME = 0.08;
     const FADE_MS = 1500;
     const GAP_MS = 2000;
 
@@ -153,7 +153,8 @@ function useLobbyMusic() {
       function step(now: number) {
         if (cancelled) return;
         const t = Math.min(1, (now - start) / ms);
-        audio.volume = from + (to - from) * t;
+        const v = from + (to - from) * t;
+        audio.volume = Math.max(0, Math.min(1, v));
         if (t < 1) {
           rafRef.current = requestAnimationFrame(step);
         } else {
