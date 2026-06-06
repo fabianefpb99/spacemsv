@@ -160,7 +160,7 @@ export function ArenaFight({
   // Slot map planeado ANTES de iniciar la pelea: se elige la disposición que
   // evita que algún golpe quede en la misma columna (sin ángulo). Una vez
   // empezada la pelea ya nadie se mueve de slot.
-  const slotMap = useMemo(() => planSlotMap(combatLog), [combatLog]);
+  const slotMap = useMemo(() => planSlotMap(), [combatLog]);
   const slotOf = useMemo(() => {
     const map = {} as Record<ArenaCharacterId, SlotId>;
     (Object.keys(slotMap) as SlotId[]).forEach((s) => {
