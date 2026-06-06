@@ -28,19 +28,27 @@ export function CharacterSprite({
 }) {
   const meta = ARENA_CHARACTER_META[characterId];
   return (
-    <img
-      src={meta.sprites[phase]}
-      alt={meta.name}
-      draggable={false}
+    <div
       className={cn(
-        "pointer-events-none select-none object-contain drop-shadow-[0_18px_24px_rgba(0,0,0,0.55)] transition-[opacity,transform] duration-200",
-        shake && "animate-[arena-shake_0.45s_ease-in-out]",
+        "transition-transform duration-200",
         className,
       )}
       style={{
-        opacity: alpha,
         transform: mirror ? "scaleX(-1)" : undefined,
       }}
-    />
+    >
+      <img
+        src={meta.sprites[phase]}
+        alt={meta.name}
+        draggable={false}
+        className={cn(
+          "pointer-events-none h-full w-full select-none object-contain drop-shadow-[0_18px_24px_rgba(0,0,0,0.55)] transition-[opacity,transform] duration-200",
+          shake && "animate-[arena-shake_0.45s_ease-in-out]",
+        )}
+        style={{
+          opacity: alpha,
+        }}
+      />
+    </div>
   );
 }
