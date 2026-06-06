@@ -100,7 +100,7 @@ export function ArenaResult({
           size="lg"
           onClick={onPlayAgain}
           variant="outline"
-          className="h-11 w-full max-w-[260px] rounded-full border-2 border-white/85 bg-black/40 text-[13px] font-extrabold uppercase tracking-[0.22em] text-white backdrop-blur-sm hover:bg-white/10 animate-fade-in"
+          className="h-11 w-full max-w-[260px] rounded-full border-2 border-white/85 bg-black/40 text-[13px] font-extrabold uppercase tracking-[0.22em] text-white backdrop-blur-sm hover:bg-white/15 hover:text-white active:bg-white/25 active:text-white animate-fade-in"
           style={{ animationDelay: "740ms" }}
         >
           Apostar de nuevo
