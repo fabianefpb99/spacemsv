@@ -38,7 +38,7 @@ export function ArenaLobby({
         </h1>
       </div>
 
-      <div className="absolute inset-x-0 top-[18%] bottom-0 grid grid-cols-4 gap-0 px-0">
+      <div className="absolute inset-x-0 top-[14%] bottom-0 grid grid-cols-4 gap-0 px-0">
         {ARENA_CHARACTERS.map((id) => (
           <FighterCard
             key={id}
@@ -76,15 +76,15 @@ function FighterCard({
       )}
     >
       <div
-        className="absolute bottom-[20%] left-1/2 h-6 w-[80%] -translate-x-1/2 rounded-full blur-md transition-all duration-300"
+        className="absolute bottom-[22%] left-1/2 h-6 w-[80%] -translate-x-1/2 rounded-full blur-md transition-all duration-300"
         style={{ backgroundColor: meta.glow, opacity: selected ? 0.95 : 0.55 }}
       />
       <CharacterSprite
         characterId={id}
         phase="idle"
         className={cn(
-          "relative z-10 h-[88%] w-[170%] max-w-none -mb-1 transition-transform duration-300",
-          selected ? "scale-[1.18]" : "scale-[1.08] opacity-95 group-hover:scale-[1.14] group-hover:opacity-100",
+          "relative z-10 h-[112%] w-[210%] max-w-none -mb-2 transition-transform duration-300",
+          selected ? "scale-[1.32]" : "scale-[1.22] opacity-95 group-hover:scale-[1.28] group-hover:opacity-100",
         )}
       />
       <div
