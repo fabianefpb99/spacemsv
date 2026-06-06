@@ -76,13 +76,9 @@ export function ArenaLobby({
 function FighterCard({
   id,
   selected,
-  disabled,
-  onSelect,
 }: {
   id: ArenaCharacterId;
   selected: boolean;
-  disabled?: boolean;
-  onSelect: (id: ArenaCharacterId) => void;
 }) {
   const meta = ARENA_CHARACTER_META[id];
   return (
