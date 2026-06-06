@@ -4,6 +4,7 @@ import { ARENA_CHARACTERS, type ArenaCharacterId } from "@/lib/games/arena.share
 import { ARENA_CHARACTER_META } from "./characters";
 import { CharacterSprite } from "./CharacterSprite";
 import arenaLobbyAudio from "@/assets/audio/arena/arena-lobby.mp3.asset.json";
+import blazeSelectAudio from "@/assets/audio/arena/blaze-select.mp3.asset.json";
 
 const LOBBY_HITBOXES: Record<ArenaCharacterId, string> = {
   nova: "left-[9%] w-[18%]",
@@ -33,6 +34,29 @@ export function ArenaLobby({
   disabled?: boolean;
 }) {
   useLobbyMusic();
+  const blazeSfxRef = useRef<HTMLAudioElement | null>(null);
+  useEffect(() => {
+    const a = new Audio(blazeSelectAudio.url);
+    a.preload = "auto";
+    a.volume = 0.7;
+    blazeSfxRef.current = a;
+    return () => {
+      a.pause();
+      blazeSfxRef.current = null;
+    };
+  }, []);
+  const handleSelect = (id: ArenaCharacterId) => {
+    if (disabled) return;
+    if (id === "blaze" && blazeSfxRef.current) {
+      try {
+        blazeSfxRef.current.currentTime = 0;
+        void blazeSfxRef.current.play();
+      } catch {
+        // ignore
+      }
+    }
+    onSelect(id);
+  };
   return (
     <div className="absolute inset-0 overflow-hidden">
       <div className="absolute left-0 right-0 top-1 flex items-center px-3 text-[9px] font-semibold uppercase tracking-[0.18em] text-white/90 sm:px-4">
@@ -67,7 +91,7 @@ export function ArenaLobby({
             key={`${id}-hitbox`}
             type="button"
             aria-label={`Seleccionar ${ARENA_CHARACTER_META[id].name}`}
-            onClick={() => !disabled && onSelect(id)}
+            onClick={() => handleSelect(id)}
             disabled={disabled}
             className={cn(
               "absolute bottom-0 top-[2%] rounded-md transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 disabled:opacity-50",
