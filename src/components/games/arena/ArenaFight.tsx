@@ -82,7 +82,7 @@ export function ArenaFight({
 
   return (
     <div
-      className="relative aspect-[9/16] w-full overflow-hidden rounded-2xl border border-white/10 bg-black"
+      className="relative h-full w-full overflow-hidden rounded-xl"
       style={{
         backgroundImage: `url(${ARENA_BACKGROUNDS.fight})`,
         backgroundSize: "cover",
@@ -90,22 +90,23 @@ export function ArenaFight({
       }}
     >
       {/* HP bars */}
-      <div className="absolute inset-x-0 top-2 flex justify-between gap-2 px-3">
-        <div className="flex flex-1 flex-col gap-1">
+      <div className="absolute inset-x-0 top-1 flex justify-between gap-2 px-2">
+        <div className="flex flex-1 flex-col gap-0.5">
           {left.map((id) => (
             <HpBar key={id} id={id} hp={hp[id]} isBet={id === characterBet} />
           ))}
         </div>
-        <div className="flex flex-1 flex-col gap-1">
+        <div className="flex flex-1 flex-col gap-0.5">
           {right.map((id) => (
             <HpBar key={id} id={id} hp={hp[id]} isBet={id === characterBet} align="right" />
           ))}
         </div>
       </div>
 
-      {/* Stage area */}
-      <div className="absolute inset-x-0 top-[42%] bottom-[28%] grid grid-cols-2 gap-2 px-3">
-        <div className="flex items-end justify-around gap-1">
+      {/* Stage — 2 teams, stacked vertically per side, facing center.
+          Left col: A top, B bottom. Right col: C top, D bottom. */}
+      <div className="absolute inset-x-0 top-[14%] bottom-[22%] grid grid-cols-2 gap-1 px-1">
+        <div className="flex flex-col items-center justify-between gap-1 py-1">
           {left.map((id) => (
             <FighterStage
               key={id}
@@ -117,7 +118,7 @@ export function ArenaFight({
             />
           ))}
         </div>
-        <div className="flex items-end justify-around gap-1">
+        <div className="flex flex-col items-center justify-between gap-1 py-1">
           {right.map((id) => (
             <FighterStage
               key={id}
@@ -126,13 +127,14 @@ export function ArenaFight({
               dead={hp[id] <= 0}
               shake={shakeId === id}
               isWinner={id === winner}
+              mirror
             />
           ))}
         </div>
       </div>
 
-      {/* Combat log */}
-      <div className="absolute inset-x-3 bottom-3 h-[22%]">
+      {/* Compact combat log */}
+      <div className="absolute inset-x-2 bottom-2 h-[20%]">
         <CombatLog events={revealedEvents} />
       </div>
     </div>
@@ -185,20 +187,23 @@ function FighterStage({
   dead,
   shake,
   isWinner,
+  mirror = false,
 }: {
   id: ArenaCharacterId;
   phase: "stance" | "attack" | "damage";
   dead: boolean;
   shake: boolean;
   isWinner: boolean;
+  mirror?: boolean;
 }) {
   return (
-    <div className="relative flex h-full w-full items-end justify-center">
+    <div className="relative flex h-1/2 w-full items-end justify-center">
       <CharacterSprite
         characterId={id}
         phase={phase}
         alpha={dead ? 0.25 : 1}
         shake={shake}
+        mirror={mirror}
         className={cn(
           "h-full w-full transition-all duration-300",
           isWinner && dead === false && "drop-shadow-[0_0_24px_rgba(250,204,21,0.9)]",
