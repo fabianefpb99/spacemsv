@@ -432,7 +432,7 @@ export function ArenaFight({
       {/* Stage — slot-positioned fighters */}
       <div className="absolute inset-x-0 top-[9%] bottom-[22%] overflow-visible">
         {/* Speed streak — aura detrás del atacante mientras avanza al golpe. */}
-        {currentEvent && lungeId === characterBet && (() => {
+        {currentEvent && lungeId && (() => {
           const aSlot = slotOf[lungeId];
           const tSlot = slotOf[currentEvent.target];
           const start = SLOT_POSITIONS[aSlot];
