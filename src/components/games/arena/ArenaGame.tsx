@@ -161,6 +161,7 @@ export function ArenaGame() {
               combatLog={result.combat_log}
               winner={result.winner}
               characterBet={result.character_bet}
+              resultMode={phase === "result"}
               onComplete={handleFightComplete}
             />
           )}

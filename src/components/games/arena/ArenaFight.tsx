@@ -334,11 +334,13 @@ export function ArenaFight({
   combatLog,
   winner,
   characterBet,
+  resultMode = false,
   onComplete,
 }: {
   combatLog: ArenaCombatEvent[];
   winner: ArenaCharacterId;
   characterBet: ArenaCharacterId;
+  resultMode?: boolean;
   onComplete: () => void;
 }) {
   useFightMusic();
@@ -440,7 +442,7 @@ export function ArenaFight({
     <div className="absolute inset-y-0 -inset-x-3 overflow-visible">
       <div className="absolute inset-y-0 left-3 right-3 overflow-visible">
       {/* Current event banner — 3 líneas centradas (atacante / acción / objetivo) */}
-      <div className="absolute inset-x-0 top-[7%] z-20 flex justify-center px-2">
+      {!resultMode && <div className="absolute inset-x-0 top-[7%] z-20 flex justify-center px-2">
         {currentEvent ? (
           <div
             key={eventIdx}
@@ -461,12 +463,25 @@ export function ArenaFight({
             </span>
           </div>
         ) : null}
-      </div>
+      </div>}
 
       {/* Stage — slot-positioned fighters */}
       <div className="absolute inset-x-0 top-[9%] bottom-[22%] overflow-visible [@media(min-height:880px)]:-translate-y-[3%]">
+        {resultMode && (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute left-1/2 top-[58%] z-[3] -translate-x-1/2 -translate-y-1/2 animate-fade-in"
+            style={{
+              width: "58%",
+              height: "18%",
+              borderRadius: "9999px",
+              background: `radial-gradient(ellipse at center, ${ARENA_CHARACTER_META[winner].color}88 0%, ${ARENA_CHARACTER_META[winner].color}33 42%, transparent 78%)`,
+              filter: "blur(20px)",
+            }}
+          />
+        )}
         {/* Speed streak — aura detrás del atacante mientras avanza al golpe. */}
-        {currentEvent && lungeId && (() => {
+        {!resultMode && currentEvent && lungeId && (() => {
           const aSlot = slotOf[lungeId];
           const tSlot = slotOf[currentEvent.target];
           const start = SLOT_POSITIONS[aSlot];
@@ -541,7 +556,9 @@ export function ArenaFight({
             </svg>
           );
         })()}
-        {(Object.keys(slotMap) as SlotId[]).map((slot) => {
+        {(resultMode ? ([winner] as ArenaCharacterId[]) : (Object.keys(slotMap) as SlotId[]).map((slot) => slotMap[slot])).map((idOrWinner, index) => {
+          const id = resultMode ? idOrWinner : idOrWinner;
+          const slot = resultMode ? "frontRight" as SlotId : (Object.keys(slotMap) as SlotId[]).find((candidate) => slotMap[candidate] === id)!;
           const id = slotMap[slot];
           const slotPos = SLOT_POSITIONS[slot];
           const dead = hp[id] <= 0;
@@ -574,20 +591,22 @@ export function ArenaFight({
             zIndex = 12;
           }
 
+          if (resultMode && id !== winner) return null;
+
           return (
             <FighterSlot
-              key={slot}
+              key={resultMode ? `winner-${winner}-${index}` : slot}
               id={id}
               slot={slot}
-              x={slotPos.x + lunge.dx}
-              y={slotPos.y + lunge.dy}
-              heightPct={heightPct}
-              zIndex={zIndex}
-              phase={dead ? "damage" : phases[id]}
-              dead={dead}
-              shake={shakeId === id}
-              mirror={mirror}
-              isWinner={id === winner}
+              x={resultMode ? 50 : slotPos.x + lunge.dx}
+              y={resultMode ? 56 : slotPos.y + lunge.dy}
+              heightPct={resultMode ? 88 : heightPct}
+              zIndex={resultMode ? 24 : zIndex}
+              phase={resultMode ? "stance" : dead ? "damage" : phases[id]}
+              dead={resultMode ? false : dead}
+              shake={resultMode ? false : shakeId === id}
+              mirror={resultMode ? false : mirror}
+              isWinner
               isBet={id === characterBet}
             />
           );
@@ -595,7 +614,7 @@ export function ArenaFight({
       </div>
 
       {/* ¡FIGHT! banner — blanco minimalista */}
-      {showFightBanner && (
+      {!resultMode && showFightBanner && (
         <div className="pointer-events-none absolute inset-x-0 top-[18%] z-30 flex justify-center">
           <div className="animate-scale-in text-center">
             <div
@@ -609,7 +628,7 @@ export function ArenaFight({
       )}
 
       {/* HP bars — fila arriba NOVA/TITAN angostas; fila abajo SHADOW/BLAZE anchas. */}
-      <div className="absolute inset-x-3 bottom-3 z-20 space-y-2">
+      {!resultMode && <div className="absolute inset-x-3 bottom-3 z-20 space-y-2">
         <div className="grid grid-cols-2 gap-3">
           <HpBar id="nova" hp={hp.nova} isBet={characterBet === "nova"} narrow />
           <HpBar id="titan" hp={hp.titan} isBet={characterBet === "titan"} narrow />
@@ -618,7 +637,7 @@ export function ArenaFight({
           <HpBar id="shadow" hp={hp.shadow} isBet={characterBet === "shadow"} />
           <HpBar id="blaze" hp={hp.blaze} isBet={characterBet === "blaze"} />
         </div>
-      </div>
+      </div>}
     </div>
     </div>
   );
