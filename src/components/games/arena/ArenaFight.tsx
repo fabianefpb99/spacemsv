@@ -82,7 +82,7 @@ export function ArenaFight({
 
   return (
     <div
-      className="relative h-full w-full overflow-hidden rounded-xl"
+      className="absolute inset-0 overflow-hidden rounded-xl"
       style={{
         backgroundImage: `url(${ARENA_BACKGROUNDS.fight})`,
         backgroundSize: "cover",
