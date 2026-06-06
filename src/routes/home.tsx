@@ -154,11 +154,31 @@ function HomePage() {
     if (plays.length >= MAX_PER_HOUR) return;
 
     const audio = new Audio(casinoIntro.url);
-    audio.volume = 0.15;
+    const TARGET_VOLUME = 0.15;
+    audio.volume = TARGET_VOLUME;
     audio.preload = "auto";
     let stopTimer: ReturnType<typeof setTimeout> | null = null;
     let consumed = false;
     let disposed = false;
+    let activeFade: ReturnType<typeof setInterval> | null = null;
+    let pausedByVisibility = false;
+
+    const fadeTo = (target: number, durationMs: number, onDone?: () => void) => {
+      if (activeFade) { clearInterval(activeFade); activeFade = null; }
+      const steps = 24;
+      const stepMs = Math.max(16, durationMs / steps);
+      const start = audio.volume;
+      let i = 0;
+      activeFade = setInterval(() => {
+        i += 1;
+        const v = Math.max(0, Math.min(1, start + (target - start) * (i / steps)));
+        try { audio.volume = v; } catch { /* ignore */ }
+        if (i >= steps) {
+          if (activeFade) { clearInterval(activeFade); activeFade = null; }
+          onDone?.();
+        }
+      }, stepMs);
+    };
 
     const markConsumed = () => {
       if (consumed) return;
@@ -175,17 +195,8 @@ function HomePage() {
       const STOP_AT_MS = 12300;
       const JS_FADE_MS = 6000; // 5s nativo + 1s adelantado
       const FADE_START_MS = STOP_AT_MS - JS_FADE_MS;
-      const startVolume = audio.volume;
       const fadeStart = setTimeout(() => {
-        const steps = 30;
-        const stepMs = JS_FADE_MS / steps;
-        let i = 0;
-        const iv = setInterval(() => {
-          i += 1;
-          const v = Math.max(0, startVolume * (1 - i / steps));
-          try { audio.volume = v; } catch { /* ignore */ }
-          if (i >= steps) clearInterval(iv);
-        }, stepMs);
+        fadeTo(0, JS_FADE_MS);
       }, Math.max(0, FADE_START_MS));
       stopTimer = setTimeout(() => {
         clearTimeout(fadeStart);
@@ -209,11 +220,50 @@ function HomePage() {
     const events: Array<keyof WindowEventMap> = ["pointerdown", "touchstart", "click", "keydown"];
     events.forEach((ev) => window.addEventListener(ev, onGesture, { once: false, passive: true } as AddEventListenerOptions));
 
+    const onVisibility = () => {
+      if (disposed) return;
+      if (document.hidden) {
+        if (!audio.paused) {
+          pausedByVisibility = true;
+          fadeTo(0, 350, () => { try { audio.pause(); } catch { /* ignore */ } });
+        }
+      } else if (pausedByVisibility) {
+        pausedByVisibility = false;
+        try {
+          audio.volume = 0;
+          const p = audio.play();
+          const ramp = () => fadeTo(TARGET_VOLUME, 500);
+          if (p && typeof p.then === "function") p.then(ramp).catch(() => { /* ignore */ });
+          else ramp();
+        } catch { /* ignore */ }
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
     return () => {
       disposed = true;
       if (stopTimer) clearTimeout(stopTimer);
+      if (activeFade) { clearInterval(activeFade); activeFade = null; }
       events.forEach((ev) => window.removeEventListener(ev, onGesture));
-      try { audio.pause(); audio.src = ""; } catch { /* ignore */ }
+      document.removeEventListener("visibilitychange", onVisibility);
+      // Fade-out suave al desmontar para evitar cortes abruptos.
+      if (!audio.paused) {
+        const fadeAudio = audio;
+        const steps = 18;
+        const dur = 450;
+        const startV = fadeAudio.volume;
+        let i = 0;
+        const iv = setInterval(() => {
+          i += 1;
+          try { fadeAudio.volume = Math.max(0, startV * (1 - i / steps)); } catch { /* ignore */ }
+          if (i >= steps) {
+            clearInterval(iv);
+            try { fadeAudio.pause(); fadeAudio.src = ""; } catch { /* ignore */ }
+          }
+        }, dur / steps);
+      } else {
+        try { audio.src = ""; } catch { /* ignore */ }
+      }
     };
   }, []);
 
