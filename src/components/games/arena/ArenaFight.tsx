@@ -81,7 +81,7 @@ function useHitSfx() {
 
 function useFightMusic() {
   useEffect(() => {
-    const TARGET_VOLUME = 0.06;
+    const TARGET_VOLUME = 0.028;
     const FADE_IN_MS = 500;
     const FADE_OUT_MS = 1200;
     const audio = new Audio(arenaFightAudio.url);
@@ -118,9 +118,21 @@ function useFightMusic() {
     }
     start();
 
+    let wasPlayingBeforeHide = false;
+    const onVisibility = () => {
+      if (document.hidden) {
+        wasPlayingBeforeHide = !audio.paused;
+        audio.pause();
+      } else if (wasPlayingBeforeHide) {
+        void audio.play().catch(() => {});
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
     return () => {
       cancelled = true;
       if (raf) cancelAnimationFrame(raf);
+      document.removeEventListener("visibilitychange", onVisibility);
       const startVol = audio.volume;
       const t0 = performance.now();
       const fadeOut = () => {
