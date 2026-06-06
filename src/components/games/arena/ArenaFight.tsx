@@ -317,9 +317,9 @@ export function ArenaFight({
       </div>
 
       {/* Stage — slot-positioned fighters */}
-      <div className="absolute inset-x-0 top-[9%] bottom-[22%]">
+      <div className="absolute inset-x-0 top-[9%] bottom-[-4%] overflow-visible">
         {/* Speed streak — aura detrás del atacante mientras avanza al golpe. */}
-        {currentEvent && lungeId && (() => {
+        {currentEvent && lungeId === characterBet && (() => {
           const aSlot = slotOf[lungeId];
           const tSlot = slotOf[currentEvent.target];
           const start = SLOT_POSITIONS[aSlot];
@@ -568,10 +568,7 @@ function FighterSlot({
         alpha={dead ? 0.3 : 1}
         shake={shake}
         mirror={mirror}
-        className={cn(
-          "h-full w-full",
-          isWinner && !dead && "drop-shadow-[0_0_24px_rgba(250,204,21,0.9)]",
-        )}
+        className="h-full w-full"
       />
     </div>
   );
