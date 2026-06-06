@@ -757,14 +757,14 @@ function FighterSlot({
         {!dead && (
           <div
             aria-hidden
-            className="pointer-events-none absolute left-1/2 bottom-[2%] -translate-x-1/2"
+            className="pointer-events-none absolute left-1/2 bottom-[10%] -translate-x-1/2"
             style={{
-              width: "34%",
-              height: "4.5%",
+              width: "26%",
+              height: "3.2%",
               background:
-                "radial-gradient(ellipse at center, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.28) 55%, rgba(0,0,0,0) 80%)",
+                "radial-gradient(ellipse at center, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.3) 55%, rgba(0,0,0,0) 82%)",
               borderRadius: "9999px",
-              filter: "blur(3px)",
+              filter: "blur(2px)",
               zIndex: 0,
             }}
           />
