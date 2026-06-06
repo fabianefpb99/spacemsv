@@ -751,6 +751,24 @@ function FighterSlot({
         className="pointer-events-none flex h-full items-end justify-center overflow-visible"
         style={{ width: needsHorizontalBleed ? "calc(100% + 20vw)" : "100%" }}
       >
+        {/* Sombra suave bajo los pies — anclada al inner container para que
+            siga al sprite tanto en pelea como en la pose ganadora, sin
+            desbordarse del slot. */}
+        {!dead && (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute left-1/2 bottom-[2%] -translate-x-1/2"
+            style={{
+              width: "34%",
+              height: "4.5%",
+              background:
+                "radial-gradient(ellipse at center, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.28) 55%, rgba(0,0,0,0) 80%)",
+              borderRadius: "9999px",
+              filter: "blur(3px)",
+              zIndex: 0,
+            }}
+          />
+        )}
         <CharacterSprite
           characterId={id}
           phase={phase}
@@ -758,7 +776,7 @@ function FighterSlot({
           shake={shake}
           mirror={mirror}
           fit="contain"
-          className="h-full"
+          className="relative z-[1] h-full"
         />
       </div>
     </div>
