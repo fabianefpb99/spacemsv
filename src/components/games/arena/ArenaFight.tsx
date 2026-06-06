@@ -202,6 +202,25 @@ export function ArenaFight({
           // no el escalado (si encogemos atrás, al avanzar parecen enanos).
           const heightPct = 65;
 
+          // Profundidad: el atacante sube en jerarquía sólo lo necesario para
+          // quedar por encima del objetivo y su compañero de fila, pero nunca
+          // por encima de los personajes del lado opuesto de la fila delantera
+          // (eso lo haría ver "más cerca de la cámara" de lo que está).
+          const attackerSlot = lungeId ? slotOf[lungeId] : null;
+          const attackerIsBack = attackerSlot?.startsWith("back") ?? false;
+          const targetIsFront = targetSlotGlobal(currentEvent, slotOf)?.startsWith("front") ?? false;
+          const baseZ = slot.startsWith("front") ? 10 : 5;
+          let zIndex = baseZ;
+          if (isAttacking) {
+            // Si el atacante es de atrás y va al frente: queda apenas encima del
+            // objetivo (front=10 → 11). Si ya es del frente, mantiene su rango +1.
+            zIndex = attackerIsBack && targetIsFront ? 11 : baseZ + 5;
+          } else if (attackerIsBack && targetIsFront && slot.startsWith("front") && slot !== attackerSlot) {
+            // El otro frontal (no involucrado) sube para mantenerse por encima
+            // del atacante que invade la zona delantera.
+            zIndex = 12;
+          }
+
           return (
             <FighterSlot
               key={slot}
@@ -209,7 +228,7 @@ export function ArenaFight({
               x={slotPos.x + lunge.dx}
               y={slotPos.y + lunge.dy}
               heightPct={heightPct}
-              zIndex={isAttacking ? 15 : slot.startsWith("front") ? 10 : 5}
+              zIndex={zIndex}
               phase={dead ? "damage" : phases[id]}
               dead={dead}
               shake={shakeId === id}
