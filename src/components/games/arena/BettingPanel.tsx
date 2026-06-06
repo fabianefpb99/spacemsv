@@ -46,31 +46,31 @@ export function BettingPanel({
   }
 
   return (
-    <div className="space-y-3 rounded-2xl border border-white/10 bg-black/50 p-3 backdrop-blur-md">
+    <div className="space-y-2 rounded-xl border border-purple-500/30 bg-[#0c0620]/80 p-2 backdrop-blur-md">
       <div className="flex items-end justify-between gap-3">
         <div className="min-w-0">
-          <div className="text-[10px] uppercase tracking-wider text-white/50">Apuesta</div>
-          <div className="h-10 w-40">
+          <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Apuesta</div>
+          <div className="h-8 w-40">
             <BetAmount
               bet={bet}
               bonusBalance={bonusBalance}
-              amountClassName="text-2xl font-bold text-white"
+              amountClassName="text-xl font-bold text-white"
             />
           </div>
         </div>
         <div className="text-right">
-          <div className="text-[10px] uppercase tracking-wider text-white/50">Pago si gana</div>
-          <div className="text-lg font-bold text-yellow-300">
+          <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Pago si gana</div>
+          <div className="text-base font-bold text-yellow-300">
             {meta ? `$${formatCOP(Math.floor(bet * meta.odds))}` : "—"}
           </div>
         </div>
       </div>
 
-      <div className="flex gap-2">
+      <div className="grid grid-cols-7 gap-1.5">
         <Button
           size="sm"
           variant="outline"
-          className="flex-1 border-white/20 bg-white/5 text-white hover:bg-white/10"
+          className="h-8 border-white/20 bg-white/5 text-white hover:bg-white/10"
           onClick={() => onBetChange(clamp(bet / 2))}
           disabled={isPlaying}
         >
@@ -79,16 +79,27 @@ export function BettingPanel({
         <Button
           size="sm"
           variant="outline"
-          className="flex-1 border-white/20 bg-white/5 text-white hover:bg-white/10"
+          className="h-8 border-white/20 bg-white/5 text-white hover:bg-white/10"
           onClick={() => onBetChange(clamp(bet * 2))}
           disabled={isPlaying}
         >
           2×
         </Button>
+        {QUICK_ADDS.map((amt) => (
+          <button
+            key={amt}
+            type="button"
+            onClick={() => onBetChange(clamp(bet + amt))}
+            disabled={isPlaying}
+            className="h-8 rounded-md border border-white/15 bg-white/5 text-[11px] font-medium text-white/90 transition hover:bg-white/10 disabled:opacity-50"
+          >
+            +{formatCOP(amt)}
+          </button>
+        ))}
         <Button
           size="sm"
           variant="outline"
-          className="flex-1 border-white/20 bg-white/5 text-white hover:bg-white/10"
+          className="h-8 border-yellow-400/40 bg-yellow-400/10 text-yellow-200 hover:bg-yellow-400/20"
           onClick={() => onBetChange(clamp(balance))}
           disabled={isPlaying}
         >
@@ -96,26 +107,12 @@ export function BettingPanel({
         </Button>
       </div>
 
-      <div className="grid grid-cols-4 gap-2">
-        {QUICK_ADDS.map((amt) => (
-          <button
-            key={amt}
-            type="button"
-            onClick={() => onBetChange(clamp(bet + amt))}
-            disabled={isPlaying}
-            className="rounded-md border border-white/15 bg-white/5 px-2 py-1.5 text-xs font-medium text-white/90 transition hover:bg-white/10 disabled:opacity-50"
-          >
-            +{formatCOP(amt)}
-          </button>
-        ))}
-      </div>
-
       <Button
-        size="lg"
+        size="default"
         onClick={onPlay}
         disabled={!selected || !canBet || isPlaying}
         className={cn(
-          "w-full text-lg font-extrabold tracking-wide",
+          "h-11 w-full text-base font-extrabold tracking-wide",
           "bg-gradient-to-r from-purple-500 via-fuchsia-500 to-purple-500",
           "shadow-[0_0_24px_rgba(168,85,247,0.55)] hover:brightness-110",
         )}
