@@ -353,9 +353,10 @@ export function ArenaFight({
                   y2={endY}
                 >
                   <stop offset="0%" stopColor={color} stopOpacity="0" />
-                  <stop offset="40%" stopColor={color} stopOpacity="0.15" />
-                  <stop offset="80%" stopColor={color} stopOpacity="0.55" />
-                  <stop offset="100%" stopColor={color} stopOpacity="0.85" />
+                  <stop offset="35%" stopColor={color} stopOpacity="0.25" />
+                  <stop offset="70%" stopColor={color} stopOpacity="0.55" />
+                  <stop offset="92%" stopColor={color} stopOpacity="0.15" />
+                  <stop offset="100%" stopColor={color} stopOpacity="0" />
                 </linearGradient>
                 <filter id={blurId} x="-30%" y="-30%" width="160%" height="160%">
                   <feGaussianBlur stdDeviation="1.4" />
@@ -548,6 +549,19 @@ function FighterSlot({
         zIndex,
       }}
     >
+      {isBet && !isWinner && !dead && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-[58%] -translate-x-1/2 -translate-y-1/2 animate-pulse"
+          style={{
+            width: "78%",
+            height: "78%",
+            background:
+              "radial-gradient(circle, rgba(250,204,21,0.55) 0%, rgba(250,204,21,0.25) 35%, rgba(250,204,21,0) 65%)",
+            filter: "blur(2px)",
+          }}
+        />
+      )}
       <CharacterSprite
         characterId={id}
         phase={phase}
@@ -557,7 +571,6 @@ function FighterSlot({
         className={cn(
           "h-full w-full",
           isWinner && !dead && "drop-shadow-[0_0_24px_rgba(250,204,21,0.9)]",
-          isBet && !isWinner && !dead && "drop-shadow-[0_0_14px_rgba(250,204,21,0.5)]",
         )}
       />
     </div>
