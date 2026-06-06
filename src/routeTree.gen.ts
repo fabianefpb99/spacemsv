@@ -22,6 +22,7 @@ import { Route as MinesRouteImport } from './routes/mines'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as DadosRouteImport } from './routes/dados'
 import { Route as BlackjackRouteImport } from './routes/blackjack'
+import { Route as ArenaRouteImport } from './routes/arena'
 import { Route as AdminpanelRouteImport } from './routes/adminpanel'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PayBrebRouteImport } from './routes/pay_.breb'
@@ -91,6 +92,11 @@ const BlackjackRoute = BlackjackRouteImport.update({
   path: '/blackjack',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ArenaRoute = ArenaRouteImport.update({
+  id: '/arena',
+  path: '/arena',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminpanelRoute = AdminpanelRouteImport.update({
   id: '/adminpanel',
   path: '/adminpanel',
@@ -110,6 +116,7 @@ const PayBrebRoute = PayBrebRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/adminpanel': typeof AdminpanelRoute
+  '/arena': typeof ArenaRoute
   '/blackjack': typeof BlackjackRoute
   '/dados': typeof DadosRoute
   '/home': typeof HomeRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/adminpanel': typeof AdminpanelRoute
+  '/arena': typeof ArenaRoute
   '/blackjack': typeof BlackjackRoute
   '/dados': typeof DadosRoute
   '/home': typeof HomeRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/adminpanel': typeof AdminpanelRoute
+  '/arena': typeof ArenaRoute
   '/blackjack': typeof BlackjackRoute
   '/dados': typeof DadosRoute
   '/home': typeof HomeRoute
@@ -167,6 +176,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/adminpanel'
+    | '/arena'
     | '/blackjack'
     | '/dados'
     | '/home'
@@ -185,6 +195,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/adminpanel'
+    | '/arena'
     | '/blackjack'
     | '/dados'
     | '/home'
@@ -203,6 +214,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/adminpanel'
+    | '/arena'
     | '/blackjack'
     | '/dados'
     | '/home'
@@ -222,6 +234,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminpanelRoute: typeof AdminpanelRoute
+  ArenaRoute: typeof ArenaRoute
   BlackjackRoute: typeof BlackjackRoute
   DadosRoute: typeof DadosRoute
   HomeRoute: typeof HomeRoute
@@ -331,6 +344,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlackjackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/arena': {
+      id: '/arena'
+      path: '/arena'
+      fullPath: '/arena'
+      preLoaderRoute: typeof ArenaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/adminpanel': {
       id: '/adminpanel'
       path: '/adminpanel'
@@ -358,6 +378,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminpanelRoute: AdminpanelRoute,
+  ArenaRoute: ArenaRoute,
   BlackjackRoute: BlackjackRoute,
   DadosRoute: DadosRoute,
   HomeRoute: HomeRoute,
