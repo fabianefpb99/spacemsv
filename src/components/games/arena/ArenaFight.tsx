@@ -12,7 +12,8 @@ import arenaFightAudio from "@/assets/audio/arena/arena-fight.mp3.asset.json";
 function useFightMusic() {
   useEffect(() => {
     const TARGET_VOLUME = 0.06;
-    const FADE_MS = 1500;
+    const FADE_IN_MS = 500;
+    const FADE_OUT_MS = 1200;
     const audio = new Audio(arenaFightAudio.url);
     audio.preload = "auto";
     audio.loop = true;
@@ -36,7 +37,7 @@ function useFightMusic() {
     async function start() {
       try {
         await audio.play();
-        fade(0, TARGET_VOLUME, FADE_MS);
+        fade(0, TARGET_VOLUME, FADE_IN_MS);
       } catch {
         const retry = () => {
           window.removeEventListener("pointerdown", retry);
@@ -53,7 +54,7 @@ function useFightMusic() {
       const startVol = audio.volume;
       const t0 = performance.now();
       const fadeOut = () => {
-        const t = Math.min(1, (performance.now() - t0) / FADE_MS);
+        const t = Math.min(1, (performance.now() - t0) / FADE_OUT_MS);
         audio.volume = Math.max(0, startVol * (1 - t));
         if (t < 1) requestAnimationFrame(fadeOut);
         else {

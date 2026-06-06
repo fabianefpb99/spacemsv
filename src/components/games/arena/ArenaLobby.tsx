@@ -224,8 +224,19 @@ function useLobbyMusic() {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       if (restartRef.current) clearTimeout(restartRef.current);
       audio.removeEventListener("ended", onEnded);
-      audio.pause();
-      audio.src = "";
+      const startVol = audio.volume;
+      const t0 = performance.now();
+      const FADE_OUT_MS = 400;
+      const fadeOut = () => {
+        const t = Math.min(1, (performance.now() - t0) / FADE_OUT_MS);
+        audio.volume = Math.max(0, startVol * (1 - t));
+        if (t < 1) requestAnimationFrame(fadeOut);
+        else {
+          audio.pause();
+          audio.src = "";
+        }
+      };
+      requestAnimationFrame(fadeOut);
       audioRef.current = null;
     };
   }, []);
