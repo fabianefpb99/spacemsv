@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -27,8 +27,6 @@ function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
 }
 
-const ZERO_COP_FORMATTER = new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 });
-
 /**
  * Top-level orchestrator for /arena.
  *  - owns selection + bet state
@@ -51,7 +49,6 @@ export function ArenaGame() {
 
   const balance = (me.data?.balance ?? 0) + (me.data?.bonus_balance ?? 0);
   const bonusBalance = me.data?.bonus_balance ?? 0;
-  const balanceLabel = useMemo(() => ZERO_COP_FORMATTER.format(Math.floor(balance)), [balance]);
 
   const handlePlay = useCallback(async () => {
     if (!selected || isPlaying) return;
@@ -115,7 +112,7 @@ export function ArenaGame() {
               <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
               <div className="font-display text-[11px] font-bold sm:text-xs text-white">
                 <span className="mr-0.5 text-emerald-400">$</span>
-                {balanceLabel} COP
+                {formatCOP(balance)} COP
               </div>
             </div>
             <AuthControl />
