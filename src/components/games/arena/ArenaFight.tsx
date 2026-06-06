@@ -223,21 +223,21 @@ export function ArenaFight({
   return (
     <div className="absolute inset-0 overflow-hidden">
       {/* Current event banner — 3 líneas centradas (atacante / acción / objetivo) */}
-      <div className="absolute inset-x-0 top-[7%] z-20 flex justify-center px-4">
+      <div className="absolute inset-x-0 top-[7%] z-20 flex justify-center px-2">
         {currentEvent ? (
           <div
             key={eventIdx}
-            className="animate-fade-in flex flex-col gap-0.5 font-extrabold uppercase leading-none tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]"
+            className="animate-fade-in flex w-full flex-col gap-0.5 font-display font-extrabold uppercase leading-none tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]"
           >
             <span
-              className="self-start text-[30px]"
+              className="self-start pl-2 text-[30px]"
               style={{ color: ARENA_CHARACTER_META[currentEvent.attacker].color }}
             >
               {ARENA_CHARACTER_META[currentEvent.attacker].name}
             </span>
             <span className="self-center text-[22px] text-white">GOLPEÓ A</span>
             <span
-              className="self-end text-[30px]"
+              className="self-end pr-2 text-[30px]"
               style={{ color: ARENA_CHARACTER_META[currentEvent.target].color }}
             >
               {ARENA_CHARACTER_META[currentEvent.target].name}
