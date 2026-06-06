@@ -73,10 +73,10 @@ const GAMES = [
 const SLIDES = [
   {
     img: heroArenaImg.url,
-    eyebrow: "MUY PRONTO",
+    eyebrow: "ENTRA A LA",
     title: "ARENA",
-    desc: "¡Entra ahora y\nvisualiza los campeones!",
-    cta: "Entrar",
+    desc: "Apuesta por tu campeón\ny gana hasta 6.5x.",
+    cta: "Jugar Arena",
     to: "/arena" as const,
   },
   {
