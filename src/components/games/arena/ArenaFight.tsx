@@ -309,6 +309,7 @@ export function ArenaFight({
   onComplete: () => void;
 }) {
   useFightMusic();
+  const { playHit } = useHitSfx();
   const [eventIdx, setEventIdx] = useState(0);
   const [phases, setPhases] = useState<PhaseMap>(freshPhases);
   const [hp, setHp] = useState<Record<ArenaCharacterId, number>>(freshHp);
@@ -377,6 +378,8 @@ export function ArenaFight({
       setHp(() => ({ ...ev.hp }));
       setShakeId(ev.target);
       setLungeId(ev.attacker);
+      const isFinal = ev.finisher === true || eventIdx === combatLog.length - 1;
+      playHit(isFinal);
     }, attackStartDelay);
 
     const reset = setTimeout(() => {
