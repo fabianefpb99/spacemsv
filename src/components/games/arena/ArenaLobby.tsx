@@ -180,7 +180,7 @@ function useLobbyMusic() {
   const restartRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const TARGET_VOLUME = 0.072;
+    const TARGET_VOLUME = 0.032;
     const FADE_MS = 1500;
     const GAP_MS = 2000;
 
@@ -238,11 +238,23 @@ function useLobbyMusic() {
 
     startPlayback();
 
+    let wasPlayingBeforeHide = false;
+    const onVisibility = () => {
+      if (document.hidden) {
+        wasPlayingBeforeHide = !audio.paused;
+        audio.pause();
+      } else if (wasPlayingBeforeHide && !cancelled) {
+        void audio.play().catch(() => {});
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
     return () => {
       cancelled = true;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       if (restartRef.current) clearTimeout(restartRef.current);
       audio.removeEventListener("ended", onEnded);
+      document.removeEventListener("visibilitychange", onVisibility);
       const startVol = audio.volume;
       const t0 = performance.now();
       const FADE_OUT_MS = 400;
