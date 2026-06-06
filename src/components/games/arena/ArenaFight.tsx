@@ -491,7 +491,6 @@ export function ArenaFight({
             <FighterSlot
               key={slot}
               id={id}
-              slot={slot}
               x={slotPos.x + lunge.dx}
               y={slotPos.y + lunge.dy}
               heightPct={heightPct}
