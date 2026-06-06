@@ -603,7 +603,7 @@ export function ArenaFight({
               dead={resultMode ? false : dead}
               shake={resultMode ? false : shakeId === id}
               mirror={resultMode ? false : mirror}
-              isWinner
+              isWinner={id === winner}
               isBet={id === characterBet}
             />
           );
