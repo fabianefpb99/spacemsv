@@ -377,7 +377,7 @@ export function ArenaFight({
       </div>
 
       {/* Stage — slot-positioned fighters */}
-      <div className="absolute inset-x-0 top-[9%] bottom-[22%] overflow-visible">
+      <div className="absolute -inset-x-[14vw] top-[9%] bottom-[22%] overflow-visible">
         {/* Speed streak — aura detrás del atacante mientras avanza al golpe. */}
         {currentEvent && lungeId === characterBet && (() => {
           const aSlot = slotOf[lungeId];
@@ -575,7 +575,6 @@ function HpBar({
 
 function FighterSlot({
   id,
-  slot,
   x,
   y,
   heightPct,
@@ -588,7 +587,6 @@ function FighterSlot({
   isBet,
 }: {
   id: ArenaCharacterId;
-  slot: SlotId;
   x: number;
   y: number;
   heightPct: number;
@@ -607,10 +605,7 @@ function FighterSlot({
         left: `${x}%`,
         top: `${y}%`,
         height: `${heightPct}%`,
-        width:
-          phase === "damage" && (slot === "frontLeft" || slot === "frontRight")
-            ? `calc(${heightPct}% + 22vw)`
-            : `${heightPct}%`,
+        width: `${heightPct}%`,
         transform: "translate(-50%, -50%)",
         zIndex,
       }}
