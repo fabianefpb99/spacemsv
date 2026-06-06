@@ -26,6 +26,8 @@ export function ArenaLobby({
         backgroundPosition: "center",
       }}
     >
+      {/* Vignette so fighters dominate over the arena artwork */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70" />
       {/* Fighters standing on the 4 platforms in the backdrop.
           The platforms sit roughly in the lower-middle of the artwork;
           fighters are large and their feet land on the platform line. */}
