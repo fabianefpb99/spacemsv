@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { ARENA_CHARACTERS, type ArenaCharacterId } from "@/lib/games/arena.shared";
-import { ARENA_BACKGROUNDS, ARENA_CHARACTER_META } from "./characters";
+import { ARENA_CHARACTER_META } from "./characters";
 import { CharacterSprite } from "./CharacterSprite";
 
 /**
