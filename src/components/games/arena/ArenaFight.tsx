@@ -95,11 +95,6 @@ function getLungeOffset(
   return { dx: (RING_CENTER.x - a.x) * 0.85, dy: (RING_CENTER.y - a.y) * 0.85 };
 }
 
-/** Elige la disposición de los 4 personajes ANTES de empezar la pelea de
- *  modo que cada golpe del log tenga ángulo (atacante y objetivo nunca en
- *  la misma columna). Si no existe disposición perfecta, escoge la que
- *  minimiza conflictos. Empata preferiendo: (a) menos cambios respecto al
- *  boceto, (b) cada personaje en su lado natural. */
 const SLOT_IDS: SlotId[] = ["backLeft", "backRight", "frontLeft", "frontRight"];
 const NATURAL_SIDE: Record<ArenaCharacterId, "Left" | "Right"> = {
   shadow: "Left",
@@ -107,16 +102,6 @@ const NATURAL_SIDE: Record<ArenaCharacterId, "Left" | "Right"> = {
   blaze: "Right",
   titan: "Right",
 };
-
-function permutations<T>(arr: T[]): T[][] {
-  if (arr.length <= 1) return [arr];
-  const out: T[][] = [];
-  for (let i = 0; i < arr.length; i++) {
-    const rest = [...arr.slice(0, i), ...arr.slice(i + 1)];
-    for (const p of permutations(rest)) out.push([arr[i], ...p]);
-  }
-  return out;
-}
 
 function getSlotOf(map: SlotMap): Record<ArenaCharacterId, SlotId> {
   const next = {} as Record<ArenaCharacterId, SlotId>;
@@ -228,11 +213,11 @@ export function ArenaFight({
 
   const slotOf = useMemo(() => getSlotOf(slotMap), [slotMap]);
 
-  // Dismiss the ¡FIGHT! banner after a beat.
   useEffect(() => {
+    if (!showFightBanner) return;
     const t = setTimeout(() => setShowFightBanner(false), FIGHT_BANNER_MS);
     return () => clearTimeout(t);
-  }, []);
+  }, [showFightBanner]);
 
   useEffect(() => {
     setEventIdx(0);
