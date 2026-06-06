@@ -26,6 +26,7 @@ import { CharacterSprite } from "./CharacterSprite";
 const EVENT_INTERVAL_MS = 1200;
 const ATTACK_PHASE_MS = 600;
 const FIGHT_BANNER_MS = 1200;
+const SWAP_PREP_MS = 260;
 
 type SlotId = "backLeft" | "backRight" | "frontLeft" | "frontRight";
 type PhaseMap = Record<ArenaCharacterId, "stance" | "attack" | "damage">;
@@ -91,6 +92,39 @@ function getLungeOffset(
   // Diagonal → lunge ~80% of the way toward ring center
   const a = SLOT_POSITIONS[attackerSlot];
   return { dx: (RING_CENTER.x - a.x) * 0.85, dy: (RING_CENTER.y - a.y) * 0.85 };
+}
+
+/** Si atacante y objetivo quedan en la misma columna (sin ángulo de ataque),
+ *  intercambia al objetivo con su vecino de fila para abrir la diagonal.
+ *  Devuelve el mismo mapa cuando no hace falta tocar nada. */
+function reorganizeForEvent(
+  currentMap: Record<SlotId, ArenaCharacterId>,
+  attacker: ArenaCharacterId,
+  target: ArenaCharacterId,
+): Record<SlotId, ArenaCharacterId> {
+  const slotOf = {} as Record<ArenaCharacterId, SlotId>;
+  (Object.keys(currentMap) as SlotId[]).forEach((s) => {
+    slotOf[currentMap[s]] = s;
+  });
+  const aSlot = slotOf[attacker];
+  const tSlot = slotOf[target];
+  if (!aSlot || !tSlot) return currentMap;
+
+  const sameRow = aSlot.startsWith("front") === tSlot.startsWith("front");
+  const sameCol = aSlot.endsWith("Left") === tSlot.endsWith("Left");
+  // Misma fila o diagonal: ya hay ángulo. Misma posición: imposible (mismo id).
+  if (!sameCol || sameRow) return currentMap;
+
+  // Misma columna: hay que mover al objetivo al lado opuesto en su misma fila.
+  const tRow: "front" | "back" = tSlot.startsWith("front") ? "front" : "back";
+  const otherSide: "Left" | "Right" = tSlot.endsWith("Left") ? "Right" : "Left";
+  const swapSlot = `${tRow}${otherSide}` as SlotId;
+
+  const next = { ...currentMap };
+  const tmp = next[tSlot];
+  next[tSlot] = next[swapSlot];
+  next[swapSlot] = tmp;
+  return next;
 }
 
 export function ArenaFight({
