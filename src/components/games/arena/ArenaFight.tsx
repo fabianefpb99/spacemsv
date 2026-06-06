@@ -84,9 +84,12 @@ function getLungeOffset(
     return { dx: dir * 10, dy: 0 };
   }
   if (sameCol) {
-    // 10% vertical toward target
-    const dir = targetSlot.startsWith("front") ? 1 : -1;
-    return { dx: 0, dy: dir * 10 };
+    // Misma columna: lunge DIAGONAL hacia el centro del ring para que el
+    // ataque se lea como un golpe lateral y no como "teletransporte" encima
+    // del personaje de la misma línea vertical.
+    const dirY = targetSlot.startsWith("front") ? 1 : -1;
+    const dirX = attackerSlot.endsWith("Left") ? 1 : -1;
+    return { dx: dirX * 9, dy: dirY * 8 };
   }
   // Diagonal → lunge ~80% of the way toward ring center
   const a = SLOT_POSITIONS[attackerSlot];
