@@ -112,8 +112,9 @@ export function ArenaFight({
   const [showFightBanner, setShowFightBanner] = useState(true);
   const [currentEvent, setCurrentEvent] = useState<ArenaCombatEvent | null>(null);
 
-  // Fixed slot map (per boceto) — no longer depends on combat outcome.
-  const slotMap = FIXED_SLOT_MAP;
+  // Slot map dinámico: arranca con el boceto y se reorganiza antes de cada
+  // golpe si atacante y objetivo quedan en la misma columna (sin ángulo).
+  const [slotMap, setSlotMap] = useState<Record<SlotId, ArenaCharacterId>>(FIXED_SLOT_MAP);
   const slotOf = useMemo(() => {
     const map = {} as Record<ArenaCharacterId, SlotId>;
     (Object.keys(slotMap) as SlotId[]).forEach((s) => {
@@ -137,10 +138,20 @@ export function ArenaFight({
     }
     const ev = combatLog[eventIdx];
     setCurrentEvent(ev);
-    setPhases((prev) => ({ ...prev, [ev.attacker]: "attack", [ev.target]: "damage" }));
-    setHp(() => ({ ...ev.hp }));
-    setShakeId(ev.target);
-    setLungeId(ev.attacker);
+
+    // 1) Reorganizar slots si la pareja no tiene ángulo de ataque.
+    const reorganized = reorganizeForEvent(slotMap, ev.attacker, ev.target);
+    const needsSwap = reorganized !== slotMap;
+    if (needsSwap) setSlotMap(reorganized);
+
+    // 2) Disparar el golpe (tras un beat si hubo swap, para que se "acomoden").
+    const swapDelay = needsSwap ? SWAP_PREP_MS : 0;
+    const startAttack = setTimeout(() => {
+      setPhases((prev) => ({ ...prev, [ev.attacker]: "attack", [ev.target]: "damage" }));
+      setHp(() => ({ ...ev.hp }));
+      setShakeId(ev.target);
+      setLungeId(ev.attacker);
+    }, swapDelay);
 
     const reset = setTimeout(() => {
       setPhases((prev) => {
@@ -152,14 +163,15 @@ export function ArenaFight({
       });
       setShakeId(null);
       setLungeId(null);
-    }, ATTACK_PHASE_MS);
-    const advance = setTimeout(() => setEventIdx((i) => i + 1), EVENT_INTERVAL_MS);
+    }, swapDelay + ATTACK_PHASE_MS);
+    const advance = setTimeout(() => setEventIdx((i) => i + 1), swapDelay + EVENT_INTERVAL_MS);
 
     return () => {
+      clearTimeout(startAttack);
       clearTimeout(reset);
       clearTimeout(advance);
     };
-  }, [eventIdx, combatLog, onComplete, showFightBanner]);
+  }, [eventIdx, combatLog, onComplete, showFightBanner, slotMap]);
 
   return (
     <div className="absolute inset-0 overflow-hidden">
