@@ -26,8 +26,10 @@ export function ArenaLobby({
         backgroundPosition: "center",
       }}
     >
-      {/* Fighters standing on the 4 platforms in the backdrop */}
-      <div className="absolute inset-x-0 top-[28%] bottom-[6%] grid grid-cols-4 gap-1 px-2">
+      {/* Fighters standing on the 4 platforms in the backdrop.
+          The platforms sit roughly in the lower-middle of the artwork;
+          fighters are large and their feet land on the platform line. */}
+      <div className="absolute inset-x-0 top-[8%] bottom-[18%] grid grid-cols-4 gap-0 px-1">
         {ARENA_CHARACTERS.map((id) => (
           <FighterCard
             key={id}
@@ -66,7 +68,7 @@ function FighterCard({
       onClick={() => !disabled && onSelect(id)}
       disabled={disabled}
       className={cn(
-        "group relative flex h-full w-full flex-col items-center justify-end gap-0.5 transition disabled:opacity-50",
+        "group relative flex h-full w-full flex-col items-center justify-end gap-1 transition disabled:opacity-50",
         selected && "z-10",
       )}
     >
@@ -74,7 +76,7 @@ function FighterCard({
         characterId={id}
         phase="idle"
         className={cn(
-          "h-[85%] w-full transition-transform",
+          "h-[88%] w-full transition-transform",
           selected ? "scale-110" : "opacity-90 group-hover:scale-105 group-hover:opacity-100",
         )}
       />
