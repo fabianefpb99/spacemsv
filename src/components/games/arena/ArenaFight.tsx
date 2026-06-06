@@ -325,10 +325,17 @@ export function ArenaFight({
           const start = SLOT_POSITIONS[aSlot];
           const lunge = getLungeOffset(aSlot, tSlot);
           if (lunge.dx === 0 && lunge.dy === 0) return null;
+          // Anclar el rastro a la cadera (no la cabeza). El sprite se dibuja con
+          // object-contain alineado al bottom dentro de un slot de 65% de alto,
+          // así que la cadera queda aprox. +14% bajo el centro del slot.
+          const HIP_OFFSET_Y = 14;
+          const sx = start.x;
+          const sy = start.y + HIP_OFFSET_Y;
           const endX = start.x + lunge.dx;
-          const endY = start.y + lunge.dy;
+          const endY = start.y + lunge.dy + HIP_OFFSET_Y;
           const color = ARENA_CHARACTER_META[lungeId].color;
-          const gradId = `arena-streak-${lungeId}`;
+          const gradId = `arena-streak-grad-${lungeId}`;
+          const blurId = `arena-streak-blur-${lungeId}`;
           return (
             <svg
               key={`streak-${eventIdx}`}
@@ -340,27 +347,49 @@ export function ArenaFight({
                 <linearGradient
                   id={gradId}
                   gradientUnits="userSpaceOnUse"
-                  x1={start.x}
-                  y1={start.y}
+                  x1={sx}
+                  y1={sy}
                   x2={endX}
                   y2={endY}
                 >
                   <stop offset="0%" stopColor={color} stopOpacity="0" />
-                  <stop offset="60%" stopColor={color} stopOpacity="0.55" />
-                  <stop offset="100%" stopColor={color} stopOpacity="0.95" />
+                  <stop offset="40%" stopColor={color} stopOpacity="0.15" />
+                  <stop offset="80%" stopColor={color} stopOpacity="0.55" />
+                  <stop offset="100%" stopColor={color} stopOpacity="0.85" />
                 </linearGradient>
+                <filter id={blurId} x="-30%" y="-30%" width="160%" height="160%">
+                  <feGaussianBlur stdDeviation="1.4" />
+                </filter>
               </defs>
-              <line
-                x1={start.x}
-                y1={start.y}
-                x2={endX}
-                y2={endY}
-                stroke={`url(#${gradId})`}
-                strokeWidth="14"
-                strokeLinecap="round"
-                vectorEffect="non-scaling-stroke"
-                style={{ filter: `drop-shadow(0 0 8px ${color})` }}
-              />
+              <g filter={`url(#${blurId})`}>
+                {/* Halo exterior — muy difuso, ancho */}
+                <line
+                  x1={sx} y1={sy} x2={endX} y2={endY}
+                  stroke={`url(#${gradId})`}
+                  strokeWidth="34"
+                  strokeLinecap="round"
+                  vectorEffect="non-scaling-stroke"
+                  opacity="0.35"
+                />
+                {/* Cuerpo medio */}
+                <line
+                  x1={sx} y1={sy} x2={endX} y2={endY}
+                  stroke={`url(#${gradId})`}
+                  strokeWidth="16"
+                  strokeLinecap="round"
+                  vectorEffect="non-scaling-stroke"
+                  opacity="0.6"
+                />
+                {/* Núcleo brillante */}
+                <line
+                  x1={sx} y1={sy} x2={endX} y2={endY}
+                  stroke="white"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  vectorEffect="non-scaling-stroke"
+                  opacity="0.55"
+                />
+              </g>
             </svg>
           );
         })()}
