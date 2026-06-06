@@ -1,11 +1,13 @@
 import { useCallback, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { Menu } from "lucide-react";
 
 import { useMe } from "@/hooks/useMe";
+import { AuthControl } from "@/components/auth/AuthControl";
+import betspaceLogo from "@/assets/betspace-logo.svg";
 import { playArena } from "@/lib/games/arena.functions";
 import {
   ARENA_MIN_BET,
@@ -79,27 +81,35 @@ export function ArenaGame() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0118] via-[#1a0533] to-[#0a0118] text-white">
-      <div className="mx-auto flex max-w-md flex-col gap-3 p-3 pb-6">
-        {/* Header */}
-        <header className="flex items-center justify-between">
-          <Link
-            to="/home"
-            className="flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-sm text-white/80 backdrop-blur-sm hover:bg-white/10"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Volver
-          </Link>
-          <div className="text-right">
-            <div className="text-[10px] uppercase tracking-wider text-white/50">Saldo</div>
-            <div className="font-mono text-sm font-bold text-white">
-              ${formatCOP(balance)}
+    <div className="min-h-screen bg-[#060210] text-white">
+      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-3 pt-3 sm:max-w-lg sm:px-4">
+        {/* Header (matches Mines/Spaceman/Dados) */}
+        <header
+          className="flex items-center justify-between border-b border-purple-500/20 bg-[#060210]/80 px-3 pb-2 -mx-3 -mt-3 backdrop-blur-sm"
+          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
+        >
+          <div className="flex items-center gap-1">
+            <Link to="/home" className="rounded-md p-2 text-white hover:bg-white/10">
+              <Menu className="h-7 w-7" strokeWidth={3} />
+            </Link>
+            <Link to="/home">
+              <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7 translate-y-px" />
+            </Link>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="text-right">
+              <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
+              <div className="font-display text-[11px] font-bold sm:text-xs text-white">
+                <span className="mr-0.5 text-emerald-400">$</span>
+                {formatCOP(balance)} COP
+              </div>
             </div>
+            <AuthControl />
           </div>
         </header>
 
-        {/* Stage (lobby or fight) */}
-        <div className="relative">
+        {/* Stage — fills available vertical space; bg image lives here */}
+        <div className="relative mt-2 flex-1 min-h-0">
           {phase === "lobby" && (
             <ArenaLobby
               selected={selected}
@@ -120,17 +130,19 @@ export function ArenaGame() {
           )}
         </div>
 
-        {/* Betting panel only on lobby */}
+        {/* Compact betting HUD */}
         {phase === "lobby" && (
-          <BettingPanel
-            bet={bet}
-            bonusBalance={bonusBalance}
-            balance={balance}
-            selected={selected}
-            onBetChange={setBet}
-            onPlay={handlePlay}
-            isPlaying={isPlaying}
-          />
+          <div className="mt-2">
+            <BettingPanel
+              bet={bet}
+              bonusBalance={bonusBalance}
+              balance={balance}
+              selected={selected}
+              onBetChange={setBet}
+              onPlay={handlePlay}
+              isPlaying={isPlaying}
+            />
+          </div>
         )}
       </div>
     </div>
