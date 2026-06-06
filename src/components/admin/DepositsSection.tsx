@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Check, Loader2, RefreshCw, Search, X } from "lucide-react";
+import { ArrowLeft, Check, Loader2, RefreshCw, Search, X } from "lucide-react";
 import astronaut from "@/assets/astronaut.svg";
+import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
 import { supabase } from "@/integrations/supabase/client";
 import {
   adminApproveDeposit,
@@ -216,6 +217,7 @@ export function DepositsSection() {
 }
 
 function DepositDetailDrawer({ id, onClose }: { id: string; onClose: () => void }) {
+  useHistoryBackClose(true, onClose);
   const getFn = useServerFn(adminGetDeposit);
   const approveFn = useServerFn(adminApproveDeposit);
   const rejectFn = useServerFn(adminRejectDeposit);
