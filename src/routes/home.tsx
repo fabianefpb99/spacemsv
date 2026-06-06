@@ -547,6 +547,38 @@ function HomePage() {
         </Link>
 
         {/* Jackpot — banner estilo BlackJack */}
+        {/* Arena — banner estilo Ruleta */}
+        <Link
+          to="/arena"
+          className="relative mt-3 block h-24 overflow-hidden rounded-xl border border-fuchsia-400/70 shadow-[0_0_12px_rgba(217,70,239,0.3)] transition hover:shadow-[0_0_22px_rgba(217,70,239,0.6)] sm:h-28"
+        >
+          <SkeletonImage
+            src={heroArenaImg.url}
+            alt="Arena"
+            loading="lazy"
+            wrapperClassName="absolute inset-0 h-full w-full"
+            className="h-full w-full object-cover"
+          />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent" />
+          <div className="relative z-10 flex h-full items-center justify-between gap-3 px-4 sm:px-5">
+            <div className="min-w-0 flex-1">
+              <div className="text-[10px] font-semibold uppercase tracking-widest text-fuchsia-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+                Apuesta y gana
+              </div>
+              <div className="mt-0.5 font-display text-2xl font-black leading-none tracking-wide text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] sm:text-3xl">
+                Arena
+              </div>
+              <div className="mt-1 inline-block rounded-sm bg-fuchsia-600/80 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white shadow-[0_0_8px_rgba(217,70,239,0.6)]">
+                Paga hasta 6.5x
+              </div>
+            </div>
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-fuchsia-400/70 bg-black/50 text-fuchsia-100 backdrop-blur-sm shadow-[0_0_10px_rgba(217,70,239,0.5)]">
+              <ChevronRight className="h-4 w-4" />
+            </span>
+          </div>
+        </Link>
+
+        {/* Jackpot — banner estilo BlackJack */}
         <div className="relative mt-3 block h-24 overflow-hidden rounded-xl border border-amber-400/70 shadow-[0_0_12px_rgba(251,191,36,0.3)] transition hover:shadow-[0_0_22px_rgba(251,191,36,0.6)] sm:h-28">
           <SkeletonImage
             src={jackpotBanner}
