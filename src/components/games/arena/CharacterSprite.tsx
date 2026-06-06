@@ -18,6 +18,7 @@ export function CharacterSprite({
   alpha = 1,
   mirror = false,
   shake = false,
+  fit = "contain",
 }: {
   characterId: ArenaCharacterId;
   phase: ArenaSpritePhase;
@@ -25,6 +26,7 @@ export function CharacterSprite({
   alpha?: number;
   mirror?: boolean;
   shake?: boolean;
+  fit?: "contain" | "height";
 }) {
   const meta = ARENA_CHARACTER_META[characterId];
   return (
@@ -42,7 +44,8 @@ export function CharacterSprite({
         alt={meta.name}
         draggable={false}
         className={cn(
-          "pointer-events-none h-full w-full select-none object-contain drop-shadow-[0_18px_24px_rgba(0,0,0,0.55)] transition-[opacity,transform] duration-200",
+          "pointer-events-none select-none object-contain drop-shadow-[0_18px_24px_rgba(0,0,0,0.55)] transition-[opacity,transform] duration-200",
+          fit === "height" ? "h-full w-auto max-w-none" : "h-full w-full",
           shake && "animate-[arena-shake_0.45s_ease-in-out]",
         )}
         style={{

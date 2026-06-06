@@ -576,6 +576,7 @@ function HpBar({
 
 function FighterSlot({
   id,
+  slot,
   x,
   y,
   heightPct,
@@ -588,6 +589,7 @@ function FighterSlot({
   isBet,
 }: {
   id: ArenaCharacterId;
+  slot: SlotId;
   x: number;
   y: number;
   heightPct: number;
@@ -599,6 +601,7 @@ function FighterSlot({
   isWinner: boolean;
   isBet: boolean;
 }) {
+  const needsHorizontalBleed = slot === "frontLeft" || slot === "frontRight";
   return (
     <div
       className="absolute flex items-end justify-center transition-[left,top] duration-300 ease-out"
@@ -625,14 +628,20 @@ function FighterSlot({
           }}
         />
       )}
-      <CharacterSprite
-        characterId={id}
-        phase={phase}
-        alpha={dead ? 0.3 : 1}
-        shake={shake}
-        mirror={mirror}
-        className="h-full w-full"
-      />
+      <div
+        className="pointer-events-none flex h-full items-end justify-center overflow-visible"
+        style={{ width: needsHorizontalBleed ? "calc(100% + 20vw)" : "100%" }}
+      >
+        <CharacterSprite
+          characterId={id}
+          phase={phase}
+          alpha={dead ? 0.3 : 1}
+          shake={shake}
+          mirror={mirror}
+          fit="height"
+          className="h-full"
+        />
+      </div>
     </div>
   );
 }
