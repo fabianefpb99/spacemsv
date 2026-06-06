@@ -603,8 +603,6 @@ function FighterSlot({
   isBet: boolean;
 }) {
   const needsHorizontalBleed = slot === "frontLeft" || slot === "frontRight";
-  const isDamage = phase === "damage";
-  const allowBleed = needsHorizontalBleed && isDamage;
   return (
     <div
       className="absolute flex items-end justify-center transition-[left,top] duration-300 ease-out"
@@ -633,7 +631,7 @@ function FighterSlot({
       )}
       <div
         className="pointer-events-none flex h-full items-end justify-center overflow-visible"
-        style={{ width: allowBleed ? "calc(100% + 20vw)" : "100%" }}
+        style={{ width: needsHorizontalBleed ? "calc(100% + 20vw)" : "100%" }}
       >
         <CharacterSprite
           characterId={id}
@@ -641,7 +639,7 @@ function FighterSlot({
           alpha={dead ? 0.3 : 1}
           shake={shake}
           mirror={mirror}
-          fit={allowBleed ? "height" : "contain"}
+          fit="contain"
           className="h-full"
         />
       </div>
