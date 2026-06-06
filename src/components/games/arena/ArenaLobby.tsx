@@ -72,7 +72,7 @@ function FighterCard({
       )}
     >
       <div
-        className="absolute bottom-[22%] left-1/2 h-6 w-[80%] -translate-x-1/2 rounded-full blur-md transition-all duration-300"
+        className="pointer-events-none absolute bottom-[22%] left-1/2 h-6 w-[80%] -translate-x-1/2 rounded-full blur-md transition-all duration-300"
         style={{ backgroundColor: meta.glow, opacity: selected ? 0.95 : 0.55 }}
       />
       <CharacterSprite
