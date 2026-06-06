@@ -557,7 +557,7 @@ function HpBar({
         className="mb-1 flex items-center gap-1 text-[11px] font-extrabold uppercase tracking-wider drop-shadow-[0_2px_3px_rgba(0,0,0,0.9)]"
         style={{ color: "#ffffff" }}
       >
-        {isBet && <span className="text-yellow-300">\u2605</span>}
+        {isBet && <span className="text-yellow-300">★</span>}
         {meta.name}
       </div>
       <div
