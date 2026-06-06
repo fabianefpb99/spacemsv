@@ -38,7 +38,7 @@ export function ArenaLobby({
         </h1>
       </div>
 
-      <div className="absolute inset-x-0 top-[24%] bottom-0 grid grid-cols-4 gap-0 px-0">
+      <div className="absolute inset-x-0 top-[18%] bottom-0 grid grid-cols-4 gap-0 px-0">
         {ARENA_CHARACTERS.map((id) => (
           <FighterCard
             key={id}
