@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   ARENA_CHARACTERS,
@@ -26,8 +26,10 @@ import { CharacterSprite } from "./CharacterSprite";
 const EVENT_INTERVAL_MS = 1200;
 const ATTACK_PHASE_MS = 600;
 const FIGHT_BANNER_MS = 1200;
+const PRE_ATTACK_REPOSITION_MS = 220;
 
 type SlotId = "backLeft" | "backRight" | "frontLeft" | "frontRight";
+type SlotMap = Record<SlotId, ArenaCharacterId>;
 type PhaseMap = Record<ArenaCharacterId, "stance" | "attack" | "damage">;
 
 /** Center-point of each slot inside the stage area (percentages).
@@ -93,11 +95,6 @@ function getLungeOffset(
   return { dx: (RING_CENTER.x - a.x) * 0.85, dy: (RING_CENTER.y - a.y) * 0.85 };
 }
 
-/** Elige la disposición de los 4 personajes ANTES de empezar la pelea de
- *  modo que cada golpe del log tenga ángulo (atacante y objetivo nunca en
- *  la misma columna). Si no existe disposición perfecta, escoge la que
- *  minimiza conflictos. Empata preferiendo: (a) menos cambios respecto al
- *  boceto, (b) cada personaje en su lado natural. */
 const SLOT_IDS: SlotId[] = ["backLeft", "backRight", "frontLeft", "frontRight"];
 const NATURAL_SIDE: Record<ArenaCharacterId, "Left" | "Right"> = {
   shadow: "Left",
@@ -106,48 +103,90 @@ const NATURAL_SIDE: Record<ArenaCharacterId, "Left" | "Right"> = {
   titan: "Right",
 };
 
-function permutations<T>(arr: T[]): T[][] {
-  if (arr.length <= 1) return [arr];
-  const out: T[][] = [];
-  for (let i = 0; i < arr.length; i++) {
-    const rest = [...arr.slice(0, i), ...arr.slice(i + 1)];
-    for (const p of permutations(rest)) out.push([arr[i], ...p]);
-  }
-  return out;
+function getSlotOf(map: SlotMap): Record<ArenaCharacterId, SlotId> {
+  const next = {} as Record<ArenaCharacterId, SlotId>;
+  SLOT_IDS.forEach((slot) => {
+    next[map[slot]] = slot;
+  });
+  return next;
 }
 
-function planSlotMap(combatLog: ArenaCombatEvent[]): Record<SlotId, ArenaCharacterId> {
-  const ids = [...ARENA_CHARACTERS] as ArenaCharacterId[];
-  let best: { map: Record<SlotId, ArenaCharacterId>; score: number } | null = null;
-  for (const perm of permutations(ids)) {
-    const map = {} as Record<SlotId, ArenaCharacterId>;
-    SLOT_IDS.forEach((s, i) => (map[s] = perm[i]));
-    const slotOf = {} as Record<ArenaCharacterId, SlotId>;
-    SLOT_IDS.forEach((s) => (slotOf[map[s]] = s));
-
-    let conflicts = 0;
-    for (const ev of combatLog) {
-      const a = slotOf[ev.attacker];
-      const t = slotOf[ev.target];
-      const sameCol = a.endsWith("Left") === t.endsWith("Left");
-      // Sólo nos importa evitar que un personaje de atrás ataque al del frente
-      // de su misma columna (no tiene ángulo). El caso inverso (front → back
-      // misma columna) se permite.
-      if (sameCol && a.startsWith("back") && t.startsWith("front")) conflicts++;
-    }
-    let naturalSide = 0;
-    for (const s of SLOT_IDS) {
-      const side = s.endsWith("Left") ? "Left" : "Right";
-      if (NATURAL_SIDE[map[s]] === side) naturalSide++;
-    }
-    let bocetoMatches = 0;
-    for (const s of SLOT_IDS) if (map[s] === FIXED_SLOT_MAP[s]) bocetoMatches++;
-
-    // score: minimiza conflictos; en empate, prefiere lado natural y boceto.
-    const score = conflicts * 1000 - naturalSide * 10 - bocetoMatches;
-    if (!best || score < best.score) best = { map, score };
+function getOppositeSideSlot(slot: SlotId): SlotId {
+  switch (slot) {
+    case "backLeft":
+      return "backRight";
+    case "backRight":
+      return "backLeft";
+    case "frontLeft":
+      return "frontRight";
+    case "frontRight":
+      return "frontLeft";
   }
-  return best!.map;
+}
+
+function swapSlots(map: SlotMap, from: SlotId, to: SlotId): SlotMap {
+  if (from === to) return map;
+  return {
+    ...map,
+    [from]: map[to],
+    [to]: map[from],
+  };
+}
+
+function isBlockedSameColumnAttack(
+  map: SlotMap,
+  attacker: ArenaCharacterId,
+  target: ArenaCharacterId,
+): boolean {
+  const slotOf = getSlotOf(map);
+  const attackerSlot = slotOf[attacker];
+  const targetSlot = slotOf[target];
+  const sameCol = attackerSlot.endsWith("Left") === targetSlot.endsWith("Left");
+  return sameCol && attackerSlot.startsWith("back") && targetSlot.startsWith("front");
+}
+
+function reorganizeForEvent(
+  currentMap: SlotMap,
+  attacker: ArenaCharacterId,
+  target: ArenaCharacterId,
+  currentHp: Record<ArenaCharacterId, number>,
+): SlotMap {
+  if (!isBlockedSameColumnAttack(currentMap, attacker, target)) return currentMap;
+
+  const currentSlotOf = getSlotOf(currentMap);
+  const attackerSlot = currentSlotOf[attacker];
+  const targetSlot = currentSlotOf[target];
+  const candidates = [
+    swapSlots(currentMap, targetSlot, getOppositeSideSlot(targetSlot)),
+    swapSlots(currentMap, attackerSlot, getOppositeSideSlot(attackerSlot)),
+  ];
+
+  let bestMap: SlotMap | null = null;
+  let bestScore = Number.POSITIVE_INFINITY;
+
+  for (const candidate of candidates) {
+    if (isBlockedSameColumnAttack(candidate, attacker, target)) continue;
+
+    const candidateSlotOf = getSlotOf(candidate);
+    const movedIds = ARENA_CHARACTERS.filter((id) => currentSlotOf[id] !== candidateSlotOf[id]);
+    const deadMoves = movedIds.filter((id) => currentHp[id] <= 0).length;
+
+    let naturalSideViolations = 0;
+    let bocetoMisses = 0;
+    for (const slot of SLOT_IDS) {
+      const side = slot.endsWith("Left") ? "Left" : "Right";
+      if (NATURAL_SIDE[candidate[slot]] !== side) naturalSideViolations++;
+      if (candidate[slot] !== FIXED_SLOT_MAP[slot]) bocetoMisses++;
+    }
+
+    const score = deadMoves * 1000 + naturalSideViolations * 10 + bocetoMisses;
+    if (!bestMap || score < bestScore) {
+      bestMap = candidate;
+      bestScore = score;
+    }
+  }
+
+  return bestMap ?? currentMap;
 }
 
 export function ArenaFight({
@@ -168,24 +207,38 @@ export function ArenaFight({
   const [lungeId, setLungeId] = useState<ArenaCharacterId | null>(null);
   const [showFightBanner, setShowFightBanner] = useState(true);
   const [currentEvent, setCurrentEvent] = useState<ArenaCombatEvent | null>(null);
+  const [slotMap, setSlotMap] = useState<SlotMap>(FIXED_SLOT_MAP);
+  const slotMapRef = useRef<SlotMap>(FIXED_SLOT_MAP);
+  const hpRef = useRef<Record<ArenaCharacterId, number>>(freshHp());
 
-  // Slot map planeado ANTES de iniciar la pelea: se elige la disposición que
-  // evita que algún golpe quede en la misma columna (sin ángulo). Una vez
-  // empezada la pelea ya nadie se mueve de slot.
-  const slotMap = useMemo(() => planSlotMap(combatLog), [combatLog]);
-  const slotOf = useMemo(() => {
-    const map = {} as Record<ArenaCharacterId, SlotId>;
-    (Object.keys(slotMap) as SlotId[]).forEach((s) => {
-      map[slotMap[s]] = s;
-    });
-    return map;
-  }, [slotMap]);
+  const slotOf = useMemo(() => getSlotOf(slotMap), [slotMap]);
 
-  // Dismiss the ¡FIGHT! banner after a beat.
   useEffect(() => {
+    if (!showFightBanner) return;
     const t = setTimeout(() => setShowFightBanner(false), FIGHT_BANNER_MS);
     return () => clearTimeout(t);
-  }, []);
+  }, [showFightBanner]);
+
+  useEffect(() => {
+    setEventIdx(0);
+    setPhases(freshPhases());
+    setHp(freshHp());
+    setShakeId(null);
+    setLungeId(null);
+    setShowFightBanner(true);
+    setCurrentEvent(null);
+    setSlotMap(FIXED_SLOT_MAP);
+    slotMapRef.current = FIXED_SLOT_MAP;
+    hpRef.current = freshHp();
+  }, [combatLog, winner, characterBet]);
+
+  useEffect(() => {
+    slotMapRef.current = slotMap;
+  }, [slotMap]);
+
+  useEffect(() => {
+    hpRef.current = hp;
+  }, [hp]);
 
   // Walk through events on a timer (start after the banner fades).
   useEffect(() => {
@@ -195,11 +248,27 @@ export function ArenaFight({
       return () => clearTimeout(t);
     }
     const ev = combatLog[eventIdx];
-    setCurrentEvent(ev);
-    setPhases((prev) => ({ ...prev, [ev.attacker]: "attack", [ev.target]: "damage" }));
-    setHp(() => ({ ...ev.hp }));
-    setShakeId(ev.target);
-    setLungeId(ev.attacker);
+    const repositionedMap = reorganizeForEvent(
+      slotMapRef.current,
+      ev.attacker,
+      ev.target,
+      hpRef.current,
+    );
+    const needsReposition = repositionedMap !== slotMapRef.current;
+
+    if (needsReposition) {
+      slotMapRef.current = repositionedMap;
+      setSlotMap(repositionedMap);
+    }
+
+    const attackStartDelay = needsReposition ? PRE_ATTACK_REPOSITION_MS : 0;
+    const startAttack = setTimeout(() => {
+      setCurrentEvent(ev);
+      setPhases((prev) => ({ ...prev, [ev.attacker]: "attack", [ev.target]: "damage" }));
+      setHp(() => ({ ...ev.hp }));
+      setShakeId(ev.target);
+      setLungeId(ev.attacker);
+    }, attackStartDelay);
 
     const reset = setTimeout(() => {
       setPhases((prev) => {
@@ -211,10 +280,11 @@ export function ArenaFight({
       });
       setShakeId(null);
       setLungeId(null);
-    }, ATTACK_PHASE_MS);
-    const advance = setTimeout(() => setEventIdx((i) => i + 1), EVENT_INTERVAL_MS);
+    }, attackStartDelay + ATTACK_PHASE_MS);
+    const advance = setTimeout(() => setEventIdx((i) => i + 1), attackStartDelay + EVENT_INTERVAL_MS);
 
     return () => {
+      clearTimeout(startAttack);
       clearTimeout(reset);
       clearTimeout(advance);
     };
