@@ -26,7 +26,7 @@ import blazeStance from "@/assets/arena/blaze-stance.png.asset.json";
 import blazeAttack from "@/assets/arena/blaze-attack.png.asset.json";
 import blazeDamage from "@/assets/arena/blaze-damage.png.asset.json";
 
-import arenaLobbyBg from "@/assets/arena/arena-lobby-v2.jpg.asset.json";
+import arenaLobbyBg from "@/assets/arena/arena-lobby-v3.jpg.asset.json";
 import arenaFightBg from "@/assets/arena/arena-fight.jpg.asset.json";
 
 export type ArenaSpritePhase = "idle" | "stance" | "attack" | "damage";
