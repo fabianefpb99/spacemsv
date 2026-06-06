@@ -47,14 +47,22 @@ export function ArenaGame() {
   const [result, setResult] = useState<ArenaRoundResult | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [recentWinners, setRecentWinners] = useState<ArenaCharacterId[]>(() => {
-    if (typeof window === "undefined") return [];
+    const DEFAULTS: ArenaCharacterId[] = [
+      "titan", "nova", "blaze", "shadow", "titan", "shadow", "nova", "blaze",
+    ];
+    if (typeof window === "undefined") return DEFAULTS;
     try {
       const raw = window.localStorage.getItem("arena:recent-winners");
-      if (!raw) return [];
+      if (!raw) return DEFAULTS;
       const parsed = JSON.parse(raw);
-      return Array.isArray(parsed) ? (parsed.slice(0, 8) as ArenaCharacterId[]) : [];
+      if (!Array.isArray(parsed) || parsed.length === 0) return DEFAULTS;
+      const stored = parsed.slice(0, 8) as ArenaCharacterId[];
+      // Rellenar con defaults si hay menos de 8
+      return stored.length >= 8
+        ? stored
+        : [...stored, ...DEFAULTS].slice(0, 8);
     } catch {
-      return [];
+      return DEFAULTS;
     }
   });
 
