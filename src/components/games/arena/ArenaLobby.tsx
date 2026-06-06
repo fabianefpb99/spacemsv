@@ -180,7 +180,7 @@ function useLobbyMusic() {
   const restartRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const TARGET_VOLUME = 0.014;
+    const TARGET_VOLUME = 0.026;
     const FADE_MS = 1500;
     const GAP_MS = 2000;
 
