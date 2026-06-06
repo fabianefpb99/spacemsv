@@ -93,37 +93,59 @@ function getLungeOffset(
   return { dx: (RING_CENTER.x - a.x) * 0.85, dy: (RING_CENTER.y - a.y) * 0.85 };
 }
 
-/** Si atacante y objetivo quedan en la misma columna (sin ángulo de ataque),
- *  intercambia al objetivo con su vecino de fila para abrir la diagonal.
- *  Devuelve el mismo mapa cuando no hace falta tocar nada. */
-function reorganizeForEvent(
-  currentMap: Record<SlotId, ArenaCharacterId>,
-  attacker: ArenaCharacterId,
-  target: ArenaCharacterId,
-): Record<SlotId, ArenaCharacterId> {
-  const slotOf = {} as Record<ArenaCharacterId, SlotId>;
-  (Object.keys(currentMap) as SlotId[]).forEach((s) => {
-    slotOf[currentMap[s]] = s;
-  });
-  const aSlot = slotOf[attacker];
-  const tSlot = slotOf[target];
-  if (!aSlot || !tSlot) return currentMap;
+/** Elige la disposición de los 4 personajes ANTES de empezar la pelea de
+ *  modo que cada golpe del log tenga ángulo (atacante y objetivo nunca en
+ *  la misma columna). Si no existe disposición perfecta, escoge la que
+ *  minimiza conflictos. Empata preferiendo: (a) menos cambios respecto al
+ *  boceto, (b) cada personaje en su lado natural. */
+const SLOT_IDS: SlotId[] = ["backLeft", "backRight", "frontLeft", "frontRight"];
+const NATURAL_SIDE: Record<ArenaCharacterId, "Left" | "Right"> = {
+  shadow: "Left",
+  nova: "Left",
+  blaze: "Right",
+  titan: "Right",
+};
 
-  const sameRow = aSlot.startsWith("front") === tSlot.startsWith("front");
-  const sameCol = aSlot.endsWith("Left") === tSlot.endsWith("Left");
-  // Misma fila o diagonal: ya hay ángulo. Misma posición: imposible (mismo id).
-  if (!sameCol || sameRow) return currentMap;
+function permutations<T>(arr: T[]): T[][] {
+  if (arr.length <= 1) return [arr];
+  const out: T[][] = [];
+  for (let i = 0; i < arr.length; i++) {
+    const rest = [...arr.slice(0, i), ...arr.slice(i + 1)];
+    for (const p of permutations(rest)) out.push([arr[i], ...p]);
+  }
+  return out;
+}
 
-  // Misma columna: hay que mover al objetivo al lado opuesto en su misma fila.
-  const tRow: "front" | "back" = tSlot.startsWith("front") ? "front" : "back";
-  const otherSide: "Left" | "Right" = tSlot.endsWith("Left") ? "Right" : "Left";
-  const swapSlot = `${tRow}${otherSide}` as SlotId;
+function planSlotMap(combatLog: ArenaCombatEvent[]): Record<SlotId, ArenaCharacterId> {
+  const ids = [...ARENA_CHARACTERS] as ArenaCharacterId[];
+  let best: { map: Record<SlotId, ArenaCharacterId>; score: number } | null = null;
+  for (const perm of permutations(ids)) {
+    const map = {} as Record<SlotId, ArenaCharacterId>;
+    SLOT_IDS.forEach((s, i) => (map[s] = perm[i]));
+    const slotOf = {} as Record<ArenaCharacterId, SlotId>;
+    SLOT_IDS.forEach((s) => (slotOf[map[s]] = s));
 
-  const next = { ...currentMap };
-  const tmp = next[tSlot];
-  next[tSlot] = next[swapSlot];
-  next[swapSlot] = tmp;
-  return next;
+    let conflicts = 0;
+    for (const ev of combatLog) {
+      const a = slotOf[ev.attacker];
+      const t = slotOf[ev.target];
+      const sameCol = a.endsWith("Left") === t.endsWith("Left");
+      const sameRow = a.startsWith("front") === t.startsWith("front");
+      if (sameCol && !sameRow) conflicts++;
+    }
+    let naturalSide = 0;
+    for (const s of SLOT_IDS) {
+      const side = s.endsWith("Left") ? "Left" : "Right";
+      if (NATURAL_SIDE[map[s]] === side) naturalSide++;
+    }
+    let bocetoMatches = 0;
+    for (const s of SLOT_IDS) if (map[s] === FIXED_SLOT_MAP[s]) bocetoMatches++;
+
+    // score: minimiza conflictos; en empate, prefiere lado natural y boceto.
+    const score = conflicts * 1000 - naturalSide * 10 - bocetoMatches;
+    if (!best || score < best.score) best = { map, score };
+  }
+  return best!.map;
 }
 
 export function ArenaFight({
