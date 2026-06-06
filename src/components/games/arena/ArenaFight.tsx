@@ -8,6 +8,55 @@ import {
 import { ARENA_CHARACTER_META } from "./characters";
 import { CharacterSprite } from "./CharacterSprite";
 import arenaFightAudio from "@/assets/audio/arena/arena-fight.mp3.asset.json";
+import hit1Audio from "@/assets/audio/arena/hit-1.mp3.asset.json";
+import hit2Audio from "@/assets/audio/arena/hit-2.mp3.asset.json";
+import hit3Audio from "@/assets/audio/arena/hit-3.mp3.asset.json";
+import hit4Audio from "@/assets/audio/arena/hit-4.mp3.asset.json";
+import hit5Audio from "@/assets/audio/arena/hit-5.mp3.asset.json";
+import hitFinalAudio from "@/assets/audio/arena/hit-final.mp3.asset.json";
+
+function useHitSfx() {
+  const hitsRef = useRef<HTMLAudioElement[]>([]);
+  const finalRef = useRef<HTMLAudioElement | null>(null);
+  const rotationRef = useRef(0);
+  useEffect(() => {
+    const urls = [hit1Audio.url, hit2Audio.url, hit3Audio.url, hit4Audio.url, hit5Audio.url];
+    hitsRef.current = urls.map((u) => {
+      const a = new Audio(u);
+      a.preload = "auto";
+      a.volume = 0.55;
+      return a;
+    });
+    const f = new Audio(hitFinalAudio.url);
+    f.preload = "auto";
+    f.volume = 0.75;
+    finalRef.current = f;
+    return () => {
+      hitsRef.current.forEach((a) => a.pause());
+      hitsRef.current = [];
+      f.pause();
+      finalRef.current = null;
+    };
+  }, []);
+  return useMemo(
+    () => ({
+      playHit(isFinal: boolean) {
+        const a = isFinal
+          ? finalRef.current
+          : hitsRef.current[rotationRef.current % hitsRef.current.length];
+        if (!isFinal) rotationRef.current++;
+        if (!a) return;
+        try {
+          a.currentTime = 0;
+          void a.play();
+        } catch {
+          // ignore
+        }
+      },
+    }),
+    [],
+  );
+}
 
 function useFightMusic() {
   useEffect(() => {
