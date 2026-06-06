@@ -17,6 +17,7 @@ import heroSlotImg from "@/assets/home-hero-slot.jpg";
 import heroDiceImg from "@/assets/home-hero-dice.jpg";
 import heroBlackjackImg from "@/assets/home-hero-blackjack.jpg";
 import heroRuletaImg from "@/assets/home-hero-ruleta.jpg";
+import heroArenaImg from "@/assets/home-hero-arena.png.asset.json";
 import gameSpaceman from "@/assets/game-spaceman.jpg";
 import gameSlotMafia from "@/assets/game-slot-mafia.jpg";
 import gameMines from "@/assets/game-mines.jpg";
@@ -72,6 +73,14 @@ const GAMES = [
 ];
 
 const SLIDES = [
+  {
+    img: heroArenaImg.url,
+    eyebrow: "MUY PRONTO",
+    title: "ARENA",
+    desc: "¡Entra ahora y\nvisualiza los campeones!",
+    cta: "Entrar",
+    to: "/arena" as const,
+  },
   {
     img: heroImg,
     eyebrow: "¡BIENVENIDO A",
