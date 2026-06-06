@@ -599,25 +599,6 @@ function HomePage() {
   );
 }
 
-function AuthCta() {
-  const [open, setOpen] = useState(false);
-  return (
-    <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="group relative inline-flex items-center gap-1.5 overflow-hidden rounded-full bg-gradient-to-r from-fuchsia-600 via-purple-600 to-indigo-600 px-3 py-1.5 font-display text-[10px] font-semibold uppercase tracking-wide text-white shadow-[0_4px_14px_-4px_rgba(168,85,247,0.6)] ring-1 ring-white/15 transition-all hover:shadow-[0_6px_18px_-4px_rgba(217,70,239,0.7)] active:scale-95"
-      >
-        <User className="h-3 w-3" strokeWidth={2.5} />
-        <span>Ingresar</span>
-        <span className="ml-0.5 hidden text-white/70 sm:inline">·</span>
-        <span className="hidden sm:inline">Registro</span>
-      </button>
-      <AuthDialog open={open} onOpenChange={setOpen} />
-    </>
-  );
-}
-
 function BottomItem({ icon, label, active, to }: { icon: React.ReactNode; label: string; active?: boolean; to?: string }) {
   const className = `flex w-14 flex-col items-center gap-1 ${active ? "text-emerald-400" : "text-purple-300/70 hover:text-purple-200"}`;
   if (to) {
