@@ -318,6 +318,52 @@ export function ArenaFight({
 
       {/* Stage — slot-positioned fighters */}
       <div className="absolute inset-x-0 top-[9%] bottom-[22%]">
+        {/* Speed streak — aura detrás del atacante mientras avanza al golpe. */}
+        {currentEvent && lungeId && (() => {
+          const aSlot = slotOf[lungeId];
+          const tSlot = slotOf[currentEvent.target];
+          const start = SLOT_POSITIONS[aSlot];
+          const lunge = getLungeOffset(aSlot, tSlot);
+          if (lunge.dx === 0 && lunge.dy === 0) return null;
+          const endX = start.x + lunge.dx;
+          const endY = start.y + lunge.dy;
+          const color = ARENA_CHARACTER_META[lungeId].color;
+          const gradId = `arena-streak-${lungeId}`;
+          return (
+            <svg
+              key={`streak-${eventIdx}`}
+              className="pointer-events-none absolute inset-0 z-[4] animate-fade-in"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+            >
+              <defs>
+                <linearGradient
+                  id={gradId}
+                  gradientUnits="userSpaceOnUse"
+                  x1={start.x}
+                  y1={start.y}
+                  x2={endX}
+                  y2={endY}
+                >
+                  <stop offset="0%" stopColor={color} stopOpacity="0" />
+                  <stop offset="60%" stopColor={color} stopOpacity="0.55" />
+                  <stop offset="100%" stopColor={color} stopOpacity="0.95" />
+                </linearGradient>
+              </defs>
+              <line
+                x1={start.x}
+                y1={start.y}
+                x2={endX}
+                y2={endY}
+                stroke={`url(#${gradId})`}
+                strokeWidth="14"
+                strokeLinecap="round"
+                vectorEffect="non-scaling-stroke"
+                style={{ filter: `drop-shadow(0 0 8px ${color})` }}
+              />
+            </svg>
+          );
+        })()}
         {(Object.keys(slotMap) as SlotId[]).map((slot) => {
           const id = slotMap[slot];
           const slotPos = SLOT_POSITIONS[slot];
