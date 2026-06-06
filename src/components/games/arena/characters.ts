@@ -26,7 +26,7 @@ import blazeStance from "@/assets/arena/blaze-stance.png.asset.json";
 import blazeAttack from "@/assets/arena/blaze-attack.png.asset.json";
 import blazeDamage from "@/assets/arena/blaze-damage.png.asset.json";
 
-import arenaLobbyBg from "@/assets/arena/arena-lobby.jpg.asset.json";
+import arenaLobbyBg from "@/assets/arena/arena-lobby-v2.jpg.asset.json";
 import arenaFightBg from "@/assets/arena/arena-fight.jpg.asset.json";
 
 export type ArenaSpritePhase = "idle" | "stance" | "attack" | "damage";
@@ -118,10 +118,6 @@ export const ARENA_CHARACTER_META: Record<ArenaCharacterId, ArenaCharacterMeta> 
 };
 
 export const ARENA_BACKGROUNDS = {
-  // NOTE: the source filenames are inverted relative to their actual content.
-  // The "arena-fight" artwork is the 4-platform selection scene, and
-  // "arena-lobby" is the combat arena. Swap them here so each phase
-  // shows the right backdrop.
-  lobby: arenaFightBg.url,
-  fight: arenaLobbyBg.url,
+  lobby: arenaLobbyBg.url,
+  fight: arenaFightBg.url,
 } as const;
