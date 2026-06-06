@@ -11,6 +11,9 @@ import betspaceLogo from "@/assets/betspace-logo.svg";
 import { playArena } from "@/lib/games/arena.functions";
 import {
   ARENA_MIN_BET,
+  ARENA_ODDS,
+  nextArenaOddsPerm,
+  type ArenaOddsPerm,
   type ArenaCharacterId,
   type ArenaRoundResult,
 } from "@/lib/games/arena.shared";
@@ -54,6 +57,21 @@ export function ArenaGame() {
   const [phase, setPhase] = useState<Phase>("lobby");
   const [result, setResult] = useState<ArenaRoundResult | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  // Permutación + odds vigentes para la apuesta actual.
+  // Se rota en cada nueva apuesta y al recargar (mount inicial).
+  const [currentOdds, setCurrentOdds] = useState<Record<ArenaCharacterId, number>>(
+    () => ({ ...ARENA_ODDS }),
+  );
+  const [currentPerm, setCurrentPerm] = useState<ArenaOddsPerm | null>(null);
+  const [lastFavorite, setLastFavorite] = useState<ArenaCharacterId | null>(null);
+
+  // Rotar al montar la página: primera ronda ya trae multiplicadores aleatorios.
+  useEffect(() => {
+    const { perm, odds, favorite } = nextArenaOddsPerm(null);
+    setCurrentOdds(odds);
+    setCurrentPerm(perm);
+    setLastFavorite(favorite);
+  }, []);
   const [recentWinners, setRecentWinners] = useState<ArenaCharacterId[]>(() => {
     const DEFAULTS: ArenaCharacterId[] = [
       "titan", "nova", "blaze", "shadow", "titan", "shadow", "nova", "blaze",
@@ -136,7 +154,14 @@ export function ArenaGame() {
     setIsPlaying(true);
     try {
       const action_id = crypto.randomUUID();
-      const res = await play({ data: { bet, character: selected, client_action_id: action_id } });
+      const res = await play({
+        data: {
+          bet,
+          character: selected,
+          client_action_id: action_id,
+          odds_perm: currentPerm ?? undefined,
+        },
+      });
       setResult(res);
       setPhase("fighting");
     } catch (err) {
@@ -144,7 +169,7 @@ export function ArenaGame() {
       toast.error(msg);
       setIsPlaying(false);
     }
-  }, [selected, bet, balance, isPlaying, play]);
+  }, [selected, bet, balance, isPlaying, play, currentPerm]);
 
   const handleFightComplete = useCallback(() => {
     setPhase("result");
@@ -159,7 +184,13 @@ export function ArenaGame() {
     setResult(null);
     setPhase("lobby");
     setIsPlaying(false);
-  }, []);
+    // Nueva apuesta = nueva rotación. Forzamos que el favorito anterior
+    // no se repita para evitar que el mismo personaje gane casi siempre.
+    const { perm, odds, favorite } = nextArenaOddsPerm(lastFavorite);
+    setCurrentOdds(odds);
+    setCurrentPerm(perm);
+    setLastFavorite(favorite);
+  }, [lastFavorite]);
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#060210] text-white">
@@ -208,7 +239,12 @@ export function ArenaGame() {
         {/* Stage — fills all remaining vertical space, no scroll */}
         <div className="relative mt-2 min-h-0 flex-1">
           {phase === "lobby" && (
-            <ArenaLobby selected={selected} onSelect={setSelected} disabled={isPlaying} />
+            <ArenaLobby
+              selected={selected}
+              onSelect={setSelected}
+              disabled={isPlaying}
+              odds={currentOdds}
+            />
           )}
           {(phase === "fighting" || phase === "result") && result && (
             <ArenaFight
@@ -233,6 +269,7 @@ export function ArenaGame() {
               balance={balance}
               selected={selected}
               recentWinners={recentWinners}
+                odds={currentOdds}
               onBetChange={setBet}
               onSelect={setSelected}
               onPlay={handlePlay}
