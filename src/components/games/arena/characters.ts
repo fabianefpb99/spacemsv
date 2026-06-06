@@ -103,6 +103,10 @@ export const ARENA_CHARACTER_META: Record<ArenaCharacterId, ArenaCharacterMeta> 
 };
 
 export const ARENA_BACKGROUNDS = {
-  lobby: arenaLobbyBg.url,
-  fight: arenaFightBg.url,
+  // NOTE: the source filenames are inverted relative to their actual content.
+  // The "arena-fight" artwork is the 4-platform selection scene, and
+  // "arena-lobby" is the combat arena. Swap them here so each phase
+  // shows the right backdrop.
+  lobby: arenaFightBg.url,
+  fight: arenaLobbyBg.url,
 } as const;
