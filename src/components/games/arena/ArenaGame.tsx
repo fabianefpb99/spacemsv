@@ -92,6 +92,8 @@ export function ArenaGame() {
         }}
       />
       <div className="pointer-events-none fixed inset-0 -z-0 bg-gradient-to-b from-black/55 via-black/15 to-black/80" />
+      {/* Stadium light sweep — subtle, on a loop, on top of the backdrop */}
+      <div className="arena-stadium-lights pointer-events-none fixed inset-0 -z-0" />
 
       <div className="relative z-10 mx-auto flex h-screen max-w-md flex-col px-3 pb-2 pt-2 sm:max-w-lg sm:px-4">
         {/* Header (matches Mines/Spaceman/Dados) */}
