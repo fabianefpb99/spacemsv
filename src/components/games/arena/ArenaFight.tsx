@@ -353,9 +353,10 @@ export function ArenaFight({
                   y2={endY}
                 >
                   <stop offset="0%" stopColor={color} stopOpacity="0" />
-                  <stop offset="40%" stopColor={color} stopOpacity="0.15" />
-                  <stop offset="80%" stopColor={color} stopOpacity="0.55" />
-                  <stop offset="100%" stopColor={color} stopOpacity="0.85" />
+                  <stop offset="35%" stopColor={color} stopOpacity="0.25" />
+                  <stop offset="70%" stopColor={color} stopOpacity="0.55" />
+                  <stop offset="92%" stopColor={color} stopOpacity="0.15" />
+                  <stop offset="100%" stopColor={color} stopOpacity="0" />
                 </linearGradient>
                 <filter id={blurId} x="-30%" y="-30%" width="160%" height="160%">
                   <feGaussianBlur stdDeviation="1.4" />
