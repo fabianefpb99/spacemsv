@@ -759,8 +759,8 @@ function FighterSlot({
             aria-hidden
             className="pointer-events-none absolute left-1/2 bottom-[17%] -translate-x-1/2"
             style={{
-              width: "26%",
-              height: "3.2%",
+              width: "38%",
+              height: "3.6%",
               background:
                 "radial-gradient(ellipse at center, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.3) 55%, rgba(0,0,0,0) 82%)",
               borderRadius: "9999px",
