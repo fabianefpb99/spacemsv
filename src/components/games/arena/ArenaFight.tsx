@@ -26,7 +26,6 @@ import { CharacterSprite } from "./CharacterSprite";
 const EVENT_INTERVAL_MS = 1200;
 const ATTACK_PHASE_MS = 600;
 const FIGHT_BANNER_MS = 1200;
-const SWAP_PREP_MS = 260;
 
 type SlotId = "backLeft" | "backRight" | "frontLeft" | "frontRight";
 type PhaseMap = Record<ArenaCharacterId, "stance" | "attack" | "damage">;
