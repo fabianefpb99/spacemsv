@@ -39,6 +39,9 @@ export type ArenaCharacterMeta = {
   side: "left" | "right";
   /** Theme color (hex) for accents, HP bars, name highlight. */
   color: string;
+  panelTone: string;
+  glow: string;
+  wins: number;
   odds: number;
   sprites: Record<ArenaSpritePhase, string>;
 };
@@ -50,6 +53,9 @@ export const ARENA_CHARACTER_META: Record<ArenaCharacterId, ArenaCharacterMeta> 
     tagline: "Estrella prodigio",
     side: "left",
     color: "#22d3ee",
+    panelTone: "rgba(34, 211, 238, 0.16)",
+    glow: "rgba(34, 211, 238, 0.6)",
+    wins: 52,
     odds: ARENA_ODDS.nova,
     sprites: {
       idle: novaIdle.url,
@@ -64,6 +70,9 @@ export const ARENA_CHARACTER_META: Record<ArenaCharacterId, ArenaCharacterMeta> 
     tagline: "Asesino silencioso",
     side: "left",
     color: "#a855f7",
+    panelTone: "rgba(168, 85, 247, 0.16)",
+    glow: "rgba(168, 85, 247, 0.58)",
+    wins: 48,
     odds: ARENA_ODDS.shadow,
     sprites: {
       idle: shadowIdle.url,
@@ -78,6 +87,9 @@ export const ARENA_CHARACTER_META: Record<ArenaCharacterId, ArenaCharacterMeta> 
     tagline: "Coloso espartano",
     side: "right",
     color: "#ef4444",
+    panelTone: "rgba(239, 68, 68, 0.16)",
+    glow: "rgba(239, 68, 68, 0.58)",
+    wins: 40,
     odds: ARENA_ODDS.titan,
     sprites: {
       idle: titanIdle.url,
@@ -92,6 +104,9 @@ export const ARENA_CHARACTER_META: Record<ArenaCharacterId, ArenaCharacterMeta> 
     tagline: "Outsider intergaláctico",
     side: "right",
     color: "#22c55e",
+    panelTone: "rgba(34, 197, 94, 0.16)",
+    glow: "rgba(34, 197, 94, 0.58)",
+    wins: 46,
     odds: ARENA_ODDS.blaze,
     sprites: {
       idle: blazeIdle.url,
