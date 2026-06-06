@@ -413,14 +413,14 @@ export function ArenaFight({
             className="animate-fade-in flex w-full flex-col gap-0.5 font-display font-extrabold uppercase leading-none tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]"
           >
             <span
-              className="self-start pl-6 text-[30px]"
+              className="self-start pl-10 text-[30px]"
               style={{ color: ARENA_CHARACTER_META[currentEvent.attacker].color }}
             >
               {ARENA_CHARACTER_META[currentEvent.attacker].name}
             </span>
             <span className="self-center text-[22px] text-white">GOLPEÓ A</span>
             <span
-              className="self-end pr-6 text-[30px]"
+              className="self-end pr-10 text-[30px]"
               style={{ color: ARENA_CHARACTER_META[currentEvent.target].color }}
             >
               {ARENA_CHARACTER_META[currentEvent.target].name}
