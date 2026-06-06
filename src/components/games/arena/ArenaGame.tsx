@@ -19,6 +19,7 @@ import { ArenaLobby } from "./ArenaLobby";
 import { ArenaFight } from "./ArenaFight";
 import { ArenaResult } from "./ArenaResult";
 import { BettingPanel } from "./BettingPanel";
+import { ARENA_BACKGROUNDS } from "./characters";
 
 type Phase = "lobby" | "fighting" | "result";
 
@@ -81,11 +82,21 @@ export function ArenaGame() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#060210] text-white">
-      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-3 pt-3 sm:max-w-lg sm:px-4">
+    <div className="relative min-h-screen overflow-hidden bg-[#060210] text-white">
+      {/* Full-bleed arena background — covers the entire viewport.
+          Swaps art between selection (lobby) and combat (fight). */}
+      <div
+        className="pointer-events-none fixed inset-0 -z-0 bg-cover bg-center transition-[background-image] duration-500"
+        style={{
+          backgroundImage: `url(${phase === "lobby" ? ARENA_BACKGROUNDS.lobby : ARENA_BACKGROUNDS.fight})`,
+        }}
+      />
+      <div className="pointer-events-none fixed inset-0 -z-0 bg-gradient-to-b from-black/55 via-black/15 to-black/80" />
+
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-md flex-col px-3 pb-3 pt-3 sm:max-w-lg sm:px-4">
         {/* Header (matches Mines/Spaceman/Dados) */}
         <header
-          className="flex items-center justify-between border-b border-purple-500/20 bg-[#060210]/80 px-3 pb-2 -mx-3 -mt-3 backdrop-blur-sm"
+          className="flex items-center justify-between border-b border-purple-500/20 bg-[#060210]/60 px-3 pb-2 -mx-3 -mt-3 backdrop-blur-sm"
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <div className="flex items-center gap-1">
