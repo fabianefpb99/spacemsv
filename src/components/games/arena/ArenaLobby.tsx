@@ -19,14 +19,10 @@ export function ArenaLobby({
 }) {
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <div className="absolute left-0 right-0 top-1 flex items-center justify-between px-3 text-[9px] font-semibold uppercase tracking-[0.18em] text-white/90 sm:px-4">
+      <div className="absolute left-0 right-0 top-1 flex items-center px-3 text-[9px] font-semibold uppercase tracking-[0.18em] text-white/90 sm:px-4">
         <div className="flex items-center gap-1.5 text-white/85">
           <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(74,222,128,0.7)]" />
           152 ONLINE
-        </div>
-        <div className="rounded-md border border-white/15 bg-black/45 px-2 py-0.5 text-white/85">
-          <span className="text-white/55">Inicio en </span>
-          <span className="font-mono text-white">00:07</span>
         </div>
       </div>
 
@@ -76,14 +72,14 @@ function FighterCard({
       )}
     >
       <div
-        className="absolute bottom-[22%] left-1/2 h-6 w-[80%] -translate-x-1/2 rounded-full blur-md transition-all duration-300"
+        className="pointer-events-none absolute bottom-[22%] left-1/2 h-6 w-[80%] -translate-x-1/2 rounded-full blur-md transition-all duration-300"
         style={{ backgroundColor: meta.glow, opacity: selected ? 0.95 : 0.55 }}
       />
       <CharacterSprite
         characterId={id}
         phase="idle"
         className={cn(
-          "relative z-10 h-[112%] w-[210%] max-w-none -mb-2 transition-transform duration-300",
+          "pointer-events-none relative z-10 h-[112%] w-[210%] max-w-none -mb-2 transition-transform duration-300",
           selected ? "scale-[1.32]" : "scale-[1.22] opacity-95 group-hover:scale-[1.28] group-hover:opacity-100",
         )}
       />
