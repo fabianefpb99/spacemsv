@@ -279,7 +279,7 @@ function FighterCard({
       <div
         className={cn(
           "pointer-events-none absolute left-1/2 -translate-x-1/2 rounded-full blur-md transition-all duration-300",
-          selected ? "bottom-[34%] h-8 w-[88%]" : "bottom-[32%] h-6 w-[78%]",
+          selected ? "bottom-[27%] h-7 w-[86%]" : "bottom-[26%] h-6 w-[78%]",
         )}
         style={{
           backgroundColor: meta.glow,
