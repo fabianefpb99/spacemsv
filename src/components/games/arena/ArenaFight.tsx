@@ -59,21 +59,6 @@ function freshHp(): Record<ArenaCharacterId, number> {
   return { nova: 100, shadow: 100, titan: 100, blaze: 100 };
 }
 
-/** Find the order in which characters reached 0 HP across the log. */
-function computeDeathOrder(combatLog: ArenaCombatEvent[]): ArenaCharacterId[] {
-  const order: ArenaCharacterId[] = [];
-  const seen = new Set<ArenaCharacterId>();
-  for (const ev of combatLog) {
-    for (const id of ARENA_CHARACTERS) {
-      if (!seen.has(id) && ev.hp[id] <= 0) {
-        seen.add(id);
-        order.push(id);
-      }
-    }
-  }
-  return order;
-}
-
 /** Posiciones fijas por boceto:
  *   Shadow front-left, Nova back-left, Blaze back-right, Titan front-right.
  *  As\u00ed cada personaje mira hacia el centro sin necesidad de mirror. */
