@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthDialog } from "./AuthDialog";
@@ -12,8 +12,13 @@ import { Lock } from "lucide-react";
 export function RequireAuth({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const [open, setOpen] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
 
-  if (loading) {
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  if (!hydrated || loading) {
     return <div className="min-h-screen bg-[#060210]" />;
   }
 
