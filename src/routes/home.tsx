@@ -315,7 +315,28 @@ function HomePage() {
 
         {/* Hero banner */}
         <section className="slider-neon-frame mt-3 overflow-hidden rounded-2xl border border-fuchsia-500/70 bg-[#1a0b3a] shadow-[0_0_8px_rgba(217,70,239,0.25)]">
-          <div className="relative h-44 sm:h-52">
+          <div
+            className="relative h-44 touch-pan-y select-none sm:h-52"
+            onPointerDown={(e) => {
+              (e.currentTarget as HTMLDivElement).dataset.startX = String(e.clientX);
+              (e.currentTarget as HTMLDivElement).dataset.startY = String(e.clientY);
+            }}
+            onPointerUp={(e) => {
+              const el = e.currentTarget as HTMLDivElement;
+              const sx = Number(el.dataset.startX ?? NaN);
+              const sy = Number(el.dataset.startY ?? NaN);
+              if (!Number.isFinite(sx) || !Number.isFinite(sy)) return;
+              const dx = e.clientX - sx;
+              const dy = e.clientY - sy;
+              delete el.dataset.startX;
+              delete el.dataset.startY;
+              if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+                showArrows();
+                if (dx < 0) setSlide((s) => (s + 1) % SLIDES.length);
+                else setSlide((s) => (s - 1 + SLIDES.length) % SLIDES.length);
+              }
+            }}
+          >
             {SLIDES.map((s, i) => (
               <SkeletonImage
                 key={i}
