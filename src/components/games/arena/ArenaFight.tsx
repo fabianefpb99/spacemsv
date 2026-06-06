@@ -14,6 +14,27 @@ import hit3Audio from "@/assets/audio/arena/hit-3.mp3.asset.json";
 import hit4Audio from "@/assets/audio/arena/hit-4.mp3.asset.json";
 import hit5Audio from "@/assets/audio/arena/hit-5.mp3.asset.json";
 import hitFinalAudio from "@/assets/audio/arena/hit-final.mp3.asset.json";
+import fightStartAudio from "@/assets/audio/arena/fight-start.mp3.asset.json";
+
+function useFightStartSfx() {
+  useEffect(() => {
+    const a = new Audio(fightStartAudio.url);
+    a.preload = "auto";
+    a.volume = 0.35;
+    const play = () => {
+      try {
+        a.currentTime = 0;
+        void a.play();
+      } catch {
+        // ignore
+      }
+    };
+    play();
+    return () => {
+      a.pause();
+    };
+  }, []);
+}
 
 function useHitSfx() {
   const hitsRef = useRef<HTMLAudioElement[]>([]);
@@ -309,6 +330,7 @@ export function ArenaFight({
   onComplete: () => void;
 }) {
   useFightMusic();
+  useFightStartSfx();
   const { playHit } = useHitSfx();
   const [eventIdx, setEventIdx] = useState(0);
   const [phases, setPhases] = useState<PhaseMap>(freshPhases);
