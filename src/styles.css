@@ -17,12 +17,13 @@
   padding: 2px;
   background: conic-gradient(
     from var(--neon-angle, 0deg),
-    transparent 0deg,
-    transparent 220deg,
-    rgba(217, 70, 239, 0.0) 240deg,
-    rgba(217, 70, 239, 0.9) 310deg,
-    #f0abfc 340deg,
-    rgba(217, 70, 239, 0.9) 360deg
+    rgba(217, 70, 239, 0) 0deg,
+    rgba(217, 70, 239, 0) 180deg,
+    rgba(217, 70, 239, 0.35) 240deg,
+    rgba(217, 70, 239, 0.95) 305deg,
+    #f0abfc 330deg,
+    rgba(217, 70, 239, 0.55) 350deg,
+    rgba(217, 70, 239, 0) 360deg
   );
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
@@ -32,7 +33,7 @@
   opacity: 0;
   pointer-events: none;
   z-index: 2;
-  animation: slider-neon-sweep 4.2s ease-in-out 2s infinite;
+  animation: slider-neon-sweep 9s ease-in-out 2s infinite;
   filter: drop-shadow(0 0 6px rgba(217, 70, 239, 0.85))
           drop-shadow(0 0 14px rgba(217, 70, 239, 0.55));
 }
@@ -43,8 +44,9 @@
 }
 @keyframes slider-neon-sweep {
   0%   { opacity: 0; --neon-angle: 0deg; }
-  10%  { opacity: 1; }
-  85%  { opacity: 1; --neon-angle: 360deg; }
+  3%   { opacity: 1; }
+  33%  { opacity: 1; --neon-angle: 360deg; }
+  37%  { opacity: 0; --neon-angle: 360deg; }
   100% { opacity: 0; --neon-angle: 360deg; }
 }
 
