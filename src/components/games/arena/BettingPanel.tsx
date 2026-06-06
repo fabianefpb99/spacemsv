@@ -10,7 +10,6 @@ import {
 import type { ArenaCharacterId } from "@/lib/games/arena.shared";
 import { ARENA_CHARACTER_META } from "./characters";
 
-const RECENT_WINNERS: ArenaCharacterId[] = ["titan", "nova", "blaze", "shadow", "titan", "shadow", "nova", "blaze"];
 const QUICK_BETS = [1000, 2000, 5000, 10000];
 
 function formatCOP(n: number) {
@@ -22,6 +21,7 @@ export function BettingPanel({
   bonusBalance,
   balance,
   selected,
+  recentWinners,
   onBetChange,
   onSelect: _onSelect,
   onPlay,
@@ -31,6 +31,7 @@ export function BettingPanel({
   bonusBalance: number;
   balance: number;
   selected: ArenaCharacterId | null;
+  recentWinners: ArenaCharacterId[];
   onBetChange: (next: number) => void;
   onSelect?: (id: ArenaCharacterId) => void;
   onPlay: () => void;
@@ -53,7 +54,7 @@ export function BettingPanel({
           Últimos
         </span>
         <div className="flex flex-1 items-center gap-1.5 overflow-hidden">
-          {RECENT_WINNERS.slice(0, 8).map((id, i) => {
+          {recentWinners.slice(0, 8).map((id, i) => {
             const w = ARENA_CHARACTER_META[id];
             return (
               <div
