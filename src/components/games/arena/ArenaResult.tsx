@@ -112,7 +112,6 @@ export function ArenaResult({
               ["--cta-glow" as never]: won ? "rgba(52,211,153,0.85)" : "rgba(244,114,182,0.85)",
             } as React.CSSProperties
           }
-          style={{ animationDelay: "740ms" }}
         >
           Apostar de nuevo
         </Button>
