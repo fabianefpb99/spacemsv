@@ -351,7 +351,7 @@ export function ArenaFight({
   }, [eventIdx, combatLog, onComplete, showFightBanner]);
 
   return (
-    <div className="absolute inset-0 overflow-hidden">
+    <div className="absolute inset-0 overflow-visible">
       {/* Current event banner — 3 líneas centradas (atacante / acción / objetivo) */}
       <div className="absolute inset-x-0 top-[7%] z-20 flex justify-center px-2">
         {currentEvent ? (
@@ -491,6 +491,7 @@ export function ArenaFight({
             <FighterSlot
               key={slot}
               id={id}
+              slot={slot}
               x={slotPos.x + lunge.dx}
               y={slotPos.y + lunge.dy}
               heightPct={heightPct}
@@ -574,6 +575,7 @@ function HpBar({
 
 function FighterSlot({
   id,
+  slot,
   x,
   y,
   heightPct,
@@ -586,6 +588,7 @@ function FighterSlot({
   isBet,
 }: {
   id: ArenaCharacterId;
+  slot: SlotId;
   x: number;
   y: number;
   heightPct: number;
@@ -604,7 +607,10 @@ function FighterSlot({
         left: `${x}%`,
         top: `${y}%`,
         height: `${heightPct}%`,
-        width: `${heightPct}%`,
+        width:
+          phase === "damage" && (slot === "frontLeft" || slot === "frontRight")
+            ? `calc(${heightPct}% + 22vw)`
+            : `${heightPct}%`,
         transform: "translate(-50%, -50%)",
         zIndex,
       }}
