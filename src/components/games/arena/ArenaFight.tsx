@@ -7,6 +7,64 @@ import {
 } from "@/lib/games/arena.shared";
 import { ARENA_CHARACTER_META } from "./characters";
 import { CharacterSprite } from "./CharacterSprite";
+import arenaFightAudio from "@/assets/audio/arena/arena-fight.mp3.asset.json";
+
+function useFightMusic() {
+  useEffect(() => {
+    const TARGET_VOLUME = 0.06;
+    const FADE_MS = 1500;
+    const audio = new Audio(arenaFightAudio.url);
+    audio.preload = "auto";
+    audio.loop = true;
+    audio.volume = 0;
+
+    let cancelled = false;
+    let raf: number | null = null;
+
+    function fade(from: number, to: number, ms: number, onDone?: () => void) {
+      const start = performance.now();
+      function step(now: number) {
+        if (cancelled) return;
+        const t = Math.min(1, (now - start) / ms);
+        audio.volume = Math.max(0, Math.min(1, from + (to - from) * t));
+        if (t < 1) raf = requestAnimationFrame(step);
+        else onDone?.();
+      }
+      raf = requestAnimationFrame(step);
+    }
+
+    async function start() {
+      try {
+        await audio.play();
+        fade(0, TARGET_VOLUME, FADE_MS);
+      } catch {
+        const retry = () => {
+          window.removeEventListener("pointerdown", retry);
+          start();
+        };
+        window.addEventListener("pointerdown", retry, { once: true });
+      }
+    }
+    start();
+
+    return () => {
+      cancelled = true;
+      if (raf) cancelAnimationFrame(raf);
+      const startVol = audio.volume;
+      const t0 = performance.now();
+      const fadeOut = () => {
+        const t = Math.min(1, (performance.now() - t0) / FADE_MS);
+        audio.volume = Math.max(0, startVol * (1 - t));
+        if (t < 1) requestAnimationFrame(fadeOut);
+        else {
+          audio.pause();
+          audio.src = "";
+        }
+      };
+      requestAnimationFrame(fadeOut);
+    };
+  }, []);
+}
 
 /**
  * Animated playback of a finished round.
@@ -200,6 +258,7 @@ export function ArenaFight({
   characterBet: ArenaCharacterId;
   onComplete: () => void;
 }) {
+  useFightMusic();
   const [eventIdx, setEventIdx] = useState(0);
   const [phases, setPhases] = useState<PhaseMap>(freshPhases);
   const [hp, setHp] = useState<Record<ArenaCharacterId, number>>(freshHp);
