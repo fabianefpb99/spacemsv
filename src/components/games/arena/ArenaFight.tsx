@@ -574,6 +574,7 @@ function HpBar({
 
 function FighterSlot({
   id,
+  slot,
   x,
   y,
   heightPct,
@@ -586,6 +587,7 @@ function FighterSlot({
   isBet,
 }: {
   id: ArenaCharacterId;
+  slot: SlotId;
   x: number;
   y: number;
   heightPct: number;
@@ -604,7 +606,10 @@ function FighterSlot({
         left: `${x}%`,
         top: `${y}%`,
         height: `${heightPct}%`,
-        width: `${heightPct}%`,
+        width:
+          slot === "frontLeft" || slot === "frontRight"
+            ? `calc(${heightPct}% + 22vw)`
+            : `${heightPct}%`,
         transform: "translate(-50%, -50%)",
         zIndex,
       }}
