@@ -1,0 +1,1 @@
+DROP FUNCTION IF EXISTS public.play_arena_v1(uuid, numeric, text, uuid);
