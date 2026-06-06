@@ -3,6 +3,13 @@ import { ARENA_CHARACTERS, type ArenaCharacterId } from "@/lib/games/arena.share
 import { ARENA_CHARACTER_META } from "./characters";
 import { CharacterSprite } from "./CharacterSprite";
 
+const LOBBY_HITBOXES: Record<ArenaCharacterId, string> = {
+  nova: "left-[9%] w-[18%]",
+  shadow: "left-[31%] w-[18%]",
+  titan: "left-[51%] w-[18%]",
+  blaze: "left-[69%] w-[18%]",
+};
+
 /**
  * Lobby (selection) — fills the parent stage with the platform backdrop and
  * places the 4 fighters on top of it. No card / no wrapper border: the
@@ -34,7 +41,7 @@ export function ArenaLobby({
         </h1>
       </div>
 
-      <div className="absolute inset-x-0 top-[14%] bottom-0 grid grid-cols-4 gap-0 px-0">
+      <div className="pointer-events-none absolute inset-x-0 top-[14%] bottom-0 grid grid-cols-4 gap-0 px-0">
         {ARENA_CHARACTERS.map((id) => (
           <FighterCard
             key={id}
@@ -42,6 +49,23 @@ export function ArenaLobby({
             selected={selected === id}
             disabled={disabled}
             onSelect={onSelect}
+          />
+        ))}
+      </div>
+
+      <div className="absolute inset-x-0 top-[14%] bottom-0">
+        {ARENA_CHARACTERS.map((id) => (
+          <button
+            key={`${id}-hitbox`}
+            type="button"
+            aria-label={`Seleccionar ${ARENA_CHARACTER_META[id].name}`}
+            onClick={() => !disabled && onSelect(id)}
+            disabled={disabled}
+            className={cn(
+              "absolute bottom-0 top-[2%] rounded-md transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 disabled:opacity-50",
+              LOBBY_HITBOXES[id],
+              selected === id && "z-20",
+            )}
           />
         ))}
       </div>
@@ -62,10 +86,7 @@ function FighterCard({
 }) {
   const meta = ARENA_CHARACTER_META[id];
   return (
-    <button
-      type="button"
-      onClick={() => !disabled && onSelect(id)}
-      disabled={disabled}
+    <div
       className={cn(
         "group relative flex h-full w-full flex-col items-center justify-end transition disabled:opacity-50",
         selected && "z-10",
@@ -110,6 +131,6 @@ function FighterCard({
           {meta.wins} wins
         </div>
       </div>
-    </button>
+    </div>
   );
 }
