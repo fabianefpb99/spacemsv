@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
 import { ARENA_CHARACTERS, type ArenaCharacterId } from "@/lib/games/arena.shared";
 import { ARENA_CHARACTER_META } from "./characters";
 import { CharacterSprite } from "./CharacterSprite";
@@ -9,6 +10,12 @@ const LOBBY_HITBOXES: Record<ArenaCharacterId, string> = {
   titan: "left-[51%] w-[18%]",
   blaze: "left-[69%] w-[18%]",
 };
+
+const LOBBY_PHRASES = [
+  "¿Quién ganará hoy?",
+  "¿Apostarás por el invicto?",
+  "...la decisión es tuya.",
+];
 
 /**
  * Lobby (selection) — fills the parent stage with the platform backdrop and
@@ -39,6 +46,7 @@ export function ArenaLobby({
           <br />
           <span className="text-fuchsia-300">de Campeones</span>
         </h1>
+        <RotatingPhrase />
       </div>
 
       <div className="pointer-events-none absolute inset-x-0 top-[14%] bottom-0 grid grid-cols-4 gap-0 px-0">
@@ -68,6 +76,34 @@ export function ArenaLobby({
         ))}
       </div>
     </div>
+  );
+}
+
+function RotatingPhrase() {
+  const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const hide = setTimeout(() => setVisible(false), 2400);
+    const next = setTimeout(() => {
+      setIndex((i) => (i + 1) % LOBBY_PHRASES.length);
+      setVisible(true);
+    }, 3000);
+    return () => {
+      clearTimeout(hide);
+      clearTimeout(next);
+    };
+  }, [index]);
+
+  return (
+    <p
+      className={cn(
+        "mt-1.5 font-display text-[clamp(0.8rem,3.2vw,1rem)] italic tracking-wide text-white/85 [text-shadow:0_0_10px_rgba(244,114,182,0.5)] transition-opacity duration-500",
+        visible ? "opacity-100" : "opacity-0",
+      )}
+    >
+      {LOBBY_PHRASES[index]}
+    </p>
   );
 }
 
