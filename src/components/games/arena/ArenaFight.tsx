@@ -5,7 +5,7 @@ import {
   type ArenaCharacterId,
   type ArenaCombatEvent,
 } from "@/lib/games/arena.shared";
-import { ARENA_BACKGROUNDS, ARENA_CHARACTER_META } from "./characters";
+import { ARENA_CHARACTER_META } from "./characters";
 import { CharacterSprite } from "./CharacterSprite";
 import { CombatLog } from "./CombatLog";
 
@@ -81,14 +81,7 @@ export function ArenaFight({
   const right = ARENA_CHARACTERS.filter((id) => ARENA_CHARACTER_META[id].side === "right");
 
   return (
-    <div
-      className="absolute inset-0 overflow-hidden rounded-xl"
-      style={{
-        backgroundImage: `url(${ARENA_BACKGROUNDS.fight})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
+    <div className="absolute inset-0 overflow-hidden">
       {/* HP bars */}
       <div className="absolute inset-x-0 top-1 flex justify-between gap-2 px-2">
         <div className="flex flex-1 flex-col gap-0.5">
