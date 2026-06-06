@@ -351,7 +351,8 @@ export function ArenaFight({
   }, [eventIdx, combatLog, onComplete, showFightBanner]);
 
   return (
-    <div className="absolute inset-0 overflow-visible">
+    <div className="absolute inset-y-0 -inset-x-3 overflow-visible">
+      <div className="absolute inset-y-0 left-3 right-3 overflow-visible">
       {/* Current event banner — 3 líneas centradas (atacante / acción / objetivo) */}
       <div className="absolute inset-x-0 top-[7%] z-20 flex justify-center px-2">
         {currentEvent ? (
@@ -377,7 +378,7 @@ export function ArenaFight({
       </div>
 
       {/* Stage — slot-positioned fighters */}
-      <div className="absolute -inset-x-[14vw] top-[9%] bottom-[22%] overflow-visible">
+      <div className="absolute inset-x-0 top-[9%] bottom-[22%] overflow-visible">
         {/* Speed streak — aura detrás del atacante mientras avanza al golpe. */}
         {currentEvent && lungeId === characterBet && (() => {
           const aSlot = slotOf[lungeId];
@@ -531,6 +532,7 @@ export function ArenaFight({
           <HpBar id="blaze" hp={hp.blaze} isBet={characterBet === "blaze"} />
         </div>
       </div>
+    </div>
     </div>
   );
 }
