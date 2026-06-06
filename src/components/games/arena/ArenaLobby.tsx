@@ -1,8 +1,9 @@
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ARENA_CHARACTERS, type ArenaCharacterId } from "@/lib/games/arena.shared";
 import { ARENA_CHARACTER_META } from "./characters";
 import { CharacterSprite } from "./CharacterSprite";
+import arenaLobbyAudio from "@/assets/audio/arena/arena-lobby.mp3.asset.json";
 
 const LOBBY_HITBOXES: Record<ArenaCharacterId, string> = {
   nova: "left-[9%] w-[18%]",
@@ -31,6 +32,7 @@ export function ArenaLobby({
   onSelect: (id: ArenaCharacterId) => void;
   disabled?: boolean;
 }) {
+  useLobbyMusic();
   return (
     <div className="absolute inset-0 overflow-hidden">
       <div className="absolute left-0 right-0 top-1 flex items-center px-3 text-[9px] font-semibold uppercase tracking-[0.18em] text-white/90 sm:px-4">
