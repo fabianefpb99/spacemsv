@@ -30,13 +30,13 @@ export function ArenaLobby({
         </div>
       </div>
 
-      <div className="absolute inset-x-0 top-[7%] text-center">
+      <div className="absolute inset-x-0 top-[4.5%] text-center">
         <h1 className="font-display text-[clamp(1.4rem,5vw,2rem)] font-black uppercase leading-none tracking-[0.08em] text-white [text-shadow:0_0_18px_rgba(255,255,255,0.35)]">
           Arena <span className="text-fuchsia-300">de Campeones</span>
         </h1>
       </div>
 
-      <div className="absolute inset-x-0 top-[16%] bottom-[4%] grid grid-cols-4 gap-0 px-1">
+      <div className="absolute inset-x-0 top-[11%] bottom-0 grid grid-cols-4 gap-0 px-0">
         {ARENA_CHARACTERS.map((id) => (
           <FighterCard
             key={id}
@@ -69,25 +69,25 @@ function FighterCard({
       onClick={() => !disabled && onSelect(id)}
       disabled={disabled}
       className={cn(
-        "group relative flex h-full w-full flex-col items-center justify-end gap-2 transition disabled:opacity-50",
+        "group relative flex h-full w-full flex-col items-center justify-end transition disabled:opacity-50",
         selected && "z-10",
       )}
     >
       <div
-        className="absolute bottom-[22%] left-1/2 h-5 w-[72%] -translate-x-1/2 rounded-full blur-md transition-all duration-300"
+        className="absolute bottom-[20%] left-1/2 h-6 w-[80%] -translate-x-1/2 rounded-full blur-md transition-all duration-300"
         style={{ backgroundColor: meta.glow, opacity: selected ? 0.95 : 0.55 }}
       />
       <CharacterSprite
         characterId={id}
         phase="idle"
         className={cn(
-          "relative z-10 h-[78%] w-[140%] max-w-none transition-transform duration-300",
-          selected ? "scale-[1.1]" : "scale-100 opacity-95 group-hover:scale-[1.06] group-hover:opacity-100",
+          "relative z-10 h-[88%] w-[170%] max-w-none -mb-1 transition-transform duration-300",
+          selected ? "scale-[1.18]" : "scale-[1.08] opacity-95 group-hover:scale-[1.14] group-hover:opacity-100",
         )}
       />
       <div
         className={cn(
-          "relative z-10 w-[94%] rounded-xl border px-1 py-1 text-center backdrop-blur-md transition",
+          "relative z-10 w-[96%] rounded-lg border px-1 py-0.5 text-center backdrop-blur-md transition",
           selected
             ? "border-white/40 shadow-[0_0_30px_rgba(255,255,255,0.08)]"
             : "border-white/10",
