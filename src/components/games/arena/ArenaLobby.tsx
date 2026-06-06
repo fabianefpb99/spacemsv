@@ -30,13 +30,15 @@ export function ArenaLobby({
         </div>
       </div>
 
-      <div className="absolute inset-x-0 top-[4.5%] text-center">
-        <h1 className="font-display text-[clamp(1.4rem,5vw,2rem)] font-black uppercase leading-none tracking-[0.08em] text-white [text-shadow:0_0_18px_rgba(255,255,255,0.35)]">
-          Arena <span className="text-fuchsia-300">de Campeones</span>
+      <div className="absolute inset-x-0 top-[4%] text-center">
+        <h1 className="font-display text-[clamp(1.9rem,7.5vw,2.8rem)] font-black uppercase leading-[0.92] tracking-[0.06em] text-white [text-shadow:0_0_18px_rgba(255,255,255,0.35)]">
+          Arena
+          <br />
+          <span className="text-fuchsia-300">de Campeones</span>
         </h1>
       </div>
 
-      <div className="absolute inset-x-0 top-[11%] bottom-0 grid grid-cols-4 gap-0 px-0">
+      <div className="absolute inset-x-0 top-[18%] bottom-0 grid grid-cols-4 gap-0 px-0">
         {ARENA_CHARACTERS.map((id) => (
           <FighterCard
             key={id}
