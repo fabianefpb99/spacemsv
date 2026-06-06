@@ -163,21 +163,26 @@ export function ArenaFight({
 
   return (
     <div className="absolute inset-0 overflow-hidden">
-      {/* Current event banner — top (texto plano, sin chips) */}
+      {/* Current event banner — 3 líneas centradas (atacante / acción / objetivo) */}
       <div className="absolute inset-x-0 top-2 z-20 flex justify-center px-2">
         {currentEvent ? (
           <div
             key={eventIdx}
-            className="animate-fade-in text-center text-[13px] font-extrabold uppercase tracking-wider text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]"
+            className="animate-fade-in flex flex-col items-center gap-0.5 text-center font-extrabold uppercase leading-tight tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]"
           >
-            <span style={{ color: ARENA_CHARACTER_META[currentEvent.attacker].color }}>
+            <span
+              className="text-[18px]"
+              style={{ color: ARENA_CHARACTER_META[currentEvent.attacker].color }}
+            >
               {ARENA_CHARACTER_META[currentEvent.attacker].name}
             </span>
-            <span className="mx-1.5 text-white/90">golpe\u00f3 a</span>
-            <span style={{ color: ARENA_CHARACTER_META[currentEvent.target].color }}>
+            <span className="text-[13px] text-white">GOLPEÓ A</span>
+            <span
+              className="text-[18px]"
+              style={{ color: ARENA_CHARACTER_META[currentEvent.target].color }}
+            >
               {ARENA_CHARACTER_META[currentEvent.target].name}
             </span>
-            <span className="ml-2 font-mono text-white/80">-{currentEvent.damage}</span>
           </div>
         ) : null}
       </div>
@@ -193,8 +198,9 @@ export function ArenaFight({
           const lunge = targetSlot ? getLungeOffset(slot, targetSlot) : { dx: 0, dy: 0 };
           // Mirror sprite so it faces this slot's direction.
           const mirror = NATURAL_FACING[id] !== slotPos.facing;
-          // Front slots render notably larger to reinforce depth.
-          const heightPct = slot.startsWith("front") ? 70 : 48;
+          // Mismo tamaño en front y back — la profundidad la da la posición Y,
+          // no el escalado (si encogemos atrás, al avanzar parecen enanos).
+          const heightPct = 65;
 
           return (
             <FighterSlot
@@ -223,7 +229,7 @@ export function ArenaFight({
               className="font-display text-6xl font-black uppercase tracking-tight text-white sm:text-7xl"
               style={{ textShadow: "0 4px 14px rgba(0,0,0,0.85)" }}
             >
-              \u00a1FIGHT!
+              ¡FIGHT!
             </div>
           </div>
         </div>
