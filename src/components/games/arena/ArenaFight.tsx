@@ -81,7 +81,7 @@ function useHitSfx() {
 
 function useFightMusic() {
   useEffect(() => {
-    const TARGET_VOLUME = 0.012;
+    const TARGET_VOLUME = 0.022;
     const FADE_IN_MS = 500;
     const FADE_OUT_MS = 1200;
     const audio = new Audio(arenaFightAudio.url);
