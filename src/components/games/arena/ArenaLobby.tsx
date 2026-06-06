@@ -1,8 +1,9 @@
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ARENA_CHARACTERS, type ArenaCharacterId } from "@/lib/games/arena.shared";
 import { ARENA_CHARACTER_META } from "./characters";
 import { CharacterSprite } from "./CharacterSprite";
+import arenaLobbyAudio from "@/assets/audio/arena/arena-lobby.mp3.asset.json";
 
 const LOBBY_HITBOXES: Record<ArenaCharacterId, string> = {
   nova: "left-[9%] w-[18%]",
@@ -31,6 +32,7 @@ export function ArenaLobby({
   onSelect: (id: ArenaCharacterId) => void;
   disabled?: boolean;
 }) {
+  useLobbyMusic();
   return (
     <div className="absolute inset-0 overflow-hidden">
       <div className="absolute left-0 right-0 top-1 flex items-center px-3 text-[9px] font-semibold uppercase tracking-[0.18em] text-white/90 sm:px-4">
@@ -42,9 +44,9 @@ export function ArenaLobby({
 
       <div className="absolute inset-x-0 top-[9%] text-center">
         <h1 className="font-display text-[clamp(1.9rem,7.5vw,2.8rem)] font-black uppercase leading-[0.92] tracking-[0.06em] text-white [text-shadow:0_0_18px_rgba(255,255,255,0.35)]">
-          Arena
+          <GlitchText text="Arena" />
           <br />
-          <span className="text-fuchsia-300">de Campeones</span>
+          <GlitchText text="de Campeones" className="text-fuchsia-300" />
         </h1>
         <RotatingPhrase />
       </div>
@@ -105,6 +107,103 @@ function RotatingPhrase() {
       {LOBBY_PHRASES[index]}
     </p>
   );
+}
+
+const GLITCH_INTERVAL_MS = 4500;
+const GLITCH_DURATION_MS = 600;
+
+function GlitchText({ text, className }: { text: string; className?: string }) {
+  const [glitch, setGlitch] = useState(false);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setGlitch(true);
+      setTimeout(() => setGlitch(false), GLITCH_DURATION_MS);
+    }, GLITCH_INTERVAL_MS);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <span
+      data-text={text}
+      className={cn("relative inline-block", glitch && "arena-glitch", className)}
+    >
+      {text}
+    </span>
+  );
+}
+
+function useLobbyMusic() {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const restartRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const TARGET_VOLUME = 0.18;
+    const FADE_MS = 1500;
+    const GAP_MS = 2000;
+
+    const audio = new Audio(arenaLobbyAudio.url);
+    audio.preload = "auto";
+    audio.volume = 0;
+    audioRef.current = audio;
+
+    let cancelled = false;
+
+    function fade(from: number, to: number, ms: number, onDone?: () => void) {
+      const start = performance.now();
+      function step(now: number) {
+        if (cancelled) return;
+        const t = Math.min(1, (now - start) / ms);
+        audio.volume = from + (to - from) * t;
+        if (t < 1) {
+          rafRef.current = requestAnimationFrame(step);
+        } else {
+          onDone?.();
+        }
+      }
+      rafRef.current = requestAnimationFrame(step);
+    }
+
+    async function startPlayback() {
+      if (cancelled) return;
+      try {
+        audio.currentTime = 0;
+        audio.volume = 0;
+        await audio.play();
+        fade(0, TARGET_VOLUME, FADE_MS);
+        const dur = (audio.duration || 0) * 1000;
+        const fadeOutAt = Math.max(0, dur - FADE_MS);
+        const tFadeOut = setTimeout(() => {
+          fade(audio.volume, 0, FADE_MS);
+        }, fadeOutAt);
+        restartRef.current = tFadeOut;
+      } catch {
+        // Autoplay blocked — retry on first user interaction
+        const retry = () => {
+          window.removeEventListener("pointerdown", retry);
+          startPlayback();
+        };
+        window.addEventListener("pointerdown", retry, { once: true });
+      }
+    }
+
+    const onEnded = () => {
+      if (cancelled) return;
+      restartRef.current = setTimeout(startPlayback, GAP_MS);
+    };
+    audio.addEventListener("ended", onEnded);
+
+    startPlayback();
+
+    return () => {
+      cancelled = true;
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (restartRef.current) clearTimeout(restartRef.current);
+      audio.removeEventListener("ended", onEnded);
+      audio.pause();
+      audio.src = "";
+      audioRef.current = null;
+    };
+  }, []);
 }
 
 function FighterCard({

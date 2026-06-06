@@ -4,6 +4,55 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Arena title glitch — TV-static-style RGB split + clip flicker */
+.arena-glitch {
+  animation: arena-glitch-shake 600ms steps(2, end);
+}
+.arena-glitch::before,
+.arena-glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  pointer-events: none;
+}
+.arena-glitch::before {
+  color: #ff00c8;
+  animation: arena-glitch-anim-1 600ms steps(2, end);
+  clip-path: inset(0 0 70% 0);
+  text-shadow: -2px 0 #ff00c8;
+}
+.arena-glitch::after {
+  color: #00e5ff;
+  animation: arena-glitch-anim-2 600ms steps(2, end);
+  clip-path: inset(60% 0 0 0);
+  text-shadow: 2px 0 #00e5ff;
+}
+@keyframes arena-glitch-shake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-1px, 1px); }
+  40% { transform: translate(2px, -1px); }
+  60% { transform: translate(-2px, -1px); }
+  80% { transform: translate(1px, 2px); }
+}
+@keyframes arena-glitch-anim-1 {
+  0% { transform: translate(0, 0); clip-path: inset(0 0 70% 0); }
+  20% { transform: translate(-3px, 1px); clip-path: inset(10% 0 60% 0); }
+  40% { transform: translate(2px, -2px); clip-path: inset(40% 0 30% 0); }
+  60% { transform: translate(-2px, 2px); clip-path: inset(20% 0 50% 0); }
+  80% { transform: translate(3px, 0); clip-path: inset(5% 0 75% 0); }
+  100% { transform: translate(0, 0); clip-path: inset(0 0 70% 0); }
+}
+@keyframes arena-glitch-anim-2 {
+  0% { transform: translate(0, 0); clip-path: inset(60% 0 0 0); }
+  20% { transform: translate(3px, -1px); clip-path: inset(50% 0 10% 0); }
+  40% { transform: translate(-2px, 2px); clip-path: inset(30% 0 40% 0); }
+  60% { transform: translate(2px, -2px); clip-path: inset(70% 0 5% 0); }
+  80% { transform: translate(-3px, 0); clip-path: inset(55% 0 15% 0); }
+  100% { transform: translate(0, 0); clip-path: inset(60% 0 0 0); }
+}
+
 /* ------------------------------------------------------------------
  * VIP Frame — futuristic HUD card with beveled corners.
  * Two layered shapes (outer gradient border + inner dark fill) sharing
