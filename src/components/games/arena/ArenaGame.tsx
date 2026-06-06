@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -27,6 +27,8 @@ function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
 }
 
+const ZERO_COP_FORMATTER = new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 });
+
 /**
  * Top-level orchestrator for /arena.
  *  - owns selection + bet state
@@ -49,6 +51,7 @@ export function ArenaGame() {
 
   const balance = (me.data?.balance ?? 0) + (me.data?.bonus_balance ?? 0);
   const bonusBalance = me.data?.bonus_balance ?? 0;
+  const balanceLabel = useMemo(() => ZERO_COP_FORMATTER.format(Math.floor(balance)), [balance]);
 
   const handlePlay = useCallback(async () => {
     if (!selected || isPlaying) return;
@@ -112,7 +115,7 @@ export function ArenaGame() {
               <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
               <div className="font-display text-[11px] font-bold sm:text-xs text-white">
                 <span className="mr-0.5 text-emerald-400">$</span>
-                {formatCOP(balance)} COP
+                {balanceLabel} COP
               </div>
             </div>
             <AuthControl />
@@ -122,11 +125,7 @@ export function ArenaGame() {
         {/* Stage — fills available vertical space; bg image lives here */}
         <div className="relative mt-2 flex-1 min-h-0">
           {phase === "lobby" && (
-            <ArenaLobby
-              selected={selected}
-              onSelect={setSelected}
-              disabled={isPlaying}
-            />
+            <ArenaLobby selected={selected} onSelect={setSelected} disabled={isPlaying} />
           )}
           {(phase === "fighting" || phase === "result") && result && (
             <ArenaFight
@@ -150,6 +149,7 @@ export function ArenaGame() {
               balance={balance}
               selected={selected}
               onBetChange={setBet}
+              onSelect={setSelected}
               onPlay={handlePlay}
               isPlaying={isPlaying}
             />
