@@ -641,10 +641,10 @@ export function ArenaFight({
       )}
 
       {/* HP bars — fila arriba NOVA/TITAN angostas; fila abajo SHADOW/BLAZE anchas. */}
-      {!resultMode && <div className="absolute inset-x-3 bottom-3 z-20 space-y-2">
+      {!resultMode && <div className="absolute inset-x-3 bottom-6 z-20 space-y-2">
         <div className="grid grid-cols-2 gap-3">
-          <HpBar id="nova" hp={hp.nova} isBet={characterBet === "nova"} narrow />
-          <HpBar id="titan" hp={hp.titan} isBet={characterBet === "titan"} narrow />
+          <HpBar id="nova" hp={hp.nova} isBet={characterBet === "nova"} />
+          <HpBar id="titan" hp={hp.titan} isBet={characterBet === "titan"} />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <HpBar id="shadow" hp={hp.shadow} isBet={characterBet === "shadow"} />
@@ -660,19 +660,17 @@ function HpBar({
   id,
   hp,
   isBet,
-  narrow = false,
 }: {
   id: ArenaCharacterId;
   hp: number;
   isBet: boolean;
-  narrow?: boolean;
 }) {
   const meta = ARENA_CHARACTER_META[id];
   const pct = Math.max(0, Math.min(100, hp));
   return (
-    <div className={cn("flex flex-col items-center", narrow && "px-6")}>
+    <div className="flex flex-col items-center">
       <div
-        className="mb-1 flex items-center gap-1 text-[11px] font-extrabold uppercase tracking-wider drop-shadow-[0_2px_3px_rgba(0,0,0,0.9)]"
+        className="mb-1 flex items-center gap-1 text-[13px] font-extrabold uppercase tracking-wider drop-shadow-[0_2px_3px_rgba(0,0,0,0.9)]"
         style={{ color: "#ffffff" }}
       >
         {isBet && <span className="text-yellow-300">★</span>}
