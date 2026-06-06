@@ -491,6 +491,7 @@ export function ArenaFight({
             <FighterSlot
               key={slot}
               id={id}
+              slot={slot}
               x={slotPos.x + lunge.dx}
               y={slotPos.y + lunge.dy}
               heightPct={heightPct}
@@ -607,7 +608,7 @@ function FighterSlot({
         top: `${y}%`,
         height: `${heightPct}%`,
         width:
-          slot === "frontLeft" || slot === "frontRight"
+          phase === "damage" && (slot === "frontLeft" || slot === "frontRight")
             ? `calc(${heightPct}% + 22vw)`
             : `${heightPct}%`,
         transform: "translate(-50%, -50%)",
