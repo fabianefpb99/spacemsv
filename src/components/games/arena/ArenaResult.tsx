@@ -26,71 +26,71 @@ export function ArenaResult({
 
   return (
     <div className="pointer-events-none absolute inset-0 z-20 flex flex-col justify-between p-4">
-      {/* Top — verdict headline */}
+      {/* Top — verdict banner with colored backdrop */}
       <div
-        className="flex flex-col items-center pt-2 animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+        className={cn(
+          "w-full animate-fade-in opacity-0 [animation-fill-mode:forwards]",
+          "border-y-2 py-2 text-center",
+          won
+            ? "border-emerald-300/80 bg-gradient-to-r from-emerald-600/0 via-emerald-600/85 to-emerald-600/0"
+            : "border-rose-300/80 bg-gradient-to-r from-rose-700/0 via-rose-700/90 to-rose-700/0",
+        )}
         style={{ animationDelay: "120ms" }}
       >
-        <div className="h-px w-40 bg-gradient-to-r from-transparent via-white/60 to-transparent" />
         <h2
-          className={cn(
-            "mt-3 text-center font-extrabold uppercase italic leading-none tracking-tight",
-            "text-[64px] sm:text-[72px]",
-            won ? "text-white" : "text-white/85",
-          )}
+          className="font-display text-[44px] font-black italic uppercase leading-none tracking-tight text-white"
           style={{
-            textShadow: won
-              ? "0 0 18px rgba(255,255,255,0.55), 0 0 36px rgba(168,85,247,0.55), 0 4px 0 rgba(0,0,0,0.45)"
-              : "0 0 18px rgba(255,255,255,0.25), 0 4px 0 rgba(0,0,0,0.55)",
+            textShadow:
+              "0 2px 0 rgba(0,0,0,0.55), 0 0 18px rgba(0,0,0,0.45)",
           }}
         >
-          {won ? "¡GANASTE!" : "PERDISTE"}
+          {won ? "¡GANASTE!" : "¡PERDISTE!"}
         </h2>
-        <div className="mt-2 h-px w-40 bg-gradient-to-r from-transparent via-white/60 to-transparent" />
       </div>
 
       {/* Bottom — winner + payout + CTA */}
-      <div className="pointer-events-auto flex flex-col items-center gap-3 pb-2">
+      <div className="pointer-events-auto flex flex-col items-center gap-3 pb-1">
         <div
-          className="text-center leading-[0.95] animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+          className="flex items-baseline justify-center gap-2 animate-fade-in opacity-0 [animation-fill-mode:forwards]"
           style={{ animationDelay: "320ms" }}
         >
-          <div
-            className="font-extrabold italic uppercase tracking-tight text-[52px] sm:text-[60px]"
+          <span
+            className="font-display text-[34px] font-black italic uppercase leading-none tracking-tight"
             style={{
               color: winnerMeta.color,
-              textShadow: `0 0 18px ${winnerMeta.color}, 0 4px 0 rgba(0,0,0,0.5)`,
+              textShadow: `0 0 14px ${winnerMeta.color}, 0 2px 0 rgba(0,0,0,0.55)`,
             }}
           >
             {winnerMeta.name}
-          </div>
-          <div
-            className="font-extrabold italic uppercase tracking-tight text-white text-[44px] sm:text-[52px] -mt-1"
-            style={{ textShadow: "0 0 14px rgba(255,255,255,0.45), 0 4px 0 rgba(0,0,0,0.55)" }}
+          </span>
+          <span
+            className="font-display text-[26px] font-black italic uppercase leading-none tracking-tight text-white"
+            style={{ textShadow: "0 2px 0 rgba(0,0,0,0.55)" }}
           >
             GANÓ
-          </div>
+          </span>
         </div>
 
         <div
-          className="text-center animate-fade-in opacity-0 [animation-fill-mode:forwards]"
-          style={{ animationDelay: "560ms" }}
+          className="flex flex-col items-center gap-0.5 text-center animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+          style={{ animationDelay: "520ms" }}
         >
-          <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/75">
+          <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/70">
             Tu apuesta
           </div>
-          <div className="text-[15px] font-extrabold uppercase text-white/90">
-            ${formatCOP(result.bet_amount)} {betMeta.name}
+          <div className="text-[13px] font-extrabold uppercase text-white">
+            ${formatCOP(result.bet_amount)}{" "}
+            <span style={{ color: betMeta.color }}>{betMeta.name}</span>
           </div>
           {won ? (
             <div
-              className="mt-0.5 text-[20px] font-extrabold text-emerald-300"
-              style={{ textShadow: "0 0 14px rgba(52,211,153,0.65)" }}
+              className="text-[18px] font-black tracking-tight text-emerald-300"
+              style={{ textShadow: "0 0 12px rgba(52,211,153,0.6)" }}
             >
               +${formatCOP(result.payout)}
             </div>
           ) : (
-            <div className="mt-0.5 text-[15px] font-bold text-rose-300/90">
+            <div className="text-[14px] font-extrabold text-rose-300/90">
               -${formatCOP(result.bet_amount)}
             </div>
           )}
@@ -100,8 +100,8 @@ export function ArenaResult({
           size="lg"
           onClick={onPlayAgain}
           variant="outline"
-          className="h-12 w-full max-w-[280px] rounded-full border-2 border-white/85 bg-black/35 text-base font-extrabold uppercase tracking-[0.2em] text-white backdrop-blur-sm hover:bg-white/10 animate-fade-in opacity-0 [animation-fill-mode:forwards]"
-          style={{ animationDelay: "800ms" }}
+          className="h-11 w-full max-w-[260px] rounded-full border-2 border-white/85 bg-black/40 text-[13px] font-extrabold uppercase tracking-[0.22em] text-white backdrop-blur-sm hover:bg-white/10 animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+          style={{ animationDelay: "740ms" }}
         >
           Apostar de nuevo
         </Button>
