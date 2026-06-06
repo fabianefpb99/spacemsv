@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Check, Loader2, RefreshCw, Search, X } from "lucide-react";
+import { ArrowLeft, Check, Loader2, RefreshCw, Search, X } from "lucide-react";
 import astronaut from "@/assets/astronaut.svg";
+import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
 import { supabase } from "@/integrations/supabase/client";
 import {
   adminApproveDeposit,
@@ -216,6 +217,7 @@ export function DepositsSection() {
 }
 
 function DepositDetailDrawer({ id, onClose }: { id: string; onClose: () => void }) {
+  useHistoryBackClose(true, onClose);
   const getFn = useServerFn(adminGetDeposit);
   const approveFn = useServerFn(adminApproveDeposit);
   const rejectFn = useServerFn(adminRejectDeposit);
@@ -243,13 +245,24 @@ function DepositDetailDrawer({ id, onClose }: { id: string; onClose: () => void 
     <div className="fixed inset-0 z-50 flex items-stretch sm:items-center sm:justify-center">
       <div className="absolute inset-0 bg-black/70" onClick={onClose} />
       <div className="relative ml-auto flex h-full w-full flex-col overflow-y-auto border-l border-fuchsia-500/40 bg-gradient-to-b from-[#0c0620] to-[#060210] shadow-[0_0_30px_rgba(217,70,239,0.3)] sm:my-6 sm:h-auto sm:max-h-[92vh] sm:max-w-xl sm:rounded-2xl sm:border">
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-purple-500/30 bg-[#060210]/90 px-4 py-3 backdrop-blur">
-          <h3 className="font-display text-sm font-bold uppercase tracking-widest text-white">
+        <div
+          className="sticky top-0 z-10 flex items-center gap-2 border-b border-purple-500/30 bg-[#060210]/90 px-3 py-3 backdrop-blur"
+          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.75rem)" }}
+        >
+          <button
+            onClick={onClose}
+            className="rounded-md p-1.5 text-purple-200 hover:bg-white/5"
+            aria-label="Volver"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <h3 className="flex-1 font-display text-sm font-bold uppercase tracking-widest text-white">
             Detalle de recarga
           </h3>
           <button
             onClick={onClose}
             className="rounded-md p-1.5 text-purple-200 hover:bg-white/5"
+            aria-label="Cerrar"
           >
             <X className="h-5 w-5" />
           </button>
