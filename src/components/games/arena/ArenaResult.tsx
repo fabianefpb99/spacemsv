@@ -74,18 +74,6 @@ export function ArenaResult({
       >
         OTRA PELEA
       </Button>
-
-      <details className="w-full max-w-xs text-[10px] text-white/40">
-        <summary className="cursor-pointer text-center hover:text-white/70">Provably fair</summary>
-        <div className="mt-2 space-y-1 break-all rounded-md bg-black/40 p-2 font-mono">
-          <div>
-            <span className="text-white/30">hash:</span> {result.server_seed_hash.slice(0, 32)}…
-          </div>
-          <div>
-            <span className="text-white/30">seed:</span> {result.server_seed.slice(0, 32)}…
-          </div>
-        </div>
-      </details>
     </div>
   );
 }
