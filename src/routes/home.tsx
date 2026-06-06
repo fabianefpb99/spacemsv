@@ -1,14 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import { Menu, Settings, ChevronRight, ChevronLeft, Gift, Home, Gamepad2, Wallet, User } from "lucide-react";
+import { Menu, ChevronRight, ChevronLeft, Gift, Home, Gamepad2, Wallet, User } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { PromoPopup } from "@/components/PromoPopup";
 import { BrandLoader } from "@/components/BrandLoader";
 import { SkeletonImage } from "@/components/SkeletonImage";
 import { stopAllGameAudio } from "@/lib/gameAudio";
 import { AuthControl } from "@/components/auth/AuthControl";
-import { AuthDialog } from "@/components/auth/AuthDialog";
-import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
 import heroImg from "@/assets/home-hero.jpg";
@@ -132,12 +130,10 @@ const SLIDES = [
 ];
 
 function HomePage() {
-  const { user } = useAuth();
   const me = useMe();
   // Never show a fake demo amount. If not logged in, show a dash; if logged
   // in but balance hasn't arrived yet, also show a dash so we don't flash $0.
-  const balanceText =
-    user && me.data ? formatCOP(me.data.balance + me.data.bonus_balance) : user ? "—" : "—";
+  const balanceText = me.data ? formatCOP(me.data.balance + me.data.bonus_balance) : "—";
   const [online] = useState(219);
   const [slide, setSlide] = useState(0);
   const slides = SLIDES.length;
