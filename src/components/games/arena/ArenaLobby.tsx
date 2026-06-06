@@ -5,6 +5,9 @@ import { ARENA_CHARACTER_META } from "./characters";
 import { CharacterSprite } from "./CharacterSprite";
 import arenaLobbyAudio from "@/assets/audio/arena/arena-lobby.mp3.asset.json";
 import blazeSelectAudio from "@/assets/audio/arena/blaze-select.mp3.asset.json";
+import novaSelectAudio from "@/assets/audio/arena/nova-select.mp3.asset.json";
+import shadowSelectAudio from "@/assets/audio/arena/shadow-select.mp3.asset.json";
+import titanSelectAudio from "@/assets/audio/arena/titan-select.mp3.asset.json";
 
 const LOBBY_HITBOXES: Record<ArenaCharacterId, string> = {
   nova: "left-[9%] w-[18%]",
@@ -34,23 +37,39 @@ export function ArenaLobby({
   disabled?: boolean;
 }) {
   useLobbyMusic();
-  const blazeSfxRef = useRef<HTMLAudioElement | null>(null);
+  const selectSfxRef = useRef<Record<ArenaCharacterId, HTMLAudioElement | null>>({
+    nova: null,
+    shadow: null,
+    titan: null,
+    blaze: null,
+  });
   useEffect(() => {
-    const a = new Audio(blazeSelectAudio.url);
-    a.preload = "auto";
-    a.volume = 0.7;
-    blazeSfxRef.current = a;
+    const sources: Record<ArenaCharacterId, string> = {
+      nova: novaSelectAudio.url,
+      shadow: shadowSelectAudio.url,
+      titan: titanSelectAudio.url,
+      blaze: blazeSelectAudio.url,
+    };
+    const created: HTMLAudioElement[] = [];
+    (Object.keys(sources) as ArenaCharacterId[]).forEach((id) => {
+      const a = new Audio(sources[id]);
+      a.preload = "auto";
+      a.volume = 0.65;
+      selectSfxRef.current[id] = a;
+      created.push(a);
+    });
     return () => {
-      a.pause();
-      blazeSfxRef.current = null;
+      created.forEach((a) => a.pause());
+      selectSfxRef.current = { nova: null, shadow: null, titan: null, blaze: null };
     };
   }, []);
   const handleSelect = (id: ArenaCharacterId) => {
     if (disabled) return;
-    if (id === "blaze" && blazeSfxRef.current) {
+    const sfx = selectSfxRef.current[id];
+    if (sfx) {
       try {
-        blazeSfxRef.current.currentTime = 0;
-        void blazeSfxRef.current.play();
+        sfx.currentTime = 0;
+        void sfx.play();
       } catch {
         // ignore
       }
@@ -161,7 +180,7 @@ function useLobbyMusic() {
   const restartRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const TARGET_VOLUME = 0.08;
+    const TARGET_VOLUME = 0.072;
     const FADE_MS = 1500;
     const GAP_MS = 2000;
 
