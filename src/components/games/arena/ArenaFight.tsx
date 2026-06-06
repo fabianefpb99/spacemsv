@@ -234,6 +234,27 @@ export function ArenaFight({
     return () => clearTimeout(t);
   }, []);
 
+  useEffect(() => {
+    setEventIdx(0);
+    setPhases(freshPhases());
+    setHp(freshHp());
+    setShakeId(null);
+    setLungeId(null);
+    setShowFightBanner(true);
+    setCurrentEvent(null);
+    setSlotMap(FIXED_SLOT_MAP);
+    slotMapRef.current = FIXED_SLOT_MAP;
+    hpRef.current = freshHp();
+  }, [combatLog, winner, characterBet]);
+
+  useEffect(() => {
+    slotMapRef.current = slotMap;
+  }, [slotMap]);
+
+  useEffect(() => {
+    hpRef.current = hp;
+  }, [hp]);
+
   // Walk through events on a timer (start after the banner fades).
   useEffect(() => {
     if (showFightBanner) return;
@@ -242,11 +263,27 @@ export function ArenaFight({
       return () => clearTimeout(t);
     }
     const ev = combatLog[eventIdx];
-    setCurrentEvent(ev);
-    setPhases((prev) => ({ ...prev, [ev.attacker]: "attack", [ev.target]: "damage" }));
-    setHp(() => ({ ...ev.hp }));
-    setShakeId(ev.target);
-    setLungeId(ev.attacker);
+    const repositionedMap = reorganizeForEvent(
+      slotMapRef.current,
+      ev.attacker,
+      ev.target,
+      hpRef.current,
+    );
+    const needsReposition = repositionedMap !== slotMapRef.current;
+
+    if (needsReposition) {
+      slotMapRef.current = repositionedMap;
+      setSlotMap(repositionedMap);
+    }
+
+    const attackStartDelay = needsReposition ? PRE_ATTACK_REPOSITION_MS : 0;
+    const startAttack = setTimeout(() => {
+      setCurrentEvent(ev);
+      setPhases((prev) => ({ ...prev, [ev.attacker]: "attack", [ev.target]: "damage" }));
+      setHp(() => ({ ...ev.hp }));
+      setShakeId(ev.target);
+      setLungeId(ev.attacker);
+    }, attackStartDelay);
 
     const reset = setTimeout(() => {
       setPhases((prev) => {
@@ -258,10 +295,11 @@ export function ArenaFight({
       });
       setShakeId(null);
       setLungeId(null);
-    }, ATTACK_PHASE_MS);
-    const advance = setTimeout(() => setEventIdx((i) => i + 1), EVENT_INTERVAL_MS);
+    }, attackStartDelay + ATTACK_PHASE_MS);
+    const advance = setTimeout(() => setEventIdx((i) => i + 1), attackStartDelay + EVENT_INTERVAL_MS);
 
     return () => {
+      clearTimeout(startAttack);
       clearTimeout(reset);
       clearTimeout(advance);
     };
