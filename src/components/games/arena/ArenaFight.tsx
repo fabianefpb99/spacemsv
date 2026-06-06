@@ -30,12 +30,15 @@ const FIGHT_BANNER_MS = 1200;
 type SlotId = "backLeft" | "backRight" | "frontLeft" | "frontRight";
 type PhaseMap = Record<ArenaCharacterId, "stance" | "attack" | "damage">;
 
-/** Center-point of each slot inside the stage area (percentages). */
+/** Center-point of each slot inside the stage area (percentages).
+ *  Layout boceto: 4 personajes casi en l\u00ednea, con depth sutil.
+ *  Front (Shadow/Titan) m\u00e1s grandes y separados a los extremos;
+ *  Back (Nova/Blaze) m\u00e1s peque\u00f1os, justo detr\u00e1s entre ellos. */
 const SLOT_POSITIONS: Record<SlotId, { x: number; y: number; facing: "left" | "right" }> = {
-  backLeft: { x: 38, y: 32, facing: "right" },
-  backRight: { x: 62, y: 32, facing: "left" },
-  frontLeft: { x: 20, y: 70, facing: "right" },
-  frontRight: { x: 80, y: 70, facing: "left" },
+  backLeft: { x: 40, y: 50, facing: "right" },
+  backRight: { x: 60, y: 50, facing: "left" },
+  frontLeft: { x: 22, y: 72, facing: "right" },
+  frontRight: { x: 78, y: 72, facing: "left" },
 };
 
 /** Stage center used for diagonal lunge target. */
@@ -56,43 +59,15 @@ function freshHp(): Record<ArenaCharacterId, number> {
   return { nova: 100, shadow: 100, titan: 100, blaze: 100 };
 }
 
-/** Find the order in which characters reached 0 HP across the log. */
-function computeDeathOrder(combatLog: ArenaCombatEvent[]): ArenaCharacterId[] {
-  const order: ArenaCharacterId[] = [];
-  const seen = new Set<ArenaCharacterId>();
-  for (const ev of combatLog) {
-    for (const id of ARENA_CHARACTERS) {
-      if (!seen.has(id) && ev.hp[id] <= 0) {
-        seen.add(id);
-        order.push(id);
-      }
-    }
-  }
-  return order;
-}
-
-/**
- * Pre-compute slot assignment so the "main duel" plays out front-and-center:
- *  - winner → frontRight
- *  - last to die (main rival) → frontLeft
- *  - remaining two → back row (death order)
- */
-function computeSlotMap(
-  combatLog: ArenaCombatEvent[],
-  winner: ArenaCharacterId,
-): Record<SlotId, ArenaCharacterId> {
-  const deathOrder = computeDeathOrder(combatLog);
-  const mainRival =
-    [...deathOrder].reverse().find((id) => id !== winner) ??
-    ARENA_CHARACTERS.find((c) => c !== winner)!;
-  const others = ARENA_CHARACTERS.filter((c) => c !== winner && c !== mainRival);
-  return {
-    frontRight: winner,
-    frontLeft: mainRival,
-    backRight: others[0],
-    backLeft: others[1],
-  };
-}
+/** Posiciones fijas por boceto:
+ *   Shadow front-left, Nova back-left, Blaze back-right, Titan front-right.
+ *  As\u00ed cada personaje mira hacia el centro sin necesidad de mirror. */
+const FIXED_SLOT_MAP: Record<SlotId, ArenaCharacterId> = {
+  frontLeft: "shadow",
+  backLeft: "nova",
+  backRight: "blaze",
+  frontRight: "titan",
+};
 
 /** Compute lunge offset (in stage %) for an attacker moving toward target. */
 function getLungeOffset(
@@ -137,8 +112,8 @@ export function ArenaFight({
   const [showFightBanner, setShowFightBanner] = useState(true);
   const [currentEvent, setCurrentEvent] = useState<ArenaCombatEvent | null>(null);
 
-  // Pre-computed slot map for this round.
-  const slotMap = useMemo(() => computeSlotMap(combatLog, winner), [combatLog, winner]);
+  // Fixed slot map (per boceto) — no longer depends on combat outcome.
+  const slotMap = FIXED_SLOT_MAP;
   const slotOf = useMemo(() => {
     const map = {} as Record<ArenaCharacterId, SlotId>;
     (Object.keys(slotMap) as SlotId[]).forEach((s) => {
@@ -188,23 +163,21 @@ export function ArenaFight({
 
   return (
     <div className="absolute inset-0 overflow-hidden">
-      {/* Current event banner — top */}
-      <div className="absolute inset-x-0 top-1 z-20 flex justify-center px-2">
+      {/* Current event banner — top (texto plano, sin chips) */}
+      <div className="absolute inset-x-0 top-2 z-20 flex justify-center px-2">
         {currentEvent ? (
           <div
             key={eventIdx}
-            className="animate-fade-in rounded-full border border-white/15 bg-black/60 px-3 py-1 text-[11px] font-bold uppercase tracking-wide backdrop-blur-sm"
+            className="animate-fade-in text-center text-[13px] font-extrabold uppercase tracking-wider text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]"
           >
             <span style={{ color: ARENA_CHARACTER_META[currentEvent.attacker].color }}>
               {ARENA_CHARACTER_META[currentEvent.attacker].name}
             </span>
-            <span className="mx-1.5 text-white/70">golpeó a</span>
+            <span className="mx-1.5 text-white/90">golpe\u00f3 a</span>
             <span style={{ color: ARENA_CHARACTER_META[currentEvent.target].color }}>
               {ARENA_CHARACTER_META[currentEvent.target].name}
             </span>
-            <span className="ml-2 rounded bg-red-500/25 px-1.5 py-0.5 font-mono text-[10px] text-red-200">
-              -{currentEvent.damage}
-            </span>
+            <span className="ml-2 font-mono text-white/80">-{currentEvent.damage}</span>
           </div>
         ) : null}
       </div>
@@ -220,8 +193,8 @@ export function ArenaFight({
           const lunge = targetSlot ? getLungeOffset(slot, targetSlot) : { dx: 0, dy: 0 };
           // Mirror sprite so it faces this slot's direction.
           const mirror = NATURAL_FACING[id] !== slotPos.facing;
-          // Front slots render slightly larger to reinforce depth.
-          const heightPct = slot.startsWith("front") ? 58 : 48;
+          // Front slots render notably larger to reinforce depth.
+          const heightPct = slot.startsWith("front") ? 70 : 48;
 
           return (
             <FighterSlot
@@ -242,28 +215,30 @@ export function ArenaFight({
         })}
       </div>
 
-      {/* ¡FIGHT! banner at start */}
+      {/* ¡FIGHT! banner — blanco minimalista */}
       {showFightBanner && (
-        <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center">
+        <div className="pointer-events-none absolute inset-x-0 top-[18%] z-30 flex justify-center">
           <div className="animate-scale-in text-center">
             <div
-              className="font-display text-6xl font-black uppercase tracking-tighter text-yellow-300 sm:text-7xl"
-              style={{ textShadow: "0 0 20px rgba(250,204,21,0.8), 0 0 40px rgba(239,68,68,0.6)" }}
+              className="font-display text-6xl font-black uppercase tracking-tight text-white sm:text-7xl"
+              style={{ textShadow: "0 4px 14px rgba(0,0,0,0.85)" }}
             >
-              ¡FIGHT!
+              \u00a1FIGHT!
             </div>
           </div>
         </div>
       )}
 
-      {/* HP bars — 2×2 grid bottom */}
-      <div className="absolute inset-x-2 bottom-2 z-20 grid grid-cols-2 gap-1.5">
-        {(["backLeft", "backRight", "frontLeft", "frontRight"] as SlotId[])
-          .sort() // keep deterministic
-          .map((slot) => {
-            const id = slotMap[slot];
-            return <HpBar key={slot} id={id} hp={hp[id]} isBet={id === characterBet} />;
-          })}
+      {/* HP bars — fila arriba NOVA/TITAN angostas; fila abajo SHADOW/BLAZE anchas. */}
+      <div className="absolute inset-x-3 bottom-3 z-20 space-y-2">
+        <div className="grid grid-cols-2 gap-3">
+          <HpBar id="nova" hp={hp.nova} isBet={characterBet === "nova"} narrow />
+          <HpBar id="titan" hp={hp.titan} isBet={characterBet === "titan"} narrow />
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <HpBar id="shadow" hp={hp.shadow} isBet={characterBet === "shadow"} />
+          <HpBar id="blaze" hp={hp.blaze} isBet={characterBet === "blaze"} />
+        </div>
       </div>
     </div>
   );
@@ -273,30 +248,30 @@ function HpBar({
   id,
   hp,
   isBet,
+  narrow = false,
 }: {
   id: ArenaCharacterId;
   hp: number;
   isBet: boolean;
+  narrow?: boolean;
 }) {
   const meta = ARENA_CHARACTER_META[id];
   const pct = Math.max(0, Math.min(100, hp));
   return (
-    <div
-      className={cn(
-        "rounded-md border bg-black/65 p-1 backdrop-blur-sm",
-        isBet
-          ? "border-yellow-400/80 shadow-[0_0_10px_rgba(250,204,21,0.4)]"
-          : "border-white/15",
-      )}
-    >
+    <div className={cn("flex flex-col items-center", narrow && "px-6")}>
       <div
-        className="flex items-center gap-1 text-[10px] font-bold leading-none"
-        style={{ color: meta.color }}
+        className="mb-1 flex items-center gap-1 text-[11px] font-extrabold uppercase tracking-wider drop-shadow-[0_2px_3px_rgba(0,0,0,0.9)]"
+        style={{ color: "#ffffff" }}
       >
-        {isBet && <span className="text-yellow-300">★</span>}
+        {isBet && <span className="text-yellow-300">\u2605</span>}
         {meta.name}
       </div>
-      <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+      <div
+        className={cn(
+          "h-2.5 w-full overflow-hidden rounded-full border bg-black/40 backdrop-blur-sm",
+          isBet ? "border-yellow-300/90 shadow-[0_0_10px_rgba(250,204,21,0.5)]" : "border-white/70",
+        )}
+      >
         <div
           className="h-full rounded-full transition-[width] duration-500"
           style={{ width: `${pct}%`, backgroundColor: meta.color }}
