@@ -185,7 +185,7 @@ function GoogleButton() {
 }
 
 function SignInForm({ onSuccess }: { onSuccess: () => void }) {
-  const { refreshSession } = useAuth();
+  const { refreshSession, user } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -212,7 +212,7 @@ function SignInForm({ onSuccess }: { onSuccess: () => void }) {
     }
     const session = await refreshSession();
     setLoading(false);
-    if (!session?.user) {
+    if (!session?.user && !user) {
       setError("La cuenta sí inició, pero el teléfono tardó en recuperar la sesión. Intenta una vez más.");
       return;
     }
