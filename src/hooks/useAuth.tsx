@@ -39,6 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const storedSession = readStoredSession();
       const hadSession = !!(sessionRef.current ?? storedSession);
       const delays = [0, 150, 400, 900];
+      
 
       if (!sessionRef.current && storedSession) {
         applySession(storedSession);
@@ -50,8 +51,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (delay > 0) {
           await new Promise((resolve) => window.setTimeout(resolve, delay));
         }
-
-        let nextSession: Session | null = null;
 
         try {
           const sessionRes = await withTimeout(supabase.auth.getSession(), 4000, "auth_get_session_timeout");
@@ -80,13 +79,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       bootstrappedRef.current = true;
-      if (!hadSession) {
-        setSession(null);
-      } else {
-        setSession(sessionRef.current ?? storedSession);
-      }
+      // If we reached here, all retries failed or returned null.
+      // Only clear if we are sure there is no session (nextSession is explicitly null).
+      applySession(nextSession);
       setLoading(false);
-      return hadSession ? (sessionRef.current ?? storedSession) : null;
+      return nextSession;
     })().finally(() => {
       refreshPromiseRef.current = null;
     });
@@ -154,12 +151,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading,
     signOut: async () => {
       try {
+        await supabase.auth.signOut();
       } catch (err) {
-        console.error("Logout error", err);
+        console.error("[auth] signOut error", err);
       } finally {
         applySession(null);
       }
-    },
     },
     refreshSession,
   };
