@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     bootstrappedRef.current = true;
     setSession(nextSession);
     setLoading(false);
-    queryClient.invalidateQueries({ queryKey: ["me"] });
+    if (!nextSession) { queryClient.clear(); } else { queryClient.invalidateQueries({ queryKey: ["me"] }); queryClient.invalidateQueries({ queryKey: ["vip"] }); }
   };
 
   const refreshSession = async () => {
@@ -153,7 +153,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     session,
     loading,
     signOut: async () => {
-      await supabase.auth.signOut();
+      try {
+      } catch (err) {
+        console.error("Logout error", err);
+      } finally {
+        applySession(null);
+      }
+    },
     },
     refreshSession,
   };
