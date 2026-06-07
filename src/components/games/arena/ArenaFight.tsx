@@ -37,32 +37,48 @@ function useFightStartSfx() {
 }
 
 function useHitSfx() {
-  // Guardamos sólo las URLs y creamos un Audio nuevo en cada golpe.
-  // Reutilizar el mismo HTMLAudioElement provoca que tras varios hits
-  // seguidos (cuando play() aún tiene una promesa pendiente) las
-  // siguientes llamadas a currentTime=0 lancen excepción y el sonido
-  // se silencie. Crear instancias desechables evita ese estado trabado.
-  const urlsRef = useRef<string[]>([]);
-  const finalUrlRef = useRef<string>("");
-  const liveRef = useRef<HTMLAudioElement[]>([]);
+  // Pool de Audio elements pre-cargados (3 instancias por sonido).
+  // Reproducir desde una instancia ya cargada => latencia ~0 (sincronizado
+  // con el sprite de golpe). Rotar entre 3 copias evita el problema de
+  // re-disparar el mismo elemento mientras play() está pendiente.
+  const poolsRef = useRef<{ hits: HTMLAudioElement[][]; final: HTMLAudioElement[] }>({
+    hits: [],
+    final: [],
+  });
   const rotationRef = useRef(0);
+  const poolIdxRef = useRef<Record<number, number>>({});
+  const finalIdxRef = useRef(0);
 
   useEffect(() => {
-    urlsRef.current = [
+    const hitUrls = [
       hit1Audio.url,
       hit2Audio.url,
       hit3Audio.url,
       hit4Audio.url,
       hit5Audio.url,
     ];
-    finalUrlRef.current = hitFinalAudio.url;
-    // Warm up the cache so the first hits don't lag.
-    [...urlsRef.current, finalUrlRef.current].forEach((u) => {
-      const a = new Audio(u);
-      a.preload = "auto";
+    const COPIES = 3;
+    poolsRef.current.hits = hitUrls.map((u) => {
+      const arr: HTMLAudioElement[] = [];
+      for (let i = 0; i < COPIES; i++) {
+        const a = new Audio(u);
+        a.preload = "auto";
+        a.volume = 0.55;
+        a.load();
+        arr.push(a);
+      }
+      return arr;
     });
+    poolsRef.current.final = [];
+    for (let i = 0; i < COPIES; i++) {
+      const a = new Audio(hitFinalAudio.url);
+      a.preload = "auto";
+      a.volume = 0.75;
+      a.load();
+      poolsRef.current.final.push(a);
+    }
     return () => {
-      liveRef.current.forEach((a) => {
+      poolsRef.current.hits.flat().concat(poolsRef.current.final).forEach((a) => {
         try {
           a.pause();
           a.src = "";
@@ -70,24 +86,37 @@ function useHitSfx() {
           // ignore
         }
       });
-      liveRef.current = [];
+      poolsRef.current.hits = [];
+      poolsRef.current.final = [];
     };
   }, []);
 
   return useMemo(
     () => ({
       playHit(isFinal: boolean) {
-        const url = isFinal
-          ? finalUrlRef.current
-          : urlsRef.current[rotationRef.current % urlsRef.current.length];
-        if (!isFinal) rotationRef.current++;
-        if (!url) return;
-        const a = new Audio(url);
-        a.volume = isFinal ? 0.75 : 0.55;
-        liveRef.current.push(a);
-        a.addEventListener("ended", () => {
-          liveRef.current = liveRef.current.filter((x) => x !== a);
-        });
+        let a: HTMLAudioElement | undefined;
+        if (isFinal) {
+          const pool = poolsRef.current.final;
+          if (!pool.length) return;
+          a = pool[finalIdxRef.current % pool.length];
+          finalIdxRef.current++;
+        } else {
+          const pools = poolsRef.current.hits;
+          if (!pools.length) return;
+          const soundIdx = rotationRef.current % pools.length;
+          rotationRef.current++;
+          const pool = pools[soundIdx];
+          const next = (poolIdxRef.current[soundIdx] ?? 0) % pool.length;
+          poolIdxRef.current[soundIdx] = next + 1;
+          a = pool[next];
+        }
+        if (!a) return;
+        try {
+          a.pause();
+          a.currentTime = 0;
+        } catch {
+          // ignore
+        }
         const p = a.play();
         if (p && typeof p.catch === "function") p.catch(() => {});
       },
