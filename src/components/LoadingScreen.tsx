@@ -23,7 +23,10 @@ const ASSETS: { src: string; type: "image" | "audio" }[] = [
 ];
 
 const BACKGROUND_THRESHOLD_MS = 60_000; // re-show loader after 60s in background
-const MIN_VISIBLE_MS = 900;
+const MIN_VISIBLE_MS = 1100;
+// Tope máximo de espera por assets. Si algún recurso tarda más de esto,
+// dejamos pasar al juego igualmente para no bloquear al usuario.
+const MAX_VISIBLE_MS = 8000;
 
 function preloadAsset(asset: { src: string; type: "image" | "audio" }): Promise<void> {
   return new Promise((resolve) => {
@@ -55,28 +58,52 @@ export function LoadingScreen({ children, variant = "rocket" }: { children: Reac
     const start = Date.now();
     let completed = 0;
 
-    const tasks = ASSETS.map((a) =>
+    // Incluimos también la imagen específica del variant — así el loader
+    // no termina antes de tener listo el arte de la vista de destino.
+    const variantImage =
+      variant === "mine" ? gameMines
+      : variant === "slot" ? gameSlotMafia
+      : variant === "dice" ? gameDice
+      : variant === "blackjack" ? blackjackPromo.url
+      : variant === "roulette" ? gameRuleta
+      : variant === "arena" ? gameArena.url
+      : variant === "rocket" ? gameSpaceman
+      : astronautRocket;
+    const allAssets: { src: string; type: "image" | "audio" }[] = [
+      ...ASSETS,
+      { src: variantImage, type: "image" },
+    ];
+    const tasks = allAssets.map((a) =>
       preloadAsset(a).then(() => {
         completed += 1;
-        if (!cancelled) setTargetProgress(Math.round((completed / ASSETS.length) * 95));
+        if (!cancelled) setTargetProgress(Math.round((completed / allAssets.length) * 95));
       })
     );
+
+    const finish = () => {
+      if (cancelled) return;
+      setTargetProgress(100);
+      setLoading(false);
+    };
+
+    // Hard cap — si los assets no terminan en MAX_VISIBLE_MS, soltamos
+    // el loader para no dejar al usuario atascado.
+    const hardCap = setTimeout(finish, MAX_VISIBLE_MS);
 
     Promise.all(tasks).then(() => {
       const elapsed = Date.now() - start;
       const wait = Math.max(0, MIN_VISIBLE_MS - elapsed);
       setTimeout(() => {
-        if (!cancelled) {
-          setTargetProgress(100);
-          setLoading(false);
-        }
+        clearTimeout(hardCap);
+        finish();
       }, wait);
     });
 
     return () => {
       cancelled = true;
+      clearTimeout(hardCap);
     };
-  }, []);
+  }, [variant]);
 
   // Smoothly animate the visible progress toward the target so the bar fills continuously
   useEffect(() => {

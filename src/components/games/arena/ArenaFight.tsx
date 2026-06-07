@@ -37,42 +37,59 @@ function useFightStartSfx() {
 }
 
 function useHitSfx() {
-  const hitsRef = useRef<HTMLAudioElement[]>([]);
-  const finalRef = useRef<HTMLAudioElement | null>(null);
+  // Guardamos sólo las URLs y creamos un Audio nuevo en cada golpe.
+  // Reutilizar el mismo HTMLAudioElement provoca que tras varios hits
+  // seguidos (cuando play() aún tiene una promesa pendiente) las
+  // siguientes llamadas a currentTime=0 lancen excepción y el sonido
+  // se silencie. Crear instancias desechables evita ese estado trabado.
+  const urlsRef = useRef<string[]>([]);
+  const finalUrlRef = useRef<string>("");
+  const liveRef = useRef<HTMLAudioElement[]>([]);
   const rotationRef = useRef(0);
+
   useEffect(() => {
-    const urls = [hit1Audio.url, hit2Audio.url, hit3Audio.url, hit4Audio.url, hit5Audio.url];
-    hitsRef.current = urls.map((u) => {
+    urlsRef.current = [
+      hit1Audio.url,
+      hit2Audio.url,
+      hit3Audio.url,
+      hit4Audio.url,
+      hit5Audio.url,
+    ];
+    finalUrlRef.current = hitFinalAudio.url;
+    // Warm up the cache so the first hits don't lag.
+    [...urlsRef.current, finalUrlRef.current].forEach((u) => {
       const a = new Audio(u);
       a.preload = "auto";
-      a.volume = 0.55;
-      return a;
     });
-    const f = new Audio(hitFinalAudio.url);
-    f.preload = "auto";
-    f.volume = 0.75;
-    finalRef.current = f;
     return () => {
-      hitsRef.current.forEach((a) => a.pause());
-      hitsRef.current = [];
-      f.pause();
-      finalRef.current = null;
-    };
-  }, []);
-  return useMemo(
-    () => ({
-      playHit(isFinal: boolean) {
-        const a = isFinal
-          ? finalRef.current
-          : hitsRef.current[rotationRef.current % hitsRef.current.length];
-        if (!isFinal) rotationRef.current++;
-        if (!a) return;
+      liveRef.current.forEach((a) => {
         try {
-          a.currentTime = 0;
-          void a.play();
+          a.pause();
+          a.src = "";
         } catch {
           // ignore
         }
+      });
+      liveRef.current = [];
+    };
+  }, []);
+
+  return useMemo(
+    () => ({
+      playHit(isFinal: boolean) {
+        const url = isFinal
+          ? finalUrlRef.current
+          : urlsRef.current[rotationRef.current % urlsRef.current.length];
+        if (!isFinal) rotationRef.current++;
+        if (!url) return;
+        const a = new Audio(url);
+        a.volume = isFinal ? 0.75 : 0.55;
+        liveRef.current.push(a);
+        a.addEventListener("ended", () => {
+          liveRef.current = liveRef.current.filter((x) => x !== a);
+        });
+        const p = a.play();
+        if (p && typeof p.catch === "function") p.catch(() => {});
       },
     }),
     [],
