@@ -25,7 +25,10 @@ export function useVip() {
     refetchOnWindowFocus: true,
     queryFn: async () => {
       if (!user) return null;
-      const [{ data: vip }, { data: levels }, { data: prof }] = await Promise.all([
+      const [{ data: vip, error: vipErr }, { data: levels, error: levelsErr }, { data: prof, error: profErr }] = await Promise.all([
+      if (vipErr) throw vipErr;
+      if (levelsErr) throw levelsErr;
+      if (profErr) throw profErr;
         supabase
           .from("user_vip" as never)
           .select("user_id,total_xp,current_level,updated_at")
