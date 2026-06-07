@@ -16,8 +16,8 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<Session | null>(() => readStoredSession());
-  const [loading, setLoading] = useState(() => !readStoredSession());
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
   const queryClient = useQueryClient();
   const bootstrappedRef = useRef(false);
   const sessionRef = useRef<Session | null>(null);
@@ -38,15 +38,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const promise = (async () => {
       const storedSession = readStoredSession();
       const hadSession = !!(sessionRef.current ?? storedSession);
-      const delays = [0, 150, 400, 900];
+      const delays = hadSession ? [0, 250, 800, 1600] : [0, 150, 400, 900];
       let nextSession: Session | null = null;
-      
 
-      if (!sessionRef.current && storedSession) {
-        applySession(storedSession);
-      } else if (!hadSession) {
-        setLoading(true);
-      }
+      setLoading(true);
 
       for (const delay of delays) {
         if (delay > 0) {
@@ -79,12 +74,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      bootstrappedRef.current = true;
-      // If we reached here, all retries failed or returned null.
-      // Only clear if we are sure there is no session (nextSession is explicitly null).
-      applySession(nextSession);
-      setLoading(false);
-      return nextSession;
+      if (hadSession && storedSession) {
+        bootstrappedRef.current = true;
+        setSession(storedSession);
+        setLoading(false);
+        return storedSession;
+      }
+
+      applySession(null);
+      return null;
     })().finally(() => {
       refreshPromiseRef.current = null;
     });
