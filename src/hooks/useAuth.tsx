@@ -74,11 +74,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      if (hadSession && storedSession) {
+      if (sessionRef.current) {
         bootstrappedRef.current = true;
-        setSession(storedSession);
         setLoading(false);
-        return storedSession;
+        return sessionRef.current;
       }
 
       applySession(null);
