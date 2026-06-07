@@ -114,6 +114,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
+      if (event === "INITIAL_SESSION") {
+        void refreshSession();
+        return;
+      }
+
       if (newSession) {
         applySession(newSession);
       } else if (bootstrappedRef.current) {
@@ -123,7 +128,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const recoverOnForeground = () => {
       if (document.visibilityState === "hidden") return;
-      if (!sessionRef.current || readStoredSession()) {
+      if (sessionRef.current || readStoredSession()) {
         void refreshSession();
       }
     };
