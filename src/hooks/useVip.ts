@@ -25,7 +25,7 @@ export function useVip() {
     refetchOnWindowFocus: true,
     queryFn: async () => {
       if (!user) return null;
-      const [{ data: vip }, { data: levels }, { data: prof }] = await Promise.all([
+      const [{ data: vip, error: vipErr }, { data: levels, error: levelsErr }, { data: prof, error: profErr }] = await Promise.all([
         supabase
           .from("user_vip" as never)
           .select("user_id,total_xp,current_level,updated_at")
@@ -41,6 +41,9 @@ export function useVip() {
           .eq("id", user.id)
           .maybeSingle(),
       ]);
+      if (vipErr) throw vipErr;
+      if (levelsErr) throw levelsErr;
+      if (profErr) throw profErr;
       return {
         user_vip: (vip as UserVipRow | null) ?? null,
         levels: (levels as unknown as VipLevelRow[]) ?? [],
