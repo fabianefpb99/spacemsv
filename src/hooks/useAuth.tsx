@@ -39,6 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const storedSession = readStoredSession();
       const hadSession = !!(sessionRef.current ?? storedSession);
       const delays = [0, 150, 400, 900];
+      let nextSession: Session | null = null;
       
 
       if (!sessionRef.current && storedSession) {
