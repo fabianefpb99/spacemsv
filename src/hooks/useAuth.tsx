@@ -38,7 +38,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const promise = (async () => {
       const storedSession = readStoredSession();
       const hadSession = !!(sessionRef.current ?? storedSession);
-      const delays = hadSession ? [0, 250, 800, 1600] : [0, 150, 400, 900];
+      // If there's no evidence of a prior session (no stored session, no
+      // in-memory session), don't loop with delays — a logged-out visitor
+      // would otherwise sit on a blank screen for seconds before the
+      // "Iniciar sesión / Registrarse" button appears. Only retry when we
+      // know a session existed and we're trying to recover it.
+      const delays = hadSession ? [0, 250, 800, 1600] : [0];
       let nextSession: Session | null = null;
 
       setLoading(true);
@@ -58,6 +63,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (nextSession) {
           applySession(nextSession);
           return nextSession;
+        }
+
+        // No prior session evidence → stop after the first attempt and
+        // render the logged-out UI immediately.
+        if (!hadSession) {
+          break;
         }
 
         try {
