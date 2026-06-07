@@ -37,7 +37,6 @@ function useFightStartSfx() {
 }
 
 function useHitSfx() {
-function useHitSfx() {
   // Guardamos sólo las URLs y creamos un Audio nuevo en cada golpe.
   // Reutilizar el mismo HTMLAudioElement provoca que tras varios hits
   // seguidos (cuando play() aún tiene una promesa pendiente) las
