@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   Check,
@@ -553,16 +553,16 @@ function HistoryRow({
   const isReject = status === "rejected" || status === "rechazada" || status === "failed";
 
   const statusMeta = isOk
-    ? { Icon: CircleCheck, label: "Completado", cls: "text-emerald-300", amountCls: "text-emerald-300" }
+    ? { Icon: CircleCheck, label: "Completado", cls: "text-emerald-300", border: "border-emerald-400/50", amountCls: "text-emerald-300" }
     : isPending
-    ? { Icon: Clock, label: "Pendiente", cls: "text-amber-300", amountCls: "text-amber-300" }
+    ? { Icon: Clock, label: "Pendiente", cls: "text-amber-300", border: "border-amber-400/50", amountCls: "text-amber-300" }
     : isReject
-    ? { Icon: CircleAlert, label: "Rechazado", cls: "text-rose-300", amountCls: "text-rose-300" }
-    : { Icon: CircleCheck, label: "Registrado", cls: "text-purple-200", amountCls: "text-white" };
+    ? { Icon: CircleAlert, label: "Rechazado", cls: "text-rose-300", border: "border-rose-400/50", amountCls: "text-rose-300" }
+    : { Icon: CircleCheck, label: "Registrado", cls: "text-purple-200", border: "border-purple-400/50", amountCls: "text-white" };
 
   return (
     <li className="flex items-center gap-3 rounded-xl border border-purple-500/25 bg-[#0c0620] p-3">
-      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border bg-black/30 ${statusMeta.cls.replace("text-", "border-")}/50`}>
+      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border bg-black/30 ${statusMeta.border}`}>
         <statusMeta.Icon className={`h-4 w-4 ${statusMeta.cls}`} />
       </div>
       <div className="min-w-0 flex-1">
