@@ -464,6 +464,9 @@ function PerfilPage() {
           <Link to="/mis-recargas" className="block">
             <LinkRow icon={<WalletIcon className="h-4 w-4 text-purple-200" />} label="Mis Recargas" />
           </Link>
+          <Link to="/retiros" className="block">
+            <LinkRow icon={<Banknote className="h-4 w-4 text-amber-300" />} label="Retirar saldo" />
+          </Link>
           <LinkRow icon={<History className="h-4 w-4 text-purple-200" />} label="Historial de Transacciones" />
           <LinkRow icon={<Gift className="h-4 w-4 text-purple-200" />} label="Mis Bonos" />
           <LinkRow
