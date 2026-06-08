@@ -163,7 +163,7 @@ function RetirosPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("transactions")
-        .select("id, amount, created_at, metadata, status")
+        .select("id, amount, created_at, meta")
         .eq("user_id", user!.id)
         .eq("type", "withdrawal")
         .order("created_at", { ascending: false })
@@ -176,8 +176,7 @@ function RetirosPage() {
     id: string;
     amount: number;
     created_at: string;
-    metadata: Record<string, unknown> | null;
-    status?: string | null;
+    meta: Record<string, unknown> | null;
   }>;
 
   return (
@@ -361,10 +360,10 @@ function RetirosPage() {
             </li>
           ) : (
             recentRows.map((r) => {
-              const meta = r.metadata ?? {};
+              const meta = r.meta ?? {};
               const method = (meta as { method?: string }).method as MethodId | undefined;
               const acc = (meta as { account?: string }).account ?? "";
-              const status = (r.status ?? "completed").toLowerCase();
+              const status = ((meta as { status?: string }).status ?? "completed").toLowerCase();
               return (
                 <HistoryRow
                   key={r.id}
