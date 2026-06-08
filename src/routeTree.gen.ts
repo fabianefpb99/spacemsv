@@ -26,6 +26,7 @@ import { Route as ArenaRouteImport } from './routes/arena'
 import { Route as AdminpanelRouteImport } from './routes/adminpanel'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PayBrebRouteImport } from './routes/pay_.breb'
+import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
 const VipRoute = VipRouteImport.update({
   id: '/vip',
@@ -112,6 +113,12 @@ const PayBrebRoute = PayBrebRouteImport.update({
   path: '/pay/breb',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LovableEmailQueueProcessRoute =
+  LovableEmailQueueProcessRouteImport.update({
+    id: '/lovable/email/queue/process',
+    path: '/lovable/email/queue/process',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -131,6 +138,7 @@ export interface FileRoutesByFullPath {
   '/terminos': typeof TerminosRoute
   '/vip': typeof VipRoute
   '/pay/breb': typeof PayBrebRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -150,6 +158,7 @@ export interface FileRoutesByTo {
   '/terminos': typeof TerminosRoute
   '/vip': typeof VipRoute
   '/pay/breb': typeof PayBrebRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -170,6 +179,7 @@ export interface FileRoutesById {
   '/terminos': typeof TerminosRoute
   '/vip': typeof VipRoute
   '/pay_/breb': typeof PayBrebRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -191,6 +201,7 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/vip'
     | '/pay/breb'
+    | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/vip'
     | '/pay/breb'
+    | '/lovable/email/queue/process'
   id:
     | '__root__'
     | '/'
@@ -229,6 +241,7 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/vip'
     | '/pay_/breb'
+    | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -249,6 +262,7 @@ export interface RootRouteChildren {
   TerminosRoute: typeof TerminosRoute
   VipRoute: typeof VipRoute
   PayBrebRoute: typeof PayBrebRoute
+  LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -372,6 +386,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PayBrebRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/queue/process': {
+      id: '/lovable/email/queue/process'
+      path: '/lovable/email/queue/process'
+      fullPath: '/lovable/email/queue/process'
+      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -393,6 +414,7 @@ const rootRouteChildren: RootRouteChildren = {
   TerminosRoute: TerminosRoute,
   VipRoute: VipRoute,
   PayBrebRoute: PayBrebRoute,
+  LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
