@@ -5,7 +5,7 @@
  */
 
 export const DICE_MIN_BET = 500;
-export const DICE_MAX_BET = 100000;
+export const DICE_MAX_BET = 50000;
 export const DICE_BET_STEP = 500;
 
 export type DiceSide = "low" | "high";

@@ -9,7 +9,7 @@ export const MINES_MIN = 1;
 export const MINES_MAX = 15;
 
 export const MINES_MIN_BET = 500;
-export const MINES_MAX_BET = 100000;
+export const MINES_MAX_BET = 50000;
 export const MINES_BET_STEP = 500;
 
 /**

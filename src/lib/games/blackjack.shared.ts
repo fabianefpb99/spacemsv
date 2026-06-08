@@ -30,7 +30,7 @@ export type BJPublicState = {
 };
 
 export const BJ_MIN_BET = 500;
-export const BJ_MAX_BET = 100000;
+export const BJ_MAX_BET = 50000;
 export const BJ_BET_STEP = 500;
 
 export const BJ_SUITS: readonly Suit[] = ["♠", "♥", "♦", "♣"];
