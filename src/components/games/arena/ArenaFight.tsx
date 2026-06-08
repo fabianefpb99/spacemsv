@@ -687,7 +687,7 @@ export function ArenaFight({
       )}
 
       {/* HP bars — fila arriba NOVA/TITAN angostas; fila abajo SHADOW/BLAZE anchas. */}
-      {!resultMode && <div className="absolute inset-x-3 bottom-6 z-20 space-y-2">
+      {!resultMode && <div className="absolute inset-x-3 bottom-[18%] z-20 space-y-1.5 [@media(min-height:780px)]:bottom-[20%]">
         <div className="grid grid-cols-2 gap-3">
           <HpBar id="nova" hp={hp.nova} isBet={characterBet === "nova"} />
           <HpBar id="titan" hp={hp.titan} isBet={characterBet === "titan"} />

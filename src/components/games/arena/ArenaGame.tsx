@@ -224,11 +224,11 @@ export function ArenaGame() {
   }, [lastStar]);
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#060210] text-white">
+    <div className="relative min-h-[100dvh] overflow-hidden bg-[#060210] text-white">
       {/* Full-bleed arena background — covers the entire viewport.
           Swaps art between selection (lobby) and combat (fight). */}
       <div
-        className="pointer-events-none fixed inset-0 -z-0 bg-cover bg-center transition-[background-image] duration-500"
+        className="pointer-events-none fixed inset-0 -z-0 bg-cover bg-[center_85%] transition-[background-image] duration-500"
         style={{
           backgroundImage: `url(${phase === "lobby" ? ARENA_BACKGROUNDS.lobby : ARENA_BACKGROUNDS.fight})`,
         }}
@@ -241,7 +241,7 @@ export function ArenaGame() {
         }`}
       />
 
-      <div className="relative z-10 mx-auto flex h-screen max-w-md flex-col px-3 pb-2 pt-2 sm:max-w-lg sm:px-4">
+      <div className="relative z-10 mx-auto flex h-[100dvh] max-w-md flex-col px-3 pb-2 pt-2 sm:max-w-lg sm:px-4">
         {/* Header (matches Mines/Spaceman/Dados) */}
         <header
           className="flex items-center justify-between border-b border-purple-500/20 bg-[#060210]/60 px-3 pb-2 -mx-3 -mt-3 backdrop-blur-sm"

@@ -308,7 +308,7 @@ function FighterCard({
         characterId={id}
         phase="idle"
         className={cn(
-          "pointer-events-none relative z-10 h-[112%] w-[210%] max-w-none -mb-2 transition-transform duration-300",
+          "pointer-events-none relative z-10 h-[112%] w-[210%] max-w-none -mb-7 transition-transform duration-300",
           selected ? "scale-[1.32]" : "scale-[1.22] opacity-95 group-hover:scale-[1.28] group-hover:opacity-100",
         )}
       />
