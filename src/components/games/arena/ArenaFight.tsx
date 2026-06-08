@@ -57,7 +57,7 @@ function useHitSfx() {
       hit4Audio.url,
       hit5Audio.url,
     ];
-    const COPIES = 3;
+    const COPIES = 2;
     poolsRef.current.hits = hitUrls.map((u) => {
       const arr: HTMLAudioElement[] = [];
       for (let i = 0; i < COPIES; i++) {

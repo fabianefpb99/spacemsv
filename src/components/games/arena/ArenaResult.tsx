@@ -1,7 +1,19 @@
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ARENA_CHARACTER_META } from "./characters";
-import type { ArenaRoundResult } from "@/lib/games/arena.shared";
+import type { ArenaRoundResult, ArenaCharacterId } from "@/lib/games/arena.shared";
+import blazeSelectAudio from "@/assets/audio/arena/blaze-select.mp3.asset.json";
+import novaSelectAudio from "@/assets/audio/arena/nova-select.mp3.asset.json";
+import shadowSelectAudio from "@/assets/audio/arena/shadow-select.mp3.asset.json";
+import titanSelectAudio from "@/assets/audio/arena/titan-select.mp3.asset.json";
+
+const WINNER_VOICE: Record<ArenaCharacterId, string> = {
+  nova: novaSelectAudio.url,
+  shadow: shadowSelectAudio.url,
+  titan: titanSelectAudio.url,
+  blaze: blazeSelectAudio.url,
+};
 
 function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
@@ -23,6 +35,31 @@ export function ArenaResult({
   const winnerMeta = ARENA_CHARACTER_META[result.winner];
   const betMeta = ARENA_CHARACTER_META[result.character_bet];
   const won = result.won;
+
+  // Reproducir la voz del personaje ganador al aparecer victorioso.
+  useEffect(() => {
+    const src = WINNER_VOICE[result.winner];
+    if (!src) return;
+    const a = new Audio(src);
+    a.volume = 0.7;
+    const t = setTimeout(() => {
+      try {
+        a.currentTime = 0;
+        void a.play();
+      } catch {
+        // ignore
+      }
+    }, 180);
+    return () => {
+      clearTimeout(t);
+      try {
+        a.pause();
+        a.src = "";
+      } catch {
+        // ignore
+      }
+    };
+  }, [result.winner]);
 
   return (
     <div className="pointer-events-none absolute inset-0 z-20 flex flex-col justify-between p-4">
