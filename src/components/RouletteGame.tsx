@@ -472,8 +472,15 @@ export function RouletteGame() {
       if (error) throw error;
       const result = (data as { cached: { winning_segment: number; winning_color: Choice; won: boolean; payout: number } }).cached;
 
-      // Refrescar balance
-      queryClient.invalidateQueries({ queryKey: ["me"] });
+      // Descontar la apuesta de inmediato en el HUD para que el header no
+      // refleje un saldo "ganado" antes de que la ruleta caiga. El refresco
+      // real (que sumará el premio si lo hubo) se hace cuando termina la
+      // animación, igual que en SlotGame.
+      queryClient.setQueryData(
+        ["me", user.id],
+        (old: { balance: number; bonus_balance: number; profile: unknown } | null | undefined) =>
+          old ? { ...old, balance: Math.max(0, Number(old.balance) - bet) } : old,
+      );
 
       // Calcular rotación final: winning segment debe terminar arriba
       const segIndex = WHEEL_ORDER.indexOf(result.winning_segment);
@@ -538,6 +545,9 @@ export function RouletteGame() {
         });
         setHistory((h) => [{ segment: result.winning_segment, color: result.winning_color }, ...h].slice(0, 30));
         playResult(result.won);
+        // Sincronizar con el servidor SOLO ahora — así el header suma el
+        // premio cuando la bola ya cayó, no antes.
+        queryClient.invalidateQueries({ queryKey: ["me"] });
         if (result.won) {
           toast.success(`¡Ganaste! +${formatCOP(Number(result.payout) || 0)} COP`);
         } else {
