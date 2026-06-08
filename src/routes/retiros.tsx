@@ -314,13 +314,17 @@ function RetirosPage() {
             label="Recibirás"
             value={
               <span className="text-emerald-300">
-                ${formatCOP(amount)} <span className="text-[10px] font-bold text-emerald-300/80">COP</span>
+                ${formatCOP(amount - Math.round(amount * 0.01))} <span className="text-[10px] font-bold text-emerald-300/80">COP</span>
               </span>
             }
           />
           <SummaryCell
-            label="Comisión"
-            value={<span className="text-white">$0 <span className="text-[10px] font-bold text-purple-200/70">COP</span></span>}
+            label="Comisión (1%)"
+            value={
+              <span className="text-white">
+                ${formatCOP(Math.round(amount * 0.01))} <span className="text-[10px] font-bold text-purple-200/70">COP</span>
+              </span>
+            }
           />
         </div>
 
