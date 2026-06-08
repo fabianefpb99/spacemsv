@@ -62,7 +62,7 @@ export function ArenaResult({
   }, [result.winner]);
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-20 flex flex-col justify-between p-4">
+    <div className="pointer-events-none absolute inset-0 z-20 flex flex-col justify-between p-2 sm:p-3">
       {/* Top — verdict banner with colored backdrop */}
       <div
         className={cn(
@@ -86,7 +86,7 @@ export function ArenaResult({
       </div>
 
       {/* Bottom — winner + payout + CTA */}
-      <div className="pointer-events-auto flex flex-col items-center gap-3 pb-1">
+      <div className="pointer-events-auto flex flex-col items-center gap-1.5 pb-0">
         <div
           className="flex items-baseline justify-center gap-2 animate-fade-in"
           style={{ animationDelay: "320ms" }}
