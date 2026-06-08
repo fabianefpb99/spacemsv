@@ -220,25 +220,40 @@ function HomePage() {
     const events: Array<keyof WindowEventMap> = ["pointerdown", "touchstart", "click", "keydown"];
     events.forEach((ev) => window.addEventListener(ev, onGesture, { once: false, passive: true } as AddEventListenerOptions));
 
-    const onVisibility = () => {
+    const pauseForBackground = () => {
       if (disposed) return;
-      if (document.hidden) {
-        if (!audio.paused) {
-          pausedByVisibility = true;
-          fadeTo(0, 350, () => { try { audio.pause(); } catch { /* ignore */ } });
-        }
-      } else if (pausedByVisibility) {
-        pausedByVisibility = false;
-        try {
-          audio.volume = 0;
-          const p = audio.play();
-          const ramp = () => fadeTo(TARGET_VOLUME, 500);
-          if (p && typeof p.then === "function") p.then(ramp).catch(() => { /* ignore */ });
-          else ramp();
-        } catch { /* ignore */ }
+      if (!audio.paused) {
+        pausedByVisibility = true;
+        fadeTo(0, 250, () => { try { audio.pause(); } catch { /* ignore */ } });
       }
     };
+    const resumeFromBackground = () => {
+      if (disposed || !pausedByVisibility) return;
+      pausedByVisibility = false;
+      try {
+        audio.volume = 0;
+        const p = audio.play();
+        const ramp = () => fadeTo(TARGET_VOLUME, 500);
+        if (p && typeof p.then === "function") p.then(ramp).catch(() => { /* ignore */ });
+        else ramp();
+      } catch { /* ignore */ }
+    };
+    const onVisibility = () => {
+      if (document.hidden) pauseForBackground();
+      else resumeFromBackground();
+    };
+    // En Android/PWA `visibilitychange` no siempre dispara al minimizar.
+    // Combinamos con `pagehide`, `blur` y `freeze` para cubrir todos los
+    // casos: minimizar app, cambiar de app, bloqueo de pantalla, BFCache.
+    const onPageHide = () => pauseForBackground();
+    const onPageShow = () => { if (!document.hidden) resumeFromBackground(); };
+    const onBlur = () => pauseForBackground();
+    const onFocus = () => { if (!document.hidden) resumeFromBackground(); };
     document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("pagehide", onPageHide);
+    window.addEventListener("pageshow", onPageShow);
+    window.addEventListener("blur", onBlur);
+    window.addEventListener("focus", onFocus);
 
     return () => {
       disposed = true;
@@ -246,6 +261,10 @@ function HomePage() {
       if (activeFade) { clearInterval(activeFade); activeFade = null; }
       events.forEach((ev) => window.removeEventListener(ev, onGesture));
       document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("pagehide", onPageHide);
+      window.removeEventListener("pageshow", onPageShow);
+      window.removeEventListener("blur", onBlur);
+      window.removeEventListener("focus", onFocus);
       // Fade-out suave al desmontar para evitar cortes abruptos.
       if (!audio.paused) {
         const fadeAudio = audio;
