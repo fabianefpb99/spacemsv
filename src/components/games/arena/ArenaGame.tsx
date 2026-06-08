@@ -63,14 +63,14 @@ export function ArenaGame() {
     () => ({ ...ARENA_ODDS }),
   );
   const [currentPerm, setCurrentPerm] = useState<ArenaOddsPerm | null>(null);
-  const [lastFavorite, setLastFavorite] = useState<ArenaCharacterId | null>(null);
+  const [lastStar, setLastStar] = useState<ArenaCharacterId | null>(null);
 
   // Rotar al montar la página: primera ronda ya trae multiplicadores aleatorios.
   useEffect(() => {
-    const { perm, odds, favorite } = nextArenaOddsPerm(null);
+    const { perm, odds, star } = nextArenaOddsPerm(null);
     setCurrentOdds(odds);
     setCurrentPerm(perm);
-    setLastFavorite(favorite);
+    setLastStar(star);
   }, []);
   const [recentWinners, setRecentWinners] = useState<ArenaCharacterId[]>(() => {
     const DEFAULTS: ArenaCharacterId[] = [
@@ -184,13 +184,13 @@ export function ArenaGame() {
     setResult(null);
     setPhase("lobby");
     setIsPlaying(false);
-    // Nueva apuesta = nueva rotación. Forzamos que el favorito anterior
-    // no se repita para evitar que el mismo personaje gane casi siempre.
-    const { perm, odds, favorite } = nextArenaOddsPerm(lastFavorite);
+    // Nueva apuesta = nueva rotación. Forzamos que la estrella anterior
+    // no se repita para variar cuál personaje paga 8x.
+    const { perm, odds, star } = nextArenaOddsPerm(lastStar);
     setCurrentOdds(odds);
     setCurrentPerm(perm);
-    setLastFavorite(favorite);
-  }, [lastFavorite]);
+    setLastStar(star);
+  }, [lastStar]);
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#060210] text-white">
