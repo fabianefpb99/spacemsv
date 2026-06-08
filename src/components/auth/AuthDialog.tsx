@@ -77,7 +77,7 @@ export function AuthDialog({
         aria-hidden="true"
       />
 
-      <div className="relative flex min-h-dvh items-center justify-center overflow-y-auto overflow-x-hidden px-4 py-6 sm:px-6">
+      <div className="relative flex min-h-dvh items-center justify-center overflow-y-auto overflow-x-hidden px-4 py-6 sm:px-6 pb-[12vh] sm:pb-[10vh]">
         <div className="relative box-border w-full max-w-md overflow-x-hidden overflow-y-auto rounded-lg border border-purple-500/40 bg-[#0c0620] p-4 text-white shadow-2xl sm:p-6 max-h-[calc(100dvh-2rem)]">
           <button
             type="button"
