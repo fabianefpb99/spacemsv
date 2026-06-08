@@ -674,7 +674,7 @@ export function ArenaFight({
 
       {/* ¡FIGHT! banner — blanco minimalista */}
       {!resultMode && showFightBanner && (
-        <div className="pointer-events-none absolute inset-x-0 top-[18%] z-30 flex justify-center">
+        <div className="pointer-events-none absolute inset-x-0 top-[15%] z-30 flex justify-center">
           <div className="animate-scale-in text-center">
             <div
               className="font-display text-6xl font-black uppercase tracking-tight text-white sm:text-7xl"
@@ -687,7 +687,10 @@ export function ArenaFight({
       )}
 
       {/* HP bars — fila arriba NOVA/TITAN angostas; fila abajo SHADOW/BLAZE anchas. */}
-      {!resultMode && <div className="absolute inset-x-3 bottom-[18%] z-20 space-y-1.5 [@media(min-height:780px)]:bottom-[20%]">
+      {!resultMode && <div
+        className="fixed inset-x-0 px-4 z-20 space-y-1.5"
+        style={{ bottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
+      >
         <div className="grid grid-cols-2 gap-3">
           <HpBar id="nova" hp={hp.nova} isBet={characterBet === "nova"} />
           <HpBar id="titan" hp={hp.titan} isBet={characterBet === "titan"} />
