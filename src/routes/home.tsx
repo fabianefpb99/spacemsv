@@ -8,6 +8,8 @@ import { SkeletonImage } from "@/components/SkeletonImage";
 import { stopAllGameAudio } from "@/lib/gameAudio";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { useMe } from "@/hooks/useMe";
+import { useAuth } from "@/hooks/useAuth";
+import { AuthDialog } from "@/components/auth/AuthDialog";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
 import heroImg from "@/assets/home-hero.jpg";
 import heroMinesImg from "@/assets/home-hero-mines.jpg";
@@ -131,6 +133,8 @@ const SLIDES = [
 
 function HomePage() {
   const me = useMe();
+  const { user, loading: authLoading } = useAuth();
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
   // Never show a fake demo amount. If not logged in, show a dash; if logged
   // in but balance hasn't arrived yet, also show a dash so we don't flash $0.
   const balanceText = me.data ? formatCOP(me.data.balance + me.data.bonus_balance) : "—";
@@ -362,16 +366,31 @@ function HomePage() {
               </Link>
             </div>
             <div className="flex items-center gap-2">
-              <div className="text-right">
-                <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
-                <div className="font-display text-[11px] font-bold sm:text-xs text-white">
-                  <span className="neon-green mr-0.5">$</span>{balanceText} COP
-                </div>
-              </div>
-              <AuthControl />
+              {user ? (
+                <>
+                  <div className="text-right">
+                    <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
+                    <div className="font-display text-[11px] font-bold sm:text-xs text-white">
+                      <span className="neon-green mr-0.5">$</span>{balanceText} COP
+                    </div>
+                  </div>
+                  <AuthControl />
+                </>
+              ) : authLoading ? (
+                <div className="h-7 w-24 animate-pulse rounded-md bg-white/5" />
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setAuthDialogOpen(true)}
+                  className="inline-flex items-center rounded-md border border-fuchsia-400/60 bg-gradient-to-r from-fuchsia-500 to-purple-600 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-white shadow-[0_0_14px_-4px_rgba(217,70,239,0.85)] transition hover:from-fuchsia-400 hover:to-purple-500 sm:text-[11px]"
+                >
+                  Login / Registro
+                </button>
+              )}
             </div>
           </div>
         </header>
+        <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
 
         {/* Online indicator */}
         <div className="mt-3 flex items-center gap-2">
