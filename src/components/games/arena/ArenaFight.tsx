@@ -212,7 +212,7 @@ function useFightMusic() {
 
 const EVENT_INTERVAL_MS = 1200;
 const ATTACK_PHASE_MS = 600;
-const FIGHT_BANNER_MS = 1200;
+const FIGHT_BANNER_MS = 1400;
 const PRE_ATTACK_REPOSITION_MS = 220;
 
 type SlotId = "backLeft" | "backRight" | "frontLeft" | "frontRight";
