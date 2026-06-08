@@ -162,6 +162,37 @@ export function ArenaGame() {
           odds_perm: currentPerm ?? undefined,
         },
       });
+      // Asegurar que el fondo de pelea y los sprites de los 4 personajes
+      // estén completamente decodificados ANTES de cambiar de fase. Así la
+      // escena aparece de una sola vez (no primero los personajes y luego
+      // el fondo). Timeout de seguridad para que nunca se cuelgue.
+      const assetUrls: string[] = [
+        ARENA_BACKGROUNDS.fight,
+        ...Object.values(ARENA_CHARACTER_META).flatMap((c) => Object.values(c.sprites)),
+      ];
+      const decodeAll = Promise.all(
+        assetUrls.map((src) => {
+          return new Promise<void>((resolve) => {
+            const img = new Image();
+            img.decoding = "async";
+            img.src = src;
+            const done = () => resolve();
+            if (typeof img.decode === "function") {
+              img.decode().then(done).catch(done);
+            } else if (img.complete) {
+              done();
+            } else {
+              img.onload = done;
+              img.onerror = done;
+            }
+          });
+        }),
+      );
+      const safety = new Promise<void>((resolve) => setTimeout(resolve, 1500));
+      await Promise.race([decodeAll, safety]);
+      // Pequeño respiro extra para que el navegador pinte el fondo nuevo
+      // antes de montar los sprites sobre él.
+      await new Promise((resolve) => setTimeout(resolve, 120));
       setResult(res);
       setPhase("fighting");
     } catch (err) {
