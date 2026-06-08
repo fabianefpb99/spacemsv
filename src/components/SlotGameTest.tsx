@@ -101,7 +101,7 @@ const PAYLINES: number[][] = [
 ];
 
 const MIN_BET = 500;
-const MAX_BET = 100000;
+const MAX_BET = 50000;
 const BET_STEP = 500;
 const QUICK_BETS = [1000, 2000, 5000, 10000];
 

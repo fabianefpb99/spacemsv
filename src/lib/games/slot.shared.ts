@@ -51,7 +51,7 @@ export const SLOT_PAYLINES: readonly (readonly number[])[] = [
 export const SLOT_REELS = 5;
 export const SLOT_ROWS = 4;
 export const SLOT_MIN_BET = 500;
-export const SLOT_MAX_BET = 100000;
+export const SLOT_MAX_BET = 50000;
 export const SLOT_BET_STEP = 500;
 export const SLOT_LINES = SLOT_PAYLINES.length;
 
