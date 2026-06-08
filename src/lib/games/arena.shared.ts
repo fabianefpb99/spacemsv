@@ -4,8 +4,8 @@
  * only renders labels and limits.
  */
 
-export const ARENA_MIN_BET = 500;
-export const ARENA_MAX_BET = 500000;
+export const ARENA_MIN_BET = 1000;
+export const ARENA_MAX_BET = 50000;
 export const ARENA_BET_STEP = 500;
 
 export type ArenaCharacterId = "nova" | "shadow" | "titan" | "blaze";
@@ -17,34 +17,41 @@ export const ARENA_CHARACTERS: readonly ArenaCharacterId[] = [
   "blaze",
 ] as const;
 
-/** Fixed odds shown to the player. Source of truth; server uses the same. */
+/**
+ * Cuotas base por rango (Opción A — 3 iguales + 1 estrella).
+ * Rangos 1-3 = comunes (3.30x). Rango 4 = estrella (8.00x).
+ * El servidor usa exactamente los mismos valores y pesos.
+ *
+ * Probabilidades reales:
+ *   - Cada común: 280/1000 = 28%
+ *   - Estrella:   110/1000 = 11%
+ *   - Casa:       50/1000  =  5%
+ * RTP por slot: común 28%·3.30 ≈ 92.4% · estrella 11%·8.00 = 88%.
+ */
 export const ARENA_ODDS: Record<ArenaCharacterId, number> = {
-  nova: 2.3,
-  shadow: 3.5,
-  titan: 4.8,
-  blaze: 6.5,
+  nova: 3.3,
+  shadow: 3.3,
+  titan: 3.3,
+  blaze: 8.0,
 };
 
-/**
- * Implied probabilities used by the server (sum 1.046 → RTP 91.5%).
- * Exposed here only for UI hints / debugging, never trusted on the wire.
- */
+/** Probabilidades implícitas por personaje en la asignación base. */
 export const ARENA_IMPLIED_PROB: Record<ArenaCharacterId, number> = {
-  nova: 0.424,
-  shadow: 0.279,
-  titan: 0.203,
-  blaze: 0.14,
+  nova: 0.28,
+  shadow: 0.28,
+  titan: 0.28,
+  blaze: 0.11,
 };
 
 /**
  * Permutación de odds (4 elementos, valores 1..4 todos distintos).
  * perm[i] = rango asignado al personaje en posición i del array
- * ARENA_CHARACTERS. Rango 1 = favorito (odds 2.30), rango 4 = underdog
- * (odds 6.50). El servidor valida la permutación e ignora el resto.
+ * ARENA_CHARACTERS. Rangos 1-3 = comunes (odds 3.30, 28% c/u),
+ * rango 4 = estrella (odds 8.00, 11%). El servidor valida y aplica.
  */
 export type ArenaOddsPerm = [number, number, number, number];
 
-const ARENA_BASE_ODDS = [2.3, 3.5, 4.8, 6.5] as const;
+const ARENA_BASE_ODDS = [3.3, 3.3, 3.3, 8.0] as const;
 
 function shuffle4(): ArenaOddsPerm {
   const arr: number[] = [1, 2, 3, 4];
@@ -56,34 +63,33 @@ function shuffle4(): ArenaOddsPerm {
 }
 
 /**
- * Genera una nueva permutación de odds garantizando que el "favorito"
- * (personaje con odds más bajas) sea distinto al de la ronda anterior.
- * En el primer call (prevFavorite=null) cualquier permutación es válida.
+ * Genera una nueva permutación garantizando que la "estrella" (personaje
+ * con la cuota alta, rango 4) sea distinta a la de la ronda anterior.
+ * En el primer call (prevStar=null) cualquier permutación es válida.
  */
-export function nextArenaOddsPerm(prevFavorite: ArenaCharacterId | null): {
+export function nextArenaOddsPerm(prevStar: ArenaCharacterId | null): {
   perm: ArenaOddsPerm;
   odds: Record<ArenaCharacterId, number>;
-  favorite: ArenaCharacterId;
+  star: ArenaCharacterId;
 } {
   for (let safety = 0; safety < 50; safety++) {
     const perm = shuffle4();
-    const favIdx = perm.indexOf(1);
-    const favorite = ARENA_CHARACTERS[favIdx];
-    if (prevFavorite === null || favorite !== prevFavorite) {
+    const starIdx = perm.indexOf(4);
+    const star = ARENA_CHARACTERS[starIdx];
+    if (prevStar === null || star !== prevStar) {
       const odds = {} as Record<ArenaCharacterId, number>;
       ARENA_CHARACTERS.forEach((id, i) => {
         odds[id] = ARENA_BASE_ODDS[perm[i] - 1];
       });
-      return { perm, odds, favorite };
+      return { perm, odds, star };
     }
   }
-  // Fallback teórico — nunca debería llegar aquí.
   const perm = shuffle4();
   const odds = {} as Record<ArenaCharacterId, number>;
   ARENA_CHARACTERS.forEach((id, i) => {
     odds[id] = ARENA_BASE_ODDS[perm[i] - 1];
   });
-  return { perm, odds, favorite: ARENA_CHARACTERS[perm.indexOf(1)] };
+  return { perm, odds, star: ARENA_CHARACTERS[perm.indexOf(4)] };
 }
 
 export type ArenaCombatEvent = {
