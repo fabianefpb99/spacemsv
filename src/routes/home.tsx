@@ -6,6 +6,7 @@ import { PromoPopup } from "@/components/PromoPopup";
 import { BrandLoader } from "@/components/BrandLoader";
 import { SkeletonImage } from "@/components/SkeletonImage";
 import { stopAllGameAudio } from "@/lib/gameAudio";
+import { playSound } from "@/lib/webAudioPlayer";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { useMe } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
