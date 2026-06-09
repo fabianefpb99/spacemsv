@@ -10,6 +10,7 @@ export type AdminSection =
   | "ganancias"
   | "recargas"
   | "retiros"
+  | "home_content"
   | "bonos"
   | "transacciones"
   | "reportes"

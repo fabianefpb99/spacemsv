@@ -41,6 +41,39 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          link: string | null
+          meta: Json
+          read_by: string[]
+          title: string
+          type: Database["public"]["Enums"]["admin_notification_type"]
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          meta?: Json
+          read_by?: string[]
+          title: string
+          type: Database["public"]["Enums"]["admin_notification_type"]
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          meta?: Json
+          read_by?: string[]
+          title?: string
+          type?: Database["public"]["Enums"]["admin_notification_type"]
+        }
+        Relationships: []
+      }
       arena_rounds: {
         Row: {
           bet_amount: number
@@ -313,6 +346,24 @@ export type Database = {
           },
         ]
       }
+      game_red_state: {
+        Row: {
+          game: string
+          last_alert_at: string
+          last_net: number
+        }
+        Insert: {
+          game: string
+          last_alert_at?: string
+          last_net?: number
+        }
+        Update: {
+          game?: string
+          last_alert_at?: string
+          last_net?: number
+        }
+        Relationships: []
+      }
       game_rounds: {
         Row: {
           betting_ends_at: string
@@ -433,6 +484,87 @@ export type Database = {
           state?: Json
           status?: Database["public"]["Enums"]["game_session_status"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      home_featured_games: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          image_url: string
+          link: string
+          name: string
+          position: number
+          tag: string
+          tag_color: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          image_url: string
+          link?: string
+          name: string
+          position?: number
+          tag?: string
+          tag_color?: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          image_url?: string
+          link?: string
+          name?: string
+          position?: number
+          tag?: string
+          tag_color?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      home_slides: {
+        Row: {
+          active: boolean
+          created_at: string
+          cta_label: string
+          cta_link: string
+          description: string
+          eyebrow: string
+          id: string
+          image_url: string
+          position: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          cta_label?: string
+          cta_link?: string
+          description?: string
+          eyebrow?: string
+          id?: string
+          image_url: string
+          position?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          cta_label?: string
+          cta_link?: string
+          description?: string
+          eyebrow?: string
+          id?: string
+          image_url?: string
+          position?: number
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1331,6 +1463,15 @@ export type Database = {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
       }
+      detect_games_in_red: {
+        Args: {
+          p_cooldown_minutes?: number
+          p_min_loss?: number
+          p_min_txs?: number
+          p_window_minutes?: number
+        }
+        Returns: number
+      }
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
@@ -1343,6 +1484,11 @@ export type Database = {
         }
         Returns: boolean
       }
+      mark_admin_notification_read: {
+        Args: { p_id: string }
+        Returns: undefined
+      }
+      mark_all_admin_notifications_read: { Args: never; Returns: number }
       mark_vip_level_seen: { Args: never; Returns: number }
       move_to_dlq: {
         Args: {
@@ -1409,6 +1555,10 @@ export type Database = {
       }
     }
     Enums: {
+      admin_notification_type:
+        | "new_user"
+        | "recharge_request"
+        | "game_red_alert"
       app_role: "admin" | "user"
       deposit_method: "nequi" | "breb"
       deposit_status:
@@ -1570,6 +1720,11 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      admin_notification_type: [
+        "new_user",
+        "recharge_request",
+        "game_red_alert",
+      ],
       app_role: ["admin", "user"],
       deposit_method: ["nequi", "breb"],
       deposit_status: [
