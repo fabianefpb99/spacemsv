@@ -1531,3 +1531,20 @@ html, body {
   60% { transform: translateX(-5px) rotate(-1deg); }
   80% { transform: translateX(4px) rotate(1deg); }
 }
+
+/* ------------------------------------------------------------------
+ * Fix: Radix Dialog / Sheet scroll lock shifting the page.
+ * When the drawer opens, Radix sets `padding-right` and
+ * `margin-right` on <body> equal to the scrollbar width to compensate
+ * for the removed scrollbar. On mobile that creates a visible white
+ * gutter on the right and pushes the layout. Neutralize it and keep
+ * the body background dark so no white strip can ever show through.
+ * ------------------------------------------------------------------ */
+html, body {
+  background-color: #060210;
+}
+body[data-scroll-locked] {
+  margin-right: 0 !important;
+  padding-right: 0 !important;
+  overflow: hidden !important;
+}
