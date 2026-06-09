@@ -11,6 +11,7 @@ export type AdminSection =
   | "recargas"
   | "retiros"
   | "home_content"
+  | "drawer"
   | "bonos"
   | "transacciones"
   | "reportes"
