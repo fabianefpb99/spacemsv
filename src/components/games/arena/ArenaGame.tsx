@@ -119,18 +119,9 @@ export function ArenaGame() {
       i.src = src;
       return i;
     });
-    const auds = audioUrls.map((src) => {
-      const a = new Audio();
-      a.preload = "auto";
-      a.src = src;
-      return a;
-    });
+    audioUrls.forEach((u) => preloadSound(u));
     return () => {
       imgs.length = 0;
-      auds.forEach((a) => {
-        a.pause();
-        a.src = "";
-      });
     };
   }, []);
 
