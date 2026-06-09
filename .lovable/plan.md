@@ -1,47 +1,100 @@
-# Reorganización dinámica de personajes en la arena
+# Plan: Sistema de audio Web Audio API (fix volumen iOS)
 
-## Problema
-Con el `FIXED_SLOT_MAP` actual (Shadow front-left, Nova back-left, Blaze back-right, Titan front-right) hay parejas que nunca pueden atacarse de forma natural:
-- Blaze (back-right) no tiene ángulo para golpear a Titan (front-right) — quedan en la misma columna y se traparían.
-- Nova (back-left) tampoco tiene ángulo para golpear a Shadow (front-left).
+## Objetivo
+Migrar todos los `new Audio()` + `.volume = X` (que iOS ignora) a un reproductor unificado basado en **Web Audio API + GainNode**, conservando exactamente el mismo comportamiento (volúmenes, fades, loops, intros, fade-outs anticipados).
 
-El boceto fijo se rompe en cuanto el log de combate incluye esas combinaciones, porque no hay animación visible.
+## Estrategia: wrapper centralizado + migración por fases
 
-## Solución
-Calcular el `slotMap` por evento en lugar de mantenerlo fijo. Antes de cada golpe, evaluamos si la pareja atacante→objetivo tiene ángulo válido; si no, intercambiamos a dos personajes para abrir la línea de ataque. Las "permutaciones" se hacen sólo cuando son necesarias y respetando estas reglas:
+Crear un único módulo `src/lib/webAudioPlayer.ts` que expone una API simple y compatible con el uso actual. Luego sustituir uso por uso, sin tocar otros sistemas.
 
-### Reglas de jerarquía
-1. Los 4 slots (`backLeft`, `backRight`, `frontLeft`, `frontRight`) siguen existiendo: siempre 2 atrás y 2 al frente.
-2. Cada personaje mantiene su lado natural por defecto (Shadow/Nova izquierda, Titan/Blaze derecha) para que sigan mirando al centro sin mirror.
-3. Antes de cada evento, si atacante y objetivo están en la misma columna, se hace un swap mínimo:
-   - Si ambos están en el mismo lado (ej. Blaze→Titan, derecha): el atacante sube al frente y el objetivo baja atrás (o viceversa, según quién esté arriba).
-   - Esto garantiza un lunge diagonal limpio hacia el centro.
-4. Después del golpe, el slotMap queda como esté para el siguiente evento (no se "rebobina"). Esto da continuidad visual y evita parpadeos.
-5. Si el siguiente evento ya es atacable con la disposición actual, no se hace ningún swap.
+### Fase 1 — Wrapper (sin romper nada)
+Crear `src/lib/webAudioPlayer.ts`:
+- Reutiliza el `AudioContext` ya existente en `gameAudio.ts` (función `getCtx()`).
+- API:
+  - `playSound(url, { volume, loop?, fadeInMs?, onEnded? }) → handle`
+  - `handle.stop(fadeMs?)` — fade-out suave o stop inmediato
+  - `handle.setVolume(v, rampMs?)` — para fades arbitrarios
+- Cachea `AudioBuffer` decodificado por URL (Map) para que las SFX repetidas no re-decodifiquen.
+- Maneja autoplay iOS: si el contexto está `suspended`, intenta `resume()` (ya hay gestos del usuario en todos los puntos donde se reproduce).
+- Fades vía `gain.linearRampToValueAtTime()` — más suave que `setInterval`/RAF.
+- Fallback: si Web Audio falla por cualquier razón, cae a `new Audio()` clásico para no romper Android viejo.
 
-### Animación del swap
-- El cambio de slot se anima con la misma transición que ya tiene `FighterSlot` (transform suave), así que mover a un personaje de `back` a `front` (o de un lado al otro) se ve como un desplazamiento corto antes del golpe.
-- El swap ocurre ~200ms antes de disparar el `lunge`, dando tiempo a que el personaje "se acomode" en su nueva posición y el ataque salga natural.
+### Fase 2 — Migrar `/home`
+- `src/routes/home.tsx`: reemplazar el bloque del `casino-intro.mp3` (líneas ~160–285) por una llamada al wrapper con `fadeInMs: 1500`, y programar `handle.stop(5000)` al timeout que ya existe.
+- Validar: probar en iOS y Android antes de seguir.
 
-### Jerarquía Z
-Se mantiene la regla actual (atacante back→front sube a z=11, oponente front no involucrado sube a z=12). Como sigue siendo lógica basada en el slot final, funciona igual con la disposición dinámica.
+### Fase 3 — Migrar Arena
+- `ArenaLobby.tsx`: música de lobby con fade-in al entrar, fade-out anticipado antes de terminar.
+- `ArenaFight.tsx`: música de pelea + SFX (`fight-start`, golpes, `hit-final`).
+- `ArenaResult.tsx`: SFX de resultado.
+- `gameAudio.ts` línea 58 (`createAudio`) y línea 512 (`dice-roll.mp3`): migrar al wrapper.
+
+### Fase 4 — Validación
+- Probar manualmente en preview que cada sonido suena y sus fades funcionan.
+- Confirmar que el volumen en iOS ahora respeta los valores configurados.
 
 ## Detalles técnicos
 
-**Archivo:** `src/components/games/arena/ArenaFight.tsx`
+```ts
+// src/lib/webAudioPlayer.ts (esqueleto)
+import { getCtx } from "./gameAudio";
 
-1. Reemplazar `const slotMap = FIXED_SLOT_MAP;` por un estado `const [slotMap, setSlotMap] = useState(FIXED_SLOT_MAP)`.
-2. Añadir helper `reorganizeForEvent(currentMap, attacker, target): SlotMap` que:
-   - Calcula los slots actuales de atacante y objetivo.
-   - Si están en columnas distintas o filas distintas (diagonal o misma fila), devuelve `currentMap` sin cambios.
-   - Si están en la misma columna, hace swap entre el objetivo y el otro personaje del lado opuesto en su misma fila (el más cercano), de modo que atacante y objetivo queden en columnas distintas.
-3. En el `useEffect` que avanza eventos, antes de `setLungeId(ev.attacker)`:
-   - Calcular `newMap = reorganizeForEvent(slotMap, ev.attacker, ev.target)`.
-   - Si `newMap !== slotMap`, `setSlotMap(newMap)` y retrasar el lunge ~220ms con un `setTimeout` adicional.
-4. `slotOf` ya es derivado de `slotMap`, así que sigue funcionando.
+const bufferCache = new Map<string, Promise<AudioBuffer>>();
 
-**Sin cambios** en assets, lógica de combate, HP, ni en el banner de eventos.
+async function loadBuffer(ctx: AudioContext, url: string) {
+  if (!bufferCache.has(url)) {
+    bufferCache.set(url, fetch(url).then(r => r.arrayBuffer()).then(b => ctx.decodeAudioData(b)));
+  }
+  return bufferCache.get(url)!;
+}
 
-## Verificación
-- Probar con un log que incluya Blaze→Titan, Titan→Blaze, Nova→Shadow, Shadow→Nova: los personajes deben reacomodarse antes del golpe y el ataque debe verse limpio.
-- Probar con un log de ataques diagonales: no debe haber reacomodos innecesarios.
+export async function playSound(url, { volume = 1, loop = false, fadeInMs = 0 }) {
+  const ctx = getCtx();
+  if (!ctx) return fallbackHtmlAudio(url, volume, loop); // fallback
+  if (ctx.state === "suspended") { try { await ctx.resume(); } catch {} }
+  const buf = await loadBuffer(ctx, url);
+  const src = ctx.createBufferSource();
+  src.buffer = buf; src.loop = loop;
+  const gain = ctx.createGain();
+  gain.gain.value = fadeInMs > 0 ? 0 : volume;
+  src.connect(gain).connect(ctx.destination);
+  src.start();
+  if (fadeInMs > 0) {
+    gain.gain.linearRampToValueAtTime(volume, ctx.currentTime + fadeInMs / 1000);
+  }
+  return {
+    stop(fadeMs = 0) {
+      if (fadeMs > 0) {
+        gain.gain.cancelScheduledValues(ctx.currentTime);
+        gain.gain.setValueAtTime(gain.gain.value, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + fadeMs / 1000);
+        setTimeout(() => { try { src.stop(); } catch {} }, fadeMs + 50);
+      } else { try { src.stop(); } catch {} }
+    },
+    setVolume(v, rampMs = 0) {
+      gain.gain.cancelScheduledValues(ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(v, ctx.currentTime + rampMs / 1000);
+    }
+  };
+}
+```
+
+## Riesgos y mitigaciones
+- **Romper fades**: usar `linearRampToValueAtTime` que es nativo y más preciso. Mismos tiempos (1500ms in, 5000ms out, etc.).
+- **Autoplay bloqueado iOS**: el `AudioContext` ya se crea/resume tras gesto en el flujo actual; el wrapper lo respeta.
+- **Latencia primer play**: primer `fetch + decode` puede tardar ~100ms. Aceptable para intros, y para SFX repetidos queda en cache.
+- **Android sin cambios**: misma ruta de Web Audio API que ya funciona allá → no se afecta.
+- **Fallback**: si por algo `getCtx()` retorna null, caemos a `new Audio()` clásico para no romper nada.
+
+## Entregables
+- `src/lib/webAudioPlayer.ts` (nuevo)
+- `src/routes/home.tsx` (migrado)
+- `src/components/games/arena/ArenaLobby.tsx` (migrado)
+- `src/components/games/arena/ArenaFight.tsx` (migrado)
+- `src/components/games/arena/ArenaResult.tsx` (migrado)
+- `src/lib/gameAudio.ts` (dos puntos migrados)
+
+## Fuera de alcance
+- No se tocan los archivos MP3.
+- No se cambian volúmenes objetivo (siguen 0.15 home, 0.026 lobby, 0.022 fight, etc.).
+- No se toca la síntesis (osciladores) de `gameAudio.ts` — esa parte ya usa Web Audio API correctamente.
