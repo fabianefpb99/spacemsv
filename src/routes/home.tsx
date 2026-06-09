@@ -8,6 +8,7 @@ import { SkeletonImage } from "@/components/SkeletonImage";
 import { stopAllGameAudio } from "@/lib/gameAudio";
 import { playSound } from "@/lib/webAudioPlayer";
 import { AuthControl } from "@/components/auth/AuthControl";
+import { NotificationBell } from "@/components/admin/NotificationBell";
 import { useMe } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthDialog } from "@/components/auth/AuthDialog";
@@ -278,6 +279,7 @@ function HomePage() {
                     </div>
                   </div>
                   <AuthControl />
+                  <NotificationBell />
                 </>
               ) : authLoading ? (
                 <div className="h-7 w-24 animate-pulse rounded-md bg-white/5" />
