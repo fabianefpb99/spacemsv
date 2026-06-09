@@ -18,6 +18,7 @@ import {
   getPublicFeaturedGames,
 } from "@/lib/admin/home-content.functions";
 import { AuthDialog } from "@/components/auth/AuthDialog";
+import { HamburgerDrawer } from "@/components/HamburgerDrawer";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
 import heroImg from "@/assets/home-hero.jpg";
 import heroMinesImg from "@/assets/home-hero-mines.jpg";
@@ -302,9 +303,17 @@ function HomePage() {
         >
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-1">
-              <button className="rounded-md p-2 text-white hover:bg-white/10">
-                <Menu className="h-7 w-7" strokeWidth={3} />
-              </button>
+              <HamburgerDrawer
+                trigger={
+                  <button
+                    type="button"
+                    aria-label="Abrir menú"
+                    className="rounded-md p-2 text-white hover:bg-white/10"
+                  >
+                    <Menu className="h-7 w-7" strokeWidth={3} />
+                  </button>
+                }
+              />
               <Link to="/home" className="logo-shine">
                 <img
                   src={betspaceLogo}
