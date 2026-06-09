@@ -114,32 +114,39 @@ function RankingPage() {
         </header>
         <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
 
-        {/* Hero del Ranking con fondo de espacio */}
-        <section
-          className="relative mt-4 overflow-hidden rounded-2xl border border-purple-500/40 shadow-[0_0_18px_rgba(168,85,247,0.25)]"
-        >
+        {/* Hero del Ranking con fondo del planeta (Spaceman) */}
+        <section className="relative mt-4 overflow-hidden rounded-2xl border border-purple-500/40 shadow-[0_0_18px_rgba(168,85,247,0.3)]">
           <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${spaceBg})` }}
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `url(${spaceBg})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center bottom",
+              backgroundRepeat: "no-repeat",
+            }}
             aria-hidden="true"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0320]/55 via-[#0a0320]/35 to-[#060210]/95" aria-hidden="true" />
+          {/* Suave oscurecido arriba para legibilidad, dejando ver el planeta abajo */}
+          <div
+            className="absolute inset-0 bg-gradient-to-b from-[#060210]/85 via-[#0a0320]/35 to-transparent"
+            aria-hidden="true"
+          />
 
-          <div className="relative px-3 pb-4 pt-5 sm:px-4">
+          <div className="relative px-3 pb-6 pt-5 sm:px-4">
             {/* Título */}
             <div className="flex items-center justify-center gap-2">
-              <Trophy className="h-5 w-5 text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.7)]" />
+              <Trophy className="h-5 w-5 text-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.95)]" />
               <h1 className="font-display text-2xl font-black tracking-widest text-white drop-shadow sm:text-3xl">
                 RANKING
               </h1>
-              <Trophy className="h-5 w-5 text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.7)]" />
+              <Trophy className="h-5 w-5 text-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.95)]" />
             </div>
             <p className="mt-1 text-center text-xs text-purple-100/80">
               Los mejores ganadores del día
             </p>
 
-            {/* Podio */}
-            <div className="mt-5 grid grid-cols-3 items-end gap-2 sm:gap-3">
+            {/* Podio: 2 - 1 - 3 */}
+            <div className="mt-7 grid grid-cols-3 items-end gap-2 sm:gap-3">
               <PodiumSlot place={2} entry={second} loading={publicQ.isLoading} />
               <PodiumSlot place={1} entry={first} loading={publicQ.isLoading} />
               <PodiumSlot place={3} entry={third} loading={publicQ.isLoading} />
@@ -261,27 +268,78 @@ function RankingPage() {
 
 /* ───────── Subcomponents ───────── */
 
-const CROWN_STYLES: Record<number, { crown: string; ring: string; bg: string; badge: string; height: string }> = {
+const PLACE_STYLES: Record<
+  number,
+  {
+    crown: string;
+    border: string;
+    cardBg: string;
+    cardShadow: string;
+    badge: string;
+    pedestal: string;
+    coin: string;
+    cardHeight: string;
+    pedestalHeight: string;
+    nameColor: string;
+    amountColor: string;
+  }
+> = {
   1: {
-    crown: "text-amber-300 drop-shadow-[0_0_10px_rgba(251,191,36,0.85)]",
-    ring: "ring-amber-300/80",
-    bg: "from-amber-500/25 via-amber-500/10 to-transparent border-amber-400/50 shadow-[0_0_22px_rgba(251,191,36,0.35)]",
-    badge: "bg-amber-500 text-amber-950",
-    height: "h-32",
+    crown:
+      "text-amber-300 drop-shadow-[0_0_14px_rgba(251,191,36,1)]",
+    // Oro intenso
+    border: "border-2 border-amber-400",
+    cardBg:
+      "bg-gradient-to-b from-amber-500/30 via-[#1a0b3a]/70 to-[#0a0320]/95",
+    cardShadow:
+      "shadow-[0_0_22px_rgba(251,191,36,0.55),inset_0_0_18px_rgba(251,191,36,0.18)]",
+    badge:
+      "bg-gradient-to-b from-amber-300 to-amber-500 text-amber-950 ring-[3px] ring-amber-200/40 shadow-[0_0_14px_rgba(251,191,36,0.9)]",
+    pedestal:
+      "bg-gradient-to-b from-amber-500/40 to-amber-700/10 border-t-2 border-amber-400/80 shadow-[0_-2px_18px_rgba(251,191,36,0.45)]",
+    coin: "bg-amber-400 text-amber-950",
+    cardHeight: "h-44",
+    pedestalHeight: "h-9",
+    nameColor: "text-white",
+    amountColor: "text-amber-100",
   },
   2: {
-    crown: "text-slate-200 drop-shadow-[0_0_8px_rgba(226,232,240,0.7)]",
-    ring: "ring-slate-300/70",
-    bg: "from-slate-400/20 via-slate-400/10 to-transparent border-slate-300/40 shadow-[0_0_16px_rgba(203,213,225,0.25)]",
-    badge: "bg-slate-300 text-slate-900",
-    height: "h-24",
+    // Plata real, brillante
+    crown:
+      "text-slate-100 drop-shadow-[0_0_10px_rgba(241,245,249,0.95)]",
+    border: "border-2 border-slate-200",
+    cardBg:
+      "bg-gradient-to-b from-slate-300/25 via-[#1a0b3a]/70 to-[#0a0320]/95",
+    cardShadow:
+      "shadow-[0_0_16px_rgba(226,232,240,0.45),inset_0_0_14px_rgba(226,232,240,0.15)]",
+    badge:
+      "bg-gradient-to-b from-slate-100 to-slate-400 text-slate-900 ring-[3px] ring-slate-100/40 shadow-[0_0_12px_rgba(226,232,240,0.85)]",
+    pedestal:
+      "bg-gradient-to-b from-slate-300/40 to-slate-500/10 border-t-2 border-slate-200/80 shadow-[0_-2px_16px_rgba(226,232,240,0.4)]",
+    coin: "bg-slate-200 text-slate-900",
+    cardHeight: "h-36",
+    pedestalHeight: "h-7",
+    nameColor: "text-white",
+    amountColor: "text-slate-100",
   },
   3: {
-    crown: "text-orange-400 drop-shadow-[0_0_8px_rgba(251,146,60,0.7)]",
-    ring: "ring-orange-400/70",
-    bg: "from-orange-500/20 via-orange-500/10 to-transparent border-orange-400/40 shadow-[0_0_16px_rgba(251,146,60,0.3)]",
-    badge: "bg-orange-500 text-orange-950",
-    height: "h-24",
+    // Bronce / naranja intenso
+    crown:
+      "text-orange-400 drop-shadow-[0_0_10px_rgba(251,146,60,0.95)]",
+    border: "border-2 border-orange-500",
+    cardBg:
+      "bg-gradient-to-b from-orange-500/30 via-[#1a0b3a]/70 to-[#0a0320]/95",
+    cardShadow:
+      "shadow-[0_0_16px_rgba(249,115,22,0.55),inset_0_0_14px_rgba(249,115,22,0.18)]",
+    badge:
+      "bg-gradient-to-b from-orange-400 to-orange-600 text-orange-950 ring-[3px] ring-orange-300/40 shadow-[0_0_12px_rgba(249,115,22,0.9)]",
+    pedestal:
+      "bg-gradient-to-b from-orange-500/40 to-orange-700/10 border-t-2 border-orange-500/80 shadow-[0_-2px_16px_rgba(249,115,22,0.45)]",
+    coin: "bg-orange-500 text-orange-950",
+    cardHeight: "h-36",
+    pedestalHeight: "h-7",
+    nameColor: "text-white",
+    amountColor: "text-orange-100",
   },
 };
 
@@ -294,53 +352,69 @@ function PodiumSlot({
   entry: RankingEntry | undefined;
   loading: boolean;
 }) {
-  const s = CROWN_STYLES[place];
+  const s = PLACE_STYLES[place];
   const isFirst = place === 1;
 
   return (
-    <div className={`flex flex-col items-center ${isFirst ? "-mt-2" : ""}`}>
-      {/* Avatar + corona */}
-      <div className="relative">
-        {isFirst && (
-          <Crown className={`absolute -top-5 left-1/2 h-7 w-7 -translate-x-1/2 ${s.crown}`} strokeWidth={2.2} />
-        )}
-        {!isFirst && (
-          <Crown className={`absolute -top-4 left-1/2 h-5 w-5 -translate-x-1/2 ${s.crown}`} strokeWidth={2.2} />
-        )}
-        <div
-          className={`flex items-center justify-center overflow-hidden rounded-full ring-2 ${s.ring} ${isFirst ? "h-20 w-20" : "h-16 w-16"} bg-[#150830]`}
-        >
-          {loading || !entry ? (
-            <div className="h-full w-full animate-pulse bg-white/5" />
-          ) : (
-            <img
-              src={getAvatarUrl(entry.avatar_key)}
-              alt={entry.username}
-              className="h-full w-full object-cover"
-            />
-          )}
-        </div>
-        <span
-          className={`absolute -bottom-2 left-1/2 inline-flex h-6 w-6 -translate-x-1/2 items-center justify-center rounded-full text-[11px] font-black ring-2 ring-[#060210] ${s.badge}`}
-        >
-          {place}
-        </span>
-      </div>
+    <div className={`flex flex-col items-center ${isFirst ? "-mt-4" : ""}`}>
+      {/* Corona encima */}
+      <Crown
+        className={`mb-1 ${isFirst ? "h-8 w-8" : "h-6 w-6"} ${s.crown}`}
+        strokeWidth={2.2}
+        fill="currentColor"
+      />
 
-      {/* Pedestal */}
+      {/* Tarjeta vertical con avatar + número */}
       <div
-        className={`mt-3 flex w-full flex-col items-center justify-end gap-1 rounded-t-xl border bg-gradient-to-b px-1.5 pb-3 pt-3 text-center ${s.bg} ${s.height}`}
+        className={`relative w-full overflow-hidden rounded-2xl ${s.border} ${s.cardBg} ${s.cardShadow} ${s.cardHeight}`}
       >
-        <div className="line-clamp-1 max-w-full px-1 font-display text-[11px] font-bold uppercase tracking-wider text-white sm:text-xs">
-          {entry?.username ?? (loading ? "…" : "—")}
+        {/* Avatar grande dentro de la tarjeta */}
+        <div className="absolute inset-x-0 top-2 flex items-center justify-center">
+          <div className={`flex items-center justify-center overflow-hidden rounded-full ${isFirst ? "h-20 w-20" : "h-16 w-16"} bg-[#150830] ring-2 ring-white/10`}>
+            {loading || !entry ? (
+              <div className="h-full w-full animate-pulse bg-white/5" />
+            ) : (
+              <img
+                src={getAvatarUrl(entry.avatar_key)}
+                alt={entry.username}
+                className="h-full w-full object-cover"
+              />
+            )}
+          </div>
         </div>
-        <div className="font-display text-[11px] font-bold sm:text-xs">
-          <span className="neon-green mr-0.5">$</span>
-          <span className="text-white">
-            {entry ? formatCOP(entry.net_amount) : "—"}
+
+        {/* Badge con el número */}
+        <div className="absolute inset-x-0 bottom-12 flex justify-center">
+          <span
+            className={`inline-flex h-7 w-7 items-center justify-center rounded-full text-[12px] font-black ${s.badge}`}
+          >
+            {place}
           </span>
         </div>
+
+        {/* Texto inferior dentro de la tarjeta */}
+        <div className="absolute inset-x-0 bottom-1 flex flex-col items-center gap-0.5 px-1">
+          <div
+            className={`line-clamp-1 max-w-full px-1 font-display text-[10px] font-black uppercase tracking-wider sm:text-[11px] ${s.nameColor}`}
+          >
+            {entry?.username ?? (loading ? "…" : "—")}
+          </div>
+          <div className="flex items-center gap-1">
+            <span className={`inline-flex h-3.5 w-3.5 items-center justify-center rounded-full text-[8px] font-black ${s.coin}`}>
+              $
+            </span>
+            <span className={`font-display text-[11px] font-black sm:text-xs ${s.amountColor}`}>
+              {entry ? formatCOP(entry.net_amount) : "—"}
+            </span>
+          </div>
+        </div>
       </div>
+
+      {/* Pedestal debajo */}
+      <div
+        className={`w-full rounded-b-md ${s.pedestal} ${s.pedestalHeight}`}
+        aria-hidden="true"
+      />
     </div>
   );
 }

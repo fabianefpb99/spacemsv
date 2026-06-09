@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Loader2, Plus, Trash2, Save, Upload, Image as ImageIcon } from "lucide-react";
+import { Loader2, Plus, Trash2, Save, Upload, Image as ImageIcon, Download } from "lucide-react";
 import { toast } from "sonner";
 import {
   adminListHomeSlides,
@@ -12,6 +12,7 @@ import {
   adminDeleteFeaturedGame,
   adminUploadHomeImage,
 } from "@/lib/admin/home-content.functions";
+import { DEFAULT_SLIDES, DEFAULT_FEATURED } from "@/lib/admin/home-defaults";
 import { Panel } from "./shared";
 
 type SlideDraft = {
@@ -45,6 +46,24 @@ async function fileToBase64(file: File): Promise<{ base64: string; type: string;
   const bytes = new Uint8Array(buf);
   for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
   return { base64: btoa(binary), type: file.type || "image/jpeg", name: file.name };
+}
+
+async function urlToUploadInput(url: string, fallbackName: string): Promise<{ base64: string; type: string; name: string }> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`No se pudo leer la imagen (${res.status})`);
+  const blob = await res.blob();
+  const file = new File([blob], fallbackName, { type: blob.type || "image/jpeg" });
+  return fileToBase64(file);
+}
+
+function filenameFromUrl(url: string, fallback: string) {
+  try {
+    const u = new URL(url, window.location.origin);
+    const last = u.pathname.split("/").filter(Boolean).pop();
+    return (last && /\.(jpg|jpeg|png|webp|gif|avif)$/i.test(last)) ? last : fallback;
+  } catch {
+    return fallback;
+  }
 }
 
 export function HomeContentSection() {
@@ -87,6 +106,7 @@ function SlidesEditor() {
 
   const q = useQuery({ queryKey: ["admin-home-slides"], queryFn: () => listFn() });
   const [drafts, setDrafts] = useState<Record<string, SlideDraft>>({});
+  const [seeding, setSeeding] = useState(false);
 
   const items: SlideDraft[] = (q.data ?? []).map((r) => ({
     id: r.id,
@@ -171,16 +191,61 @@ function SlidesEditor() {
 
   const newDrafts = Object.entries(drafts).filter(([k]) => k.startsWith("new-"));
 
+  async function seedDefaults() {
+    if (!confirm(`Esto cargará ${DEFAULT_SLIDES.length} slides actuales del Home en la base de datos para que puedas editarlos. ¿Continuar?`)) return;
+    setSeeding(true);
+    try {
+      for (let i = 0; i < DEFAULT_SLIDES.length; i++) {
+        const s = DEFAULT_SLIDES[i];
+        const name = filenameFromUrl(s.img, `slide-${i + 1}.jpg`);
+        const up = await urlToUploadInput(s.img, name);
+        const stored = await uploadFn({
+          data: { filename: up.name, content_type: up.type, data_base64: up.base64 },
+        });
+        await upFn({
+          data: {
+            position: i,
+            image_url: stored.path,
+            eyebrow: s.eyebrow,
+            title: s.title,
+            description: s.desc,
+            cta_label: s.cta,
+            cta_link: s.to,
+            active: true,
+          },
+        });
+      }
+      qc.invalidateQueries({ queryKey: ["admin-home-slides"] });
+      toast.success("Slides actuales cargados");
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setSeeding(false);
+    }
+  }
+
   return (
     <Panel
       title="Slider del Home"
       actions={
-        <button
-          onClick={addNew}
-          className="inline-flex items-center gap-1 rounded-md border border-fuchsia-500/40 bg-fuchsia-600/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-fuchsia-200 hover:bg-fuchsia-600/30"
-        >
-          <Plus className="h-3 w-3" /> Nuevo slide
-        </button>
+        <div className="flex items-center gap-2">
+          {(q.data?.length ?? 0) === 0 && (
+            <button
+              onClick={seedDefaults}
+              disabled={seeding}
+              className="inline-flex items-center gap-1 rounded-md border border-emerald-500/40 bg-emerald-600/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-200 hover:bg-emerald-600/25 disabled:opacity-50"
+            >
+              {seeding ? <Loader2 className="h-3 w-3 animate-spin" /> : <Download className="h-3 w-3" />}
+              Cargar actuales
+            </button>
+          )}
+          <button
+            onClick={addNew}
+            className="inline-flex items-center gap-1 rounded-md border border-fuchsia-500/40 bg-fuchsia-600/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-fuchsia-200 hover:bg-fuchsia-600/30"
+          >
+            <Plus className="h-3 w-3" /> Nuevo slide
+          </button>
+        </div>
       }
     >
       {q.isLoading ? (
@@ -225,9 +290,11 @@ function SlidesEditor() {
             );
           })}
           {items.length === 0 && newDrafts.length === 0 && (
-            <p className="text-center text-xs text-purple-200/60">
-              No hay slides aún. Si dejas la lista vacía, el Home usa los slides por defecto.
-            </p>
+            <div className="rounded-md border border-purple-500/20 bg-[#0c0620]/60 p-3 text-center text-xs text-purple-200/80">
+              No hay slides en la base de datos. El Home está usando los <span className="font-bold text-purple-100">{DEFAULT_SLIDES.length} slides por defecto</span>.
+              <br />
+              Pulsa <span className="font-bold text-emerald-300">“Cargar actuales”</span> arriba para importarlos y poder editarlos o eliminarlos uno por uno.
+            </div>
           )}
         </div>
       )}
@@ -408,6 +475,7 @@ function FeaturedEditor() {
 
   const q = useQuery({ queryKey: ["admin-home-featured"], queryFn: () => listFn() });
   const [drafts, setDrafts] = useState<Record<string, FeaturedDraft>>({});
+  const [seeding, setSeeding] = useState(false);
 
   const items: FeaturedDraft[] = (q.data ?? []).map((r) => ({
     id: r.id,
@@ -492,16 +560,60 @@ function FeaturedEditor() {
 
   const newDrafts = Object.entries(drafts).filter(([k]) => k.startsWith("new-"));
 
+  async function seedDefaults() {
+    if (!confirm(`Esto cargará ${DEFAULT_FEATURED.length} juegos destacados actuales del Home en la base de datos para que puedas editarlos. ¿Continuar?`)) return;
+    setSeeding(true);
+    try {
+      for (let i = 0; i < DEFAULT_FEATURED.length; i++) {
+        const g = DEFAULT_FEATURED[i];
+        const name = filenameFromUrl(g.img, `featured-${i + 1}.jpg`);
+        const up = await urlToUploadInput(g.img, name);
+        const stored = await uploadFn({
+          data: { filename: up.name, content_type: up.type, data_base64: up.base64 },
+        });
+        await upFn({
+          data: {
+            position: i,
+            image_url: stored.path,
+            name: g.name,
+            tag: g.tag,
+            tag_color: g.tag_color,
+            link: g.to,
+            active: true,
+          },
+        });
+      }
+      qc.invalidateQueries({ queryKey: ["admin-home-featured"] });
+      toast.success("Juegos destacados cargados");
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setSeeding(false);
+    }
+  }
+
   return (
     <Panel
       title="Juegos Destacados"
       actions={
-        <button
-          onClick={addNew}
-          className="inline-flex items-center gap-1 rounded-md border border-fuchsia-500/40 bg-fuchsia-600/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-fuchsia-200 hover:bg-fuchsia-600/30"
-        >
-          <Plus className="h-3 w-3" /> Nuevo
-        </button>
+        <div className="flex items-center gap-2">
+          {(q.data?.length ?? 0) === 0 && (
+            <button
+              onClick={seedDefaults}
+              disabled={seeding}
+              className="inline-flex items-center gap-1 rounded-md border border-emerald-500/40 bg-emerald-600/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-200 hover:bg-emerald-600/25 disabled:opacity-50"
+            >
+              {seeding ? <Loader2 className="h-3 w-3 animate-spin" /> : <Download className="h-3 w-3" />}
+              Cargar actuales
+            </button>
+          )}
+          <button
+            onClick={addNew}
+            className="inline-flex items-center gap-1 rounded-md border border-fuchsia-500/40 bg-fuchsia-600/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-fuchsia-200 hover:bg-fuchsia-600/30"
+          >
+            <Plus className="h-3 w-3" /> Nuevo
+          </button>
+        </div>
       }
     >
       {q.isLoading ? (
@@ -546,9 +658,11 @@ function FeaturedEditor() {
             );
           })}
           {items.length === 0 && newDrafts.length === 0 && (
-            <p className="text-center text-xs text-purple-200/60">
-              No hay juegos destacados aún. Si la lista está vacía, el Home usa los juegos por defecto.
-            </p>
+            <div className="rounded-md border border-purple-500/20 bg-[#0c0620]/60 p-3 text-center text-xs text-purple-200/80">
+              No hay juegos destacados en la base de datos. El Home está usando los <span className="font-bold text-purple-100">{DEFAULT_FEATURED.length} juegos por defecto</span>.
+              <br />
+              Pulsa <span className="font-bold text-emerald-300">“Cargar actuales”</span> arriba para importarlos y poder editarlos o eliminarlos uno por uno.
+            </div>
           )}
         </div>
       )}
