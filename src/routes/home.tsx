@@ -156,8 +156,43 @@ function HomePage() {
   const balanceText = me.data ? formatCOP(me.data.balance + me.data.bonus_balance) : "—";
   const [online] = useState(219);
   const [slide, setSlide] = useState(0);
-  const slides = SLIDES.length;
   const [arrowsVisible, setArrowsVisible] = useState(true);
+
+  const fetchSlides = useServerFn(getPublicHomeSlides);
+  const fetchFeatured = useServerFn(getPublicFeaturedGames);
+  const slidesQ = useQuery({
+    queryKey: ["public-home-slides"],
+    queryFn: () => fetchSlides(),
+    staleTime: 60_000,
+  });
+  const featuredQ = useQuery({
+    queryKey: ["public-featured-games"],
+    queryFn: () => fetchFeatured(),
+    staleTime: 60_000,
+  });
+
+  const slidesList = (slidesQ.data && slidesQ.data.length > 0)
+    ? slidesQ.data.map((s) => ({
+        img: s.image_url,
+        eyebrow: s.eyebrow ?? "",
+        title: s.title,
+        desc: s.description ?? "",
+        cta: s.cta_label ?? "Ver más",
+        to: (s.cta_link ?? "/home") as "/home",
+      }))
+    : SLIDES;
+
+  const gamesList = (featuredQ.data && featuredQ.data.length > 0)
+    ? featuredQ.data.map((g) => ({
+        name: g.name,
+        img: g.image_url,
+        tag: g.tag ?? "POPULAR",
+        tagCls: TAG_CLS[g.tag_color ?? "purple"] ?? TAG_CLS.purple,
+        to: (g.link ?? "/home") as "/home",
+      }))
+    : GAMES;
+
+  const slides = slidesList.length;
   const arrowsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showBrandLoader, setShowBrandLoader] = useState(false);
 
