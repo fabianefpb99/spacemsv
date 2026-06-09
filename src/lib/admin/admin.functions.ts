@@ -359,13 +359,25 @@ export const adminGetCasinoStats = createServerFn({ method: "POST" })
     await assertAdmin(context.userId);
     const { from, to } = resolveRange(data);
 
-    const { data: txs, error } = await supabaseAdmin
-      .from("transactions")
-      .select("type, amount, game, created_at")
-      .gte("created_at", from.toISOString())
-      .lte("created_at", to.toISOString())
-      .limit(50000);
-    if (error) throw new Error(error.message);
+    // Paginate to bypass PostgREST max-rows cap; otherwise long ranges
+    // truncate and games added later (e.g. arena) get dropped from totals.
+    type TxRow = { type: string; amount: number | string | null; game: string | null; created_at: string };
+    const txs: TxRow[] = [];
+    const pageSize = 1000;
+    for (let pageStart = 0; ; pageStart += pageSize) {
+      const { data: page, error } = await supabaseAdmin
+        .from("transactions")
+        .select("type, amount, game, created_at")
+        .gte("created_at", from.toISOString())
+        .lte("created_at", to.toISOString())
+        .order("created_at", { ascending: true })
+        .range(pageStart, pageStart + pageSize - 1);
+      if (error) throw new Error(error.message);
+      if (!page || page.length === 0) break;
+      txs.push(...(page as TxRow[]));
+      if (page.length < pageSize) break;
+      if (txs.length >= 200000) break; // safety cap
+    }
 
     let bets = 0,
       wins = 0,
