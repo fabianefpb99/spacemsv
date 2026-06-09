@@ -20,9 +20,14 @@ html.light body {
 }
 
 /* Page-level outer wrappers */
-html.light .bg-\[\#060210\]:not(header):not(nav) {
+html.light .bg-\[\#060210\]:not(header):not(nav):not(.theme-dark-fixed) {
   background-color: #ffffff !important;
   color: #111111;
+}
+
+html.light .theme-dark-fixed {
+  background-color: #060210 !important;
+  color: #ffffff !important;
 }
 
 /* Light-mode text helpers for page content (NOT header/nav, which stay dark) */

@@ -509,7 +509,7 @@ function BottomItem({
 function BottomCenterActive() {
   return (
     <div className="-mt-7 flex w-16 flex-col items-center gap-1">
-      <span className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-purple-400/60 bg-gradient-to-b from-purple-600 to-purple-800 shadow-[0_0_18px_rgba(168,85,247,0.6)]">
+      <span className="theme-dark-fixed flex h-14 w-14 items-center justify-center rounded-full border-2 border-purple-400/60 bg-[#060210] shadow-[0_0_18px_rgba(168,85,247,0.35)]">
         <Trophy className="h-7 w-7 text-white" strokeWidth={2.2} />
       </span>
       <span className="text-[9px] font-bold tracking-wider text-emerald-400">RANKING</span>
