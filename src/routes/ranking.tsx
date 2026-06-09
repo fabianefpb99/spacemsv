@@ -355,6 +355,15 @@ function PodiumSlot({
   const s = PLACE_STYLES[place];
   const isFirst = place === 1;
 
+  // Cortes agresivos tipo "chamfer" en esquinas opuestas
+  const cutOuter =
+    "polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px)";
+  const cutInner =
+    "polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px)";
+  // Color del "borde" según puesto
+  const edgeColor =
+    place === 1 ? "#fbbf24" : place === 2 ? "#e2e8f0" : "#f97316";
+
   return (
     <div className={`flex flex-col items-center ${isFirst ? "-mt-4" : ""}`}>
       {/* Corona encima */}
@@ -364,13 +373,31 @@ function PodiumSlot({
         fill="currentColor"
       />
 
-      {/* Tarjeta vertical con avatar + número */}
+      {/* Tarjeta vertical con avatar + número (esquinas con corte agresivo) */}
       <div
-        className={`relative w-full overflow-hidden rounded-2xl ${s.border} ${s.cardBg} ${s.cardShadow} ${s.cardHeight}`}
+        className={`relative w-full p-[2px] ${s.cardShadow} ${s.cardHeight}`}
+        style={{
+          clipPath: cutOuter,
+          WebkitClipPath: cutOuter,
+          backgroundColor: edgeColor,
+        }}
       >
+        <div
+          className={`relative h-full w-full overflow-hidden ${s.cardBg}`}
+          style={{
+            clipPath: cutInner,
+            WebkitClipPath: cutInner,
+          }}
+        >
         {/* Avatar grande dentro de la tarjeta */}
         <div className="absolute inset-x-0 top-2 flex items-center justify-center">
-          <div className={`flex items-center justify-center overflow-hidden rounded-full ${isFirst ? "h-20 w-20" : "h-16 w-16"} bg-[#150830] ring-2 ring-white/10`}>
+          <div
+            className="flex items-center justify-center overflow-hidden rounded-full bg-[#150830] ring-2 ring-white/10"
+            style={{
+              height: isFirst ? "5.1rem" : "4.08rem",
+              width: isFirst ? "5.1rem" : "4.08rem",
+            }}
+          >
             {loading || !entry ? (
               <div className="h-full w-full animate-pulse bg-white/5" />
             ) : (
@@ -408,11 +435,18 @@ function PodiumSlot({
             </span>
           </div>
         </div>
+        </div>
       </div>
 
       {/* Pedestal debajo */}
       <div
-        className={`w-full rounded-b-md ${s.pedestal} ${s.pedestalHeight}`}
+        className={`w-full ${s.pedestal} ${s.pedestalHeight}`}
+        style={{
+          clipPath:
+            "polygon(0 0, 100% 0, calc(100% - 10px) 100%, 10px 100%)",
+          WebkitClipPath:
+            "polygon(0 0, 100% 0, calc(100% - 10px) 100%, 10px 100%)",
+        }}
         aria-hidden="true"
       />
     </div>
