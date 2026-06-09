@@ -92,6 +92,18 @@ export function HomeContentSection() {
           Juegos Destacados
         </button>
       </div>
+      <div className="rounded-md border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-[10px] leading-relaxed text-amber-100/80">
+        <span className="font-bold uppercase tracking-wider text-amber-200">Nota: </span>
+        {tab === "slides" ? (
+          <>
+            Usa imágenes en formato <b>JPG</b> o <b>WebP</b>, resolución recomendada <b>1600×900 px</b> (16:9) y peso ideal <b>menos de 300 KB</b> para una carga rápida.
+          </>
+        ) : (
+          <>
+            Usa imágenes <b>cuadradas</b> en formato <b>JPG</b> o <b>WebP</b>, resolución recomendada <b>600×600 px</b> y peso ideal <b>menos de 150 KB</b> para una carga rápida.
+          </>
+        )}
+      </div>
       {tab === "slides" ? <SlidesEditor /> : <FeaturedEditor />}
     </div>
   );
