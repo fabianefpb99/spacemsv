@@ -104,6 +104,10 @@ export function UsersSection() {
           <div className="flex items-center justify-center py-12 text-purple-200/70">
             <Loader2 className="h-5 w-5 animate-spin" />
           </div>
+        ) : q.isError ? (
+          <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-200">
+            No se pudieron cargar los usuarios. {q.error instanceof Error ? q.error.message : ""}
+          </div>
         ) : q.data && q.data.rows.length === 0 ? (
           <div className="py-10 text-center text-xs text-purple-200/60">Sin resultados.</div>
         ) : (
@@ -271,9 +275,21 @@ function UserDetailDrawer({ userId, onClose }: { userId: string; onClose: () => 
             <X className="h-5 w-5" />
           </button>
         </div>
-        {detail.isLoading || !detail.data ? (
+        {detail.isLoading ? (
           <div className="flex flex-1 items-center justify-center py-20">
             <Loader2 className="h-6 w-6 animate-spin text-purple-300" />
+          </div>
+        ) : detail.isError ? (
+          <div className="p-4">
+            <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-200">
+              No se pudo cargar este usuario. {detail.error instanceof Error ? detail.error.message : ""}
+            </div>
+          </div>
+        ) : !detail.data ? (
+          <div className="p-4">
+            <div className="rounded-xl border border-purple-500/20 bg-[#150830]/50 p-3 text-xs text-purple-200/70">
+              Usuario no encontrado.
+            </div>
           </div>
         ) : (
           <div className="space-y-4 p-4">
@@ -514,6 +530,10 @@ function UserDetailDrawer({ userId, onClose }: { userId: string; onClose: () => 
             <Panel title="Historial reciente">
               {txs.isLoading ? (
                 <Loader2 className="mx-auto h-5 w-5 animate-spin text-purple-300" />
+              ) : txs.isError ? (
+                <div className="rounded-md border border-rose-500/30 bg-rose-500/10 p-2 text-[11px] text-rose-200">
+                  No se pudo cargar el historial. {txs.error instanceof Error ? txs.error.message : ""}
+                </div>
               ) : (
                 <ul className="space-y-1">
                   {txs.data?.map(
