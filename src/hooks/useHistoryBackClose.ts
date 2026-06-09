@@ -1,5 +1,11 @@
 import { useEffect, useRef } from "react";
 
+// Module-level flag: when the cleanup of one mount calls history.back(),
+// the resulting popstate must NOT close the next mount (StrictMode double
+// invoke in dev / Lovable editor). The cleanup sets this; the listener
+// consumes it once.
+let ignoreNextPop = false;
+
 /**
  * When `open` is true, pushes a history entry so the browser/system back
  * button (Android hardware back, iOS swipe-back) closes the panel instead
@@ -24,6 +30,17 @@ export function useHistoryBackClose(open: boolean, onClose: () => void) {
     }
 
     const onPop = () => {
+      if (ignoreNextPop) {
+        ignoreNextPop = false;
+        // Re-push so the back button still closes the modal next time.
+        try {
+          window.history.pushState({ __modal: true }, "");
+          pushedRef.current = true;
+        } catch {
+          // ignore
+        }
+        return;
+      }
       closingFromPopRef.current = true;
       pushedRef.current = false;
       onCloseRef.current();
@@ -34,9 +51,11 @@ export function useHistoryBackClose(open: boolean, onClose: () => void) {
       window.removeEventListener("popstate", onPop);
       if (pushedRef.current && !closingFromPopRef.current) {
         pushedRef.current = false;
+        ignoreNextPop = true;
         try {
           window.history.back();
         } catch {
+          ignoreNextPop = false;
           // ignore
         }
       }
