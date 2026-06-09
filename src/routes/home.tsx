@@ -11,6 +11,12 @@ import { AuthControl } from "@/components/auth/AuthControl";
 import { NotificationBell } from "@/components/admin/NotificationBell";
 import { useMe } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import {
+  getPublicHomeSlides,
+  getPublicFeaturedGames,
+} from "@/lib/admin/home-content.functions";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
 import heroImg from "@/assets/home-hero.jpg";
@@ -73,6 +79,14 @@ const GAMES = [
   { name: "MINAS", img: gameMines, tag: "POPULAR", tagCls: "bg-purple-600/40 text-purple-200 border-purple-500/50", to: "/mines" },
   { name: "DICE", img: gameDice, tag: "CLÁSICO", tagCls: "bg-rose-600/30 text-rose-200 border-rose-500/50", to: "/dados" },
 ];
+
+const TAG_CLS: Record<string, string> = {
+  purple: "bg-purple-600/40 text-purple-200 border-purple-500/50",
+  emerald: "bg-emerald-600/30 text-emerald-200 border-emerald-500/50",
+  rose: "bg-rose-600/30 text-rose-200 border-rose-500/50",
+  amber: "bg-amber-600/30 text-amber-200 border-amber-500/50",
+  fuchsia: "bg-fuchsia-600/30 text-fuchsia-200 border-fuchsia-500/50",
+};
 
 const SLIDES = [
   {
