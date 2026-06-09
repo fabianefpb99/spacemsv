@@ -8,8 +8,15 @@ import { SkeletonImage } from "@/components/SkeletonImage";
 import { stopAllGameAudio } from "@/lib/gameAudio";
 import { playSound } from "@/lib/webAudioPlayer";
 import { AuthControl } from "@/components/auth/AuthControl";
+import { NotificationBell } from "@/components/admin/NotificationBell";
 import { useMe } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import {
+  getPublicHomeSlides,
+  getPublicFeaturedGames,
+} from "@/lib/admin/home-content.functions";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
 import heroImg from "@/assets/home-hero.jpg";
@@ -72,6 +79,14 @@ const GAMES = [
   { name: "MINAS", img: gameMines, tag: "POPULAR", tagCls: "bg-purple-600/40 text-purple-200 border-purple-500/50", to: "/mines" },
   { name: "DICE", img: gameDice, tag: "CLÁSICO", tagCls: "bg-rose-600/30 text-rose-200 border-rose-500/50", to: "/dados" },
 ];
+
+const TAG_CLS: Record<string, string> = {
+  purple: "bg-purple-600/40 text-purple-200 border-purple-500/50",
+  emerald: "bg-emerald-600/30 text-emerald-200 border-emerald-500/50",
+  rose: "bg-rose-600/30 text-rose-200 border-rose-500/50",
+  amber: "bg-amber-600/30 text-amber-200 border-amber-500/50",
+  fuchsia: "bg-fuchsia-600/30 text-fuchsia-200 border-fuchsia-500/50",
+};
 
 const SLIDES = [
   {
@@ -141,8 +156,43 @@ function HomePage() {
   const balanceText = me.data ? formatCOP(me.data.balance + me.data.bonus_balance) : "—";
   const [online] = useState(219);
   const [slide, setSlide] = useState(0);
-  const slides = SLIDES.length;
   const [arrowsVisible, setArrowsVisible] = useState(true);
+
+  const fetchSlides = useServerFn(getPublicHomeSlides);
+  const fetchFeatured = useServerFn(getPublicFeaturedGames);
+  const slidesQ = useQuery({
+    queryKey: ["public-home-slides"],
+    queryFn: () => fetchSlides(),
+    staleTime: 60_000,
+  });
+  const featuredQ = useQuery({
+    queryKey: ["public-featured-games"],
+    queryFn: () => fetchFeatured(),
+    staleTime: 60_000,
+  });
+
+  const slidesList = (slidesQ.data && slidesQ.data.length > 0)
+    ? slidesQ.data.map((s) => ({
+        img: s.image_url,
+        eyebrow: s.eyebrow ?? "",
+        title: s.title,
+        desc: s.description ?? "",
+        cta: s.cta_label ?? "Ver más",
+        to: (s.cta_link ?? "/home") as "/home",
+      }))
+    : SLIDES;
+
+  const gamesList = (featuredQ.data && featuredQ.data.length > 0)
+    ? featuredQ.data.map((g) => ({
+        name: g.name,
+        img: g.image_url,
+        tag: g.tag ?? "POPULAR",
+        tagCls: TAG_CLS[g.tag_color ?? "purple"] ?? TAG_CLS.purple,
+        to: (g.link ?? "/home") as "/home",
+      }))
+    : GAMES;
+
+  const slides = slidesList.length;
   const arrowsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showBrandLoader, setShowBrandLoader] = useState(false);
 
@@ -224,9 +274,10 @@ function HomePage() {
   };
 
   useEffect(() => {
-    const id = setInterval(() => setSlide((s) => (s + 1) % SLIDES.length), 5000);
+    if (slidesList.length <= 1) return;
+    const id = setInterval(() => setSlide((s) => (s + 1) % slidesList.length), 5000);
     return () => clearInterval(id);
-  }, []);
+  }, [slidesList.length]);
 
   // Auto-ocultar flechas al cargar y cada vez que cambia el slide
   useEffect(() => {
@@ -237,7 +288,7 @@ function HomePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slide]);
 
-  const current = SLIDES[slide];
+  const current = slidesList[slide] ?? slidesList[0];
 
   return (
     <div className="min-h-screen bg-[#060210] text-white">
@@ -278,6 +329,7 @@ function HomePage() {
                     </div>
                   </div>
                   <AuthControl />
+                  <NotificationBell />
                 </>
               ) : authLoading ? (
                 <div className="h-7 w-24 animate-pulse rounded-md bg-white/5" />
@@ -323,12 +375,12 @@ function HomePage() {
               delete el.dataset.startY;
               if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
                 showArrows();
-                if (dx < 0) setSlide((s) => (s + 1) % SLIDES.length);
-                else setSlide((s) => (s - 1 + SLIDES.length) % SLIDES.length);
+                if (dx < 0) setSlide((s) => (s + 1) % slidesList.length);
+                else setSlide((s) => (s - 1 + slidesList.length) % slidesList.length);
               }
             }}
           >
-            {SLIDES.map((s, i) => (
+            {slidesList.map((s, i) => (
               <SkeletonImage
                 key={i}
                 src={s.img}
@@ -339,14 +391,14 @@ function HomePage() {
             ))}
             {/* Flechas de navegación */}
             <button
-              onClick={() => { showArrows(); setSlide((s) => (s - 1 + SLIDES.length) % SLIDES.length); }}
+              onClick={() => { showArrows(); setSlide((s) => (s - 1 + slidesList.length) % slidesList.length); }}
               aria-label="Anterior"
               className={`absolute left-2 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white/80 backdrop-blur-sm transition-opacity duration-500 hover:bg-black/50 hover:text-white ${arrowsVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
             <button
-              onClick={() => { showArrows(); setSlide((s) => (s + 1) % SLIDES.length); }}
+              onClick={() => { showArrows(); setSlide((s) => (s + 1) % slidesList.length); }}
               aria-label="Siguiente"
               className={`absolute right-2 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white/80 backdrop-blur-sm transition-opacity duration-500 hover:bg-black/50 hover:text-white ${arrowsVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}
             >
@@ -392,7 +444,7 @@ function HomePage() {
             </button>
           </div>
           <div className="mt-3 grid grid-cols-4 gap-2 sm:gap-3">
-            {GAMES.map((g) => (
+            {gamesList.map((g) => (
               <Link
                 key={g.name}
                 to={g.to}

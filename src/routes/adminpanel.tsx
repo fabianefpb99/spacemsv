@@ -8,6 +8,7 @@ import {
   Download,
   Gift,
   Home,
+  Image as ImageIcon,
   Loader2,
   LogOut,
   Menu,
@@ -32,6 +33,7 @@ import { RtpSection } from "@/components/admin/RtpSection";
 import { EarningsSection } from "@/components/admin/EarningsSection";
 import { DepositsSection } from "@/components/admin/DepositsSection";
 import { WithdrawalsSection } from "@/components/admin/WithdrawalsSection";
+import { HomeContentSection } from "@/components/admin/HomeContentSection";
 
 export const Route = createFileRoute("/adminpanel")({
   head: () => ({
@@ -50,6 +52,7 @@ const SECTIONS: { id: AdminSection; label: string; icon: typeof Home; ready: boo
   { id: "ganancias", label: "Ganancias del Casino", icon: TrendingUp, ready: true },
   { id: "recargas", label: "Recargas", icon: WalletIcon, ready: true },
   { id: "retiros", label: "Retiros", icon: Download, ready: true },
+  { id: "home_content", label: "Contenido Home", icon: ImageIcon, ready: true },
   { id: "bonos", label: "Bonos", icon: Gift, ready: false },
   { id: "transacciones", label: "Transacciones", icon: Coins, ready: false },
   { id: "reportes", label: "Reportes", icon: BarChart3, ready: false },
@@ -106,6 +109,8 @@ function AdminPanelPage() {
         return <DepositsSection />;
       case "retiros":
         return <WithdrawalsSection />;
+      case "home_content":
+        return <HomeContentSection />;
       default:
         return <PlaceholderSection label={currentLabel} />;
     }
