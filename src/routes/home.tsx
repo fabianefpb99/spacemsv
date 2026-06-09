@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import { Menu, ChevronRight, ChevronLeft, Gift, Home, Gamepad2, Wallet, User, Trophy } from "lucide-react";
+import { Menu, ChevronRight, ChevronLeft, Gift, Home, Star, Wallet, User, Trophy } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { PromoPopup } from "@/components/PromoPopup";
 import { BrandLoader } from "@/components/BrandLoader";
@@ -694,7 +694,7 @@ function HomePage() {
       >
         <div className="mx-auto flex max-w-md items-end justify-between px-4 pt-2 pb-2 sm:max-w-lg">
           <BottomItem icon={<Home className="h-5 w-5" />} label="INICIO" active />
-          <BottomItem icon={<Gamepad2 className="h-5 w-5" />} label="JUEGOS" />
+          <BottomItem icon={<Star className="h-5 w-5" />} label="EVENTOS" to="/eventos" />
           <BottomCenter />
           <BottomItem icon={<Wallet className="h-5 w-5" />} label="DEPÓSITO" to="/pay" />
           <BottomItem icon={<User className="h-5 w-5" />} label="PERFIL" to="/perfil" />
