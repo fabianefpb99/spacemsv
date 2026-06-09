@@ -274,7 +274,7 @@ function HomePage() {
   };
 
   useEffect(() => {
-    const id = setInterval(() => setSlide((s) => (s + 1) % SLIDES.length), 5000);
+    const id = setInterval(() => setSlide((s) => (s + 1) % slidesList.length), 5000);
     return () => clearInterval(id);
   }, []);
 
@@ -374,12 +374,12 @@ function HomePage() {
               delete el.dataset.startY;
               if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
                 showArrows();
-                if (dx < 0) setSlide((s) => (s + 1) % SLIDES.length);
-                else setSlide((s) => (s - 1 + SLIDES.length) % SLIDES.length);
+                if (dx < 0) setSlide((s) => (s + 1) % slidesList.length);
+                else setSlide((s) => (s - 1 + slidesList.length) % slidesList.length);
               }
             }}
           >
-            {SLIDES.map((s, i) => (
+            {slidesList.map((s, i) => (
               <SkeletonImage
                 key={i}
                 src={s.img}
@@ -390,14 +390,14 @@ function HomePage() {
             ))}
             {/* Flechas de navegación */}
             <button
-              onClick={() => { showArrows(); setSlide((s) => (s - 1 + SLIDES.length) % SLIDES.length); }}
+              onClick={() => { showArrows(); setSlide((s) => (s - 1 + slidesList.length) % slidesList.length); }}
               aria-label="Anterior"
               className={`absolute left-2 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white/80 backdrop-blur-sm transition-opacity duration-500 hover:bg-black/50 hover:text-white ${arrowsVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
             <button
-              onClick={() => { showArrows(); setSlide((s) => (s + 1) % SLIDES.length); }}
+              onClick={() => { showArrows(); setSlide((s) => (s + 1) % slidesList.length); }}
               aria-label="Siguiente"
               className={`absolute right-2 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white/80 backdrop-blur-sm transition-opacity duration-500 hover:bg-black/50 hover:text-white ${arrowsVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}
             >
@@ -443,7 +443,7 @@ function HomePage() {
             </button>
           </div>
           <div className="mt-3 grid grid-cols-4 gap-2 sm:gap-3">
-            {GAMES.map((g) => (
+            {gamesList.map((g) => (
               <Link
                 key={g.name}
                 to={g.to}
