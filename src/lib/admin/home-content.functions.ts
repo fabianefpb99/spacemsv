@@ -49,7 +49,7 @@ export const adminListHomeSlides = createServerFn({ method: "GET" })
   });
 
 const slideInput = z.object({
-  id: z.string().uuid().optional().nullable(),
+  id: z.string().uuid().optional(),
   position: z.number().int().min(0).max(999).default(0),
   image_url: z.string().min(1).max(1024),
   eyebrow: z.string().max(120).default(""),
@@ -110,7 +110,7 @@ export const adminListFeaturedGames = createServerFn({ method: "GET" })
   });
 
 const featuredInput = z.object({
-  id: z.string().uuid().optional().nullable(),
+  id: z.string().uuid().optional(),
   position: z.number().int().min(0).max(999).default(0),
   image_url: z.string().min(1).max(1024),
   name: z.string().min(1).max(60),
