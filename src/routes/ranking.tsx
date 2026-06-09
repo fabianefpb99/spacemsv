@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Menu, Home, Gamepad2, Wallet, User, Trophy, Crown } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import betspaceLogo from "@/assets/betspace-logo.svg";
@@ -410,10 +410,9 @@ function PodiumSlot({
             {loading || !entry ? (
               <div className="h-full w-full animate-pulse bg-white/5" />
             ) : (
-              <img
+              <SmoothAvatar
                 src={getAvatarUrl(entry.avatar_key)}
                 alt={entry.username}
-                className="h-full w-full object-cover"
               />
             )}
           </div>
