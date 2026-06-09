@@ -218,6 +218,7 @@ function RetirosPage() {
     !!activeAccount && amount >= MIN_WITHDRAW && !overBalance && !createMut.isPending;
 
   function handleSubmit() {
+    if (createMut.isPending) return;
     if (!activeAccount) {
       setToast({ kind: "warn", text: "Agrega una cuenta de retiro antes de continuar." });
       return;
