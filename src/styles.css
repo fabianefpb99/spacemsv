@@ -4,6 +4,62 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ------------------------------------------------------------------
+ * Light theme overrides (first-pass migration).
+ *
+ * The whole app was built with hard-coded dark hex utilities like
+ * `bg-[#060210]` / `bg-[#0c0620]/95`. Rather than rewriting every
+ * className we override those exact classes when `html.light` is on.
+ * This flips the page chrome (outer wrappers, headers, bottom navs)
+ * to white in light mode while leaving inner game/card surfaces
+ * untouched for now — we'll migrate the rest progressively.
+ * ------------------------------------------------------------------ */
+html.light body {
+  background-color: #ffffff;
+  color: #111111;
+}
+
+/* Page-level outer wrappers */
+html.light .bg-\[\#060210\] {
+  background-color: #ffffff !important;
+  color: #111111;
+}
+html.light .bg-\[\#060210\]\/95 {
+  background-color: rgb(255 255 255 / 0.95) !important;
+}
+html.light .bg-\[\#060210\]\/80 {
+  background-color: rgb(255 255 255 / 0.85) !important;
+}
+
+/* Borders that were tuned for dark mode → soften for light */
+html.light .border-purple-500\/20 {
+  border-color: rgb(168 85 247 / 0.25);
+}
+
+/* Inside the chrome wrappers, white text needs to flip to dark.
+ * We scope it to direct text in headers / bottom navs and the page
+ * wrapper, but NOT inside cards that retain a dark background. */
+html.light .bg-\[\#060210\] > .font-display,
+html.light header.bg-\[\#060210\] *,
+html.light nav.bg-\[\#060210\]\/95 * {
+  /* allow nested neon colors to win via their own utility class */
+}
+html.light header.bg-\[\#060210\] .text-white,
+html.light nav.bg-\[\#060210\]\/95 .text-white,
+html.light header.bg-\[\#060210\] .text-purple-100,
+html.light nav.bg-\[\#060210\]\/95 .text-purple-100 {
+  color: #111111 !important;
+}
+html.light header.bg-\[\#060210\] .text-purple-200\/70,
+html.light nav.bg-\[\#060210\]\/95 .text-purple-200\/70 {
+  color: rgb(75 85 99 / 0.85) !important;
+}
+
+/* Hamburger / back icons inside light header */
+html.light header.bg-\[\#060210\] button:hover {
+  background-color: rgb(0 0 0 / 0.06);
+}
+
 /* Hero slider — rotating neon glow sweep around the border */
 .slider-neon-frame {
   position: relative;

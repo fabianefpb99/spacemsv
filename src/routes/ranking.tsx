@@ -10,6 +10,7 @@ import { NotificationBell } from "@/components/admin/NotificationBell";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
+import { HamburgerDrawer } from "@/components/HamburgerDrawer";
 import { getAvatarUrl } from "@/lib/avatars";
 import {
   getRankingPublic,
@@ -78,9 +79,17 @@ function RankingPage() {
         >
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-1">
-              <button className="rounded-md p-2 text-white hover:bg-white/10">
-                <Menu className="h-7 w-7" strokeWidth={3} />
-              </button>
+              <HamburgerDrawer
+                trigger={
+                  <button
+                    type="button"
+                    aria-label="Abrir menú"
+                    className="rounded-md p-2 text-white hover:bg-white/10"
+                  >
+                    <Menu className="h-7 w-7" strokeWidth={3} />
+                  </button>
+                }
+              />
               <Link to="/home" className="logo-shine">
                 <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7 translate-y-px" />
                 <img src={betspaceLogo} alt="" aria-hidden="true" className="logo-shine-overlay h-6 w-auto sm:h-7 translate-y-px" />
