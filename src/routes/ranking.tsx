@@ -290,7 +290,7 @@ const PLACE_STYLES: Record<
     // Oro intenso
     border: "border-2 border-amber-400",
     cardBg:
-      "bg-gradient-to-b from-amber-500/25 via-[#0a0418]/90 to-[#05010f]/98",
+      "bg-gradient-to-b from-amber-500/20 via-[#1a0b3a]/55 to-[#0a0320]/70",
     cardShadow:
       "shadow-[0_0_22px_rgba(251,191,36,0.55),inset_0_0_18px_rgba(251,191,36,0.18)]",
     badge:
@@ -309,7 +309,7 @@ const PLACE_STYLES: Record<
       "text-slate-100 drop-shadow-[0_0_10px_rgba(241,245,249,0.95)]",
     border: "border-2 border-slate-200",
     cardBg:
-      "bg-gradient-to-b from-slate-300/20 via-[#0a0418]/90 to-[#05010f]/98",
+      "bg-gradient-to-b from-slate-300/18 via-[#1a0b3a]/55 to-[#0a0320]/70",
     cardShadow:
       "shadow-[0_0_16px_rgba(226,232,240,0.45),inset_0_0_14px_rgba(226,232,240,0.15)]",
     badge:
@@ -328,7 +328,7 @@ const PLACE_STYLES: Record<
       "text-orange-400 drop-shadow-[0_0_10px_rgba(251,146,60,0.95)]",
     border: "border-2 border-orange-500",
     cardBg:
-      "bg-gradient-to-b from-orange-500/25 via-[#0a0418]/90 to-[#05010f]/98",
+      "bg-gradient-to-b from-orange-500/20 via-[#1a0b3a]/55 to-[#0a0320]/70",
     cardShadow:
       "shadow-[0_0_16px_rgba(249,115,22,0.55),inset_0_0_14px_rgba(249,115,22,0.18)]",
     badge:
