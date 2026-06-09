@@ -1,100 +1,63 @@
-# Plan: Sistema de audio Web Audio API (fix volumen iOS)
 
-## Objetivo
-Migrar todos los `new Audio()` + `.volume = X` (que iOS ignora) a un reproductor unificado basado en **Web Audio API + GainNode**, conservando exactamente el mismo comportamiento (volúmenes, fades, loops, intros, fade-outs anticipados).
+Voy a entregarlo en 4 bloques bien separados, todo dentro del panel admin actual y sin tocar la experiencia de jugadores no-admin.
 
-## Estrategia: wrapper centralizado + migración por fases
+## 1. Campanita 🔔 en el header (solo admin)
 
-Crear un único módulo `src/lib/webAudioPlayer.ts` que expone una API simple y compatible con el uso actual. Luego sustituir uso por uso, sin tocar otros sistemas.
+- Aparece **solo si el usuario tiene rol admin**, justo a la izquierda de la tuerca (Settings).
+- Badge rojo con número de no-leídas; al hacer clic abre un panel desplegable limpio con tabs:
+  - **Todas** · **Recargas** · **Usuarios** · **Juegos en rojo**
+- Cada item: icono + título + descripción corta + tiempo relativo ("hace 2 min") + link directo al detalle dentro de `/adminpanel`.
+- Acciones: "Marcar como leída" (click) y "Marcar todas".
+- **Realtime** vía Supabase Realtime → llegan al instante sin recargar.
+- Sonido sutil opcional (silenciable) cuando entra una nueva, solo si la pestaña está visible.
+- Mismo componente sirve en móvil y desktop (popover bien posicionado, max-width responsive).
 
-### Fase 1 — Wrapper (sin romper nada)
-Crear `src/lib/webAudioPlayer.ts`:
-- Reutiliza el `AudioContext` ya existente en `gameAudio.ts` (función `getCtx()`).
-- API:
-  - `playSound(url, { volume, loop?, fadeInMs?, onEnded? }) → handle`
-  - `handle.stop(fadeMs?)` — fade-out suave o stop inmediato
-  - `handle.setVolume(v, rampMs?)` — para fades arbitrarios
-- Cachea `AudioBuffer` decodificado por URL (Map) para que las SFX repetidas no re-decodifiquen.
-- Maneja autoplay iOS: si el contexto está `suspended`, intenta `resume()` (ya hay gestos del usuario en todos los puntos donde se reproduce).
-- Fades vía `gain.linearRampToValueAtTime()` — más suave que `setInterval`/RAF.
-- Fallback: si Web Audio falla por cualquier razón, cae a `new Audio()` clásico para no romper Android viejo.
+## 2. Generación de notificaciones
 
-### Fase 2 — Migrar `/home`
-- `src/routes/home.tsx`: reemplazar el bloque del `casino-intro.mp3` (líneas ~160–285) por una llamada al wrapper con `fadeInMs: 1500`, y programar `handle.stop(5000)` al timeout que ya existe.
-- Validar: probar en iOS y Android antes de seguir.
+Tres fuentes, todas server-side, sin cargar al cliente:
 
-### Fase 3 — Migrar Arena
-- `ArenaLobby.tsx`: música de lobby con fade-in al entrar, fade-out anticipado antes de terminar.
-- `ArenaFight.tsx`: música de pelea + SFX (`fight-start`, golpes, `hit-final`).
-- `ArenaResult.tsx`: SFX de resultado.
-- `gameAudio.ts` línea 58 (`createAudio`) y línea 512 (`dice-roll.mp3`): migrar al wrapper.
+| Tipo | Cuándo se crea |
+|---|---|
+| `new_user` | Trigger en `profiles` al insertar (o en `auth.users` vía función) |
+| `recharge_request` | Trigger en `deposit_requests` al insertar con estado pendiente |
+| `game_red_alert` | Job que revisa cada juego: si después de ≥ 2 apuestas en una ventana corta, el balance neto del casino es negativo, dispara una alerta (con cooldown para no spamear) |
 
-### Fase 4 — Validación
-- Probar manualmente en preview que cada sonido suena y sus fades funcionan.
-- Confirmar que el volumen en iOS ahora respeta los valores configurados.
+Todo va a una tabla nueva `admin_notifications` con RLS estricta (solo admins pueden leer).
+
+## 3. Detección de "juego en rojo"
+
+- Función SQL `detect_games_in_red()` que mira `game_bets` / `arena_rounds` de los últimos N minutos (configurable, default 30 min).
+- Por cada juego con ≥ 2 apuestas, calcula `payout_total - bet_total`. Si es positivo (jugadores ganando), se considera "en rojo para el casino".
+- Si supera un umbral configurable (default: pérdida > $5.000 COP o > 3 apuestas perdedoras seguidas para el casino), inserta una notificación tipo `game_red_alert` con cooldown de 15 min por juego para no duplicar.
+- Se ejecuta vía pg_cron cada 2 minutos.
+- En el panel además mostraremos una **insignia roja** sobre la tarjeta del juego en la sección RTP cuando esté en rojo, para que veas el contexto inmediato.
+
+## 4. Editor de Slider del Home (panel admin)
+
+Nueva sección "Contenido Home" en el sidebar admin, con dos pestañas:
+
+### Pestaña "Slider Hero"
+- Lista de slides reorderable (drag o flechas ↑↓).
+- Cada slide: imagen (subida a Storage), eyebrow, título, descripción, texto del botón, link destino (selector con las rutas del sitio + opción custom).
+- Activar/Desactivar cada slide sin borrarlo.
+- Vista previa en vivo del slide tal como se verá en mobile.
+- Botón "Restaurar slides por defecto" como red de seguridad.
+
+### Pestaña "Juegos Destacados"
+- Los 4 juegos del grid `Juegos destacados`.
+- Cada uno: imagen, nombre, tag ("POPULAR", "NUEVO", "CLÁSICO"…), color del tag, ruta destino.
+- Reordenar y activar/desactivar.
+- Soporta más de 4 si en el futuro queremos ampliar la grilla.
+
+El `Home` lee los slides y juegos desde la BD vía server function pública (con caché). Si la BD está vacía o falla, **fallback a los actuales hardcoded** para que nunca se quede en blanco.
 
 ## Detalles técnicos
 
-```ts
-// src/lib/webAudioPlayer.ts (esqueleto)
-import { getCtx } from "./gameAudio";
+- **Tablas nuevas**: `admin_notifications`, `home_slides`, `home_featured_games`, `game_red_state` (para el cooldown).
+- **Server functions**: `listAdminNotifications`, `markNotificationRead`, `markAllRead`, `adminListHomeSlides`, `adminUpsertHomeSlide`, `adminDeleteHomeSlide`, `adminReorderHomeSlides` (y equivalentes para featured games), `getHomeSlidesPublic`, `getFeaturedGamesPublic`.
+- **Storage**: bucket público `home-content` para imágenes del slider/juegos.
+- **Realtime**: subscripción a `admin_notifications` solo cuando el usuario es admin.
+- **Seguridad**: RLS estricta — solo `has_role(auth.uid(), 'admin')` puede leer/escribir `admin_notifications`, `home_slides`, `home_featured_games`. Lectura pública de slides y featured games por server fn admin-elevada (no policy `anon`).
+- **No tocaré** la UI de jugadores excepto: agregar la campanita oculta para no-admin, y leer slider/featured desde la BD con fallback.
 
-const bufferCache = new Map<string, Promise<AudioBuffer>>();
-
-async function loadBuffer(ctx: AudioContext, url: string) {
-  if (!bufferCache.has(url)) {
-    bufferCache.set(url, fetch(url).then(r => r.arrayBuffer()).then(b => ctx.decodeAudioData(b)));
-  }
-  return bufferCache.get(url)!;
-}
-
-export async function playSound(url, { volume = 1, loop = false, fadeInMs = 0 }) {
-  const ctx = getCtx();
-  if (!ctx) return fallbackHtmlAudio(url, volume, loop); // fallback
-  if (ctx.state === "suspended") { try { await ctx.resume(); } catch {} }
-  const buf = await loadBuffer(ctx, url);
-  const src = ctx.createBufferSource();
-  src.buffer = buf; src.loop = loop;
-  const gain = ctx.createGain();
-  gain.gain.value = fadeInMs > 0 ? 0 : volume;
-  src.connect(gain).connect(ctx.destination);
-  src.start();
-  if (fadeInMs > 0) {
-    gain.gain.linearRampToValueAtTime(volume, ctx.currentTime + fadeInMs / 1000);
-  }
-  return {
-    stop(fadeMs = 0) {
-      if (fadeMs > 0) {
-        gain.gain.cancelScheduledValues(ctx.currentTime);
-        gain.gain.setValueAtTime(gain.gain.value, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + fadeMs / 1000);
-        setTimeout(() => { try { src.stop(); } catch {} }, fadeMs + 50);
-      } else { try { src.stop(); } catch {} }
-    },
-    setVolume(v, rampMs = 0) {
-      gain.gain.cancelScheduledValues(ctx.currentTime);
-      gain.gain.linearRampToValueAtTime(v, ctx.currentTime + rampMs / 1000);
-    }
-  };
-}
-```
-
-## Riesgos y mitigaciones
-- **Romper fades**: usar `linearRampToValueAtTime` que es nativo y más preciso. Mismos tiempos (1500ms in, 5000ms out, etc.).
-- **Autoplay bloqueado iOS**: el `AudioContext` ya se crea/resume tras gesto en el flujo actual; el wrapper lo respeta.
-- **Latencia primer play**: primer `fetch + decode` puede tardar ~100ms. Aceptable para intros, y para SFX repetidos queda en cache.
-- **Android sin cambios**: misma ruta de Web Audio API que ya funciona allá → no se afecta.
-- **Fallback**: si por algo `getCtx()` retorna null, caemos a `new Audio()` clásico para no romper nada.
-
-## Entregables
-- `src/lib/webAudioPlayer.ts` (nuevo)
-- `src/routes/home.tsx` (migrado)
-- `src/components/games/arena/ArenaLobby.tsx` (migrado)
-- `src/components/games/arena/ArenaFight.tsx` (migrado)
-- `src/components/games/arena/ArenaResult.tsx` (migrado)
-- `src/lib/gameAudio.ts` (dos puntos migrados)
-
-## Fuera de alcance
-- No se tocan los archivos MP3.
-- No se cambian volúmenes objetivo (siguen 0.15 home, 0.026 lobby, 0.022 fight, etc.).
-- No se toca la síntesis (osciladores) de `gameAudio.ts` — esa parte ya usa Web Audio API correctamente.
+¿Confirmas y arranco? Si quieres ajustar algo (por ejemplo el umbral de "juego en rojo" o el sonido), dímelo antes y lo dejo cocinado en el primer pase.
