@@ -599,44 +599,64 @@ function SummaryCell({ icon, label, value }: { icon?: React.ReactNode; label: st
 }
 
 function HistoryRow({
-  status, method, accountTail, amount, when,
+  status, method, accountTail, amount, when, rejectReason, canCancel, onCancel,
 }: {
   status: string;
   method?: MethodId;
   accountTail: string;
   amount: number;
   when: string;
+  rejectReason?: string | null;
+  canCancel?: boolean;
+  onCancel?: () => void;
 }) {
   const isOk = status === "completed" || status === "approved" || status === "aprobada";
   const isPending = status === "pending" || status === "pendiente" || status === "pendiente_revision";
   const isReject = status === "rejected" || status === "rechazada" || status === "failed";
+  const isCancel = status === "cancelada" || status === "cancelled";
 
   const statusMeta = isOk
-    ? { Icon: CircleCheck, label: "Completado", cls: "text-emerald-300", border: "border-emerald-400/50", amountCls: "text-emerald-300" }
+    ? { Icon: CircleCheck, label: "Aprobado", cls: "text-emerald-300", border: "border-emerald-400/50", amountCls: "text-emerald-300" }
     : isPending
     ? { Icon: Clock, label: "Pendiente", cls: "text-amber-300", border: "border-amber-400/50", amountCls: "text-amber-300" }
     : isReject
     ? { Icon: CircleAlert, label: "Rechazado", cls: "text-rose-300", border: "border-rose-400/50", amountCls: "text-rose-300" }
+    : isCancel
+    ? { Icon: X, label: "Cancelado", cls: "text-purple-200", border: "border-purple-400/50", amountCls: "text-purple-200" }
     : { Icon: CircleCheck, label: "Registrado", cls: "text-purple-200", border: "border-purple-400/50", amountCls: "text-white" };
 
   return (
-    <li className="flex items-center gap-3 rounded-xl border border-purple-500/25 bg-[#0c0620] p-3">
-      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border bg-black/30 ${statusMeta.border}`}>
-        <statusMeta.Icon className={`h-4 w-4 ${statusMeta.cls}`} />
-      </div>
-      <div className="min-w-0 flex-1">
-        <div className={`text-[12px] font-bold ${statusMeta.cls}`}>{statusMeta.label}</div>
-        <div className="truncate text-[10px] text-purple-200/70">
-          {method === "nequi" ? "Nequi" : method === "breb" ? "BRE-B" : "Retiro"} {accountTail}
+    <li className="rounded-xl border border-purple-500/25 bg-[#0c0620] p-3">
+      <div className="flex items-center gap-3">
+        <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border bg-black/30 ${statusMeta.border}`}>
+          <statusMeta.Icon className={`h-4 w-4 ${statusMeta.cls}`} />
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className={`text-[12px] font-bold ${statusMeta.cls}`}>{statusMeta.label}</div>
+          <div className="truncate text-[10px] text-purple-200/70">
+            {method === "nequi" ? "Nequi" : method === "breb" ? "BRE-B" : "Retiro"} {accountTail}
+          </div>
+        </div>
+        <div className="text-right">
+          <div className={`text-[13px] font-extrabold ${statusMeta.amountCls}`}>
+            ${formatCOP(amount)} <span className="text-[10px] font-bold opacity-80">COP</span>
+          </div>
+          <div className="text-[10px] text-purple-200/60">{when}</div>
         </div>
       </div>
-      <div className="text-right">
-        <div className={`text-[13px] font-extrabold ${statusMeta.amountCls}`}>
-          ${formatCOP(amount)} <span className="text-[10px] font-bold opacity-80">COP</span>
-        </div>
-        <div className="text-[10px] text-purple-200/60">{when}</div>
-      </div>
-      <ChevronRight className="h-4 w-4 shrink-0 text-purple-300/60" />
+      {isReject && rejectReason && (
+        <p className="mt-2 rounded-md border border-rose-400/30 bg-rose-500/5 px-2 py-1.5 text-[10px] text-rose-200/90">
+          <b>Motivo:</b> {rejectReason}
+        </p>
+      )}
+      {canCancel && onCancel && (
+        <button
+          onClick={onCancel}
+          className="mt-2 w-full rounded-md border border-rose-400/40 bg-rose-500/10 px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-rose-200 hover:bg-rose-500/20"
+        >
+          Cancelar solicitud
+        </button>
+      )}
     </li>
   );
 }
