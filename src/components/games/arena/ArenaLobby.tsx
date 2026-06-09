@@ -8,6 +8,7 @@ import blazeSelectAudio from "@/assets/audio/arena/blaze-select.mp3.asset.json";
 import novaSelectAudio from "@/assets/audio/arena/nova-select.mp3.asset.json";
 import shadowSelectAudio from "@/assets/audio/arena/shadow-select.mp3.asset.json";
 import titanSelectAudio from "@/assets/audio/arena/titan-select.mp3.asset.json";
+import { playSound, preloadSound } from "@/lib/webAudioPlayer";
 
 const LOBBY_HITBOXES: Record<ArenaCharacterId, string> = {
   nova: "left-[9%] w-[18%]",
@@ -39,43 +40,22 @@ export function ArenaLobby({
   odds: Record<ArenaCharacterId, number>;
 }) {
   useLobbyMusic();
-  const selectSfxRef = useRef<Record<ArenaCharacterId, HTMLAudioElement | null>>({
-    nova: null,
-    shadow: null,
-    titan: null,
-    blaze: null,
+  const selectSourcesRef = useRef<Record<ArenaCharacterId, string>>({
+    nova: novaSelectAudio.url,
+    shadow: shadowSelectAudio.url,
+    titan: titanSelectAudio.url,
+    blaze: blazeSelectAudio.url,
   });
   useEffect(() => {
-    const sources: Record<ArenaCharacterId, string> = {
-      nova: novaSelectAudio.url,
-      shadow: shadowSelectAudio.url,
-      titan: titanSelectAudio.url,
-      blaze: blazeSelectAudio.url,
-    };
-    const created: HTMLAudioElement[] = [];
+    const sources = selectSourcesRef.current;
     (Object.keys(sources) as ArenaCharacterId[]).forEach((id) => {
-      const a = new Audio(sources[id]);
-      a.preload = "auto";
-      a.volume = 0.65;
-      selectSfxRef.current[id] = a;
-      created.push(a);
+      preloadSound(sources[id]);
     });
-    return () => {
-      created.forEach((a) => a.pause());
-      selectSfxRef.current = { nova: null, shadow: null, titan: null, blaze: null };
-    };
   }, []);
   const handleSelect = (id: ArenaCharacterId) => {
     if (disabled) return;
-    const sfx = selectSfxRef.current[id];
-    if (sfx) {
-      try {
-        sfx.currentTime = 0;
-        void sfx.play();
-      } catch {
-        // ignore
-      }
-    }
+    const url = selectSourcesRef.current[id];
+    if (url) playSound(url, { volume: 0.65 });
     onSelect(id);
   };
   return (
