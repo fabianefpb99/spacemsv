@@ -13,7 +13,7 @@ import {
   X,
   type LucideIcon,
 } from "lucide-react";
-import { cloneElement, isValidElement, useEffect, useState, type MouseEvent, type ReactNode } from "react";
+import { cloneElement, isValidElement, useEffect, useState, type MouseEvent, type ReactElement, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Switch } from "@/components/ui/switch";
 import { useTheme } from "@/hooks/useTheme";
@@ -70,13 +70,13 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
     };
   }, [open]);
 
-  const triggerNode = isValidElement<{ onClick?: (event: MouseEvent<HTMLElement>) => void }>(trigger)
-    ? cloneElement(trigger, {
+  const triggerNode = isValidElement(trigger)
+    ? cloneElement(trigger as ReactElement<any>, {
         "aria-controls": "hamburger-drawer-panel",
         "aria-expanded": open,
         "aria-haspopup": "dialog",
         onClick: (event: MouseEvent<HTMLElement>) => {
-          trigger.props.onClick?.(event);
+          (trigger as ReactElement<any>).props.onClick?.(event);
           if (!event.defaultPrevented) {
             setOpen(true);
           }
