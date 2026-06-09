@@ -308,23 +308,30 @@ function EventosPage() {
         </header>
         <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
 
-        {/* Hero */}
+        {/* Hero banner horizontal */}
         <section className="relative mt-4 overflow-hidden rounded-2xl border border-amber-400/40 shadow-[0_0_22px_rgba(251,191,36,0.25)]">
-          <img
-            src={eventosHero}
-            alt="Eventos BetSpaceman"
-            width={1280}
-            height={640}
-            className="block h-auto w-full"
-          />
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-[#060210] via-[#060210]/60 to-transparent"
-          />
-          <div className="absolute inset-x-0 bottom-0 px-4 pb-3 sm:px-5 sm:pb-4">
-            <p className="font-display text-[11px] font-bold uppercase tracking-[0.2em] text-amber-200 drop-shadow sm:text-xs">
-              Completa desafíos y gana recompensas
-            </p>
+          <div className="relative h-24 w-full sm:h-28">
+            <img
+              src={eventosHero}
+              alt="Eventos BetSpaceman"
+              width={1920}
+              height={512}
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-[#060210]/55 to-[#060210]/85"
+            />
+            <div className="absolute inset-0 flex items-center justify-end pr-4 sm:pr-5">
+              <div className="text-right">
+                <h1 className="font-display text-2xl font-black tracking-[0.18em] text-amber-200 drop-shadow-[0_0_10px_rgba(251,191,36,0.55)] sm:text-3xl">
+                  EVENTOS
+                </h1>
+                <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-purple-100/80 sm:text-[11px]">
+                  Desafíos y recompensas
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
