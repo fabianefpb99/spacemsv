@@ -7,6 +7,7 @@ import blazeSelectAudio from "@/assets/audio/arena/blaze-select.mp3.asset.json";
 import novaSelectAudio from "@/assets/audio/arena/nova-select.mp3.asset.json";
 import shadowSelectAudio from "@/assets/audio/arena/shadow-select.mp3.asset.json";
 import titanSelectAudio from "@/assets/audio/arena/titan-select.mp3.asset.json";
+import { playSound } from "@/lib/webAudioPlayer";
 
 const WINNER_VOICE: Record<ArenaCharacterId, string> = {
   nova: novaSelectAudio.url,
@@ -40,24 +41,13 @@ export function ArenaResult({
   useEffect(() => {
     const src = WINNER_VOICE[result.winner];
     if (!src) return;
-    const a = new Audio(src);
-    a.volume = 0.7;
+    let handle: ReturnType<typeof playSound> | null = null;
     const t = setTimeout(() => {
-      try {
-        a.currentTime = 0;
-        void a.play();
-      } catch {
-        // ignore
-      }
+      handle = playSound(src, { volume: 0.7 });
     }, 180);
     return () => {
       clearTimeout(t);
-      try {
-        a.pause();
-        a.src = "";
-      } catch {
-        // ignore
-      }
+      handle?.stop();
     };
   }, [result.winner]);
 
