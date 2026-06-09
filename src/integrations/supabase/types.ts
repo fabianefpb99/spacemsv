@@ -697,6 +697,117 @@ export type Database = {
         }
         Relationships: []
       }
+      withdrawal_accounts: {
+        Row: {
+          bank_label: string | null
+          created_at: string
+          id: string
+          identifier: string
+          is_default: boolean
+          method: Database["public"]["Enums"]["deposit_method"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bank_label?: string | null
+          created_at?: string
+          id?: string
+          identifier: string
+          is_default?: boolean
+          method: Database["public"]["Enums"]["deposit_method"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bank_label?: string | null
+          created_at?: string
+          id?: string
+          identifier?: string
+          is_default?: boolean
+          method?: Database["public"]["Enums"]["deposit_method"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      withdrawal_requests: {
+        Row: {
+          account_identifier: string
+          account_label: string | null
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          cancelled_at: string | null
+          created_at: string
+          debit_tx_id: string | null
+          email: string | null
+          fee: number
+          id: string
+          method: Database["public"]["Enums"]["deposit_method"]
+          net_amount: number
+          new_balance: number | null
+          prev_balance: number | null
+          refund_tx_id: string | null
+          reject_reason: string | null
+          rejected_at: string | null
+          rejected_by: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          account_identifier: string
+          account_label?: string | null
+          amount: number
+          approved_at?: string | null
+          approved_by?: string | null
+          cancelled_at?: string | null
+          created_at?: string
+          debit_tx_id?: string | null
+          email?: string | null
+          fee?: number
+          id?: string
+          method: Database["public"]["Enums"]["deposit_method"]
+          net_amount: number
+          new_balance?: number | null
+          prev_balance?: number | null
+          refund_tx_id?: string | null
+          reject_reason?: string | null
+          rejected_at?: string | null
+          rejected_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          account_identifier?: string
+          account_label?: string | null
+          amount?: number
+          approved_at?: string | null
+          approved_by?: string | null
+          cancelled_at?: string | null
+          created_at?: string
+          debit_tx_id?: string | null
+          email?: string | null
+          fee?: number
+          id?: string
+          method?: Database["public"]["Enums"]["deposit_method"]
+          net_amount?: number
+          new_balance?: number | null
+          prev_balance?: number | null
+          refund_tx_id?: string | null
+          reject_reason?: string | null
+          rejected_at?: string | null
+          rejected_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       admin_users_overview: {
@@ -857,6 +968,40 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      admin_approve_withdrawal: {
+        Args: { p_id: string }
+        Returns: {
+          account_identifier: string
+          account_label: string | null
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          cancelled_at: string | null
+          created_at: string
+          debit_tx_id: string | null
+          email: string | null
+          fee: number
+          id: string
+          method: Database["public"]["Enums"]["deposit_method"]
+          net_amount: number
+          new_balance: number | null
+          prev_balance: number | null
+          refund_tx_id: string | null
+          reject_reason: string | null
+          rejected_at: string | null
+          rejected_by: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "withdrawal_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       admin_reject_deposit: {
         Args: { p_id: string; p_reason: string }
         Returns: {
@@ -890,6 +1035,40 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "deposit_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_reject_withdrawal: {
+        Args: { p_id: string; p_reason: string }
+        Returns: {
+          account_identifier: string
+          account_label: string | null
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          cancelled_at: string | null
+          created_at: string
+          debit_tx_id: string | null
+          email: string | null
+          fee: number
+          id: string
+          method: Database["public"]["Enums"]["deposit_method"]
+          net_amount: number
+          new_balance: number | null
+          prev_balance: number | null
+          refund_tx_id: string | null
+          reject_reason: string | null
+          rejected_at: string | null
+          rejected_by: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "withdrawal_requests"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -990,6 +1169,40 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      cancel_withdrawal_request: {
+        Args: { p_id: string }
+        Returns: {
+          account_identifier: string
+          account_label: string | null
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          cancelled_at: string | null
+          created_at: string
+          debit_tx_id: string | null
+          email: string | null
+          fee: number
+          id: string
+          method: Database["public"]["Enums"]["deposit_method"]
+          net_amount: number
+          new_balance: number | null
+          prev_balance: number | null
+          refund_tx_id: string | null
+          reject_reason: string | null
+          rejected_at: string | null
+          rejected_by: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "withdrawal_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       confirm_deposit_request: {
         Args: {
           p_first_name: string
@@ -1071,6 +1284,45 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "deposit_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      create_withdrawal_request: {
+        Args: {
+          p_account_identifier: string
+          p_account_label?: string
+          p_amount: number
+          p_method: Database["public"]["Enums"]["deposit_method"]
+        }
+        Returns: {
+          account_identifier: string
+          account_label: string | null
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          cancelled_at: string | null
+          created_at: string
+          debit_tx_id: string | null
+          email: string | null
+          fee: number
+          id: string
+          method: Database["public"]["Enums"]["deposit_method"]
+          net_amount: number
+          new_balance: number | null
+          prev_balance: number | null
+          refund_tx_id: string | null
+          reject_reason: string | null
+          rejected_at: string | null
+          rejected_by: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "withdrawal_requests"
           isOneToOne: true
           isSetofReturn: false
         }
