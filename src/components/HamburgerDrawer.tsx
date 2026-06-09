@@ -11,14 +11,25 @@ import {
   Sun,
   Moon,
   X,
+  Facebook,
+  Instagram,
+  Twitter,
+  Youtube,
+  Send,
+  MessageCircle,
+  Music2,
+  Hash,
   type LucideIcon,
 } from "lucide-react";
 import { cloneElement, isValidElement, useEffect, useState, type MouseEvent, type ReactElement, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Switch } from "@/components/ui/switch";
 import { useTheme } from "@/hooks/useTheme";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import arenaHero from "@/assets/home-hero-arena.png.asset.json";
+import { getPublicDrawerSettings } from "@/lib/admin/drawer-content.functions";
 
 type Item = {
   label: string;
@@ -37,11 +48,33 @@ const ITEMS: Item[] = [
   { label: "Soporte", icon: Headphones },
 ];
 
+const SOCIAL_ICONS: Record<string, LucideIcon> = {
+  facebook: Facebook,
+  instagram: Instagram,
+  twitter: Twitter,
+  youtube: Youtube,
+  tiktok: Music2,
+  telegram: Send,
+  whatsapp: MessageCircle,
+  discord: Hash,
+};
+
 export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
   const [open, setOpen] = useState(false);
   const { theme, toggle } = useTheme();
   const navigate = useNavigate();
   const isLight = theme === "light";
+
+  const settingsFn = useServerFn(getPublicDrawerSettings);
+  const settingsQ = useQuery({
+    queryKey: ["public-drawer"],
+    queryFn: () => settingsFn(),
+    staleTime: 60_000,
+  });
+  const promo = settingsQ.data?.promo;
+  const socials = settingsQ.data?.socials ?? [];
+  const promoImage = promo?.image_url || arenaHero.url;
+  const promoActive = promo?.active !== false;
 
   useEffect(() => {
     if (!open || typeof document === "undefined") return;
@@ -165,13 +198,14 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
                     type="button"
                     onClick={() => {
                       setOpen(false);
-                      navigate({ to: "/arena" });
+                      navigate({ to: (promo?.cta_link as string) || "/arena" });
                     }}
                     className="group relative mt-4 block aspect-[16/10] w-full overflow-hidden rounded-2xl border border-fuchsia-500/30 bg-[#1a0a3a] text-left shadow-[0_0_24px_rgba(168,85,247,0.25)] transition hover:shadow-[0_0_32px_rgba(217,70,239,0.45)]"
                     aria-label="Promoción Arena"
+                    hidden={!promoActive}
                   >
                     <img
-                      src={arenaHero.url}
+                      src={promoImage}
                       alt=""
                       aria-hidden
                       className="pointer-events-none absolute inset-0 h-full w-full object-cover object-right"
@@ -186,20 +220,45 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
                     />
                     <div className="relative z-10 flex h-full flex-col justify-center gap-1.5 p-3 pr-[48%]">
                       <span className="inline-flex w-fit items-center rounded-full bg-fuchsia-500/20 px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.12em] text-fuchsia-200 ring-1 ring-fuchsia-400/40">
-                        Juego destacado
+                        {promo?.eyebrow || "Juego destacado"}
                       </span>
                       <h3 className="text-lg font-black uppercase leading-none tracking-wide text-white drop-shadow-[0_0_12px_rgba(217,70,239,0.6)]">
-                        ARENA
+                        {promo?.title || "ARENA"}
                       </h3>
                       <p className="text-[10px] leading-tight text-purple-100/80">
-                        Combates épicos<br />y premios reales
+                        {promo?.subtitle || "Combates épicos y premios reales"}
                       </p>
                       <span className="mt-1 inline-flex w-fit items-center rounded-md bg-gradient-to-r from-fuchsia-500 to-purple-600 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-white shadow-[0_4px_14px_rgba(217,70,239,0.5)]">
-                        ¡Pelear ahora!
+                        {promo?.cta_label || "¡Pelear ahora!"}
                       </span>
                     </div>
                   </button>
                 </nav>
+
+                {socials.length > 0 && (
+                  <div className="border-t border-purple-500/15 px-4 pt-3">
+                    <div className="mb-2 text-[9px] font-bold uppercase tracking-[0.18em] text-purple-300/70">
+                      Síguenos
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {socials.map((s) => {
+                        const Icon = SOCIAL_ICONS[s.platform] ?? Hash;
+                        return (
+                          <a
+                            key={s.id}
+                            href={s.url}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            aria-label={s.platform}
+                            className="flex h-9 w-9 items-center justify-center rounded-full border border-purple-500/30 bg-[#150830] text-fuchsia-200 transition hover:border-fuchsia-400/60 hover:bg-fuchsia-500/15 hover:text-white"
+                          >
+                            <Icon className="h-4 w-4" strokeWidth={2.2} />
+                          </a>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
                 <div className="border-t border-purple-500/15 px-4 py-3" style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 0.75rem)" }}>
                   <div className="flex items-center justify-between gap-3 rounded-xl border border-purple-500/20 bg-[#150830]/60 px-3 py-2.5">
