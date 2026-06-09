@@ -1548,3 +1548,15 @@ body[data-scroll-locked] {
   padding-right: 0 !important;
   overflow: hidden !important;
 }
+
+body[data-scroll-locked] [style*="--removed-body-scroll-bar-size"],
+body[data-scroll-locked] .right-\[var\(--removed-body-scroll-bar-size\)\],
+body[data-scroll-locked] .w-screen,
+body[data-scroll-locked] [data-radix-portal] {
+  margin-right: 0 !important;
+  right: 0 !important;
+}
+
+body[data-scroll-locked] {
+  --removed-body-scroll-bar-size: 0px !important;
+}
