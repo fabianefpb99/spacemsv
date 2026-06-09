@@ -274,9 +274,10 @@ function HomePage() {
   };
 
   useEffect(() => {
+    if (slidesList.length <= 1) return;
     const id = setInterval(() => setSlide((s) => (s + 1) % slidesList.length), 5000);
     return () => clearInterval(id);
-  }, []);
+  }, [slidesList.length]);
 
   // Auto-ocultar flechas al cargar y cada vez que cambia el slide
   useEffect(() => {
