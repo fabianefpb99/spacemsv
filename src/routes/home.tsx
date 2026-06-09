@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import { Menu, ChevronRight, ChevronLeft, Gift, Home, Gamepad2, Wallet, User } from "lucide-react";
+import { Menu, ChevronRight, ChevronLeft, Gift, Home, Gamepad2, Wallet, User, Trophy } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { PromoPopup } from "@/components/PromoPopup";
 import { BrandLoader } from "@/components/BrandLoader";
@@ -663,12 +663,12 @@ function BottomItem({ icon, label, active, to }: { icon: React.ReactNode; label:
 
 function BottomCenter() {
   return (
-    <Link to="/spaceman" className="-mt-7 flex w-16 flex-col items-center gap-1">
-      <span className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-2 border-white shadow-lg shadow-purple-900/60">
-        <img src={gameSpaceman} alt="" className="h-full w-full object-cover" />
+    <button type="button" className="-mt-7 flex w-16 flex-col items-center gap-1">
+      <span className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-purple-500/60 bg-gradient-to-br from-purple-700 to-purple-900 shadow-lg shadow-purple-900/60">
+        <Trophy className="h-7 w-7 text-yellow-300" strokeWidth={2.2} />
       </span>
-      <span className="text-[9px] font-bold tracking-wider text-purple-200">SPACEMAN</span>
-    </Link>
+      <span className="text-[9px] font-bold tracking-wider text-purple-200">RANKING</span>
+    </button>
   );
 }
 
