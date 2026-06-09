@@ -1,0 +1,401 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Menu, Home, Gamepad2, Wallet, User, Trophy, Crown } from "lucide-react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import betspaceLogo from "@/assets/betspace-logo.svg";
+import spaceBg from "@/assets/space-bg.png";
+import { AuthControl } from "@/components/auth/AuthControl";
+import { NotificationBell } from "@/components/admin/NotificationBell";
+import { AuthDialog } from "@/components/auth/AuthDialog";
+import { useAuth } from "@/hooks/useAuth";
+import { useMe } from "@/hooks/useMe";
+import { getAvatarUrl } from "@/lib/avatars";
+import {
+  getRankingPublic,
+  getMyRankingPosition,
+  type RankingEntry,
+} from "@/lib/ranking.functions";
+
+export const Route = createFileRoute("/ranking")({
+  head: () => ({
+    meta: [
+      { title: "Ranking — BetSpaceman" },
+      { name: "description", content: "Top ganadores del día en BetSpaceman: ranking general y arena." },
+      { property: "og:title", content: "Ranking — BetSpaceman" },
+      { property: "og:description", content: "Top ganadores del día en BetSpaceman: ranking general y arena." },
+    ],
+  }),
+  component: RankingPage,
+});
+
+function formatCOP(n: number) {
+  return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
+}
+
+function RankingPage() {
+  const { user, loading: authLoading } = useAuth();
+  const me = useMe();
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
+
+  const fetchPublic = useServerFn(getRankingPublic);
+  const fetchMyPos = useServerFn(getMyRankingPosition);
+
+  const publicQ = useQuery({
+    queryKey: ["ranking", "public"],
+    queryFn: () => fetchPublic(),
+    staleTime: 15_000,
+    refetchInterval: 20_000,
+    refetchOnWindowFocus: true,
+  });
+
+  const myPosQ = useQuery({
+    queryKey: ["ranking", "me", user?.id ?? null],
+    enabled: !!user,
+    queryFn: () => fetchMyPos(),
+    staleTime: 15_000,
+    refetchInterval: 20_000,
+  });
+
+  const winners = publicQ.data?.winners ?? [];
+  const arena = publicQ.data?.arena ?? [];
+
+  // Podio: 1°, 2°, 3°
+  const first = winners[0];
+  const second = winners[1];
+  const third = winners[2];
+  const rest = winners.slice(3);
+
+  const balanceText = me.data ? formatCOP(me.data.balance) : "—";
+
+  return (
+    <div className="min-h-screen bg-[#060210] text-white">
+      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4">
+        {/* Header (igual al de Home) */}
+        <header
+          className="flex flex-col items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
+          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
+        >
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-1">
+              <button className="rounded-md p-2 text-white hover:bg-white/10">
+                <Menu className="h-7 w-7" strokeWidth={3} />
+              </button>
+              <Link to="/home" className="logo-shine">
+                <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7 translate-y-px" />
+                <img src={betspaceLogo} alt="" aria-hidden="true" className="logo-shine-overlay h-6 w-auto sm:h-7 translate-y-px" />
+              </Link>
+            </div>
+            <div className="flex items-center gap-2">
+              {user ? (
+                <>
+                  <div className="text-right">
+                    <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
+                    <div className="font-display text-[11px] font-bold sm:text-xs text-white">
+                      <span className="neon-green mr-0.5">$</span>{balanceText} COP
+                    </div>
+                  </div>
+                  <AuthControl />
+                  <NotificationBell />
+                </>
+              ) : authLoading ? (
+                <div className="h-7 w-24 animate-pulse rounded-md bg-white/5" />
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setAuthDialogOpen(true)}
+                  className="inline-flex items-center rounded-md border border-fuchsia-400/60 bg-gradient-to-r from-fuchsia-500 to-purple-600 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-white shadow-[0_0_14px_-4px_rgba(217,70,239,0.85)] transition hover:from-fuchsia-400 hover:to-purple-500 sm:text-[11px]"
+                >
+                  Login / Registro
+                </button>
+              )}
+            </div>
+          </div>
+        </header>
+        <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
+
+        {/* Hero del Ranking con fondo de espacio */}
+        <section
+          className="relative mt-4 overflow-hidden rounded-2xl border border-purple-500/40 shadow-[0_0_18px_rgba(168,85,247,0.25)]"
+        >
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${spaceBg})` }}
+            aria-hidden="true"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0320]/55 via-[#0a0320]/35 to-[#060210]/95" aria-hidden="true" />
+
+          <div className="relative px-3 pb-4 pt-5 sm:px-4">
+            {/* Título */}
+            <div className="flex items-center justify-center gap-2">
+              <Trophy className="h-5 w-5 text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.7)]" />
+              <h1 className="font-display text-2xl font-black tracking-widest text-white drop-shadow sm:text-3xl">
+                RANKING
+              </h1>
+              <Trophy className="h-5 w-5 text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.7)]" />
+            </div>
+            <p className="mt-1 text-center text-xs text-purple-100/80">
+              Los mejores ganadores del día
+            </p>
+
+            {/* Podio */}
+            <div className="mt-5 grid grid-cols-3 items-end gap-2 sm:gap-3">
+              <PodiumSlot place={2} entry={second} loading={publicQ.isLoading} />
+              <PodiumSlot place={1} entry={first} loading={publicQ.isLoading} />
+              <PodiumSlot place={3} entry={third} loading={publicQ.isLoading} />
+            </div>
+
+            {!publicQ.isLoading && winners.length === 0 && (
+              <p className="mt-6 text-center text-xs text-purple-200/70">
+                Aún no hay ganadores hoy. ¡Sé el primero!
+              </p>
+            )}
+          </div>
+        </section>
+
+        {/* Tu posición */}
+        <section className="mt-5">
+          <h3 className="font-display text-[11px] font-bold uppercase tracking-widest text-purple-200/80">
+            Tu posición
+          </h3>
+          <div className="mt-2 flex items-center gap-3 rounded-xl border border-purple-500/30 bg-[#0c0620]/80 p-3 sm:p-4">
+            {user ? (
+              <>
+                <div className="flex w-12 shrink-0 items-center justify-center">
+                  <span className="font-display text-2xl font-black text-purple-300/90">
+                    #{myPosQ.data?.rank ?? "—"}
+                  </span>
+                </div>
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-purple-700/40 ring-2 ring-purple-400/40">
+                  <img
+                    src={getAvatarUrl(me.data?.profile?.avatar_key)}
+                    alt="Tu avatar"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-sm font-bold text-white">
+                    {me.data?.profile?.username ?? "Tú"}
+                  </div>
+                  <div className="font-display text-base font-bold">
+                    <span className="neon-green mr-0.5">$</span>
+                    <span className="text-white">{formatCOP(myPosQ.data?.net_amount ?? 0)}</span>
+                  </div>
+                  <div className="text-[10px] text-purple-300/70">Ganado hoy</div>
+                </div>
+              </>
+            ) : (
+              <div className="flex w-full items-center justify-between gap-3">
+                <div className="text-xs text-purple-100/80">
+                  Inicia sesión para ver tu posición.
+                </div>
+                <button
+                  onClick={() => setAuthDialogOpen(true)}
+                  className="rounded-md bg-purple-600 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-white hover:bg-purple-500"
+                >
+                  Entrar
+                </button>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Top ganadores Arena hoy */}
+        <section className="mt-5">
+          <div className="flex items-end justify-between">
+            <h3 className="font-display text-[11px] font-bold uppercase tracking-widest text-purple-200/80">
+              Top ganadores de Arena hoy
+            </h3>
+            <Link to="/arena" className="text-[11px] font-semibold text-purple-300 hover:text-purple-200">
+              Jugar →
+            </Link>
+          </div>
+          <ul className="mt-2 flex flex-col gap-1.5">
+            {publicQ.isLoading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <li key={i} className="h-12 animate-pulse rounded-lg bg-white/5" />
+              ))
+            ) : arena.length === 0 ? (
+              <li className="rounded-lg border border-purple-500/20 bg-[#0c0620]/60 px-3 py-3 text-center text-xs text-purple-200/70">
+                Sin ganadores en Arena hoy.
+              </li>
+            ) : (
+              arena.map((e, idx) => <ArenaRow key={e.user_id} pos={idx + 1} entry={e} />)
+            )}
+          </ul>
+        </section>
+
+        {/* Resto del ranking general (puestos 4+) */}
+        {rest.length > 0 && (
+          <section className="mt-5">
+            <h3 className="font-display text-[11px] font-bold uppercase tracking-widest text-purple-200/80">
+              Más ganadores hoy
+            </h3>
+            <ul className="mt-2 flex flex-col gap-1.5">
+              {rest.map((e, idx) => (
+                <ArenaRow key={e.user_id} pos={idx + 4} entry={e} />
+              ))}
+            </ul>
+          </section>
+        )}
+
+        <div className="h-24" />
+      </div>
+
+      {/* Bottom nav */}
+      <nav
+        className="fixed inset-x-0 bottom-0 z-30 border-t border-purple-500/20 bg-[#060210]/95 backdrop-blur"
+        style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+      >
+        <div className="mx-auto flex max-w-md items-end justify-between px-4 pt-2 pb-2 sm:max-w-lg">
+          <BottomItem icon={<Home className="h-5 w-5" />} label="INICIO" to="/home" />
+          <BottomItem icon={<Gamepad2 className="h-5 w-5" />} label="JUEGOS" />
+          <BottomCenterActive />
+          <BottomItem icon={<Wallet className="h-5 w-5" />} label="DEPÓSITO" to="/pay" />
+          <BottomItem icon={<User className="h-5 w-5" />} label="PERFIL" to="/perfil" />
+        </div>
+      </nav>
+    </div>
+  );
+}
+
+/* ───────── Subcomponents ───────── */
+
+const CROWN_STYLES: Record<number, { crown: string; ring: string; bg: string; badge: string; height: string }> = {
+  1: {
+    crown: "text-amber-300 drop-shadow-[0_0_10px_rgba(251,191,36,0.85)]",
+    ring: "ring-amber-300/80",
+    bg: "from-amber-500/25 via-amber-500/10 to-transparent border-amber-400/50 shadow-[0_0_22px_rgba(251,191,36,0.35)]",
+    badge: "bg-amber-500 text-amber-950",
+    height: "h-32",
+  },
+  2: {
+    crown: "text-slate-200 drop-shadow-[0_0_8px_rgba(226,232,240,0.7)]",
+    ring: "ring-slate-300/70",
+    bg: "from-slate-400/20 via-slate-400/10 to-transparent border-slate-300/40 shadow-[0_0_16px_rgba(203,213,225,0.25)]",
+    badge: "bg-slate-300 text-slate-900",
+    height: "h-24",
+  },
+  3: {
+    crown: "text-orange-400 drop-shadow-[0_0_8px_rgba(251,146,60,0.7)]",
+    ring: "ring-orange-400/70",
+    bg: "from-orange-500/20 via-orange-500/10 to-transparent border-orange-400/40 shadow-[0_0_16px_rgba(251,146,60,0.3)]",
+    badge: "bg-orange-500 text-orange-950",
+    height: "h-24",
+  },
+};
+
+function PodiumSlot({
+  place,
+  entry,
+  loading,
+}: {
+  place: 1 | 2 | 3;
+  entry: RankingEntry | undefined;
+  loading: boolean;
+}) {
+  const s = CROWN_STYLES[place];
+  const isFirst = place === 1;
+
+  return (
+    <div className={`flex flex-col items-center ${isFirst ? "-mt-2" : ""}`}>
+      {/* Avatar + corona */}
+      <div className="relative">
+        {isFirst && (
+          <Crown className={`absolute -top-5 left-1/2 h-7 w-7 -translate-x-1/2 ${s.crown}`} strokeWidth={2.2} />
+        )}
+        {!isFirst && (
+          <Crown className={`absolute -top-4 left-1/2 h-5 w-5 -translate-x-1/2 ${s.crown}`} strokeWidth={2.2} />
+        )}
+        <div
+          className={`flex items-center justify-center overflow-hidden rounded-full ring-2 ${s.ring} ${isFirst ? "h-20 w-20" : "h-16 w-16"} bg-[#150830]`}
+        >
+          {loading || !entry ? (
+            <div className="h-full w-full animate-pulse bg-white/5" />
+          ) : (
+            <img
+              src={getAvatarUrl(entry.avatar_key)}
+              alt={entry.username}
+              className="h-full w-full object-cover"
+            />
+          )}
+        </div>
+        <span
+          className={`absolute -bottom-2 left-1/2 inline-flex h-6 w-6 -translate-x-1/2 items-center justify-center rounded-full text-[11px] font-black ring-2 ring-[#060210] ${s.badge}`}
+        >
+          {place}
+        </span>
+      </div>
+
+      {/* Pedestal */}
+      <div
+        className={`mt-3 flex w-full flex-col items-center justify-end gap-1 rounded-t-xl border bg-gradient-to-b px-1.5 pb-3 pt-3 text-center ${s.bg} ${s.height}`}
+      >
+        <div className="line-clamp-1 max-w-full px-1 font-display text-[11px] font-bold uppercase tracking-wider text-white sm:text-xs">
+          {entry?.username ?? (loading ? "…" : "—")}
+        </div>
+        <div className="font-display text-[11px] font-bold sm:text-xs">
+          <span className="neon-green mr-0.5">$</span>
+          <span className="text-white">
+            {entry ? formatCOP(entry.net_amount) : "—"}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ArenaRow({ pos, entry }: { pos: number; entry: RankingEntry }) {
+  return (
+    <li className="flex items-center gap-3 rounded-lg border border-purple-500/20 bg-[#0c0620]/70 px-3 py-2.5">
+      <span className="w-5 text-center font-display text-xs font-black text-purple-300/80">{pos}</span>
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-purple-700/30 ring-1 ring-purple-400/30">
+        <img src={getAvatarUrl(entry.avatar_key)} alt={entry.username} className="h-full w-full object-cover" />
+      </div>
+      <div className="min-w-0 flex-1 truncate text-xs font-semibold uppercase tracking-wider text-white">
+        {entry.username}
+      </div>
+      <div className="font-display text-xs font-bold">
+        <span className="neon-green mr-0.5">$</span>
+        <span className="text-white">{formatCOP(entry.net_amount)}</span>
+      </div>
+    </li>
+  );
+}
+
+function BottomItem({
+  icon,
+  label,
+  to,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  to?: string;
+}) {
+  const className = "flex w-14 flex-col items-center gap-1 text-purple-300/70 hover:text-purple-200";
+  if (to) {
+    return (
+      <Link to={to} className={className}>
+        {icon}
+        <span className="text-[9px] font-bold tracking-wider">{label}</span>
+      </Link>
+    );
+  }
+  return (
+    <button className={className}>
+      {icon}
+      <span className="text-[9px] font-bold tracking-wider">{label}</span>
+    </button>
+  );
+}
+
+function BottomCenterActive() {
+  return (
+    <div className="-mt-7 flex w-16 flex-col items-center gap-1">
+      <span className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-purple-400/60 bg-gradient-to-b from-purple-600 to-purple-800 shadow-[0_0_18px_rgba(168,85,247,0.6)]">
+        <Trophy className="h-7 w-7 text-white" strokeWidth={2.2} />
+      </span>
+      <span className="text-[9px] font-bold tracking-wider text-emerald-400">RANKING</span>
+    </div>
+  );
+}

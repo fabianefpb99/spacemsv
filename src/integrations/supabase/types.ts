@@ -1477,6 +1477,31 @@ export type Database = {
         Returns: number
       }
       expire_pending_deposits: { Args: never; Returns: number }
+      get_my_today_position: {
+        Args: never
+        Returns: {
+          net_amount: number
+          rank: number
+        }[]
+      }
+      get_today_top_arena: {
+        Args: { p_limit?: number }
+        Returns: {
+          avatar_key: string
+          net_amount: number
+          user_id: string
+          username: string
+        }[]
+      }
+      get_today_top_winners: {
+        Args: { p_limit?: number }
+        Returns: {
+          avatar_key: string
+          net_amount: number
+          user_id: string
+          username: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
