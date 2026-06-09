@@ -18,6 +18,7 @@ import { createPortal } from "react-dom";
 import { Switch } from "@/components/ui/switch";
 import { useTheme } from "@/hooks/useTheme";
 import betspaceLogo from "@/assets/betspace-logo.svg";
+import arenaHero from "@/assets/home-hero-arena.png.asset.json";
 
 type Item = {
   label: string;
@@ -111,9 +112,9 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
               <aside
                 id="hamburger-drawer-panel"
                 className="absolute inset-y-0 left-0 flex h-full w-[82vw] max-w-[320px] animate-in slide-in-from-left duration-300 flex-col border-r border-purple-500/20 bg-[#0a0418] text-white"
-                style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.5rem)" }}
+                style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 1.5rem)" }}
               >
-                <div className="flex items-center justify-between px-4 pb-3">
+                <div className="flex items-center justify-between pl-6 pr-4 pb-3">
                   <Link
                     to="/home"
                     onClick={() => setOpen(false)}
@@ -159,6 +160,44 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
                       </li>
                     ))}
                   </ul>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpen(false);
+                      navigate({ to: "/arena" });
+                    }}
+                    className="group relative mt-4 block w-full overflow-hidden rounded-2xl border border-fuchsia-500/30 bg-gradient-to-br from-[#1a0a3a] via-[#2a0f55] to-[#0a0418] text-left shadow-[0_0_24px_rgba(168,85,247,0.25)] transition hover:shadow-[0_0_32px_rgba(217,70,239,0.45)]"
+                    aria-label="Promoción Arena"
+                  >
+                    <div
+                      aria-hidden
+                      className="absolute inset-0 opacity-60"
+                      style={{
+                        backgroundImage: `radial-gradient(circle at 80% 30%, rgba(217,70,239,0.35), transparent 55%), radial-gradient(circle at 20% 80%, rgba(99,102,241,0.3), transparent 60%)`,
+                      }}
+                    />
+                    <img
+                      src={arenaHero.url}
+                      alt=""
+                      aria-hidden
+                      className="pointer-events-none absolute -right-2 bottom-0 h-[110%] w-auto object-contain object-bottom opacity-90"
+                    />
+                    <div className="relative z-10 flex flex-col gap-1.5 p-3 pr-[42%]">
+                      <span className="inline-flex w-fit items-center rounded-full bg-fuchsia-500/20 px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.12em] text-fuchsia-200 ring-1 ring-fuchsia-400/40">
+                        Juego destacado
+                      </span>
+                      <h3 className="text-lg font-black uppercase leading-none tracking-wide text-white drop-shadow-[0_0_12px_rgba(217,70,239,0.6)]">
+                        ARENA
+                      </h3>
+                      <p className="text-[10px] leading-tight text-purple-100/80">
+                        Combates épicos<br />y premios reales
+                      </p>
+                      <span className="mt-1 inline-flex w-fit items-center rounded-md bg-gradient-to-r from-fuchsia-500 to-purple-600 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-white shadow-[0_4px_14px_rgba(217,70,239,0.5)]">
+                        ¡Pelear ahora!
+                      </span>
+                    </div>
+                  </button>
                 </nav>
 
                 <div className="border-t border-purple-500/15 px-4 py-3" style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 0.75rem)" }}>
