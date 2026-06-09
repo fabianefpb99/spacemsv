@@ -82,6 +82,37 @@ export function depositStatusBadge(s: string) {
   return m[s] ?? "border-purple-500/30 bg-purple-500/5 text-purple-200";
 }
 
+export function withdrawalStatusBadge(s: string) {
+  const m: Record<string, string> = {
+    pendiente: "border-amber-500/50 bg-amber-500/10 text-amber-200",
+    aprobada: "border-emerald-500/50 bg-emerald-500/10 text-emerald-200",
+    rechazada: "border-rose-500/50 bg-rose-500/10 text-rose-200",
+    cancelada: "border-purple-500/30 bg-purple-500/5 text-purple-300/70",
+  };
+  return m[s] ?? "border-purple-500/30 bg-purple-500/5 text-purple-200";
+}
+
+export type WithdrawalRow = {
+  id: string;
+  user_id: string;
+  username: string | null;
+  email: string | null;
+  amount: number;
+  fee: number;
+  net_amount: number;
+  method: string;
+  account_identifier: string;
+  account_label: string | null;
+  status: string;
+  reject_reason: string | null;
+  prev_balance: number | null;
+  new_balance: number | null;
+  created_at: string;
+  approved_at: string | null;
+  rejected_at: string | null;
+  cancelled_at: string | null;
+};
+
 /* ------------------------------ UI primitives ----------------------------- */
 
 export function Panel({
