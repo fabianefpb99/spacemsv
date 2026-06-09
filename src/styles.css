@@ -30,6 +30,48 @@ html.light .light-text-dark { color: #1a0b3a !important; }
 html.light .light-text-purple { color: rgb(126 34 206) !important; }
 html.light .light-text-muted { color: rgb(88 28 135 / 0.85) !important; }
 
+/* ------------------------------------------------------------------
+ * Light mode — keep bottom nav (and any element inside <nav>/<header>)
+ * fully dark, regardless of which background utility it uses.
+ * ------------------------------------------------------------------ */
+html.light nav,
+html.light nav *,
+html.light header,
+html.light header * {
+  color-scheme: dark;
+}
+html.light nav .bg-\[\#060210\],
+html.light nav .bg-\[\#060210\]\/95,
+html.light header .bg-\[\#060210\] {
+  background-color: #060210 !important;
+}
+
+/* ------------------------------------------------------------------
+ * Light mode — quiet down neon borders & glowing box-shadows on
+ * content cards (featured games, Jackpot/Blackjack banners, etc.).
+ * Scoped so header/nav are not affected.
+ * ------------------------------------------------------------------ */
+html.light :is(
+  .border-fuchsia-500\/70,
+  .border-fuchsia-400\/70,
+  .border-fuchsia-400\/60,
+  .border-purple-400\/70,
+  .border-purple-500\/30,
+  .border-purple-500\/20,
+  .border-amber-400\/70
+):not(:is(header, nav) *):not(header):not(nav) {
+  border-color: rgba(148, 130, 180, 0.18) !important;
+}
+
+html.light [class*="shadow-[0_0_"]:not(:is(header, nav) *) {
+  box-shadow: none !important;
+}
+
+/* Disable the rotating neon sweep around the hero slider in light mode */
+html.light .slider-neon-frame::before {
+  display: none !important;
+}
+
 /* Hero slider — rotating neon glow sweep around the border */
 .slider-neon-frame {
   position: relative;
