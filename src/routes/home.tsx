@@ -715,12 +715,12 @@ function BottomItem({ icon, label, active, to }: { icon: React.ReactNode; label:
 
 function BottomCenter() {
   return (
-    <button type="button" className="-mt-7 flex w-16 flex-col items-center gap-1">
+    <Link to="/ranking" className="-mt-7 flex w-16 flex-col items-center gap-1">
       <span className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-purple-500/20 bg-[#060210] shadow-lg shadow-purple-900/60">
         <Trophy className="h-7 w-7 text-purple-300/70" strokeWidth={2.2} />
       </span>
       <span className="text-[9px] font-bold tracking-wider text-purple-200">RANKING</span>
-    </button>
+    </Link>
   );
 }
 
