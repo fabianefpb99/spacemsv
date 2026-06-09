@@ -6,7 +6,7 @@ async function getSupabaseAdmin() {
   return (await import("@/integrations/supabase/client.server")).supabaseAdmin;
 }
 
-async function assertAdmin(userId: string) {
+async function isAdmin(userId: string) {
   const admin = await getSupabaseAdmin();
   const { data } = await admin
     .from("user_roles")
@@ -14,13 +14,13 @@ async function assertAdmin(userId: string) {
     .eq("user_id", userId)
     .eq("role", "admin")
     .maybeSingle();
-  if (!data) throw new Error("not_admin");
+  return !!data;
 }
 
 export const listAdminNotifications = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.userId);
+    if (!(await isAdmin(context.userId))) return [];
     const admin = await getSupabaseAdmin();
     const { data, error } = await admin
       .from("admin_notifications")
@@ -38,7 +38,7 @@ export const markAdminNotificationRead = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.userId);
+    if (!(await isAdmin(context.userId))) return { ok: false };
     const admin = await getSupabaseAdmin();
     const { error } = await admin.rpc("mark_admin_notification_read", { p_id: data.id });
     if (error) throw new Error(error.message);
@@ -48,7 +48,7 @@ export const markAdminNotificationRead = createServerFn({ method: "POST" })
 export const markAllAdminNotificationsRead = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.userId);
+    if (!(await isAdmin(context.userId))) return { count: 0 };
     const admin = await getSupabaseAdmin();
     const { data, error } = await admin.rpc("mark_all_admin_notifications_read");
     if (error) throw new Error(error.message);
