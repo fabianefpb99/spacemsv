@@ -9,6 +9,10 @@ import { useEffect, useRef } from "react";
 export function useHistoryBackClose(open: boolean, onClose: () => void) {
   const pushedRef = useRef(false);
   const closingFromPopRef = useRef(false);
+  const onCloseRef = useRef(onClose);
+  // Keep latest onClose without re-running the effect (avoids the drawer
+  // closing itself when the parent re-renders with a new arrow function).
+  onCloseRef.current = onClose;
 
   useEffect(() => {
     if (!open) return;
@@ -22,7 +26,7 @@ export function useHistoryBackClose(open: boolean, onClose: () => void) {
     const onPop = () => {
       closingFromPopRef.current = true;
       pushedRef.current = false;
-      onClose();
+      onCloseRef.current();
     };
     window.addEventListener("popstate", onPop);
 
@@ -38,5 +42,5 @@ export function useHistoryBackClose(open: boolean, onClose: () => void) {
       }
       closingFromPopRef.current = false;
     };
-  }, [open, onClose]);
+  }, [open]);
 }
