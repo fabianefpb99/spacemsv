@@ -217,22 +217,22 @@ function RankingPage() {
         </section>
 
         {/* Top ganadores Arena hoy */}
-        <section className="mt-5">
-          <div className="flex items-end justify-between">
-            <h3 className="font-display text-[11px] font-bold uppercase tracking-widest text-purple-200/80">
+        <section className="mt-5 rounded-xl border border-purple-500/30 bg-[#0c0620]/80 p-3 sm:p-4">
+          <div className="flex items-center justify-between">
+            <h3 className="font-display text-[11px] font-bold uppercase tracking-widest text-white">
               Top ganadores de Arena hoy
             </h3>
             <Link to="/arena" className="text-[11px] font-semibold text-purple-300 hover:text-purple-200">
               Jugar →
             </Link>
           </div>
-          <ul className="mt-2 flex flex-col gap-1.5">
+          <ul className="mt-2 flex flex-col divide-y divide-purple-500/15">
             {publicQ.isLoading ? (
               Array.from({ length: 3 }).map((_, i) => (
-                <li key={i} className="h-12 animate-pulse rounded-lg bg-white/5" />
+                <li key={i} className="h-9 animate-pulse rounded bg-white/5 my-1" />
               ))
             ) : arena.length === 0 ? (
-              <li className="rounded-lg border border-purple-500/20 bg-[#0c0620]/60 px-3 py-3 text-center text-xs text-purple-200/70">
+              <li className="py-3 text-center text-xs text-purple-200/70">
                 Sin ganadores en Arena hoy.
               </li>
             ) : (
@@ -243,11 +243,11 @@ function RankingPage() {
 
         {/* Resto del ranking general (puestos 4+) */}
         {rest.length > 0 && (
-          <section className="mt-5">
-            <h3 className="font-display text-[11px] font-bold uppercase tracking-widest text-purple-200/80">
+          <section className="mt-5 rounded-xl border border-purple-500/30 bg-[#0c0620]/80 p-3 sm:p-4">
+            <h3 className="font-display text-[11px] font-bold uppercase tracking-widest text-white">
               Más ganadores hoy
             </h3>
-            <ul className="mt-2 flex flex-col gap-1.5">
+            <ul className="mt-2 flex flex-col divide-y divide-purple-500/15">
               {rest.map((e, idx) => (
                 <ArenaRow key={e.user_id} pos={idx + 4} entry={e} />
               ))}
@@ -464,12 +464,12 @@ function PodiumSlot({
 
 function ArenaRow({ pos, entry }: { pos: number; entry: RankingEntry }) {
   return (
-    <li className="flex items-center gap-3 rounded-lg border border-purple-500/20 bg-[#0c0620]/70 px-3 py-2.5">
+    <li className="flex items-center gap-2.5 py-1.5">
       <span className="w-5 text-center font-display text-xs font-black text-purple-300/80">{pos}</span>
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-purple-700/30 ring-1 ring-purple-400/30">
+      <div className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-purple-700/30 ring-1 ring-purple-400/30">
         <img src={getAvatarUrl(entry.avatar_key)} alt={entry.username} className="h-full w-full object-cover" />
       </div>
-      <div className="min-w-0 flex-1 truncate text-xs font-semibold uppercase tracking-wider text-white">
+      <div className="min-w-0 flex-1 truncate text-[11px] font-semibold uppercase tracking-wider text-white">
         {entry.username}
       </div>
       <div className="font-display text-xs font-bold">
