@@ -167,23 +167,24 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
                       setOpen(false);
                       navigate({ to: "/arena" });
                     }}
-                    className="group relative mt-4 block w-full overflow-hidden rounded-2xl border border-fuchsia-500/30 bg-gradient-to-br from-[#1a0a3a] via-[#2a0f55] to-[#0a0418] text-left shadow-[0_0_24px_rgba(168,85,247,0.25)] transition hover:shadow-[0_0_32px_rgba(217,70,239,0.45)]"
+                    className="group relative mt-4 block aspect-[16/10] w-full overflow-hidden rounded-2xl border border-fuchsia-500/30 bg-[#1a0a3a] text-left shadow-[0_0_24px_rgba(168,85,247,0.25)] transition hover:shadow-[0_0_32px_rgba(217,70,239,0.45)]"
                     aria-label="Promoción Arena"
                   >
-                    <div
-                      aria-hidden
-                      className="absolute inset-0 opacity-60"
-                      style={{
-                        backgroundImage: `radial-gradient(circle at 80% 30%, rgba(217,70,239,0.35), transparent 55%), radial-gradient(circle at 20% 80%, rgba(99,102,241,0.3), transparent 60%)`,
-                      }}
-                    />
                     <img
                       src={arenaHero.url}
                       alt=""
                       aria-hidden
-                      className="pointer-events-none absolute -right-2 bottom-0 h-[110%] w-auto object-contain object-bottom opacity-90"
+                      className="pointer-events-none absolute inset-0 h-full w-full object-cover object-right"
                     />
-                    <div className="relative z-10 flex flex-col gap-1.5 p-3 pr-[42%]">
+                    <div
+                      aria-hidden
+                      className="absolute inset-0"
+                      style={{
+                        background:
+                          "linear-gradient(90deg, rgba(10,4,24,0.95) 0%, rgba(26,10,58,0.85) 38%, rgba(26,10,58,0.15) 65%, rgba(26,10,58,0) 100%)",
+                      }}
+                    />
+                    <div className="relative z-10 flex h-full flex-col justify-center gap-1.5 p-3 pr-[48%]">
                       <span className="inline-flex w-fit items-center rounded-full bg-fuchsia-500/20 px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.12em] text-fuchsia-200 ring-1 ring-fuchsia-400/40">
                         Juego destacado
                       </span>
