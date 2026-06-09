@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   Check,
@@ -13,7 +13,8 @@ import {
   Wallet as WalletIcon,
   X,
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import nequiLogo from "@/assets/nequi.svg";
 import brebLogo from "@/assets/bre-b.svg";
@@ -21,7 +22,12 @@ import { AuthControl } from "@/components/auth/AuthControl";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { useMe } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+import {
+  cancelMyWithdrawal,
+  createWithdrawal,
+  listMyWithdrawalAccounts,
+  listMyWithdrawals,
+} from "@/lib/withdrawals/withdrawal.functions";
 
 const MIN_WITHDRAW = 20_000;
 
@@ -76,9 +82,8 @@ type MethodId = "nequi" | "breb";
 
 type Account = {
   method: MethodId;
-  // For Nequi: phone (10 digits). For BRE-B: alias / cuenta.
   identifier: string;
-  bankLabel?: string; // optional secondary line, e.g. "Bancolombia · Ahorros"
+  bankLabel?: string;
   isDefault?: boolean;
 };
 
@@ -88,21 +93,27 @@ function RetirosPage() {
   const me = useMe();
   const balance = me.data?.balance ?? 0;
   const balanceText = me.data ? formatCOP(balance) : "—";
+  const qc = useQueryClient();
 
-  // Persisted withdrawal accounts (local-only — backend pendiente).
-  const storageKey = user ? `retiros:accounts:${user.id}` : null;
-  const [accounts, setAccounts] = useState<Account[]>([]);
-  useEffect(() => {
-    if (!storageKey) return;
-    try {
-      const raw = localStorage.getItem(storageKey);
-      if (raw) setAccounts(JSON.parse(raw));
-    } catch {}
-  }, [storageKey]);
-  useEffect(() => {
-    if (!storageKey) return;
-    try { localStorage.setItem(storageKey, JSON.stringify(accounts)); } catch {}
-  }, [storageKey, accounts]);
+  const listAccountsFn = useServerFn(listMyWithdrawalAccounts);
+  const listWdFn = useServerFn(listMyWithdrawals);
+  const createWdFn = useServerFn(createWithdrawal);
+  const cancelWdFn = useServerFn(cancelMyWithdrawal);
+
+  // Saved accounts from backend
+  const accountsQ = useQuery({
+    queryKey: ["my-withdrawal-accounts", user?.id ?? null],
+    enabled: !!user,
+    queryFn: () => listAccountsFn(),
+  });
+  const accounts: Account[] = useMemo(() => {
+    return (accountsQ.data ?? []).map((a: any) => ({
+      method: a.method as MethodId,
+      identifier: a.identifier,
+      bankLabel: a.bank_label ?? undefined,
+      isDefault: a.is_default,
+    }));
+  }, [accountsQ.data]);
 
   const defaultAcc = accounts.find((a) => a.isDefault) ?? accounts[0] ?? null;
   const [selectedMethod, setSelectedMethod] = useState<MethodId>(defaultAcc?.method ?? "nequi");
@@ -119,8 +130,19 @@ function RetirosPage() {
   }
   function setMax() { setAmount(balance); }
 
-  // Add-account modal
+  // Pending add-account form (only saved when the request is submitted)
   const [openAdd, setOpenAdd] = useState<MethodId | null>(null);
+  const [pendingAccount, setPendingAccount] = useState<Account | null>(null);
+
+  // After saving the form locally, ensure the chosen method is selected
+  useEffect(() => {
+    if (pendingAccount) setSelectedMethod(pendingAccount.method);
+  }, [pendingAccount]);
+
+  const activeAccount: Account | null =
+    pendingAccount && pendingAccount.method === selectedMethod
+      ? pendingAccount
+      : selectedAccount;
 
   // Submit feedback (no backend yet)
   const [toast, setToast] = useState<{ kind: "ok" | "warn" | "err"; text: string } | null>(null);
@@ -132,10 +154,71 @@ function RetirosPage() {
 
   const belowMin = amount > 0 && amount < MIN_WITHDRAW;
   const overBalance = amount > balance;
-  const canSubmit = !!selectedAccount && amount >= MIN_WITHDRAW && !overBalance;
+
+  // Withdrawals history (from withdrawal_requests)
+  const recentQ = useQuery({
+    queryKey: ["my-withdrawals", user?.id ?? null],
+    enabled: !!user,
+    staleTime: 15_000,
+    queryFn: () => listWdFn(),
+  });
+  const recentRows = (recentQ.data ?? []) as Array<{
+    id: string;
+    amount: number;
+    net_amount: number;
+    method: MethodId;
+    account_identifier: string;
+    status: string;
+    reject_reason: string | null;
+    created_at: string;
+  }>;
+
+  const createMut = useMutation({
+    mutationFn: (vars: { amount: number; account: Account }) =>
+      createWdFn({
+        data: {
+          amount: vars.amount,
+          method: vars.account.method,
+          account_identifier: vars.account.identifier,
+          account_label: vars.account.bankLabel ?? null,
+        },
+      }),
+    onSuccess: () => {
+      setAmount(0);
+      setPendingAccount(null);
+      qc.invalidateQueries({ queryKey: ["my-withdrawals"] });
+      qc.invalidateQueries({ queryKey: ["my-withdrawal-accounts"] });
+      qc.invalidateQueries({ queryKey: ["me"] });
+      setToast({ kind: "ok", text: "Solicitud enviada. Un administrador la revisará pronto." });
+    },
+    onError: (e: any) => {
+      const msg = String(e?.message ?? "");
+      const text = msg.includes("insufficient_funds")
+        ? "Saldo insuficiente."
+        : msg.includes("has_pending_withdrawal")
+        ? "Ya tienes un retiro pendiente. Espera o cancélalo."
+        : msg.includes("invalid_amount")
+        ? `Monto inválido. Mínimo $${formatCOP(MIN_WITHDRAW)} COP.`
+        : "No se pudo procesar la solicitud.";
+      setToast({ kind: "err", text });
+    },
+  });
+
+  const cancelMut = useMutation({
+    mutationFn: (id: string) => cancelWdFn({ data: { id } }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["my-withdrawals"] });
+      qc.invalidateQueries({ queryKey: ["me"] });
+      setToast({ kind: "ok", text: "Solicitud cancelada. Tu saldo fue devuelto." });
+    },
+    onError: () => setToast({ kind: "err", text: "No se pudo cancelar." }),
+  });
+
+  const canSubmit =
+    !!activeAccount && amount >= MIN_WITHDRAW && !overBalance && !createMut.isPending;
 
   function handleSubmit() {
-    if (!selectedAccount) {
+    if (!activeAccount) {
       setToast({ kind: "warn", text: "Agrega una cuenta de retiro antes de continuar." });
       return;
     }
@@ -147,37 +230,8 @@ function RetirosPage() {
       setToast({ kind: "err", text: "El monto supera tu balance disponible." });
       return;
     }
-    // Backend de retiros aún no disponible.
-    setToast({
-      kind: "ok",
-      text: "Solicitud registrada. Pronto un administrador la revisará.",
-    });
-    setAmount(0);
+    createMut.mutate({ amount, account: activeAccount });
   }
-
-  // Recent withdrawals from `transactions` (type = 'withdrawal').
-  const recentQ = useQuery({
-    queryKey: ["retiros-recent", user?.id ?? null],
-    enabled: !!user,
-    staleTime: 30_000,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("transactions")
-        .select("id, amount, created_at, meta")
-        .eq("user_id", user!.id)
-        .eq("type", "withdrawal")
-        .order("created_at", { ascending: false })
-        .limit(5);
-      if (error) throw error;
-      return data ?? [];
-    },
-  });
-  const recentRows = (recentQ.data ?? []) as Array<{
-    id: string;
-    amount: number;
-    created_at: string;
-    meta: Record<string, unknown> | null;
-  }>;
 
   return (
     <div className="min-h-screen bg-[#060210] text-white font-pay">
@@ -244,9 +298,14 @@ function RetirosPage() {
             selected={selectedMethod === "nequi"}
             logo={<img src={nequiLogo} alt="Nequi" className="h-5 w-auto" />}
             title="NEQUI"
-            account={accounts.find((a) => a.method === "nequi")}
+            account={
+              (pendingAccount?.method === "nequi" ? pendingAccount : undefined) ??
+              accounts.find((a) => a.method === "nequi")
+            }
             onSelect={() => {
-              const a = accounts.find((x) => x.method === "nequi");
+              const a =
+                (pendingAccount?.method === "nequi" ? pendingAccount : undefined) ??
+                accounts.find((x) => x.method === "nequi");
               if (a) setSelectedMethod("nequi");
               else setOpenAdd("nequi");
             }}
@@ -256,9 +315,14 @@ function RetirosPage() {
             selected={selectedMethod === "breb"}
             logo={<img src={brebLogo} alt="BRE-B" className="h-5 w-auto" />}
             title="BRE-B"
-            account={accounts.find((a) => a.method === "breb")}
+            account={
+              (pendingAccount?.method === "breb" ? pendingAccount : undefined) ??
+              accounts.find((a) => a.method === "breb")
+            }
             onSelect={() => {
-              const a = accounts.find((x) => x.method === "breb");
+              const a =
+                (pendingAccount?.method === "breb" ? pendingAccount : undefined) ??
+                accounts.find((x) => x.method === "breb");
               if (a) setSelectedMethod("breb");
               else setOpenAdd("breb");
             }}
@@ -334,7 +398,7 @@ function RetirosPage() {
           disabled={!canSubmit}
           className="mt-4 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-fuchsia-500 to-purple-600 px-4 py-3.5 text-sm font-extrabold uppercase tracking-wide text-white shadow-[0_0_24px_-6px_rgba(217,70,239,0.85)] transition hover:from-fuchsia-400 hover:to-purple-500 disabled:cursor-not-allowed disabled:from-purple-900/40 disabled:to-purple-900/40 disabled:text-purple-200/40 disabled:shadow-none"
         >
-          Solicitar retiro
+          {createMut.isPending ? "Enviando…" : "Solicitar retiro"}
         </button>
         <p className="mt-2 flex items-center justify-center gap-1 text-center text-[10px] text-purple-200/60">
           <Lock className="h-3 w-3" /> Tu retiro será revisado por un administrador
@@ -363,22 +427,19 @@ function RetirosPage() {
               <p className="text-[11px] text-purple-200/70">Aún no has realizado retiros.</p>
             </li>
           ) : (
-            recentRows.map((r) => {
-              const meta = r.meta ?? {};
-              const method = (meta as { method?: string }).method as MethodId | undefined;
-              const acc = (meta as { account?: string }).account ?? "";
-              const status = ((meta as { status?: string }).status ?? "completed").toLowerCase();
-              return (
-                <HistoryRow
-                  key={r.id}
-                  status={status}
-                  method={method}
-                  accountTail={acc ? maskAccount(acc) : "Retiro"}
-                  amount={Math.abs(Number(r.amount) || 0)}
-                  when={formatRel(r.created_at)}
-                />
-              );
-            })
+            recentRows.map((r) => (
+              <HistoryRow
+                key={r.id}
+                status={r.status}
+                method={r.method}
+                accountTail={r.account_identifier ? maskAccount(r.account_identifier) : "Retiro"}
+                amount={Math.abs(Number(r.amount) || 0)}
+                when={formatRel(r.created_at)}
+                rejectReason={r.reject_reason}
+                canCancel={r.status === "pendiente"}
+                onCancel={() => cancelMut.mutate(r.id)}
+              />
+            ))
           )}
         </ul>
 
@@ -399,14 +460,8 @@ function RetirosPage() {
           method={openAdd}
           onClose={() => setOpenAdd(null)}
           onSave={(acc) => {
-            setAccounts((prev) => {
-              const next = prev.filter((a) => a.method !== acc.method);
-              const list = [...next, { ...acc, isDefault: true }].map((a) => ({
-                ...a,
-                isDefault: a.method === acc.method,
-              }));
-              return list;
-            });
+            // Saved permanently when the withdrawal request is submitted.
+            setPendingAccount({ ...acc, isDefault: true });
             setSelectedMethod(acc.method);
             setOpenAdd(null);
           }}
