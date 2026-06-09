@@ -17,6 +17,7 @@ import {
   Gift,
 } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
+import eventosHero from "@/assets/eventos-hero.jpg";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { NotificationBell } from "@/components/admin/NotificationBell";
 import { AuthDialog } from "@/components/auth/AuthDialog";
@@ -66,8 +67,8 @@ const MISSIONS: Mission[] = [
     goal: 10,
     reward: { kind: "bonus", value: 1000, label: "1.000 Bonus" },
     cta: { label: "Ir a Arena", to: "/arena" },
-    accent: "purple",
-    icon: <Swords className="h-6 w-6 text-purple-200" />,
+    accent: "emerald",
+    icon: <Swords className="h-6 w-6 text-emerald-200" />,
   },
   {
     id: "m2",
@@ -78,8 +79,8 @@ const MISSIONS: Mission[] = [
     goal: 10000,
     reward: { kind: "bonus", value: 500, label: "500 Bonus" },
     cta: { label: "Apostar", to: "/home" },
-    accent: "amber",
-    icon: <Coins className="h-6 w-6 text-amber-300" />,
+    accent: "emerald",
+    icon: <Coins className="h-6 w-6 text-emerald-200" />,
   },
   {
     id: "m3",
@@ -90,8 +91,8 @@ const MISSIONS: Mission[] = [
     goal: 10,
     reward: { kind: "spins", value: 5, label: "5 Free Spins" },
     cta: { label: "Jugar Slot", to: "/slot" },
-    accent: "rose",
-    icon: <Sparkles className="h-6 w-6 text-rose-200" />,
+    accent: "emerald",
+    icon: <Sparkles className="h-6 w-6 text-emerald-200" />,
   },
   {
     id: "m4",
@@ -102,8 +103,8 @@ const MISSIONS: Mission[] = [
     goal: 3,
     reward: { kind: "bonus", value: 2500, label: "2.500 Bonus" },
     cta: { label: "Ir a Arena", to: "/arena" },
-    accent: "rose",
-    icon: <Swords className="h-6 w-6 text-rose-200" />,
+    accent: "amber",
+    icon: <Swords className="h-6 w-6 text-amber-200" />,
   },
   {
     id: "m5",
@@ -114,8 +115,8 @@ const MISSIONS: Mission[] = [
     goal: 50000,
     reward: { kind: "bonus", value: 1500, label: "1.500 Bonus" },
     cta: { label: "Jugar", to: "/home" },
-    accent: "emerald",
-    icon: <Coins className="h-6 w-6 text-emerald-200" />,
+    accent: "amber",
+    icon: <Coins className="h-6 w-6 text-amber-200" />,
   },
   {
     id: "m6",
@@ -126,8 +127,8 @@ const MISSIONS: Mission[] = [
     goal: 1,
     reward: { kind: "bonus", value: 3000, label: "3.000 Bonus" },
     cta: { label: "Invitar", to: "/perfil" },
-    accent: "blue",
-    icon: <Users className="h-6 w-6 text-sky-200" />,
+    accent: "amber",
+    icon: <Users className="h-6 w-6 text-amber-200" />,
   },
   {
     id: "m7",
@@ -145,9 +146,9 @@ const MISSIONS: Mission[] = [
 
 const TABS: { id: "all" | MissionType; label: string; icon: React.ReactNode }[] = [
   { id: "all", label: "TODOS", icon: <LayoutGrid className="h-4 w-4" /> },
-  { id: "daily", label: "DIARIOS", icon: <Calendar className="h-4 w-4" /> },
-  { id: "weekly", label: "SEMANALES", icon: <CalendarDays className="h-4 w-4" /> },
   { id: "special", label: "ESPECIALES", icon: <Sparkles className="h-4 w-4" /> },
+  { id: "weekly", label: "SEMANALES", icon: <CalendarDays className="h-4 w-4" /> },
+  { id: "daily", label: "DIARIOS", icon: <Calendar className="h-4 w-4" /> },
 ];
 
 function useDailyCountdown() {
