@@ -1,10 +1,8 @@
 import {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
-  useState,
   type ReactNode,
 } from "react";
 
@@ -28,35 +26,20 @@ function applyTheme(t: Theme) {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("dark");
-
-  // Hydrate from storage once.
+  // Theme switching temporarily disabled — force dark globally.
   useEffect(() => {
+    applyTheme("dark");
     try {
-      const stored = (localStorage.getItem(STORAGE_KEY) as Theme | null) ?? null;
-      const initial: Theme = stored === "light" || stored === "dark" ? stored : "dark";
-      setThemeState(initial);
-      applyTheme(initial);
-    } catch {
-      applyTheme("dark");
-    }
-  }, []);
-
-  const setTheme = useCallback((t: Theme) => {
-    setThemeState(t);
-    applyTheme(t);
-    try {
-      localStorage.setItem(STORAGE_KEY, t);
+      localStorage.removeItem(STORAGE_KEY);
     } catch {
       /* ignore */
     }
   }, []);
 
-  const toggle = useCallback(() => {
-    setTheme(theme === "dark" ? "light" : "dark");
-  }, [theme, setTheme]);
-
-  const value = useMemo<Ctx>(() => ({ theme, toggle, setTheme }), [theme, toggle, setTheme]);
+  const value = useMemo<Ctx>(
+    () => ({ theme: "dark", toggle: () => {}, setTheme: () => {} }),
+    [],
+  );
 
   return <ThemeCtx.Provider value={value}>{children}</ThemeCtx.Provider>;
 }

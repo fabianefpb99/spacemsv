@@ -180,7 +180,8 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
                     </div>
                     <Switch
                       checked={isLight}
-                      onCheckedChange={toggle}
+                      onCheckedChange={() => {}}
+                      disabled
                       aria-label="Cambiar tema"
                     />
                   </div>
