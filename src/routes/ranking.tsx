@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Menu, Home, Gamepad2, Wallet, User, Trophy, Crown } from "lucide-react";
+import { Menu, Home, Star, Wallet, User, Trophy, Crown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -265,7 +265,7 @@ function RankingPage() {
       >
         <div className="mx-auto flex max-w-md items-end justify-between px-4 pt-2 pb-2 sm:max-w-lg">
           <BottomItem icon={<Home className="h-5 w-5" />} label="INICIO" to="/home" />
-          <BottomItem icon={<Gamepad2 className="h-5 w-5" />} label="JUEGOS" />
+          <BottomItem icon={<Star className="h-5 w-5" />} label="EVENTOS" to="/eventos" />
           <BottomCenterActive />
           <BottomItem icon={<Wallet className="h-5 w-5" />} label="DEPÓSITO" to="/pay" />
           <BottomItem icon={<User className="h-5 w-5" />} label="PERFIL" to="/perfil" />
