@@ -287,7 +287,7 @@ function HomePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slide]);
 
-  const current = SLIDES[slide];
+  const current = slidesList[slide] ?? slidesList[0];
 
   return (
     <div className="min-h-screen bg-[#060210] text-white">
