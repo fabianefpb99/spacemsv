@@ -178,100 +178,33 @@ function GlitchText({ text, className }: { text: string; className?: string }) {
 }
 
 function useLobbyMusic() {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const rafRef = useRef<number | null>(null);
-  const restartRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   useEffect(() => {
     const TARGET_VOLUME = 0.026;
-    const FADE_MS = 1500;
+    const FADE_IN_MS = 1500;
     const GAP_MS = 2000;
 
-    const audio = new Audio(arenaLobbyAudio.url);
-    audio.preload = "auto";
-    audio.volume = 0;
-    audioRef.current = audio;
-
     let cancelled = false;
+    let current: ReturnType<typeof playSound> | null = null;
+    let restartTimer: ReturnType<typeof setTimeout> | null = null;
 
-    function fade(from: number, to: number, ms: number, onDone?: () => void) {
-      const start = performance.now();
-      function step(now: number) {
-        if (cancelled) return;
-        const t = Math.min(1, (now - start) / ms);
-        const v = from + (to - from) * t;
-        audio.volume = Math.max(0, Math.min(1, v));
-        if (t < 1) {
-          rafRef.current = requestAnimationFrame(step);
-        } else {
-          onDone?.();
-        }
-      }
-      rafRef.current = requestAnimationFrame(step);
-    }
-
-    async function startPlayback() {
+    const startPlayback = () => {
       if (cancelled) return;
-      try {
-        audio.currentTime = 0;
-        audio.volume = 0;
-        await audio.play();
-        fade(0, TARGET_VOLUME, FADE_MS);
-        const dur = (audio.duration || 0) * 1000;
-        const fadeOutAt = Math.max(0, dur - FADE_MS);
-        const tFadeOut = setTimeout(() => {
-          fade(audio.volume, 0, FADE_MS);
-        }, fadeOutAt);
-        restartRef.current = tFadeOut;
-      } catch {
-        // Autoplay blocked — retry on first user interaction
-        const retry = () => {
-          window.removeEventListener("pointerdown", retry);
-          startPlayback();
-        };
-        window.addEventListener("pointerdown", retry, { once: true });
-      }
-    }
-
-    const onEnded = () => {
-      if (cancelled) return;
-      restartRef.current = setTimeout(startPlayback, GAP_MS);
+      current = playSound(arenaLobbyAudio.url, {
+        volume: TARGET_VOLUME,
+        fadeInMs: FADE_IN_MS,
+        pauseOnHidden: true,
+        onEnded: () => {
+          if (cancelled) return;
+          restartTimer = setTimeout(startPlayback, GAP_MS);
+        },
+      });
     };
-    audio.addEventListener("ended", onEnded);
-
     startPlayback();
-
-    let wasPlayingBeforeHide = false;
-    const onVisibility = () => {
-      if (document.hidden) {
-        wasPlayingBeforeHide = !audio.paused;
-        audio.pause();
-      } else if (wasPlayingBeforeHide && !cancelled) {
-        void audio.play().catch(() => {});
-      }
-    };
-    document.addEventListener("visibilitychange", onVisibility);
 
     return () => {
       cancelled = true;
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      if (restartRef.current) clearTimeout(restartRef.current);
-      audio.removeEventListener("ended", onEnded);
-      document.removeEventListener("visibilitychange", onVisibility);
-      const startVol = audio.volume;
-      const t0 = performance.now();
-      const FADE_OUT_MS = 400;
-      const fadeOut = () => {
-        const t = Math.min(1, (performance.now() - t0) / FADE_OUT_MS);
-        audio.volume = Math.max(0, startVol * (1 - t));
-        if (t < 1) requestAnimationFrame(fadeOut);
-        else {
-          audio.pause();
-          audio.src = "";
-        }
-      };
-      requestAnimationFrame(fadeOut);
-      audioRef.current = null;
+      if (restartTimer) clearTimeout(restartTimer);
+      current?.stop(400);
     };
   }, []);
 }
