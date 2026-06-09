@@ -20,45 +20,15 @@ html.light body {
 }
 
 /* Page-level outer wrappers */
-html.light .bg-\[\#060210\] {
+html.light .bg-\[\#060210\]:not(header):not(nav) {
   background-color: #ffffff !important;
   color: #111111;
 }
-html.light .bg-\[\#060210\]\/95 {
-  background-color: rgb(255 255 255 / 0.95) !important;
-}
-html.light .bg-\[\#060210\]\/80 {
-  background-color: rgb(255 255 255 / 0.85) !important;
-}
 
-/* Borders that were tuned for dark mode → soften for light */
-html.light .border-purple-500\/20 {
-  border-color: rgb(168 85 247 / 0.25);
-}
-
-/* Inside the chrome wrappers, white text needs to flip to dark.
- * We scope it to direct text in headers / bottom navs and the page
- * wrapper, but NOT inside cards that retain a dark background. */
-html.light .bg-\[\#060210\] > .font-display,
-html.light header.bg-\[\#060210\] *,
-html.light nav.bg-\[\#060210\]\/95 * {
-  /* allow nested neon colors to win via their own utility class */
-}
-html.light header.bg-\[\#060210\] .text-white,
-html.light nav.bg-\[\#060210\]\/95 .text-white,
-html.light header.bg-\[\#060210\] .text-purple-100,
-html.light nav.bg-\[\#060210\]\/95 .text-purple-100 {
-  color: #111111 !important;
-}
-html.light header.bg-\[\#060210\] .text-purple-200\/70,
-html.light nav.bg-\[\#060210\]\/95 .text-purple-200\/70 {
-  color: rgb(75 85 99 / 0.85) !important;
-}
-
-/* Hamburger / back icons inside light header */
-html.light header.bg-\[\#060210\] button:hover {
-  background-color: rgb(0 0 0 / 0.06);
-}
+/* Light-mode text helpers for page content (NOT header/nav, which stay dark) */
+html.light .light-text-dark { color: #1a0b3a !important; }
+html.light .light-text-purple { color: rgb(126 34 206) !important; }
+html.light .light-text-muted { color: rgb(88 28 135 / 0.85) !important; }
 
 /* Hero slider — rotating neon glow sweep around the border */
 .slider-neon-frame {

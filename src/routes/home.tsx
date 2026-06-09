@@ -362,7 +362,7 @@ function HomePage() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
           </span>
-          <span className="text-xs font-semibold text-white/90">{online} ONLINE</span>
+          <span className="text-xs font-semibold text-white/90 light-text-muted">{online} ONLINE</span>
         </div>
 
         {/* Hero banner */}
@@ -445,10 +445,10 @@ function HomePage() {
         {/* Featured games */}
         <section className="mt-5">
           <div className="flex items-end justify-between">
-            <h3 className="font-display text-sm font-bold uppercase tracking-widest text-white">
+            <h3 className="font-display text-sm font-bold uppercase tracking-widest text-white light-text-dark">
               Juegos destacados
             </h3>
-            <button className="text-xs font-semibold text-purple-300 hover:text-purple-200">
+            <button className="text-xs font-semibold text-purple-300 hover:text-purple-200 light-text-purple">
               Ver todos
             </button>
           </div>

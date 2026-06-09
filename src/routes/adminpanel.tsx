@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   BarChart3,
@@ -66,6 +66,20 @@ function AdminPanelPage() {
   const navigate = useNavigate();
   const [section, setSection] = useState<AdminSection>("dashboard");
   const [navOpen, setNavOpen] = useState(false);
+
+  // Admin panel is always dark, regardless of user's theme preference.
+  useEffect(() => {
+    const root = document.documentElement;
+    const wasLight = root.classList.contains("light");
+    root.classList.remove("light");
+    root.classList.add("dark");
+    return () => {
+      if (wasLight) {
+        root.classList.add("light");
+        root.classList.remove("dark");
+      }
+    };
+  }, []);
 
   if (!loading && !user) {
     return (
