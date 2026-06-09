@@ -13,7 +13,7 @@ import {
   X,
   type LucideIcon,
 } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { useTheme } from "@/hooks/useTheme";
 import { useState } from "react";
@@ -47,8 +47,11 @@ export function HamburgerDrawer({ trigger }: { trigger: React.ReactNode }) {
       <SheetTrigger asChild>{trigger}</SheetTrigger>
       <SheetContent
         side="left"
-        className="w-[82vw] max-w-[320px] border-r border-purple-500/20 bg-[#0a0418] p-0 text-white [&>button]:hidden"
+        aria-describedby={undefined}
+        className="left-0 w-[82vw] max-w-[320px] border-r border-purple-500/20 bg-[#0a0418] p-0 text-white [&>button]:hidden"
       >
+        <SheetTitle className="sr-only">Menú principal</SheetTitle>
+        <SheetDescription className="sr-only">Navega por las secciones principales y cambia el tema del sitio.</SheetDescription>
         <div
           className="flex h-full flex-col"
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.5rem)" }}
