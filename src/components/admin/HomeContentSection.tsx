@@ -475,6 +475,7 @@ function FeaturedEditor() {
 
   const q = useQuery({ queryKey: ["admin-home-featured"], queryFn: () => listFn() });
   const [drafts, setDrafts] = useState<Record<string, FeaturedDraft>>({});
+  const [seeding, setSeeding] = useState(false);
 
   const items: FeaturedDraft[] = (q.data ?? []).map((r) => ({
     id: r.id,
@@ -559,16 +560,60 @@ function FeaturedEditor() {
 
   const newDrafts = Object.entries(drafts).filter(([k]) => k.startsWith("new-"));
 
+  async function seedDefaults() {
+    if (!confirm(`Esto cargará ${DEFAULT_FEATURED.length} juegos destacados actuales del Home en la base de datos para que puedas editarlos. ¿Continuar?`)) return;
+    setSeeding(true);
+    try {
+      for (let i = 0; i < DEFAULT_FEATURED.length; i++) {
+        const g = DEFAULT_FEATURED[i];
+        const name = filenameFromUrl(g.img, `featured-${i + 1}.jpg`);
+        const up = await urlToUploadInput(g.img, name);
+        const stored = await uploadFn({
+          data: { filename: up.name, content_type: up.type, data_base64: up.base64 },
+        });
+        await upFn({
+          data: {
+            position: i,
+            image_url: stored.path,
+            name: g.name,
+            tag: g.tag,
+            tag_color: g.tag_color,
+            link: g.to,
+            active: true,
+          },
+        });
+      }
+      qc.invalidateQueries({ queryKey: ["admin-home-featured"] });
+      toast.success("Juegos destacados cargados");
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setSeeding(false);
+    }
+  }
+
   return (
     <Panel
       title="Juegos Destacados"
       actions={
-        <button
-          onClick={addNew}
-          className="inline-flex items-center gap-1 rounded-md border border-fuchsia-500/40 bg-fuchsia-600/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-fuchsia-200 hover:bg-fuchsia-600/30"
-        >
-          <Plus className="h-3 w-3" /> Nuevo
-        </button>
+        <div className="flex items-center gap-2">
+          {(q.data?.length ?? 0) === 0 && (
+            <button
+              onClick={seedDefaults}
+              disabled={seeding}
+              className="inline-flex items-center gap-1 rounded-md border border-emerald-500/40 bg-emerald-600/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-200 hover:bg-emerald-600/25 disabled:opacity-50"
+            >
+              {seeding ? <Loader2 className="h-3 w-3 animate-spin" /> : <Download className="h-3 w-3" />}
+              Cargar actuales
+            </button>
+          )}
+          <button
+            onClick={addNew}
+            className="inline-flex items-center gap-1 rounded-md border border-fuchsia-500/40 bg-fuchsia-600/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-fuchsia-200 hover:bg-fuchsia-600/30"
+          >
+            <Plus className="h-3 w-3" /> Nuevo
+          </button>
+        </div>
       }
     >
       {q.isLoading ? (
@@ -613,9 +658,11 @@ function FeaturedEditor() {
             );
           })}
           {items.length === 0 && newDrafts.length === 0 && (
-            <p className="text-center text-xs text-purple-200/60">
-              No hay juegos destacados aún. Si la lista está vacía, el Home usa los juegos por defecto.
-            </p>
+            <div className="rounded-md border border-purple-500/20 bg-[#0c0620]/60 p-3 text-center text-xs text-purple-200/80">
+              No hay juegos destacados en la base de datos. El Home está usando los <span className="font-bold text-purple-100">{DEFAULT_FEATURED.length} juegos por defecto</span>.
+              <br />
+              Pulsa <span className="font-bold text-emerald-300">“Cargar actuales”</span> arriba para importarlos y poder editarlos o eliminarlos uno por uno.
+            </div>
           )}
         </div>
       )}
