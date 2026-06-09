@@ -17,6 +17,7 @@ import {
   Gift,
 } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
+import eventosHero from "@/assets/eventos-hero.jpg";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { NotificationBell } from "@/components/admin/NotificationBell";
 import { AuthDialog } from "@/components/auth/AuthDialog";
@@ -66,8 +67,8 @@ const MISSIONS: Mission[] = [
     goal: 10,
     reward: { kind: "bonus", value: 1000, label: "1.000 Bonus" },
     cta: { label: "Ir a Arena", to: "/arena" },
-    accent: "purple",
-    icon: <Swords className="h-6 w-6 text-purple-200" />,
+    accent: "emerald",
+    icon: <Swords className="h-6 w-6 text-emerald-200" />,
   },
   {
     id: "m2",
@@ -78,8 +79,8 @@ const MISSIONS: Mission[] = [
     goal: 10000,
     reward: { kind: "bonus", value: 500, label: "500 Bonus" },
     cta: { label: "Apostar", to: "/home" },
-    accent: "amber",
-    icon: <Coins className="h-6 w-6 text-amber-300" />,
+    accent: "emerald",
+    icon: <Coins className="h-6 w-6 text-emerald-200" />,
   },
   {
     id: "m3",
@@ -90,8 +91,8 @@ const MISSIONS: Mission[] = [
     goal: 10,
     reward: { kind: "spins", value: 5, label: "5 Free Spins" },
     cta: { label: "Jugar Slot", to: "/slot" },
-    accent: "rose",
-    icon: <Sparkles className="h-6 w-6 text-rose-200" />,
+    accent: "emerald",
+    icon: <Sparkles className="h-6 w-6 text-emerald-200" />,
   },
   {
     id: "m4",
@@ -102,8 +103,8 @@ const MISSIONS: Mission[] = [
     goal: 3,
     reward: { kind: "bonus", value: 2500, label: "2.500 Bonus" },
     cta: { label: "Ir a Arena", to: "/arena" },
-    accent: "rose",
-    icon: <Swords className="h-6 w-6 text-rose-200" />,
+    accent: "amber",
+    icon: <Swords className="h-6 w-6 text-amber-200" />,
   },
   {
     id: "m5",
@@ -114,8 +115,8 @@ const MISSIONS: Mission[] = [
     goal: 50000,
     reward: { kind: "bonus", value: 1500, label: "1.500 Bonus" },
     cta: { label: "Jugar", to: "/home" },
-    accent: "emerald",
-    icon: <Coins className="h-6 w-6 text-emerald-200" />,
+    accent: "amber",
+    icon: <Coins className="h-6 w-6 text-amber-200" />,
   },
   {
     id: "m6",
@@ -126,8 +127,8 @@ const MISSIONS: Mission[] = [
     goal: 1,
     reward: { kind: "bonus", value: 3000, label: "3.000 Bonus" },
     cta: { label: "Invitar", to: "/perfil" },
-    accent: "blue",
-    icon: <Users className="h-6 w-6 text-sky-200" />,
+    accent: "amber",
+    icon: <Users className="h-6 w-6 text-amber-200" />,
   },
   {
     id: "m7",
@@ -145,9 +146,9 @@ const MISSIONS: Mission[] = [
 
 const TABS: { id: "all" | MissionType; label: string; icon: React.ReactNode }[] = [
   { id: "all", label: "TODOS", icon: <LayoutGrid className="h-4 w-4" /> },
-  { id: "daily", label: "DIARIOS", icon: <Calendar className="h-4 w-4" /> },
-  { id: "weekly", label: "SEMANALES", icon: <CalendarDays className="h-4 w-4" /> },
   { id: "special", label: "ESPECIALES", icon: <Sparkles className="h-4 w-4" /> },
+  { id: "weekly", label: "SEMANALES", icon: <CalendarDays className="h-4 w-4" /> },
+  { id: "daily", label: "DIARIOS", icon: <Calendar className="h-4 w-4" /> },
 ];
 
 function useDailyCountdown() {
@@ -250,7 +251,8 @@ function EventosPage() {
   }, [tab]);
 
   const daily = filtered.filter((m) => m.type === "daily");
-  const others = filtered.filter((m) => m.type !== "daily");
+  const weekly = filtered.filter((m) => m.type === "weekly");
+  const special = filtered.filter((m) => m.type === "special");
 
   return (
     <div className="min-h-screen bg-[#060210] text-white">
@@ -307,27 +309,22 @@ function EventosPage() {
         <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
 
         {/* Hero */}
-        <section className="relative mt-4 overflow-hidden rounded-2xl border border-purple-500/40 bg-gradient-to-br from-[#1a0b3a] via-[#0c0620] to-[#060210] shadow-[0_0_18px_rgba(168,85,247,0.3)]">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-fuchsia-600/20 blur-3xl"
+        <section className="relative mt-4 overflow-hidden rounded-2xl border border-amber-400/40 shadow-[0_0_22px_rgba(251,191,36,0.25)]">
+          <img
+            src={eventosHero}
+            alt="Eventos BetSpaceman"
+            width={1280}
+            height={640}
+            className="block h-auto w-full"
           />
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute -left-12 bottom-0 h-40 w-40 rounded-full bg-purple-600/20 blur-3xl"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-[#060210] via-[#060210]/60 to-transparent"
           />
-          <div className="relative flex items-center gap-3 px-4 py-5 sm:px-5">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-purple-400/40 bg-purple-500/15 shadow-[0_0_18px_rgba(168,85,247,0.35)]">
-              <Star className="h-7 w-7 fill-amber-300 text-amber-300 drop-shadow-[0_0_10px_rgba(251,191,36,0.9)]" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <h1 className="font-display text-2xl font-black tracking-widest text-white drop-shadow sm:text-3xl">
-                EVENTOS
-              </h1>
-              <p className="text-[11px] text-purple-100/80 sm:text-xs">
-                Completa desafíos y gana recompensas
-              </p>
-            </div>
+          <div className="absolute inset-x-0 bottom-0 px-4 pb-3 sm:px-5 sm:pb-4">
+            <p className="font-display text-[11px] font-bold uppercase tracking-[0.2em] text-amber-200 drop-shadow sm:text-xs">
+              Completa desafíos y gana recompensas
+            </p>
           </div>
         </section>
 
@@ -352,48 +349,9 @@ function EventosPage() {
           })}
         </div>
 
-        {/* Desafíos diarios */}
-        {(tab === "all" || tab === "daily") && (
-          <section className="mt-5">
-            <div className="flex items-center justify-between">
-              <h3 className="font-display text-[11px] font-bold uppercase tracking-widest text-purple-100">
-                Desafíos diarios
-              </h3>
-              <div className="text-[10px] text-purple-300/80">
-                Actualiza en <span className="font-mono font-bold text-purple-200">{dailyTimer}</span>
-              </div>
-            </div>
-            <div className="mt-2 flex flex-col gap-2.5">
-              {daily.length === 0 ? (
-                <EmptyState />
-              ) : (
-                daily.map((m) => <MissionCard key={m.id} mission={m} />)
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* Otras misiones (semanales / especiales / todas no-diarias) */}
-        {(tab !== "daily") && others.length > 0 && (
-          <section className="mt-5">
-            <h3 className="font-display text-[11px] font-bold uppercase tracking-widest text-purple-100">
-              {tab === "weekly"
-                ? "Misiones semanales"
-                : tab === "special"
-                ? "Misiones especiales"
-                : "Misiones destacadas"}
-            </h3>
-            <div className="mt-2 flex flex-col gap-2.5">
-              {others.map((m) => (
-                <MissionCard key={m.id} mission={m} />
-              ))}
-            </div>
-          </section>
-        )}
-
         {/* Evento especial fin de semana */}
         {(tab === "all" || tab === "special") && (
-          <section className="mt-6">
+          <section className="mt-5">
             <div className="relative overflow-hidden rounded-2xl border border-amber-400/40 bg-gradient-to-br from-fuchsia-700/40 via-purple-800/40 to-amber-600/30 p-4 shadow-[0_0_22px_rgba(217,70,239,0.35)]">
               <div
                 aria-hidden="true"
@@ -430,6 +388,51 @@ function EventosPage() {
                 <span className="text-[10px] uppercase tracking-wider text-purple-200/80">Termina en</span>
                 <span className="font-mono text-xs font-bold text-white">{weekendTimer}</span>
               </div>
+            </div>
+          </section>
+        )}
+
+        {/* Misiones especiales */}
+        {(tab === "all" || tab === "special") && special.length > 0 && (
+          <section className="mt-5">
+            <h3 className="font-display text-[11px] font-bold uppercase tracking-widest text-amber-200">
+              Misiones especiales
+            </h3>
+            <div className="mt-2 flex flex-col gap-2.5">
+              {special.map((m) => <MissionCard key={m.id} mission={m} />)}
+            </div>
+          </section>
+        )}
+
+        {/* Misiones semanales */}
+        {(tab === "all" || tab === "weekly") && weekly.length > 0 && (
+          <section className="mt-5">
+            <h3 className="font-display text-[11px] font-bold uppercase tracking-widest text-amber-200">
+              Misiones semanales
+            </h3>
+            <div className="mt-2 flex flex-col gap-2.5">
+              {weekly.map((m) => <MissionCard key={m.id} mission={m} />)}
+            </div>
+          </section>
+        )}
+
+        {/* Desafíos diarios */}
+        {(tab === "all" || tab === "daily") && (
+          <section className="mt-5">
+            <div className="flex items-center justify-between">
+              <h3 className="font-display text-[11px] font-bold uppercase tracking-widest text-emerald-200">
+                Desafíos diarios
+              </h3>
+              <div className="text-[10px] text-emerald-300/80">
+                Actualiza en <span className="font-mono font-bold text-emerald-200">{dailyTimer}</span>
+              </div>
+            </div>
+            <div className="mt-2 flex flex-col gap-2.5">
+              {daily.length === 0 ? (
+                <EmptyState />
+              ) : (
+                daily.map((m) => <MissionCard key={m.id} mission={m} />)
+              )}
             </div>
           </section>
         )}
