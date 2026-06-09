@@ -27,6 +27,7 @@ import arenaFightAudio from "@/assets/audio/arena/arena-fight.mp3.asset.json";
 import fightStartAudio from "@/assets/audio/arena/fight-start.mp3.asset.json";
 import hit1Audio from "@/assets/audio/arena/hit-1.mp3.asset.json";
 import hit2Audio from "@/assets/audio/arena/hit-2.mp3.asset.json";
+import { preloadSound } from "@/lib/webAudioPlayer";
 import hit3Audio from "@/assets/audio/arena/hit-3.mp3.asset.json";
 import hit4Audio from "@/assets/audio/arena/hit-4.mp3.asset.json";
 import hit5Audio from "@/assets/audio/arena/hit-5.mp3.asset.json";
@@ -119,18 +120,9 @@ export function ArenaGame() {
       i.src = src;
       return i;
     });
-    const auds = audioUrls.map((src) => {
-      const a = new Audio();
-      a.preload = "auto";
-      a.src = src;
-      return a;
-    });
+    audioUrls.forEach((u) => preloadSound(u));
     return () => {
       imgs.length = 0;
-      auds.forEach((a) => {
-        a.pause();
-        a.src = "";
-      });
     };
   }, []);
 

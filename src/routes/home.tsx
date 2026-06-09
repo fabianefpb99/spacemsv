@@ -6,6 +6,7 @@ import { PromoPopup } from "@/components/PromoPopup";
 import { BrandLoader } from "@/components/BrandLoader";
 import { SkeletonImage } from "@/components/SkeletonImage";
 import { stopAllGameAudio } from "@/lib/gameAudio";
+import { playSound } from "@/lib/webAudioPlayer";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { useMe } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
@@ -157,136 +158,38 @@ function HomePage() {
     plays = plays.filter((t) => now - t < ONE_HOUR);
     if (plays.length >= MAX_PER_HOUR) return;
 
-    const audio = new Audio(casinoIntro.url);
     const TARGET_VOLUME = 0.15;
-    audio.volume = TARGET_VOLUME;
-    audio.preload = "auto";
-    let stopTimer: ReturnType<typeof setTimeout> | null = null;
-    let consumed = false;
-    let disposed = false;
-    let activeFade: ReturnType<typeof setInterval> | null = null;
-    let pausedByVisibility = false;
+    const STOP_AT_MS = 12300;
+    const JS_FADE_MS = 6000; // 5s nativo del archivo + 1s adelantado por JS
+    const FADE_START_MS = STOP_AT_MS - JS_FADE_MS;
 
-    const fadeTo = (target: number, durationMs: number, onDone?: () => void) => {
-      if (activeFade) { clearInterval(activeFade); activeFade = null; }
-      const steps = 24;
-      const stepMs = Math.max(16, durationMs / steps);
-      const start = audio.volume;
-      let i = 0;
-      activeFade = setInterval(() => {
-        i += 1;
-        const v = Math.max(0, Math.min(1, start + (target - start) * (i / steps)));
-        try { audio.volume = v; } catch { /* ignore */ }
-        if (i >= steps) {
-          if (activeFade) { clearInterval(activeFade); activeFade = null; }
-          onDone?.();
-        }
-      }, stepMs);
-    };
+    // Web Audio: respeta volumen en iOS (HTMLAudio lo ignora).
+    const handle = playSound(casinoIntro.url, {
+      volume: TARGET_VOLUME,
+      pauseOnHidden: true,
+    });
 
-    const markConsumed = () => {
-      if (consumed) return;
-      consumed = true;
-      const ts = Date.now();
-      try {
-        const stored = JSON.parse(localStorage.getItem(KEY) || "[]");
-        const arr = Array.isArray(stored) ? stored : [];
-        arr.push(ts);
-        localStorage.setItem(KEY, JSON.stringify(arr));
-      } catch { /* ignore */ }
-      // El archivo trae fade-out nativo de 5s. Adelantamos el desvanecimiento
-      // 1s aplicando una rampa de volumen JS que empieza 1s antes del fade nativo.
-      const STOP_AT_MS = 12300;
-      const JS_FADE_MS = 6000; // 5s nativo + 1s adelantado
-      const FADE_START_MS = STOP_AT_MS - JS_FADE_MS;
-      const fadeStart = setTimeout(() => {
-        fadeTo(0, JS_FADE_MS);
-      }, Math.max(0, FADE_START_MS));
-      stopTimer = setTimeout(() => {
-        clearTimeout(fadeStart);
-        try { audio.pause(); audio.src = ""; } catch { /* ignore */ }
-      }, STOP_AT_MS);
-    };
+    // Marcamos consumo en cuanto disparamos: si el usuario cierra la pestaña
+    // igual cuenta como una reproducción dentro de la hora.
+    try {
+      const stored = JSON.parse(localStorage.getItem(KEY) || "[]");
+      const arr = Array.isArray(stored) ? stored : [];
+      arr.push(Date.now());
+      localStorage.setItem(KEY, JSON.stringify(arr));
+    } catch { /* ignore */ }
 
-    const tryPlay = () => {
-      if (disposed || consumed) return;
-      const p = audio.play();
-      if (p && typeof p.then === "function") {
-        p.then(markConsumed).catch(() => { /* esperar gesto */ });
-      } else {
-        markConsumed();
-      }
-    };
-
-    tryPlay();
-
-    const onGesture = () => { tryPlay(); };
-    const events: Array<keyof WindowEventMap> = ["pointerdown", "touchstart", "click", "keydown"];
-    events.forEach((ev) => window.addEventListener(ev, onGesture, { once: false, passive: true } as AddEventListenerOptions));
-
-    const pauseForBackground = () => {
-      if (disposed) return;
-      if (!audio.paused) {
-        pausedByVisibility = true;
-        fadeTo(0, 250, () => { try { audio.pause(); } catch { /* ignore */ } });
-      }
-    };
-    const resumeFromBackground = () => {
-      if (disposed || !pausedByVisibility) return;
-      pausedByVisibility = false;
-      try {
-        audio.volume = 0;
-        const p = audio.play();
-        const ramp = () => fadeTo(TARGET_VOLUME, 500);
-        if (p && typeof p.then === "function") p.then(ramp).catch(() => { /* ignore */ });
-        else ramp();
-      } catch { /* ignore */ }
-    };
-    const onVisibility = () => {
-      if (document.hidden) pauseForBackground();
-      else resumeFromBackground();
-    };
-    // En Android/PWA `visibilitychange` no siempre dispara al minimizar.
-    // Combinamos con `pagehide`, `blur` y `freeze` para cubrir todos los
-    // casos: minimizar app, cambiar de app, bloqueo de pantalla, BFCache.
-    const onPageHide = () => pauseForBackground();
-    const onPageShow = () => { if (!document.hidden) resumeFromBackground(); };
-    const onBlur = () => pauseForBackground();
-    const onFocus = () => { if (!document.hidden) resumeFromBackground(); };
-    document.addEventListener("visibilitychange", onVisibility);
-    window.addEventListener("pagehide", onPageHide);
-    window.addEventListener("pageshow", onPageShow);
-    window.addEventListener("blur", onBlur);
-    window.addEventListener("focus", onFocus);
+    const tFade = setTimeout(() => {
+      handle.setVolume(0, JS_FADE_MS);
+    }, Math.max(0, FADE_START_MS));
+    const tStop = setTimeout(() => {
+      handle.stop();
+    }, STOP_AT_MS);
 
     return () => {
-      disposed = true;
-      if (stopTimer) clearTimeout(stopTimer);
-      if (activeFade) { clearInterval(activeFade); activeFade = null; }
-      events.forEach((ev) => window.removeEventListener(ev, onGesture));
-      document.removeEventListener("visibilitychange", onVisibility);
-      window.removeEventListener("pagehide", onPageHide);
-      window.removeEventListener("pageshow", onPageShow);
-      window.removeEventListener("blur", onBlur);
-      window.removeEventListener("focus", onFocus);
+      clearTimeout(tFade);
+      clearTimeout(tStop);
       // Fade-out suave al desmontar para evitar cortes abruptos.
-      if (!audio.paused) {
-        const fadeAudio = audio;
-        const steps = 18;
-        const dur = 450;
-        const startV = fadeAudio.volume;
-        let i = 0;
-        const iv = setInterval(() => {
-          i += 1;
-          try { fadeAudio.volume = Math.max(0, startV * (1 - i / steps)); } catch { /* ignore */ }
-          if (i >= steps) {
-            clearInterval(iv);
-            try { fadeAudio.pause(); fadeAudio.src = ""; } catch { /* ignore */ }
-          }
-        }, dur / steps);
-      } else {
-        try { audio.src = ""; } catch { /* ignore */ }
-      }
+      handle.stop(450);
     };
   }, []);
 

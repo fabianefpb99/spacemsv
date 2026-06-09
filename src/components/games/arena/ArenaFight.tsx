@@ -15,41 +15,35 @@ import hit4Audio from "@/assets/audio/arena/hit-4.mp3.asset.json";
 import hit5Audio from "@/assets/audio/arena/hit-5.mp3.asset.json";
 import hitFinalAudio from "@/assets/audio/arena/hit-final.mp3.asset.json";
 import fightStartAudio from "@/assets/audio/arena/fight-start.mp3.asset.json";
+import { playSound, preloadSound } from "@/lib/webAudioPlayer";
 
 function useFightStartSfx() {
   useEffect(() => {
-    const a = new Audio(fightStartAudio.url);
-    a.preload = "auto";
-    a.volume = 0.35;
-    const play = () => {
-      try {
-        a.currentTime = 0;
-        void a.play();
-      } catch {
-        // ignore
-      }
-    };
-    play();
+    const handle = playSound(fightStartAudio.url, { volume: 0.35 });
     return () => {
-      a.pause();
+      handle.stop();
     };
   }, []);
 }
 
 function useHitSfx() {
-  // Pool de Audio elements pre-cargados (3 instancias por sonido).
-  // Reproducir desde una instancia ya cargada => latencia ~0 (sincronizado
-  // con el sprite de golpe). Rotar entre 3 copias evita el problema de
-  // re-disparar el mismo elemento mientras play() está pendiente.
-  const poolsRef = useRef<{ hits: HTMLAudioElement[][]; final: HTMLAudioElement[] }>({
-    hits: [],
-    final: [],
-  });
+  // Con Web Audio API cada disparo crea un BufferSource nuevo a partir del
+  // AudioBuffer cacheado. No hay conflicto entre reproducciones simultáneas
+  // y la latencia es mínima (el buffer ya está decodificado).
   const rotationRef = useRef(0);
-  const poolIdxRef = useRef<Record<number, number>>({});
-  const finalIdxRef = useRef(0);
 
   useEffect(() => {
+    [
+      hit1Audio.url,
+      hit2Audio.url,
+      hit3Audio.url,
+      hit4Audio.url,
+      hit5Audio.url,
+      hitFinalAudio.url,
+    ].forEach((u) => preloadSound(u));
+  }, []);
+
+  return useMemo(() => {
     const hitUrls = [
       hit1Audio.url,
       hit2Audio.url,
@@ -57,140 +51,30 @@ function useHitSfx() {
       hit4Audio.url,
       hit5Audio.url,
     ];
-    const COPIES = 2;
-    poolsRef.current.hits = hitUrls.map((u) => {
-      const arr: HTMLAudioElement[] = [];
-      for (let i = 0; i < COPIES; i++) {
-        const a = new Audio(u);
-        a.preload = "auto";
-        a.volume = 0.55;
-        a.load();
-        arr.push(a);
-      }
-      return arr;
-    });
-    poolsRef.current.final = [];
-    for (let i = 0; i < COPIES; i++) {
-      const a = new Audio(hitFinalAudio.url);
-      a.preload = "auto";
-      a.volume = 0.75;
-      a.load();
-      poolsRef.current.final.push(a);
-    }
-    return () => {
-      poolsRef.current.hits.flat().concat(poolsRef.current.final).forEach((a) => {
-        try {
-          a.pause();
-          a.src = "";
-        } catch {
-          // ignore
+    return {
+      playHit(isFinal: boolean) {
+        if (isFinal) {
+          playSound(hitFinalAudio.url, { volume: 0.75 });
+          return;
         }
-      });
-      poolsRef.current.hits = [];
-      poolsRef.current.final = [];
+        const idx = rotationRef.current % hitUrls.length;
+        rotationRef.current++;
+        playSound(hitUrls[idx], { volume: 0.55 });
+      },
     };
   }, []);
-
-  return useMemo(
-    () => ({
-      playHit(isFinal: boolean) {
-        let a: HTMLAudioElement | undefined;
-        if (isFinal) {
-          const pool = poolsRef.current.final;
-          if (!pool.length) return;
-          a = pool[finalIdxRef.current % pool.length];
-          finalIdxRef.current++;
-        } else {
-          const pools = poolsRef.current.hits;
-          if (!pools.length) return;
-          const soundIdx = rotationRef.current % pools.length;
-          rotationRef.current++;
-          const pool = pools[soundIdx];
-          const next = (poolIdxRef.current[soundIdx] ?? 0) % pool.length;
-          poolIdxRef.current[soundIdx] = next + 1;
-          a = pool[next];
-        }
-        if (!a) return;
-        try {
-          a.pause();
-          a.currentTime = 0;
-        } catch {
-          // ignore
-        }
-        const p = a.play();
-        if (p && typeof p.catch === "function") p.catch(() => {});
-      },
-    }),
-    [],
-  );
 }
 
 function useFightMusic() {
   useEffect(() => {
-    const TARGET_VOLUME = 0.022;
-    const FADE_IN_MS = 500;
-    const FADE_OUT_MS = 1200;
-    const audio = new Audio(arenaFightAudio.url);
-    audio.preload = "auto";
-    audio.loop = true;
-    audio.volume = 0;
-
-    let cancelled = false;
-    let raf: number | null = null;
-
-    function fade(from: number, to: number, ms: number, onDone?: () => void) {
-      const start = performance.now();
-      function step(now: number) {
-        if (cancelled) return;
-        const t = Math.min(1, (now - start) / ms);
-        audio.volume = Math.max(0, Math.min(1, from + (to - from) * t));
-        if (t < 1) raf = requestAnimationFrame(step);
-        else onDone?.();
-      }
-      raf = requestAnimationFrame(step);
-    }
-
-    async function start() {
-      try {
-        await audio.play();
-        fade(0, TARGET_VOLUME, FADE_IN_MS);
-      } catch {
-        const retry = () => {
-          window.removeEventListener("pointerdown", retry);
-          start();
-        };
-        window.addEventListener("pointerdown", retry, { once: true });
-      }
-    }
-    start();
-
-    let wasPlayingBeforeHide = false;
-    const onVisibility = () => {
-      if (document.hidden) {
-        wasPlayingBeforeHide = !audio.paused;
-        audio.pause();
-      } else if (wasPlayingBeforeHide) {
-        void audio.play().catch(() => {});
-      }
-    };
-    document.addEventListener("visibilitychange", onVisibility);
-
+    const handle = playSound(arenaFightAudio.url, {
+      volume: 0.022,
+      loop: true,
+      fadeInMs: 500,
+      pauseOnHidden: true,
+    });
     return () => {
-      cancelled = true;
-      if (raf) cancelAnimationFrame(raf);
-      document.removeEventListener("visibilitychange", onVisibility);
-      const startVol = audio.volume;
-      const t0 = performance.now();
-      const fadeOut = () => {
-        const t = Math.min(1, (performance.now() - t0) / FADE_OUT_MS);
-        audio.volume = Math.max(0, startVol * (1 - t));
-        if (t < 1) requestAnimationFrame(fadeOut);
-        else {
-          audio.pause();
-          audio.src = "";
-        }
-      };
-      requestAnimationFrame(fadeOut);
+      handle.stop(1200);
     };
   }, []);
 }

@@ -508,17 +508,15 @@ let revealStreak = 0;
 export function playDiceRollSound(_durationMs = 2000) {
   if (muted) return;
   if (typeof window === "undefined") return;
-  try {
-    const audio = new Audio("/sounds/dice-roll.mp3");
-    audio.volume = 0.9;
-    // Animation lasts ~2100ms but trimmed audio is ~1840ms.
-    // Delay so the dice "impact" lands near the end of the animation.
-    window.setTimeout(() => {
-      void audio.play().catch(() => {});
-    }, 260);
-  } catch {
-    /* ignore */
-  }
+  // Animation lasts ~2100ms but trimmed audio is ~1840ms.
+  // Delay so the dice "impact" lands near the end of the animation.
+  window.setTimeout(() => {
+    // Lazy import para evitar ciclo de dependencias (webAudioPlayer importa
+    // getCtx desde este mismo archivo).
+    import("./webAudioPlayer").then(({ playSound }) => {
+      playSound("/sounds/dice-roll.mp3", { volume: 0.9 });
+    }).catch(() => { /* ignore */ });
+  }, 260);
 }
 
 export function resetRevealStreak() {
