@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
 import { AuthDialog } from "./AuthDialog";
-import { getAvatarUrl } from "@/lib/avatars";
+import { UserAvatar } from "@/components/UserAvatar";
 import { useVip } from "@/hooks/useVip";
 import { computeProgress } from "@/lib/vip/vip.shared";
 import { RANK_ART } from "@/lib/vip/vip-art";
