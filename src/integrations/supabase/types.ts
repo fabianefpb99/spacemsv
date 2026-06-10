@@ -578,6 +578,8 @@ export type Database = {
           icon_key: string
           id: string
           is_active: boolean
+          metric: string
+          min_amount: number
           reward_image_url: string | null
           reward_kind: string
           reward_label: string
@@ -585,6 +587,8 @@ export type Database = {
           sort_order: number
           subtitle: string | null
           title: string
+          trigger_event: string
+          trigger_game: string | null
           type: string
           updated_at: string
         }
@@ -597,6 +601,8 @@ export type Database = {
           icon_key?: string
           id?: string
           is_active?: boolean
+          metric?: string
+          min_amount?: number
           reward_image_url?: string | null
           reward_kind: string
           reward_label?: string
@@ -604,6 +610,8 @@ export type Database = {
           sort_order?: number
           subtitle?: string | null
           title: string
+          trigger_event?: string
+          trigger_game?: string | null
           type: string
           updated_at?: string
         }
@@ -616,6 +624,8 @@ export type Database = {
           icon_key?: string
           id?: string
           is_active?: boolean
+          metric?: string
+          min_amount?: number
           reward_image_url?: string | null
           reward_kind?: string
           reward_label?: string
@@ -623,6 +633,8 @@ export type Database = {
           sort_order?: number
           subtitle?: string | null
           title?: string
+          trigger_event?: string
+          trigger_game?: string | null
           type?: string
           updated_at?: string
         }
@@ -784,26 +796,105 @@ export type Database = {
         }
         Relationships: []
       }
+      user_avatar_unlocks: {
+        Row: {
+          image_url: string | null
+          label: string | null
+          mission_id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          image_url?: string | null
+          label?: string | null
+          mission_id: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          image_url?: string | null
+          label?: string | null
+          mission_id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_avatar_unlocks_mission_id_fkey"
+            columns: ["mission_id"]
+            isOneToOne: false
+            referencedRelation: "missions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_balances: {
         Row: {
           balance: number
           bonus_balance: number
+          free_spins: number
           updated_at: string
           user_id: string
         }
         Insert: {
           balance?: number
           bonus_balance?: number
+          free_spins?: number
           updated_at?: string
           user_id: string
         }
         Update: {
           balance?: number
           bonus_balance?: number
+          free_spins?: number
           updated_at?: string
           user_id?: string
         }
         Relationships: []
+      }
+      user_missions: {
+        Row: {
+          claimed_at: string | null
+          completed_at: string | null
+          created_at: string
+          id: string
+          mission_id: string
+          period_start: string
+          progress: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          claimed_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          mission_id: string
+          period_start: string
+          progress?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          claimed_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          mission_id?: string
+          period_start?: string
+          progress?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_missions_mission_id_fkey"
+            columns: ["mission_id"]
+            isOneToOne: false
+            referencedRelation: "missions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -1088,6 +1179,15 @@ export type Database = {
       }
     }
     Functions: {
+      _award_mission_progress: {
+        Args: {
+          p_amount: number
+          p_event: string
+          p_game: string
+          p_user_id: string
+        }
+        Returns: undefined
+      }
       _credit_win: {
         Args: { p_amount: number; p_user_id: string }
         Returns: {
@@ -1105,6 +1205,7 @@ export type Database = {
         }[]
       }
       _gen_deposit_reference: { Args: never; Returns: string }
+      _mission_period_start: { Args: { p_type: string }; Returns: string }
       _spaceman_gen_crash: { Args: { p_server_seed: string }; Returns: number }
       adjust_balance: {
         Args: {

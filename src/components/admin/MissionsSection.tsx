@@ -10,6 +10,31 @@ import { useAuth } from "@/hooks/useAuth";
 type MissionType = "daily" | "weekly" | "special";
 type RewardKind = "bonus" | "spins" | "xp" | "avatar";
 type Accent = "purple" | "emerald" | "amber" | "rose" | "blue";
+type TriggerEvent = "bet_placed" | "bet_won" | "deposit_made" | "manual";
+type Metric = "count" | "sum_amount";
+
+const TRIGGER_LABELS: Record<TriggerEvent, string> = {
+  bet_placed: "Cada apuesta realizada",
+  bet_won: "Cada apuesta ganada",
+  deposit_made: "Cada depósito aprobado",
+  manual: "Manual (no se otorga sola)",
+};
+
+const METRIC_LABELS: Record<Metric, string> = {
+  count: "Contar eventos (cantidad)",
+  sum_amount: "Sumar montos (COP)",
+};
+
+const GAME_OPTIONS: { value: string; label: string }[] = [
+  { value: "", label: "Cualquier juego" },
+  { value: "arena", label: "Arena" },
+  { value: "slot", label: "Slot Mafia" },
+  { value: "spaceman", label: "Spaceman" },
+  { value: "dice", label: "Dados" },
+  { value: "mines", label: "Mines" },
+  { value: "ruleta", label: "Ruleta" },
+  { value: "blackjack", label: "Blackjack" },
+];
 
 type Mission = {
   id: string;
@@ -27,6 +52,10 @@ type Mission = {
   cta_to: string;
   sort_order: number;
   is_active: boolean;
+  trigger_event: TriggerEvent;
+  trigger_game: string | null;
+  metric: Metric;
+  min_amount: number;
 };
 
 const TYPE_LABELS: Record<MissionType, string> = {
@@ -65,6 +94,10 @@ const EMPTY: Omit<Mission, "id"> = {
   cta_to: "/home",
   sort_order: 0,
   is_active: true,
+  trigger_event: "bet_placed",
+  trigger_game: null,
+  metric: "count",
+  min_amount: 0,
 };
 
 export function MissionsSection() {
@@ -296,6 +329,10 @@ function MissionEditor({
       cta_to: m.cta_to?.trim() || "/home",
       sort_order: Number(m.sort_order) || 0,
       is_active: m.is_active ?? true,
+      trigger_event: (m.trigger_event ?? "bet_placed") as TriggerEvent,
+      trigger_game: m.trigger_game?.toString().trim() || null,
+      metric: (m.metric ?? "count") as Metric,
+      min_amount: Math.max(0, Number(m.min_amount) || 0),
     };
     const res = m.id
       ? await supabase.from("missions").update(payload).eq("id", m.id)
@@ -508,6 +545,70 @@ function MissionEditor({
               Activa (visible en /eventos)
             </label>
           </Field>
+
+          <div className="sm:col-span-2 mt-2 rounded-lg border border-fuchsia-500/30 bg-fuchsia-500/5 p-3">
+            <div className="mb-2 text-[11px] font-bold uppercase tracking-widest text-fuchsia-200">
+              Lógica automática (cómo avanza la misión)
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <Field label="Evento que cuenta">
+                <select
+                  className={inputCls}
+                  value={m.trigger_event ?? "bet_placed"}
+                  onChange={(e) => set("trigger_event", e.target.value as TriggerEvent)}
+                >
+                  {(Object.keys(TRIGGER_LABELS) as TriggerEvent[]).map((k) => (
+                    <option key={k} value={k}>{TRIGGER_LABELS[k]}</option>
+                  ))}
+                </select>
+              </Field>
+
+              <Field label="Juego (filtro)">
+                <select
+                  className={inputCls}
+                  value={m.trigger_game ?? ""}
+                  onChange={(e) => set("trigger_game", e.target.value || null)}
+                  disabled={(m.trigger_event ?? "bet_placed") === "deposit_made" || (m.trigger_event ?? "bet_placed") === "manual"}
+                >
+                  {GAME_OPTIONS.map((g) => (
+                    <option key={g.value} value={g.value}>{g.label}</option>
+                  ))}
+                </select>
+              </Field>
+
+              <Field label="Qué se suma a la meta">
+                <select
+                  className={inputCls}
+                  value={m.metric ?? "count"}
+                  onChange={(e) => set("metric", e.target.value as Metric)}
+                  disabled={(m.trigger_event ?? "bet_placed") === "manual"}
+                >
+                  {(Object.keys(METRIC_LABELS) as Metric[]).map((k) => (
+                    <option key={k} value={k}>{METRIC_LABELS[k]}</option>
+                  ))}
+                </select>
+              </Field>
+
+              <Field label="Monto mínimo por evento (COP)">
+                <input
+                  className={inputCls}
+                  type="number"
+                  min={0}
+                  value={Number(m.min_amount ?? 0)}
+                  onChange={(e) => set("min_amount", Number(e.target.value))}
+                  disabled={(m.trigger_event ?? "bet_placed") === "manual"}
+                />
+              </Field>
+            </div>
+            <p className="mt-2 text-[10px] leading-relaxed text-purple-200/70">
+              Ejemplos:<br />
+              • <b>Haz tu primera apuesta en Arena</b> → evento "Cada apuesta realizada", juego "Arena", contar eventos, meta 1.<br />
+              • <b>Apuesta de $10.000 o más</b> → evento "Cada apuesta realizada", monto mínimo 10000, contar eventos, meta 1.<br />
+              • <b>Acumula $50.000 apostados</b> → evento "Cada apuesta realizada", sumar montos, meta 50000.<br />
+              • <b>Gana 10 veces en Arena</b> → evento "Cada apuesta ganada", juego "Arena", contar eventos, meta 10.<br />
+              • <b>Manual</b>: la misión se mostrará pero no avanzará automáticamente.
+            </p>
+          </div>
         </div>
 
         <div className="mt-4 flex items-center justify-end gap-2">

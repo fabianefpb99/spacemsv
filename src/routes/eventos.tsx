@@ -50,6 +50,41 @@ function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
 }
 
+function periodStartFor(type: string): number {
+  // Igual que la función SQL `_mission_period_start`, en hora Colombia (UTC-5, sin DST).
+  const TZ_OFFSET_MS = 5 * 60 * 60 * 1000;
+  const nowLocal = new Date(Date.now() - TZ_OFFSET_MS);
+  const d = new Date(nowLocal);
+  if (type === "daily") {
+    d.setUTCHours(0, 0, 0, 0);
+  } else if (type === "weekly") {
+    // date_trunc('week', ...) → lunes 00:00
+    const day = d.getUTCDay(); // 0=dom..6=sáb
+    const diff = (day + 6) % 7; // días desde lunes
+    d.setUTCDate(d.getUTCDate() - diff);
+    d.setUTCHours(0, 0, 0, 0);
+  } else {
+    return 0; // 'epoch'
+  }
+  return d.getTime() + TZ_OFFSET_MS;
+}
+
+type UserMissionRow = {
+  mission_id: string;
+  period_start: string;
+  progress: number | string;
+  completed_at: string | null;
+};
+
+function progressForMission(m: any, rows: UserMissionRow[]): number {
+  const target = periodStartFor(m.type);
+  const found = rows.find(
+    (r) => r.mission_id === m.id && Math.abs(new Date(r.period_start).getTime() - target) < 5_000,
+  );
+  if (!found) return 0;
+  return Math.min(Number(m.goal) || 1, Number(found.progress) || 0);
+}
+
 type RewardKind = "bonus" | "spins" | "avatar";
 type MissionType = "daily" | "weekly" | "special";
 
@@ -285,6 +320,40 @@ function EventosPage() {
     },
   });
 
+  // Progreso real del usuario por misión (período actual)
+  const userMissionsQ = useQuery({
+    queryKey: ["user-missions", user?.id ?? null],
+    enabled: !!user,
+    staleTime: 15_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("user_missions")
+        .select("mission_id, period_start, progress, completed_at, claimed_at");
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  // Realtime: refrescar al insertarse/actualizarse progreso del usuario
+  useEffect(() => {
+    if (!user) return;
+    const ch = supabase
+      .channel(`user-missions-${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "user_missions", filter: `user_id=eq.${user.id}` },
+        () => {
+          userMissionsQ.refetch();
+          me.refetch?.();
+        },
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(ch);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
   const specialEventQ = useQuery({
     queryKey: ["eventos-special-event"],
     staleTime: 60_000,
@@ -335,7 +404,7 @@ function EventosPage() {
     type: r.type,
     title: r.title,
     subtitle: r.subtitle ?? undefined,
-    progress: 0,
+    progress: progressForMission(r, userMissionsQ.data ?? []),
     goal: Number(r.goal) || 1,
     reward: {
       kind: (r.reward_kind === "xp" ? "bonus" : r.reward_kind) as RewardKind,
@@ -358,34 +427,43 @@ function EventosPage() {
 
   const activeMissions = dbMissions.length > 0 ? dbMissions : MISSIONS;
 
-  // Dispara el flotante de "Misión completada" cuando una misión
-  // alcanza su meta. Dedupe por id usando sessionStorage para no
-  // notificar varias veces por sesión.
+  // Dispara el flotante de "Misión completada" cuando una misión se completa
+  // realmente en el backend. Solo notifica completaciones nuevas (posteriores
+  // a la apertura de la página) para evitar notificaciones de misiones ya
+  // completadas en sesiones anteriores.
+  const [mountedAt] = useState<number>(() => Date.now());
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const SEEN_KEY = "betspace:missions-notified";
+    const rows = userMissionsQ.data ?? [];
+    const SEEN_KEY = "betspace:missions-notified-v2";
     let seen = new Set<string>();
     try {
       seen = new Set<string>(JSON.parse(sessionStorage.getItem(SEEN_KEY) ?? "[]"));
     } catch {}
-    for (const m of activeMissions) {
-      if (m.progress >= m.goal && !seen.has(m.id)) {
-        seen.add(m.id);
-        notifyMissionComplete({
-          id: m.id,
-          title: m.title,
-          subtitle: m.subtitle,
-          reward: {
-            kind: m.reward.kind,
-            value: m.reward.value,
-            label: m.reward.label,
-            image: m.rewardImage ?? null,
-          },
-        });
-      }
+    for (const r of rows as UserMissionRow[]) {
+      if (!r.completed_at) continue;
+      const completedAt = new Date(r.completed_at).getTime();
+      // Solo nuevas completaciones (no las viejas)
+      if (completedAt < mountedAt - 5_000) continue;
+      const key = `${r.mission_id}:${r.period_start}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const m = activeMissions.find((x) => x.id === r.mission_id);
+      if (!m) continue;
+      notifyMissionComplete({
+        id: m.id,
+        title: m.title,
+        subtitle: m.subtitle,
+        reward: {
+          kind: m.reward.kind,
+          value: m.reward.value,
+          label: m.reward.label,
+          image: m.rewardImage ?? null,
+        },
+      });
     }
     sessionStorage.setItem(SEEN_KEY, JSON.stringify(Array.from(seen)));
-  }, [activeMissions]);
+  }, [userMissionsQ.data, activeMissions, mountedAt]);
 
   const filtered = useMemo(() => {
     if (tab === "all") return activeMissions;
