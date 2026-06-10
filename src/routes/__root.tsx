@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
 import { supabase } from "@/integrations/supabase/client";
+import { MissionCompleteFloater } from "@/components/MissionCompleteFloater";
 
 function NotFoundComponent() {
   return (
@@ -165,6 +166,7 @@ function RootComponent() {
       <ThemeProvider>
         <AuthProvider>
           <Outlet />
+          <MissionCompleteFloater />
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
