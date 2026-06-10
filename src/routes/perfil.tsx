@@ -404,9 +404,12 @@ function PerfilPage() {
               <span className="neon-green mr-0.5">$</span>
               <span className="text-white">{bonusText}</span>
             </div>
-            <button className="mt-2 flex w-full items-center justify-center gap-1 rounded-md border border-amber-400/60 bg-amber-500/10 px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-200 hover:bg-amber-500/20">
-              Ver bonos
-            </button>
+            <Link
+              to="/eventos"
+              className="mt-2 flex w-full items-center justify-center gap-1 rounded-md border border-amber-400/60 bg-amber-500/10 px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-200 hover:bg-amber-500/20"
+            >
+              Ver eventos
+            </Link>
           </div>
         </section>
 
