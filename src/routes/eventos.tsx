@@ -32,6 +32,7 @@ import { useMe } from "@/hooks/useMe";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { getMissionIconUrl } from "@/lib/mission-icons";
+import { notifyMissionComplete } from "@/components/MissionCompleteFloater";
 
 export const Route = createFileRoute("/eventos")({
   head: () => ({
@@ -356,6 +357,35 @@ function EventosPage() {
   }));
 
   const activeMissions = dbMissions.length > 0 ? dbMissions : MISSIONS;
+
+  // Dispara el flotante de "Misión completada" cuando una misión
+  // alcanza su meta. Dedupe por id usando sessionStorage para no
+  // notificar varias veces por sesión.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const SEEN_KEY = "betspace:missions-notified";
+    let seen = new Set<string>();
+    try {
+      seen = new Set<string>(JSON.parse(sessionStorage.getItem(SEEN_KEY) ?? "[]"));
+    } catch {}
+    for (const m of activeMissions) {
+      if (m.progress >= m.goal && !seen.has(m.id)) {
+        seen.add(m.id);
+        notifyMissionComplete({
+          id: m.id,
+          title: m.title,
+          subtitle: m.subtitle,
+          reward: {
+            kind: m.reward.kind,
+            value: m.reward.value,
+            label: m.reward.label,
+            image: m.rewardImage ?? null,
+          },
+        });
+      }
+    }
+    sessionStorage.setItem(SEEN_KEY, JSON.stringify(Array.from(seen)));
+  }, [activeMissions]);
 
   const filtered = useMemo(() => {
     if (tab === "all") return activeMissions;
