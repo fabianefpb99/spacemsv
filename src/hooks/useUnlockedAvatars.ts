@@ -38,8 +38,12 @@ export function useUnlockedAvatars() {
 
   useEffect(() => {
     if (!user) return;
+    // Unique per mount: StrictMode double-invokes effects and `supabase.channel()`
+    // reuses an existing channel by name, which throws "cannot add postgres_changes
+    // callbacks after subscribe()" on the second mount.
+    const channelName = `avatar-unlocks-${user.id}-${Math.random().toString(36).slice(2)}`;
     const channel = supabase
-      .channel(`avatar-unlocks-${user.id}`)
+      .channel(channelName)
       .on(
         "postgres_changes",
         {
