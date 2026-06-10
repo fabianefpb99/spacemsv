@@ -285,6 +285,13 @@ function RetirosPage() {
           </div>
         </header>
 
+        {profileBlocked ? (
+          <ProfileGate
+            onOpen={() => setDataDialogOpen(true)}
+            balanceText={balanceText}
+          />
+        ) : (
+        <>
         {/* Balance card */}
         <div className="relative mt-5 overflow-hidden rounded-2xl border border-purple-500/40 bg-gradient-to-b from-[#180a3a] to-[#0a0420] p-4 shadow-[0_0_30px_-10px_rgba(168,85,247,0.55)]">
           <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-fuchsia-500/15 blur-3xl" />
