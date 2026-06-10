@@ -10,6 +10,31 @@ import { useAuth } from "@/hooks/useAuth";
 type MissionType = "daily" | "weekly" | "special";
 type RewardKind = "bonus" | "spins" | "xp" | "avatar";
 type Accent = "purple" | "emerald" | "amber" | "rose" | "blue";
+type TriggerEvent = "bet_placed" | "bet_won" | "deposit_made" | "manual";
+type Metric = "count" | "sum_amount";
+
+const TRIGGER_LABELS: Record<TriggerEvent, string> = {
+  bet_placed: "Cada apuesta realizada",
+  bet_won: "Cada apuesta ganada",
+  deposit_made: "Cada depósito aprobado",
+  manual: "Manual (no se otorga sola)",
+};
+
+const METRIC_LABELS: Record<Metric, string> = {
+  count: "Contar eventos (cantidad)",
+  sum_amount: "Sumar montos (COP)",
+};
+
+const GAME_OPTIONS: { value: string; label: string }[] = [
+  { value: "", label: "Cualquier juego" },
+  { value: "arena", label: "Arena" },
+  { value: "slot", label: "Slot Mafia" },
+  { value: "spaceman", label: "Spaceman" },
+  { value: "dice", label: "Dados" },
+  { value: "mines", label: "Mines" },
+  { value: "ruleta", label: "Ruleta" },
+  { value: "blackjack", label: "Blackjack" },
+];
 
 type Mission = {
   id: string;
@@ -27,6 +52,10 @@ type Mission = {
   cta_to: string;
   sort_order: number;
   is_active: boolean;
+  trigger_event: TriggerEvent;
+  trigger_game: string | null;
+  metric: Metric;
+  min_amount: number;
 };
 
 const TYPE_LABELS: Record<MissionType, string> = {
@@ -65,6 +94,10 @@ const EMPTY: Omit<Mission, "id"> = {
   cta_to: "/home",
   sort_order: 0,
   is_active: true,
+  trigger_event: "bet_placed",
+  trigger_game: null,
+  metric: "count",
+  min_amount: 0,
 };
 
 export function MissionsSection() {
