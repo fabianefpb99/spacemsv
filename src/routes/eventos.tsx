@@ -284,6 +284,51 @@ function EventosPage() {
     },
   });
 
+  const specialEventQ = useQuery({
+    queryKey: ["eventos-special-event"],
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "eventos_special_event")
+        .maybeSingle();
+      if (error) throw error;
+      return (data?.value ?? null) as {
+        active: boolean;
+        eyebrow: string;
+        title: string;
+        subtitle: string;
+        badge_value: string;
+        badge_label: string;
+        accent: "purple" | "emerald" | "amber" | "rose" | "blue";
+        ends_at: string | null;
+      } | null;
+    },
+  });
+  const sp = specialEventQ.data;
+  const spActive = sp ? sp.active : true;
+  const spEyebrow = sp?.eyebrow ?? "Evento especial";
+  const spTitle = sp?.title ?? "DOBLE XP DE FIN DE SEMANA";
+  const spSubtitle = sp?.subtitle ?? "Sube de nivel el doble de rápido";
+  const spBadgeValue = sp?.badge_value ?? "x2";
+  const spBadgeLabel = sp?.badge_label ?? "XP";
+  const [customEndsText, setCustomEndsText] = useState("");
+  useEffect(() => {
+    if (!sp?.ends_at) return;
+    const tick = () => {
+      const diff = Math.max(0, new Date(sp.ends_at!).getTime() - Date.now());
+      const d = Math.floor(diff / 86_400_000);
+      const h = Math.floor((diff % 86_400_000) / 3_600_000);
+      const m = Math.floor((diff % 3_600_000) / 60_000);
+      setCustomEndsText(d > 0 ? `${d}d ${h}h ${m}m` : `${h}h ${m}m`);
+    };
+    tick();
+    const i = setInterval(tick, 30_000);
+    return () => clearInterval(i);
+  }, [sp?.ends_at]);
+  const spTimerText = sp?.ends_at ? customEndsText : weekendTimer;
+
   const dbMissions: Mission[] = (missionsQ.data ?? []).map((r: any) => ({
     id: r.id,
     type: r.type,
@@ -424,7 +469,7 @@ function EventosPage() {
         </div>
 
         {/* Evento especial fin de semana */}
-        {(tab === "all" || tab === "special") && (
+        {spActive && (tab === "all" || tab === "special") && (
           <section className="mt-5">
             <div className="relative overflow-hidden rounded-2xl border border-amber-400/40 bg-gradient-to-br from-fuchsia-700/40 via-purple-800/40 to-amber-600/30 p-4 shadow-[0_0_22px_rgba(217,70,239,0.35)]">
               <div
@@ -437,27 +482,27 @@ function EventosPage() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-[10px] font-bold uppercase tracking-widest text-amber-200">
-                    Evento especial
+                    {spEyebrow}
                   </div>
                   <div className="font-display text-lg font-black leading-tight text-white">
-                    DOBLE XP DE FIN DE SEMANA
+                    {spTitle}
                   </div>
                   <div className="text-[11px] text-purple-100/80">
-                    Sube de nivel el doble de rápido
+                    {spSubtitle}
                   </div>
                 </div>
                 <div className="flex shrink-0 flex-col items-center rounded-xl border border-amber-300/50 bg-amber-400/15 px-3 py-2 text-center">
                   <div className="font-display text-xl font-black text-amber-200 drop-shadow-[0_0_8px_rgba(251,191,36,0.7)] leading-none">
-                    x2
+                    {spBadgeValue}
                   </div>
                   <div className="mt-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-200">
-                    XP
+                    {spBadgeLabel}
                   </div>
                 </div>
               </div>
               <div className="mt-3 flex items-center justify-between rounded-lg border border-white/10 bg-black/30 px-3 py-2">
                 <span className="text-[10px] uppercase tracking-wider text-purple-200/80">Termina en</span>
-                <span className="font-mono text-xs font-bold text-white">{weekendTimer}</span>
+                <span className="font-mono text-xs font-bold text-white">{spTimerText}</span>
               </div>
             </div>
           </section>
