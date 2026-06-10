@@ -483,6 +483,8 @@ function RetirosPage() {
             <span className="text-purple-200/60">Tiempo estimado: 10 minutos a 24 horas hábiles.</span>
           </p>
         </div>
+        </>
+        )}
       </div>
 
       {/* Add-account modal */}
@@ -495,6 +497,20 @@ function RetirosPage() {
             setPendingAccount({ ...acc, isDefault: true });
             setSelectedMethod(acc.method);
             setOpenAdd(null);
+          }}
+        />
+      )}
+
+      {user && (
+        <PersonalDataDialog
+          open={dataDialogOpen}
+          onOpenChange={setDataDialogOpen}
+          userId={user.id}
+          initial={fullProfile.data ?? undefined}
+          title="Completa tus datos para retirar"
+          subtitle="Es obligatorio registrar tu información personal antes de solicitar retiros."
+          onSaved={() => {
+            qc.invalidateQueries({ queryKey: ["perfil-full", user.id] });
           }}
         />
       )}
