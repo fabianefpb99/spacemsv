@@ -573,31 +573,28 @@ export function RouletteGame() {
 
   return (
     <div
-      className="relative mx-auto flex h-[100dvh] max-w-md flex-col px-3 pt-4 sm:max-w-lg sm:px-4 text-white overflow-hidden"
+      className="relative mx-auto flex h-[100dvh] max-w-md flex-col px-3 pt-4 sm:max-w-lg sm:px-4 text-white overflow-hidden bg-[#06010f]"
       style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) * 0.85 + 0.6rem)" }}
     >
       {/* ───────────────── FONDO COMPLETO DE LA ESCENA (idéntico patrón Spaceman) ───────────────── */}
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#06010f]">
-        <img
-          src={rouletteScene.url}
-          alt=""
-          draggable={false}
-          className="absolute inset-0 h-full w-full select-none object-cover"
-        />
-        {/* RUEDA FUNCIONAL anclada al aro pintado — vive DENTRO del mismo contenedor
-            que el fondo para compartir su sistema de coordenadas. Así, en PWA standalone
-            (donde inset-0 incluye safe-area y dvh puede no hacerlo), la rueda nunca
-            se desincroniza del aro pintado: ambos se mueven juntos. */}
-        <div
-          className="pointer-events-none absolute left-1/2 -translate-x-1/2 -translate-y-1/2"
-          style={{
-            top: `${WHEEL_CY_PCT}%`,
-            height: `calc(100% * (942 / 1672) * ${WHEEL_DIAM_PCT / 100})`,
-            aspectRatio: "1 / 1",
-          }}
-        >
-          <RouletteWheel rotation={rotation} spinning={phase === "spinning"} />
-        </div>
+      <img
+        src={rouletteScene.url}
+        alt=""
+        draggable={false}
+        className="pointer-events-none absolute inset-0 z-0 h-full w-full select-none object-cover"
+      />
+      {/* RUEDA FUNCIONAL anclada al aro pintado — comparte sistema de
+          coordenadas con el fondo para que aro y rueda nunca se
+          desincronicen, incluso en PWA con safe-area. */}
+      <div
+        className="pointer-events-none absolute left-1/2 z-0 -translate-x-1/2 -translate-y-1/2"
+        style={{
+          top: `${WHEEL_CY_PCT}%`,
+          height: `calc(100% * (942 / 1672) * ${WHEEL_DIAM_PCT / 100})`,
+          aspectRatio: "1 / 1",
+        }}
+      >
+        <RouletteWheel rotation={rotation} spinning={phase === "spinning"} />
       </div>
 
       {/* ───────────────── HEADER GLOBAL ───────────────── */}
