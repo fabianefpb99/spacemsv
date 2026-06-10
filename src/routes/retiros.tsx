@@ -10,6 +10,7 @@ import {
   Info,
   Lock,
   ShieldCheck,
+  UserCircle2,
   Wallet as WalletIcon,
   X,
 } from "lucide-react";
@@ -22,6 +23,8 @@ import { AuthControl } from "@/components/auth/AuthControl";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { useMe } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { PersonalDataDialog } from "@/components/profile/PersonalDataDialog";
 import {
   cancelMyWithdrawal,
   createWithdrawal,
@@ -94,6 +97,26 @@ function RetirosPage() {
   const balance = me.data?.balance ?? 0;
   const balanceText = me.data ? formatCOP(balance) : "—";
   const qc = useQueryClient();
+
+  // Personal data gate — withdrawals require a fully completed profile
+  const fullProfile = useQuery({
+    queryKey: ["perfil-full", user?.id ?? null],
+    enabled: !!user,
+    staleTime: 30_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select(
+          "first_name, second_name, last_name, second_last_name, gender, birth_date, phone, document_type, document_number, document_issue_date, terms_accepted_at, profile_completed",
+        )
+        .eq("id", user!.id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+  const [dataDialogOpen, setDataDialogOpen] = useState(false);
+  const profileBlocked = !!user && fullProfile.isSuccess && !fullProfile.data?.profile_completed;
 
   const listAccountsFn = useServerFn(listMyWithdrawalAccounts);
   const listWdFn = useServerFn(listMyWithdrawals);
