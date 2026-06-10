@@ -89,11 +89,15 @@ export function AvatarPickerDialog({ open, onOpenChange, userId, currentKey }: P
       locked: !i.unlocked,
       unlockHint: i.unlockHint,
     }));
-  const legacyItems: PickerItem[] = AVATAR_OPTIONS.map((opt) => ({
+  // Legacy collectibles are superseded by mission rewards; hide them from
+  // the picker so the only "locked" entries shown come from active missions.
+  const legacyItems: PickerItem[] = AVATAR_OPTIONS.filter(
+    (opt) => !opt.collectible,
+  ).map((opt) => ({
     key: opt.key,
     url: opt.url,
     label: opt.label,
-    locked: !!opt.collectible && !unlocked?.has(opt.key as AvatarKey),
+    locked: false,
     unlockHint: opt.unlockHint,
   }));
   const allItems: PickerItem[] = [...legacyItems, ...missionItems];
