@@ -12,6 +12,8 @@ import {
   RefreshCw,
   Search,
   Sparkles,
+  ChevronDown,
+  UserCircle2,
   Wallet as WalletIcon,
   X,
 } from "lucide-react";
