@@ -28,7 +28,9 @@ import { useMe } from "@/hooks/useMe";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import { AvatarPickerDialog } from "@/components/profile/AvatarPickerDialog";
-import { getAvatarUrl } from "@/lib/avatars";
+import { getAvatarUrl, COLLECTIBLE_AVATARS } from "@/lib/avatars";
+import { useUnlockedAvatars } from "@/hooks/useUnlockedAvatars";
+import { Lock } from "lucide-react";
 import { VipLevelUpToast } from "@/components/vip/VipLevelUpToast";
 import { VipBadge } from "@/components/vip/VipBadge";
 import { useVip } from "@/hooks/useVip";
@@ -111,6 +113,7 @@ function PerfilPage() {
   const isAdminQ = useIsAdmin();
   const vip = useVip();
   const queryClient = useQueryClient();
+  const unlockedQ = useUnlockedAvatars();
   const [dataDialogOpen, setDataDialogOpen] = useState(false);
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
   const [minElapsed, setMinElapsed] = useState(false);
@@ -406,6 +409,69 @@ function PerfilPage() {
             <button className="mt-2 flex w-full items-center justify-center gap-1 rounded-md border border-amber-400/60 bg-amber-500/10 px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-200 hover:bg-amber-500/20">
               Ver bonos
             </button>
+          </div>
+        </section>
+
+        {/* Colección */}
+        <SectionTitle>Colección</SectionTitle>
+        <section className="rounded-2xl border border-purple-500/30 bg-[#0c0620]/80 p-3">
+          <div className="mb-2 flex items-center justify-between">
+            <div className="text-[10px] font-semibold uppercase tracking-widest text-purple-200/80">
+              Avatares coleccionables
+            </div>
+            <div className="text-[10px] font-bold text-fuchsia-300">
+              {COLLECTIBLE_AVATARS.filter((a) => unlockedQ.data?.unlocked.has(a.key)).length}
+              /{COLLECTIBLE_AVATARS.length}
+            </div>
+          </div>
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {COLLECTIBLE_AVATARS.map((opt) => {
+              const isUnlocked = !!unlockedQ.data?.unlocked.has(opt.key);
+              const isEquipped = me.data?.profile?.avatar_key === opt.key;
+              return (
+                <button
+                  key={opt.key}
+                  type="button"
+                  onClick={() => setAvatarDialogOpen(true)}
+                  className="group flex w-[88px] shrink-0 flex-col items-center gap-1"
+                  title={isUnlocked ? opt.label : opt.unlockHint}
+                >
+                  <div
+                    className={cn(
+                      "relative aspect-square w-full overflow-hidden rounded-xl border-2 transition",
+                      isEquipped
+                        ? "border-fuchsia-400 ring-2 ring-fuchsia-400/60"
+                        : isUnlocked
+                          ? "border-amber-400/70 shadow-[0_0_10px_rgba(251,191,36,0.35)]"
+                          : "border-white/10",
+                    )}
+                  >
+                    <img
+                      src={opt.url}
+                      alt={opt.label}
+                      className={cn("h-full w-full object-cover", !isUnlocked && "grayscale")}
+                      loading="lazy"
+                    />
+                    {!isUnlocked && (
+                      <span className="absolute inset-0 flex items-center justify-center bg-black/55">
+                        <Lock className="h-4 w-4 text-white/90" />
+                      </span>
+                    )}
+                  </div>
+                  <div className="w-full truncate text-center text-[10px] font-semibold text-white/90">
+                    {opt.label}
+                  </div>
+                  <div
+                    className={cn(
+                      "w-full truncate text-center text-[9px]",
+                      isUnlocked ? "text-emerald-300" : "text-purple-200/60",
+                    )}
+                  >
+                    {isEquipped ? "En uso" : isUnlocked ? "Desbloqueado" : opt.unlockHint}
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </section>
 
