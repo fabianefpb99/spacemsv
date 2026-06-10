@@ -11,7 +11,7 @@ import { AuthDialog } from "@/components/auth/AuthDialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
 import { HamburgerDrawer } from "@/components/HamburgerDrawer";
-import { getAvatarUrl } from "@/lib/avatars";
+import { UserAvatar } from "@/components/UserAvatar";
 import {
   getRankingPublic,
   getMyRankingPosition,
@@ -183,11 +183,7 @@ function RankingPage() {
                   </span>
                 </div>
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-purple-700/40 ring-2 ring-purple-400/40">
-                  <img
-                    src={getAvatarUrl(me.data?.profile?.avatar_key)}
-                    alt="Tu avatar"
-                    className="h-full w-full object-cover"
-                  />
+                  <UserAvatar avatarKey={me.data?.profile?.avatar_key} alt="Tu avatar" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm font-bold text-white">
@@ -410,10 +406,7 @@ function PodiumSlot({
             {loading || !entry ? (
               <div className="h-full w-full animate-pulse bg-white/5" />
             ) : (
-              <SmoothAvatar
-                src={getAvatarUrl(entry.avatar_key)}
-                alt={entry.username}
-              />
+              <UserAvatar avatarKey={entry.avatar_key} alt={entry.username} />
             )}
           </div>
         </div>
@@ -466,7 +459,7 @@ function ArenaRow({ pos, entry }: { pos: number; entry: RankingEntry }) {
     <li className="flex items-center gap-2.5 py-1.5">
       <span className="w-5 text-center font-display text-xs font-black text-purple-300/80">{pos}</span>
       <div className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-purple-700/30 ring-1 ring-purple-400/30">
-        <SmoothAvatar src={getAvatarUrl(entry.avatar_key)} alt={entry.username} spinnerSize="sm" />
+        <UserAvatar avatarKey={entry.avatar_key} alt={entry.username} spinnerSize="sm" />
       </div>
       <div className="min-w-0 flex-1 truncate text-[11px] font-semibold uppercase tracking-wider text-white">
         {entry.username}
