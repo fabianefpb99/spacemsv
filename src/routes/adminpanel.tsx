@@ -15,6 +15,7 @@ import {
   PanelLeft,
   Percent,
   Settings as SettingsIcon,
+  Sparkles,
   TrendingUp,
   Users,
   Wallet as WalletIcon,
@@ -36,6 +37,7 @@ import { DepositsSection } from "@/components/admin/DepositsSection";
 import { WithdrawalsSection } from "@/components/admin/WithdrawalsSection";
 import { HomeContentSection } from "@/components/admin/HomeContentSection";
 import { DrawerSection } from "@/components/admin/DrawerSection";
+import { MissionsSection } from "@/components/admin/MissionsSection";
 
 export const Route = createFileRoute("/adminpanel")({
   head: () => ({
@@ -56,6 +58,7 @@ const SECTIONS: { id: AdminSection; label: string; icon: typeof Home; ready: boo
   { id: "retiros", label: "Retiros", icon: Download, ready: true },
   { id: "home_content", label: "Contenido Home", icon: ImageIcon, ready: true },
   { id: "drawer", label: "Menú Lateral", icon: PanelLeft, ready: true },
+  { id: "eventos", label: "Eventos y Misiones", icon: Sparkles, ready: true },
   { id: "bonos", label: "Bonos", icon: Gift, ready: false },
   { id: "transacciones", label: "Transacciones", icon: Coins, ready: false },
   { id: "reportes", label: "Reportes", icon: BarChart3, ready: false },
@@ -130,6 +133,8 @@ function AdminPanelPage() {
         return <HomeContentSection />;
       case "drawer":
         return <DrawerSection />;
+      case "eventos":
+        return <MissionsSection />;
       default:
         return <PlaceholderSection label={currentLabel} />;
     }
