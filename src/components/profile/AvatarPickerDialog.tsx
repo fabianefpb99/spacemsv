@@ -19,7 +19,6 @@ type Props = {
 export function AvatarPickerDialog({ open, onOpenChange, userId, currentKey }: Props) {
   const qc = useQueryClient();
   const unlockedQ = useUnlockedAvatars();
-  const unlocked = unlockedQ.data?.unlocked;
   const [selected, setSelected] = useState<string | null>(
     (currentKey as string) ?? null,
   );
