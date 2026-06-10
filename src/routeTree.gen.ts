@@ -18,6 +18,7 @@ import { Route as SlotpruebasRouteImport } from './routes/slotpruebas'
 import { Route as SlotRouteImport } from './routes/slot'
 import { Route as RuletaRouteImport } from './routes/ruleta'
 import { Route as RetirosRouteImport } from './routes/retiros'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RankingRouteImport } from './routes/ranking'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as PayRouteImport } from './routes/pay'
@@ -78,6 +79,11 @@ const RuletaRoute = RuletaRouteImport.update({
 const RetirosRoute = RetirosRouteImport.update({
   id: '/retiros',
   path: '/retiros',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RankingRoute = RankingRouteImport.update({
@@ -175,6 +181,7 @@ export interface FileRoutesByFullPath {
   '/pay': typeof PayRoute
   '/perfil': typeof PerfilRoute
   '/ranking': typeof RankingRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/retiros': typeof RetirosRoute
   '/ruleta': typeof RuletaRoute
   '/slot': typeof SlotRoute
@@ -202,6 +209,7 @@ export interface FileRoutesByTo {
   '/pay': typeof PayRoute
   '/perfil': typeof PerfilRoute
   '/ranking': typeof RankingRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/retiros': typeof RetirosRoute
   '/ruleta': typeof RuletaRoute
   '/slot': typeof SlotRoute
@@ -230,6 +238,7 @@ export interface FileRoutesById {
   '/pay': typeof PayRoute
   '/perfil': typeof PerfilRoute
   '/ranking': typeof RankingRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/retiros': typeof RetirosRoute
   '/ruleta': typeof RuletaRoute
   '/slot': typeof SlotRoute
@@ -259,6 +268,7 @@ export interface FileRouteTypes {
     | '/pay'
     | '/perfil'
     | '/ranking'
+    | '/reset-password'
     | '/retiros'
     | '/ruleta'
     | '/slot'
@@ -286,6 +296,7 @@ export interface FileRouteTypes {
     | '/pay'
     | '/perfil'
     | '/ranking'
+    | '/reset-password'
     | '/retiros'
     | '/ruleta'
     | '/slot'
@@ -313,6 +324,7 @@ export interface FileRouteTypes {
     | '/pay'
     | '/perfil'
     | '/ranking'
+    | '/reset-password'
     | '/retiros'
     | '/ruleta'
     | '/slot'
@@ -341,6 +353,7 @@ export interface RootRouteChildren {
   PayRoute: typeof PayRoute
   PerfilRoute: typeof PerfilRoute
   RankingRoute: typeof RankingRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   RetirosRoute: typeof RetirosRoute
   RuletaRoute: typeof RuletaRoute
   SlotRoute: typeof SlotRoute
@@ -419,6 +432,13 @@ declare module '@tanstack/react-router' {
       path: '/retiros'
       fullPath: '/retiros'
       preLoaderRoute: typeof RetirosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ranking': {
@@ -549,6 +569,7 @@ const rootRouteChildren: RootRouteChildren = {
   PayRoute: PayRoute,
   PerfilRoute: PerfilRoute,
   RankingRoute: RankingRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   RetirosRoute: RetirosRoute,
   RuletaRoute: RuletaRoute,
   SlotRoute: SlotRoute,
@@ -566,3 +587,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
