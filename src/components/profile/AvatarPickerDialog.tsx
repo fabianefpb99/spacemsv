@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Check, Loader2 } from "lucide-react";
+import { Check, Loader2, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { AVATAR_OPTIONS, type AvatarKey } from "@/lib/avatars";
+import { useUnlockedAvatars } from "@/hooks/useUnlockedAvatars";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -17,6 +18,8 @@ type Props = {
 
 export function AvatarPickerDialog({ open, onOpenChange, userId, currentKey }: Props) {
   const qc = useQueryClient();
+  const unlockedQ = useUnlockedAvatars();
+  const unlocked = unlockedQ.data?.unlocked;
   const [selected, setSelected] = useState<AvatarKey | null>(
     (currentKey as AvatarKey) ?? null,
   );
@@ -103,18 +106,28 @@ export function AvatarPickerDialog({ open, onOpenChange, userId, currentKey }: P
           <div className="mt-4 grid grid-cols-4 gap-3">
           {AVATAR_OPTIONS.map((opt) => {
             const isSelected = selected === opt.key;
+            const isLocked = !!opt.collectible && !unlocked?.has(opt.key);
             return (
               <button
                 key={opt.key}
                 type="button"
-                onClick={() => setSelected(opt.key)}
-                aria-label={opt.label}
+                onClick={() => {
+                  if (isLocked) {
+                    toast.info(opt.unlockHint ?? "Aún no has desbloqueado este avatar");
+                    return;
+                  }
+                  setSelected(opt.key);
+                }}
+                aria-label={isLocked ? `${opt.label} (bloqueado)` : opt.label}
                 aria-pressed={isSelected}
+                title={isLocked ? opt.unlockHint : opt.label}
                 className={cn(
                   "group relative aspect-square overflow-hidden rounded-xl border-2 transition-all",
                   isSelected
                     ? "border-fuchsia-400 ring-2 ring-fuchsia-400/60"
-                    : "border-white/10 hover:border-fuchsia-400/50",
+                    : isLocked
+                      ? "border-white/10 opacity-60"
+                      : "border-white/10 hover:border-fuchsia-400/50",
                 )}
                 style={
                   isSelected
@@ -125,9 +138,17 @@ export function AvatarPickerDialog({ open, onOpenChange, userId, currentKey }: P
                 <img
                   src={opt.url}
                   alt={opt.label}
-                  className="h-full w-full object-cover"
+                  className={cn(
+                    "h-full w-full object-cover",
+                    isLocked && "grayscale",
+                  )}
                   loading="lazy"
                 />
+                {isLocked && (
+                  <span className="absolute inset-0 flex items-center justify-center bg-black/50">
+                    <Lock className="h-4 w-4 text-white/90" />
+                  </span>
+                )}
                 {isSelected && (
                   <span className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-fuchsia-500 text-white shadow">
                     <Check className="h-3 w-3" />
