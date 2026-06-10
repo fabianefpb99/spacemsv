@@ -195,7 +195,10 @@ function HomePage() {
 
   const slides = slidesList.length;
   const arrowsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [showBrandLoader, setShowBrandLoader] = useState(false);
+  // Start visible on every mount so the brand loader paints BEFORE the home
+  // ever flashes through. The effect below decides if we keep it on screen
+  // (within the per-hour quota) or hide it immediately.
+  const [showBrandLoader, setShowBrandLoader] = useState(true);
 
   // Ambient casino intro — máximo 5 veces por hora.
   // Audio file ya incluye fade-in (1.5s) y fade-out (5s) — 12s totales.
@@ -257,7 +260,10 @@ function HomePage() {
     } catch { shows = []; }
     const now = Date.now();
     shows = shows.filter((t) => now - t < ONE_HOUR);
-    if (shows.length >= MAX_PER_HOUR) return;
+    if (shows.length >= MAX_PER_HOUR) {
+      setShowBrandLoader(false);
+      return;
+    }
     shows.push(now);
     try { localStorage.setItem(KEY, JSON.stringify(shows)); } catch { /* ignore */ }
     setShowBrandLoader(true);
