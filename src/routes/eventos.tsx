@@ -285,6 +285,40 @@ function EventosPage() {
     },
   });
 
+  // Progreso real del usuario por misión (período actual)
+  const userMissionsQ = useQuery({
+    queryKey: ["user-missions", user?.id ?? null],
+    enabled: !!user,
+    staleTime: 15_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("user_missions")
+        .select("mission_id, period_start, progress, completed_at, claimed_at");
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  // Realtime: refrescar al insertarse/actualizarse progreso del usuario
+  useEffect(() => {
+    if (!user) return;
+    const ch = supabase
+      .channel(`user-missions-${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "user_missions", filter: `user_id=eq.${user.id}` },
+        () => {
+          userMissionsQ.refetch();
+          me.refetch?.();
+        },
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(ch);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
   const specialEventQ = useQuery({
     queryKey: ["eventos-special-event"],
     staleTime: 60_000,
@@ -335,7 +369,7 @@ function EventosPage() {
     type: r.type,
     title: r.title,
     subtitle: r.subtitle ?? undefined,
-    progress: 0,
+    progress: progressForMission(r, userMissionsQ.data ?? []),
     goal: Number(r.goal) || 1,
     reward: {
       kind: (r.reward_kind === "xp" ? "bonus" : r.reward_kind) as RewardKind,
