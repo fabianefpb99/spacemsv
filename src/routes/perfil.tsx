@@ -20,6 +20,8 @@ import {
   UserCircle2,
   AlertCircle,
   CalendarDays,
+  Phone,
+  Receipt,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
@@ -36,6 +38,7 @@ import { VIP_CARD_THEME, RANK_ART } from "@/lib/vip/vip-art";
 import { cn } from "@/lib/utils";
 import { Sparkles } from "lucide-react";
 import { PersonalDataDialog } from "@/components/profile/PersonalDataDialog";
+import { ChangePasswordDialog } from "@/components/profile/ChangePasswordDialog";
 import { BrandLoader } from "@/components/BrandLoader";
 
 export const Route = createFileRoute("/perfil")({
@@ -113,6 +116,7 @@ function PerfilPage() {
   const unlockedQ = useUnlockedAvatars();
   const [dataDialogOpen, setDataDialogOpen] = useState(false);
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [minElapsed, setMinElapsed] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setMinElapsed(true), 1060);
@@ -473,6 +477,21 @@ function PerfilPage() {
             status={emailVerified ? "ok" : "muted"}
             statusLabel={emailVerified ? "Verificado" : "Sin verificar"}
           />
+          <button type="button" onClick={() => setPasswordDialogOpen(true)} className="block w-full text-left">
+            <SecurityRow
+              icon={<Lock className="h-4 w-4 text-purple-200" />}
+              title="Contraseña"
+              subtitle="Cambia tu contraseña periódicamente"
+              actionLabel="Cambiar"
+            />
+          </button>
+          <SecurityRow
+            icon={<Phone className="h-4 w-4 text-purple-200" />}
+            title="Número de Teléfono"
+            subtitle={fullProfile.data?.phone || "No vinculado"}
+            status={fullProfile.data?.phone ? "ok" : "muted"}
+            statusLabel={fullProfile.data?.phone ? "Vinculado" : "No vinculado"}
+          />
         </div>
 
         {/* Estadísticas */}
@@ -508,6 +527,9 @@ function PerfilPage() {
           </Link>
           <Link to="/retiros" className="block">
             <LinkRow icon={<Banknote className="h-4 w-4 text-amber-300" />} label="Retirar saldo" />
+          </Link>
+          <Link to="/transacciones" className="block">
+            <LinkRow icon={<Receipt className="h-4 w-4 text-purple-200" />} label="Historial de Transacciones" />
           </Link>
           <Link to="/eventos" className="block">
             <LinkRow icon={<CalendarDays className="h-4 w-4 text-fuchsia-300" />} label="Eventos" />
@@ -611,6 +633,7 @@ function PerfilPage() {
         userId={user?.id}
         currentKey={me.data?.profile?.avatar_key ?? null}
       />
+      <ChangePasswordDialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen} />
     </div>
   );
 }
