@@ -10,18 +10,17 @@ import {
   LogOut,
   Lock,
   Mail,
-  Phone,
   ShieldCheck,
   Trophy,
   Wallet as WalletIcon,
   Dice5,
   Banknote,
-  History,
   Settings as SettingsIcon,
   IdCard,
   Gamepad2,
   UserCircle2,
   AlertCircle,
+  CalendarDays,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
@@ -473,18 +472,6 @@ function PerfilPage() {
             status={emailVerified ? "ok" : "muted"}
             statusLabel={emailVerified ? "Verificado" : "Sin verificar"}
           />
-          <SecurityRow
-            icon={<Lock className="h-4 w-4 text-purple-200" />}
-            title="Contraseña"
-            subtitle="Actualízala con frecuencia"
-            actionLabel="Cambiar"
-          />
-          <SecurityRow
-            icon={<Phone className="h-4 w-4 text-purple-200" />}
-            title="Número de Teléfono"
-            subtitle={phone || "No vinculado"}
-            actionLabel={phone ? "Cambiar" : "Vincular"}
-          />
         </div>
 
         {/* Estadísticas */}
@@ -521,8 +508,9 @@ function PerfilPage() {
           <Link to="/retiros" className="block">
             <LinkRow icon={<Banknote className="h-4 w-4 text-amber-300" />} label="Retirar saldo" />
           </Link>
-          <LinkRow icon={<History className="h-4 w-4 text-purple-200" />} label="Historial de Transacciones" />
-          <LinkRow icon={<Gift className="h-4 w-4 text-purple-200" />} label="Mis Bonos" />
+          <Link to="/eventos" className="block">
+            <LinkRow icon={<CalendarDays className="h-4 w-4 text-fuchsia-300" />} label="Eventos" />
+          </Link>
           <LinkRow
             icon={<IdCard className="h-4 w-4 text-purple-200" />}
             label="Verificación de Identidad"
@@ -532,7 +520,6 @@ function PerfilPage() {
               </span>
             }
           />
-          <LinkRow icon={<SettingsIcon className="h-4 w-4 text-purple-200" />} label="Configuración" />
         </div>
 
         {/* Banner: completar datos */}
