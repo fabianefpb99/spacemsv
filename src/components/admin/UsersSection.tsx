@@ -349,6 +349,9 @@ function UserDetailDrawer({ userId, onClose }: { userId: string; onClose: () => 
               />
             </div>
 
+            {/* Personal data (collapsible) */}
+            <PersonalDataPanel profile={detail.data.profile} />
+
             {/* Stats */}
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
               <StatChip
