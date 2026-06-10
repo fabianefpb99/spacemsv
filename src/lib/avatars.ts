@@ -52,8 +52,28 @@ export const COLLECTIBLE_AVATARS = AVATAR_OPTIONS.filter((o) => o.collectible);
 export const DEFAULT_AVATAR_KEY: AvatarKey = "avatar-8";
 export const DEFAULT_AVATAR_FALLBACK = astronautDefault;
 
+/**
+ * Runtime cache for mission-driven avatars (key shape: `mission:<id>`).
+ * Populated by `useUnlockedAvatars` whenever active mission data is fetched
+ * so that `getAvatarUrl` can resolve mission avatars across the app
+ * (header, ranking, perfil card, etc.) without an extra query.
+ */
+const missionAvatarUrlCache = new Map<string, string>();
+
+export function rememberMissionAvatar(missionId: string, url: string) {
+  if (!missionId || !url) return;
+  missionAvatarUrlCache.set(`mission:${missionId}`, url);
+}
+
+export function getMissionAvatarUrl(key: string): string | undefined {
+  return missionAvatarUrlCache.get(key);
+}
+
 export function getAvatarUrl(key: string | null | undefined): string {
   if (!key) return DEFAULT_AVATAR_FALLBACK;
+  if (key.startsWith("mission:")) {
+    return missionAvatarUrlCache.get(key) ?? DEFAULT_AVATAR_FALLBACK;
+  }
   const found = AVATAR_OPTIONS.find((o) => o.key === key);
   return found?.url ?? DEFAULT_AVATAR_FALLBACK;
 }
