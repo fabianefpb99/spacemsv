@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
 import { AuthDialog } from "./AuthDialog";
-import { getAvatarUrl } from "@/lib/avatars";
+import { UserAvatar } from "@/components/UserAvatar";
 import { useVip } from "@/hooks/useVip";
 import { computeProgress } from "@/lib/vip/vip.shared";
 import { RANK_ART } from "@/lib/vip/vip-art";
@@ -70,11 +70,7 @@ export function AuthControl({ className }: { className?: string }) {
         <div className="flex items-center gap-2 border-b border-purple-500/20 pb-3">
           <div className="relative h-10 w-10 shrink-0">
             <div className="h-10 w-10 overflow-hidden rounded-full border border-fuchsia-400/40 bg-purple-900/40 ring-1 ring-purple-400/30">
-              <img
-                src={getAvatarUrl(me.data?.profile?.avatar_key)}
-                alt=""
-                className="h-full w-full object-cover"
-              />
+              <UserAvatar avatarKey={me.data?.profile?.avatar_key} alt="" />
             </div>
             {vipProgress && (
               <img

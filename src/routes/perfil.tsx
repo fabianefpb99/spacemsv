@@ -28,7 +28,7 @@ import { useMe } from "@/hooks/useMe";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import { AvatarPickerDialog } from "@/components/profile/AvatarPickerDialog";
-import { getAvatarUrl } from "@/lib/avatars";
+import { UserAvatar } from "@/components/UserAvatar";
 import { useUnlockedAvatars } from "@/hooks/useUnlockedAvatars";
 import { VipLevelUpToast } from "@/components/vip/VipLevelUpToast";
 import { VipBadge } from "@/components/vip/VipBadge";
@@ -269,10 +269,10 @@ function PerfilPage() {
                       : "0 0 18px rgba(217,70,239,0.45)",
                   }}
                 >
-                  <img
-                    src={getAvatarUrl(me.data?.profile?.avatar_key)}
+                  <UserAvatar
+                    avatarKey={me.data?.profile?.avatar_key}
                     alt=""
-                    className="h-full w-full object-cover"
+                    spinnerSize="lg"
                   />
                 </div>
                 <button

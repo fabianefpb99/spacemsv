@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Menu, Home, Star, Wallet, User, Trophy, Crown } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import betspaceLogo from "@/assets/betspace-logo.svg";
@@ -11,7 +11,7 @@ import { AuthDialog } from "@/components/auth/AuthDialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
 import { HamburgerDrawer } from "@/components/HamburgerDrawer";
-import { getAvatarUrl } from "@/lib/avatars";
+import { UserAvatar } from "@/components/UserAvatar";
 import {
   getRankingPublic,
   getMyRankingPosition,
@@ -183,11 +183,7 @@ function RankingPage() {
                   </span>
                 </div>
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-purple-700/40 ring-2 ring-purple-400/40">
-                  <img
-                    src={getAvatarUrl(me.data?.profile?.avatar_key)}
-                    alt="Tu avatar"
-                    className="h-full w-full object-cover"
-                  />
+                  <UserAvatar avatarKey={me.data?.profile?.avatar_key} alt="Tu avatar" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm font-bold text-white">
@@ -410,10 +406,7 @@ function PodiumSlot({
             {loading || !entry ? (
               <div className="h-full w-full animate-pulse bg-white/5" />
             ) : (
-              <SmoothAvatar
-                src={getAvatarUrl(entry.avatar_key)}
-                alt={entry.username}
-              />
+              <UserAvatar avatarKey={entry.avatar_key} alt={entry.username} />
             )}
           </div>
         </div>
@@ -466,7 +459,7 @@ function ArenaRow({ pos, entry }: { pos: number; entry: RankingEntry }) {
     <li className="flex items-center gap-2.5 py-1.5">
       <span className="w-5 text-center font-display text-xs font-black text-purple-300/80">{pos}</span>
       <div className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-purple-700/30 ring-1 ring-purple-400/30">
-        <SmoothAvatar src={getAvatarUrl(entry.avatar_key)} alt={entry.username} spinnerSize="sm" />
+        <UserAvatar avatarKey={entry.avatar_key} alt={entry.username} spinnerSize="sm" />
       </div>
       <div className="min-w-0 flex-1 truncate text-[11px] font-semibold uppercase tracking-wider text-white">
         {entry.username}
@@ -512,68 +505,6 @@ function BottomCenterActive() {
         <Trophy className="h-7 w-7 text-white" strokeWidth={2.2} />
       </span>
       <span className="text-[9px] font-bold tracking-wider text-emerald-400">RANKING</span>
-    </div>
-  );
-}
-
-function SmoothAvatar({
-  src,
-  alt,
-  spinnerSize = "md",
-}: {
-  src: string;
-  alt: string;
-  spinnerSize?: "sm" | "md";
-}) {
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    setLoaded(false);
-    if (!src) return;
-    let cancelled = false;
-    const img = new Image();
-    img.decoding = "async";
-    img.src = src;
-    const done = () => {
-      if (cancelled) return;
-      const finish = () => !cancelled && setLoaded(true);
-      if (img.decode) {
-        img.decode().then(finish).catch(finish);
-      } else {
-        finish();
-      }
-    };
-    if (img.complete && img.naturalWidth > 0) done();
-    else {
-      img.onload = done;
-      img.onerror = () => !cancelled && setLoaded(true);
-    }
-    return () => {
-      cancelled = true;
-    };
-  }, [src]);
-
-  const spinner =
-    spinnerSize === "sm"
-      ? "h-3 w-3 border-[1.5px]"
-      : "h-5 w-5 border-2";
-
-  return (
-    <div className="relative h-full w-full">
-      {!loaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white/5">
-          <span
-            className={`${spinner} animate-spin rounded-full border-purple-300/40 border-t-purple-200`}
-          />
-        </div>
-      )}
-      <img
-        src={src}
-        alt={alt}
-        className={`h-full w-full object-cover transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"}`}
-        loading="eager"
-        decoding="async"
-      />
     </div>
   );
 }
