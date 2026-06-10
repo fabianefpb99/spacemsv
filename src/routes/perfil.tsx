@@ -10,7 +10,6 @@ import {
   LogOut,
   Lock,
   Mail,
-  ShieldCheck,
   Trophy,
   Wallet as WalletIcon,
   Dice5,
