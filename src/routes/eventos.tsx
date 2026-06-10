@@ -492,7 +492,7 @@ function MissionCard({ mission }: { mission: Mission }) {
   return (
     <div className={`relative overflow-hidden rounded-xl border border-purple-500/30 bg-[#0c0620]/85 p-3 ring-1 ${a.ring}`}>
       <div className="flex items-center gap-3">
-        <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${a.bg} ring-1 ${a.ring}`}>
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center">
           {mission.icon}
         </div>
         <div className="min-w-0 flex-1">
