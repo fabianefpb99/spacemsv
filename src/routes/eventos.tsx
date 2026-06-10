@@ -29,6 +29,9 @@ import { AuthDialog } from "@/components/auth/AuthDialog";
 import { HamburgerDrawer } from "@/components/HamburgerDrawer";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { getMissionIconUrl } from "@/lib/mission-icons";
 
 export const Route = createFileRoute("/eventos")({
   head: () => ({
@@ -265,10 +268,54 @@ function EventosPage() {
 
   const balanceText = me.data ? formatCOP(me.data.balance) : "—";
 
+  const missionsQ = useQuery({
+    queryKey: ["missions-public"],
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("missions")
+        .select("*")
+        .eq("is_active", true)
+        .order("type")
+        .order("sort_order")
+        .order("created_at");
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const dbMissions: Mission[] = (missionsQ.data ?? []).map((r: any) => ({
+    id: r.id,
+    type: r.type,
+    title: r.title,
+    subtitle: r.subtitle ?? undefined,
+    progress: 0,
+    goal: Number(r.goal) || 1,
+    reward: {
+      kind: (r.reward_kind === "xp" ? "bonus" : r.reward_kind) as RewardKind,
+      value: r.reward_kind === "avatar" ? (r.reward_label || "Avatar") : Number(r.reward_value) || 0,
+      label:
+        r.reward_label ||
+        (r.reward_kind === "bonus"
+          ? `${r.reward_value} Bonus`
+          : r.reward_kind === "spins"
+            ? `${r.reward_value} Free Spins`
+            : r.reward_kind === "xp"
+              ? `+${r.reward_value} XP`
+              : "Avatar"),
+    },
+    cta: { label: r.cta_label || "Jugar", to: r.cta_to || "/home" },
+    accent: r.accent,
+    icon: <MissionIcon src={getMissionIconUrl(r.icon_key)} alt="" />,
+    rewardImage: r.reward_image_url ?? undefined,
+  }));
+
+  const activeMissions = dbMissions.length > 0 ? dbMissions : MISSIONS;
+
   const filtered = useMemo(() => {
-    if (tab === "all") return MISSIONS;
-    return MISSIONS.filter((m) => m.type === tab);
-  }, [tab]);
+    if (tab === "all") return activeMissions;
+    return activeMissions.filter((m) => m.type === tab);
+  }, [tab, activeMissions]);
 
   const daily = filtered.filter((m) => m.type === "daily");
   const weekly = filtered.filter((m) => m.type === "weekly");
