@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
-import type { AvatarKey } from "@/lib/avatars";
+import { rememberMissionAvatar, type AvatarKey } from "@/lib/avatars";
 
 export type CollectibleItem = {
   /** Stable id: avatar key for legacy items, `mission:<id>` for mission rewards. */
@@ -12,8 +12,11 @@ export type CollectibleItem = {
   label: string;
   unlocked: boolean;
   unlockHint?: string;
-  /** Present only for legacy items that can be equipped via AvatarPickerDialog. */
-  avatarKey?: AvatarKey;
+  /**
+   * Key written to `profiles.avatar_key` when the user equips this collectible.
+   * `AvatarKey` for legacy items, `mission:<id>` string for mission rewards.
+   */
+  avatarKey?: string;
   /** Only set for mission rewards (used to keep equipped state consistent). */
   missionId?: string;
 };
@@ -98,14 +101,20 @@ export function useUnlockedAvatars() {
 
       const missionItems: CollectibleItem[] = (missionsRes.data ?? [])
         .filter((m) => !!m.reward_image_url)
-        .map((m) => ({
-          id: `mission:${m.id}`,
-          missionId: m.id,
-          imageUrl: m.reward_image_url as string,
-          label: m.reward_label || m.title,
-          unlocked: unlockedMissionIds.has(m.id),
-          unlockHint: m.subtitle || `Completa: ${m.title}`,
-        }));
+        .map((m) => {
+          // Populate the runtime cache so getAvatarUrl can resolve this
+          // mission avatar everywhere (header, ranking, perfil header card).
+          rememberMissionAvatar(m.id, m.reward_image_url as string);
+          return {
+            id: `mission:${m.id}`,
+            missionId: m.id,
+            avatarKey: `mission:${m.id}`,
+            imageUrl: m.reward_image_url as string,
+            label: m.reward_label || m.title,
+            unlocked: unlockedMissionIds.has(m.id),
+            unlockHint: m.subtitle || `Completa: ${m.title}`,
+          };
+        });
 
       const items = missionItems;
       const unlockedCount = items.filter((i) => i.unlocked).length;

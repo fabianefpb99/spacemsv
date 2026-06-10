@@ -19,13 +19,12 @@ type Props = {
 export function AvatarPickerDialog({ open, onOpenChange, userId, currentKey }: Props) {
   const qc = useQueryClient();
   const unlockedQ = useUnlockedAvatars();
-  const unlocked = unlockedQ.data?.unlocked;
-  const [selected, setSelected] = useState<AvatarKey | null>(
-    (currentKey as AvatarKey) ?? null,
+  const [selected, setSelected] = useState<string | null>(
+    (currentKey as string) ?? null,
   );
 
   useEffect(() => {
-    if (open) setSelected((currentKey as AvatarKey) ?? null);
+    if (open) setSelected((currentKey as string) ?? null);
   }, [open, currentKey]);
 
   // Lock scroll + ESC to close while open (mirrors AuthDialog pattern so the
@@ -52,7 +51,7 @@ export function AvatarPickerDialog({ open, onOpenChange, userId, currentKey }: P
   }, [open, onOpenChange]);
 
   const save = useMutation({
-    mutationFn: async (key: AvatarKey) => {
+    mutationFn: async (key: string) => {
       if (!userId) throw new Error("Sin sesión");
       const { error } = await supabase
         .from("profiles")
@@ -70,6 +69,37 @@ export function AvatarPickerDialog({ open, onOpenChange, userId, currentKey }: P
   });
 
   if (!open || typeof document === "undefined") return null;
+
+  // Combine legacy avatar options with unlocked-aware mission avatars so the
+  // user can equip rewards earned from missions directly from the picker.
+  type PickerItem = {
+    key: string;
+    url: string;
+    label: string;
+    locked: boolean;
+    unlockHint?: string;
+  };
+  const missionItems: PickerItem[] = (unlockedQ.data?.items ?? [])
+    .filter((i) => !!i.avatarKey)
+    .map((i) => ({
+      key: i.avatarKey as string,
+      url: i.imageUrl,
+      label: i.label,
+      locked: !i.unlocked,
+      unlockHint: i.unlockHint,
+    }));
+  // Legacy collectibles are superseded by mission rewards; hide them from
+  // the picker so the only "locked" entries shown come from active missions.
+  const legacyItems: PickerItem[] = AVATAR_OPTIONS.filter(
+    (opt) => !opt.collectible,
+  ).map((opt) => ({
+    key: opt.key,
+    url: opt.url,
+    label: opt.label,
+    locked: false,
+    unlockHint: opt.unlockHint,
+  }));
+  const allItems: PickerItem[] = [...legacyItems, ...missionItems];
 
   return createPortal(
     <div
@@ -104,9 +134,9 @@ export function AvatarPickerDialog({ open, onOpenChange, userId, currentKey }: P
           </div>
 
           <div className="mt-4 grid grid-cols-4 gap-3">
-          {AVATAR_OPTIONS.map((opt) => {
+          {allItems.map((opt) => {
             const isSelected = selected === opt.key;
-            const isLocked = !!opt.collectible && !unlocked?.has(opt.key);
+            const isLocked = opt.locked;
             return (
               <button
                 key={opt.key}
