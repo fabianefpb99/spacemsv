@@ -160,7 +160,6 @@ function PerfilPage() {
     email.split("@")[0] ??
     "Usuario";
   const emailVerified = !!user?.email_confirmed_at;
-  const phone = user?.phone || (user?.user_metadata?.phone as string | undefined) || "";
   const balanceText = me.data ? formatCOP(me.data.balance) : "—";
   const bonusText = me.data ? formatCOP(me.data.bonus_balance) : "—";
   const verification = me.data?.profile?.verification_status ?? "unverified";
