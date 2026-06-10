@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VipRouteImport } from './routes/vip'
+import { Route as TransaccionesRouteImport } from './routes/transacciones'
 import { Route as TerminosRouteImport } from './routes/terminos'
 import { Route as SpacemanRouteImport } from './routes/spaceman'
 import { Route as SoporteRouteImport } from './routes/soporte'
@@ -37,6 +38,11 @@ import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/em
 const VipRoute = VipRouteImport.update({
   id: '/vip',
   path: '/vip',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TransaccionesRoute = TransaccionesRouteImport.update({
+  id: '/transacciones',
+  path: '/transacciones',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TerminosRoute = TerminosRouteImport.update({
@@ -176,6 +182,7 @@ export interface FileRoutesByFullPath {
   '/soporte': typeof SoporteRoute
   '/spaceman': typeof SpacemanRoute
   '/terminos': typeof TerminosRoute
+  '/transacciones': typeof TransaccionesRoute
   '/vip': typeof VipRoute
   '/pay/breb': typeof PayBrebRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -202,6 +209,7 @@ export interface FileRoutesByTo {
   '/soporte': typeof SoporteRoute
   '/spaceman': typeof SpacemanRoute
   '/terminos': typeof TerminosRoute
+  '/transacciones': typeof TransaccionesRoute
   '/vip': typeof VipRoute
   '/pay/breb': typeof PayBrebRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -229,6 +237,7 @@ export interface FileRoutesById {
   '/soporte': typeof SoporteRoute
   '/spaceman': typeof SpacemanRoute
   '/terminos': typeof TerminosRoute
+  '/transacciones': typeof TransaccionesRoute
   '/vip': typeof VipRoute
   '/pay_/breb': typeof PayBrebRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -257,6 +266,7 @@ export interface FileRouteTypes {
     | '/soporte'
     | '/spaceman'
     | '/terminos'
+    | '/transacciones'
     | '/vip'
     | '/pay/breb'
     | '/lovable/email/auth/preview'
@@ -283,6 +293,7 @@ export interface FileRouteTypes {
     | '/soporte'
     | '/spaceman'
     | '/terminos'
+    | '/transacciones'
     | '/vip'
     | '/pay/breb'
     | '/lovable/email/auth/preview'
@@ -309,6 +320,7 @@ export interface FileRouteTypes {
     | '/soporte'
     | '/spaceman'
     | '/terminos'
+    | '/transacciones'
     | '/vip'
     | '/pay_/breb'
     | '/lovable/email/auth/preview'
@@ -336,6 +348,7 @@ export interface RootRouteChildren {
   SoporteRoute: typeof SoporteRoute
   SpacemanRoute: typeof SpacemanRoute
   TerminosRoute: typeof TerminosRoute
+  TransaccionesRoute: typeof TransaccionesRoute
   VipRoute: typeof VipRoute
   PayBrebRoute: typeof PayBrebRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -350,6 +363,13 @@ declare module '@tanstack/react-router' {
       path: '/vip'
       fullPath: '/vip'
       preLoaderRoute: typeof VipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/transacciones': {
+      id: '/transacciones'
+      path: '/transacciones'
+      fullPath: '/transacciones'
+      preLoaderRoute: typeof TransaccionesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/terminos': {
@@ -536,6 +556,7 @@ const rootRouteChildren: RootRouteChildren = {
   SoporteRoute: SoporteRoute,
   SpacemanRoute: SpacemanRoute,
   TerminosRoute: TerminosRoute,
+  TransaccionesRoute: TransaccionesRoute,
   VipRoute: VipRoute,
   PayBrebRoute: PayBrebRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
@@ -545,3 +566,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
