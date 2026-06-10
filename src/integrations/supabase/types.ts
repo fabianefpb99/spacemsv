@@ -568,6 +568,66 @@ export type Database = {
         }
         Relationships: []
       }
+      missions: {
+        Row: {
+          accent: string
+          created_at: string
+          cta_label: string
+          cta_to: string
+          goal: number
+          icon_key: string
+          id: string
+          is_active: boolean
+          reward_image_url: string | null
+          reward_kind: string
+          reward_label: string
+          reward_value: number
+          sort_order: number
+          subtitle: string | null
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          accent?: string
+          created_at?: string
+          cta_label?: string
+          cta_to?: string
+          goal?: number
+          icon_key?: string
+          id?: string
+          is_active?: boolean
+          reward_image_url?: string | null
+          reward_kind: string
+          reward_label?: string
+          reward_value?: number
+          sort_order?: number
+          subtitle?: string | null
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          accent?: string
+          created_at?: string
+          cta_label?: string
+          cta_to?: string
+          goal?: number
+          icon_key?: string
+          id?: string
+          is_active?: boolean
+          reward_image_url?: string | null
+          reward_kind?: string
+          reward_label?: string
+          reward_value?: number
+          sort_order?: number
+          subtitle?: string | null
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_key: string | null
