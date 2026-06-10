@@ -72,6 +72,8 @@ export const GAME_LABELS: Record<string, string> = {
   mines: "BUSCAMINAS",
   dice: "DADOS",
   blackjack: "BLACKJACK",
+  arena: "ARENA",
+  ruleta: "RULETA",
 };
 
 export function depositStatusBadge(s: string) {
