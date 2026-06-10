@@ -4,7 +4,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 import type { AvatarKey } from "@/lib/avatars";
-import { COLLECTIBLE_AVATARS } from "@/lib/avatars";
 
 export type CollectibleItem = {
   /** Stable id: avatar key for legacy items, `mission:<id>` for mission rewards. */
@@ -74,27 +73,12 @@ export function useUnlockedAvatars() {
       totalCount: number;
       arenaWins: number;
     }> => {
-      // 1. Legacy: arena wins → avatar-arena
-      const { count } = await supabase
-        .from("transactions")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", user!.id)
-        .eq("type", "win")
-        .eq("game", "arena");
-      const arenaWins = count ?? 0;
+      // Collectibles come exclusively from active missions whose reward is an
+      // avatar. Legacy hard-coded items were removed to avoid duplicates with
+      // the equivalent missions configured from the admin panel.
       const unlocked = new Set<AvatarKey>();
-      if (arenaWins >= 10) unlocked.add("avatar-arena");
+      const arenaWins = 0;
 
-      const legacyItems: CollectibleItem[] = COLLECTIBLE_AVATARS.map((o) => ({
-        id: o.key,
-        imageUrl: o.url,
-        label: o.label,
-        unlocked: unlocked.has(o.key),
-        unlockHint: o.unlockHint,
-        avatarKey: o.key,
-      }));
-
-      // 2. Mission-driven avatars
       const [missionsRes, unlocksRes] = await Promise.all([
         supabase
           .from("missions")
@@ -123,7 +107,7 @@ export function useUnlockedAvatars() {
           unlockHint: m.subtitle || `Completa: ${m.title}`,
         }));
 
-      const items = [...legacyItems, ...missionItems];
+      const items = missionItems;
       const unlockedCount = items.filter((i) => i.unlocked).length;
       return {
         items,
