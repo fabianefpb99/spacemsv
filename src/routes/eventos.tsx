@@ -427,34 +427,43 @@ function EventosPage() {
 
   const activeMissions = dbMissions.length > 0 ? dbMissions : MISSIONS;
 
-  // Dispara el flotante de "Misión completada" cuando una misión
-  // alcanza su meta. Dedupe por id usando sessionStorage para no
-  // notificar varias veces por sesión.
+  // Dispara el flotante de "Misión completada" cuando una misión se completa
+  // realmente en el backend. Solo notifica completaciones nuevas (posteriores
+  // a la apertura de la página) para evitar notificaciones de misiones ya
+  // completadas en sesiones anteriores.
+  const [mountedAt] = useState<number>(() => Date.now());
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const SEEN_KEY = "betspace:missions-notified";
+    const rows = userMissionsQ.data ?? [];
+    const SEEN_KEY = "betspace:missions-notified-v2";
     let seen = new Set<string>();
     try {
       seen = new Set<string>(JSON.parse(sessionStorage.getItem(SEEN_KEY) ?? "[]"));
     } catch {}
-    for (const m of activeMissions) {
-      if (m.progress >= m.goal && !seen.has(m.id)) {
-        seen.add(m.id);
-        notifyMissionComplete({
-          id: m.id,
-          title: m.title,
-          subtitle: m.subtitle,
-          reward: {
-            kind: m.reward.kind,
-            value: m.reward.value,
-            label: m.reward.label,
-            image: m.rewardImage ?? null,
-          },
-        });
-      }
+    for (const r of rows as UserMissionRow[]) {
+      if (!r.completed_at) continue;
+      const completedAt = new Date(r.completed_at).getTime();
+      // Solo nuevas completaciones (no las viejas)
+      if (completedAt < mountedAt - 5_000) continue;
+      const key = `${r.mission_id}:${r.period_start}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const m = activeMissions.find((x) => x.id === r.mission_id);
+      if (!m) continue;
+      notifyMissionComplete({
+        id: m.id,
+        title: m.title,
+        subtitle: m.subtitle,
+        reward: {
+          kind: m.reward.kind,
+          value: m.reward.value,
+          label: m.reward.label,
+          image: m.rewardImage ?? null,
+        },
+      });
     }
     sessionStorage.setItem(SEEN_KEY, JSON.stringify(Array.from(seen)));
-  }, [activeMissions]);
+  }, [userMissionsQ.data, activeMissions, mountedAt]);
 
   const filtered = useMemo(() => {
     if (tab === "all") return activeMissions;
