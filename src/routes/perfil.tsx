@@ -432,16 +432,16 @@ function PerfilPage() {
                   key={opt.key}
                   type="button"
                   onClick={() => setAvatarDialogOpen(true)}
-                  className="group flex w-[88px] shrink-0 flex-col items-center gap-1"
+                  className="group flex w-[56px] shrink-0 flex-col items-center gap-1"
                   title={isUnlocked ? opt.label : opt.unlockHint}
                 >
                   <div
                     className={cn(
-                      "relative aspect-square w-full overflow-hidden rounded-xl border-2 transition",
+                      "relative aspect-square w-full overflow-hidden rounded-lg border transition",
                       isEquipped
                         ? "border-fuchsia-400 ring-2 ring-fuchsia-400/60"
                         : isUnlocked
-                          ? "border-amber-400/70 shadow-[0_0_10px_rgba(251,191,36,0.35)]"
+                          ? "border-amber-400/70 shadow-[0_0_6px_rgba(251,191,36,0.3)]"
                           : "border-white/10",
                     )}
                   >
@@ -453,20 +453,9 @@ function PerfilPage() {
                     />
                     {!isUnlocked && (
                       <span className="absolute inset-0 flex items-center justify-center bg-black/55">
-                        <Lock className="h-4 w-4 text-white/90" />
+                        <Lock className="h-3 w-3 text-white/90" />
                       </span>
                     )}
-                  </div>
-                  <div className="w-full truncate text-center text-[10px] font-semibold text-white/90">
-                    {opt.label}
-                  </div>
-                  <div
-                    className={cn(
-                      "w-full truncate text-center text-[9px]",
-                      isUnlocked ? "text-emerald-300" : "text-purple-200/60",
-                    )}
-                  >
-                    {isEquipped ? "En uso" : isUnlocked ? "Desbloqueado" : opt.unlockHint}
                   </div>
                 </button>
               );
