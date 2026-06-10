@@ -28,7 +28,7 @@ import { useMe } from "@/hooks/useMe";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import { AvatarPickerDialog } from "@/components/profile/AvatarPickerDialog";
-import { getAvatarUrl, COLLECTIBLE_AVATARS } from "@/lib/avatars";
+import { getAvatarUrl } from "@/lib/avatars";
 import { useUnlockedAvatars } from "@/hooks/useUnlockedAvatars";
 import { VipLevelUpToast } from "@/components/vip/VipLevelUpToast";
 import { VipBadge } from "@/components/vip/VipBadge";
@@ -423,21 +423,24 @@ function PerfilPage() {
               Avatares coleccionables
             </div>
             <div className="text-[10px] font-bold text-fuchsia-300">
-              {COLLECTIBLE_AVATARS.filter((a) => unlockedQ.data?.unlocked.has(a.key)).length}
-              /{COLLECTIBLE_AVATARS.length}
+              {unlockedQ.data?.unlockedCount ?? 0}
+              /{unlockedQ.data?.totalCount ?? 0}
             </div>
           </div>
           <div className="flex gap-2 overflow-x-auto pb-1">
-            {COLLECTIBLE_AVATARS.map((opt) => {
-              const isUnlocked = !!unlockedQ.data?.unlocked.has(opt.key);
-              const isEquipped = me.data?.profile?.avatar_key === opt.key;
+            {(unlockedQ.data?.items ?? []).map((opt) => {
+              const isUnlocked = opt.unlocked;
+              const isEquipped =
+                !!opt.avatarKey && me.data?.profile?.avatar_key === opt.avatarKey;
               return (
                 <button
-                  key={opt.key}
+                  key={opt.id}
                   type="button"
-                  onClick={() => setAvatarDialogOpen(true)}
+                  onClick={() => {
+                    if (opt.avatarKey) setAvatarDialogOpen(true);
+                  }}
                   className="group flex w-[56px] shrink-0 flex-col items-center gap-1"
-                  title={isUnlocked ? opt.label : opt.unlockHint}
+                  title={isUnlocked ? opt.label : (opt.unlockHint ?? opt.label)}
                 >
                   <div
                     className={cn(
@@ -450,7 +453,7 @@ function PerfilPage() {
                     )}
                   >
                     <img
-                      src={opt.url}
+                      src={opt.imageUrl}
                       alt={opt.label}
                       className={cn("h-full w-full object-cover", !isUnlocked && "grayscale")}
                       loading="lazy"
@@ -464,6 +467,11 @@ function PerfilPage() {
                 </button>
               );
             })}
+            {(unlockedQ.data?.items.length ?? 0) === 0 && (
+              <div className="py-2 text-[11px] text-white/40">
+                No hay avatares coleccionables disponibles.
+              </div>
+            )}
           </div>
         </section>
 
