@@ -329,6 +329,10 @@ function MissionEditor({
       cta_to: m.cta_to?.trim() || "/home",
       sort_order: Number(m.sort_order) || 0,
       is_active: m.is_active ?? true,
+      trigger_event: (m.trigger_event ?? "bet_placed") as TriggerEvent,
+      trigger_game: m.trigger_game?.toString().trim() || null,
+      metric: (m.metric ?? "count") as Metric,
+      min_amount: Math.max(0, Number(m.min_amount) || 0),
     };
     const res = m.id
       ? await supabase.from("missions").update(payload).eq("id", m.id)
