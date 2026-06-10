@@ -19,6 +19,10 @@ import {
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import eventosHero from "@/assets/eventos-hero.jpg";
 import avatarArenaAsset from "@/assets/avatar-astronauta-arena.png.asset.json";
+import iconSwords from "@/assets/mission-swords.png.asset.json";
+import iconCoins from "@/assets/mission-coins.png.asset.json";
+import iconSparkles from "@/assets/mission-sparkles.png.asset.json";
+import iconUsers from "@/assets/mission-users.png.asset.json";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { NotificationBell } from "@/components/admin/NotificationBell";
 import { AuthDialog } from "@/components/auth/AuthDialog";
@@ -70,7 +74,7 @@ const MISSIONS: Mission[] = [
     reward: { kind: "bonus", value: 1000, label: "1.000 Bonus" },
     cta: { label: "Ir a Arena", to: "/arena" },
     accent: "emerald",
-    icon: <Swords className="h-6 w-6 text-emerald-200" />,
+    icon: <MissionIcon src={iconSwords.url} alt="Espadas" />,
   },
   {
     id: "m2",
@@ -82,7 +86,7 @@ const MISSIONS: Mission[] = [
     reward: { kind: "bonus", value: 500, label: "500 Bonus" },
     cta: { label: "Apostar", to: "/home" },
     accent: "emerald",
-    icon: <Coins className="h-6 w-6 text-emerald-200" />,
+    icon: <MissionIcon src={iconCoins.url} alt="Monedas" />,
   },
   {
     id: "m3",
@@ -94,7 +98,7 @@ const MISSIONS: Mission[] = [
     reward: { kind: "spins", value: 5, label: "5 Free Spins" },
     cta: { label: "Jugar Slot", to: "/slot" },
     accent: "emerald",
-    icon: <Sparkles className="h-6 w-6 text-emerald-200" />,
+    icon: <MissionIcon src={iconSparkles.url} alt="Estrella" />,
   },
   {
     id: "m4",
@@ -106,7 +110,7 @@ const MISSIONS: Mission[] = [
     reward: { kind: "bonus", value: 2500, label: "2.500 Bonus" },
     cta: { label: "Ir a Arena", to: "/arena" },
     accent: "purple",
-    icon: <Swords className="h-6 w-6 text-purple-200" />,
+    icon: <MissionIcon src={iconSwords.url} alt="Espadas" />,
   },
   {
     id: "m5",
@@ -118,7 +122,7 @@ const MISSIONS: Mission[] = [
     reward: { kind: "bonus", value: 1500, label: "1.500 Bonus" },
     cta: { label: "Jugar", to: "/home" },
     accent: "purple",
-    icon: <Coins className="h-6 w-6 text-purple-200" />,
+    icon: <MissionIcon src={iconCoins.url} alt="Monedas" />,
   },
   {
     id: "m6",
@@ -130,7 +134,7 @@ const MISSIONS: Mission[] = [
     reward: { kind: "bonus", value: 3000, label: "3.000 Bonus" },
     cta: { label: "Invitar", to: "/perfil" },
     accent: "amber",
-    icon: <Users className="h-6 w-6 text-amber-200" />,
+    icon: <MissionIcon src={iconUsers.url} alt="Amigos" />,
   },
   {
     id: "m7",
@@ -142,10 +146,23 @@ const MISSIONS: Mission[] = [
     reward: { kind: "avatar", value: "Astronauta Arena", label: "Avatar exclusivo" },
     cta: { label: "Ir a Arena", to: "/arena" },
     accent: "amber",
-    icon: <Swords className="h-6 w-6 text-amber-200" />,
+    icon: <MissionIcon src={iconSwords.url} alt="Espadas" />,
     rewardImage: avatarArenaAsset.url,
   },
 ];
+
+function MissionIcon({ src, alt }: { src: string; alt: string }) {
+  return (
+    <img
+      src={src}
+      alt={alt}
+      loading="lazy"
+      width={96}
+      height={96}
+      className="h-full w-full object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.45)]"
+    />
+  );
+}
 
 const TABS: { id: "all" | MissionType; label: string; icon: React.ReactNode }[] = [
   { id: "all", label: "TODOS", icon: <LayoutGrid className="h-4 w-4" /> },
