@@ -6,6 +6,7 @@ import avatar5 from "@/assets/avatars/avatar-5.png.asset.json";
 import avatar6 from "@/assets/avatars/avatar-6.png.asset.json";
 import avatar7 from "@/assets/avatars/avatar-7.png.asset.json";
 import avatar8 from "@/assets/avatars/avatar-8.png.asset.json";
+import avatarArena from "@/assets/avatar-astronauta-arena.png.asset.json";
 import astronautDefault from "@/assets/astronaut.svg";
 
 export type AvatarKey =
@@ -16,9 +17,16 @@ export type AvatarKey =
   | "avatar-5"
   | "avatar-6"
   | "avatar-7"
-  | "avatar-8";
+  | "avatar-8"
+  | "avatar-arena";
 
-export type AvatarOption = { key: AvatarKey; url: string; label: string };
+export type AvatarOption = {
+  key: AvatarKey;
+  url: string;
+  label: string;
+  collectible?: boolean;
+  unlockHint?: string;
+};
 
 // Display order: astronaut (default) → men/characters → women at the end.
 export const AVATAR_OPTIONS: AvatarOption[] = [
@@ -30,7 +38,16 @@ export const AVATAR_OPTIONS: AvatarOption[] = [
   { key: "avatar-3", url: avatar3.url, label: "Tiburón" },
   { key: "avatar-5", url: avatar5.url, label: "Dama" },
   { key: "avatar-6", url: avatar6.url, label: "Diosa" },
+  {
+    key: "avatar-arena",
+    url: avatarArena.url,
+    label: "Astronauta Dorado",
+    collectible: true,
+    unlockHint: "Gana 10 veces en ARENA",
+  },
 ];
+
+export const COLLECTIBLE_AVATARS = AVATAR_OPTIONS.filter((o) => o.collectible);
 
 export const DEFAULT_AVATAR_KEY: AvatarKey = "avatar-8";
 export const DEFAULT_AVATAR_FALLBACK = astronautDefault;
