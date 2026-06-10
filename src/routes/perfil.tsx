@@ -269,10 +269,10 @@ function PerfilPage() {
                       : "0 0 18px rgba(217,70,239,0.45)",
                   }}
                 >
-                  <img
-                    src={getAvatarUrl(me.data?.profile?.avatar_key)}
+                  <UserAvatar
+                    avatarKey={me.data?.profile?.avatar_key}
                     alt=""
-                    className="h-full w-full object-cover"
+                    spinnerSize="lg"
                   />
                 </div>
                 <button
