@@ -7,7 +7,6 @@ import avatar6 from "@/assets/avatars/avatar-6.png.asset.json";
 import avatar7 from "@/assets/avatars/avatar-7.png.asset.json";
 import avatar8 from "@/assets/avatars/avatar-8.png.asset.json";
 import avatarArena from "@/assets/avatar-astronauta-arena.png.asset.json";
-import astronautDefault from "@/assets/astronaut.svg";
 
 export type AvatarKey =
   | "avatar-1"
@@ -50,7 +49,12 @@ export const AVATAR_OPTIONS: AvatarOption[] = [
 export const COLLECTIBLE_AVATARS = AVATAR_OPTIONS.filter((o) => o.collectible);
 
 export const DEFAULT_AVATAR_KEY: AvatarKey = "avatar-8";
-export const DEFAULT_AVATAR_FALLBACK = astronautDefault;
+/**
+ * Empty string fallback. Consumers that render avatars should use the
+ * <UserAvatar /> component, which displays a professional loading spinner
+ * when the URL is empty (instead of a default astronaut placeholder).
+ */
+export const DEFAULT_AVATAR_FALLBACK = "";
 
 /**
  * Runtime cache for mission-driven avatars (key shape: `mission:<id>`).
@@ -70,10 +74,10 @@ export function getMissionAvatarUrl(key: string): string | undefined {
 }
 
 export function getAvatarUrl(key: string | null | undefined): string {
-  if (!key) return DEFAULT_AVATAR_FALLBACK;
+  if (!key) return "";
   if (key.startsWith("mission:")) {
-    return missionAvatarUrlCache.get(key) ?? DEFAULT_AVATAR_FALLBACK;
+    return missionAvatarUrlCache.get(key) ?? "";
   }
   const found = AVATAR_OPTIONS.find((o) => o.key === key);
-  return found?.url ?? DEFAULT_AVATAR_FALLBACK;
+  return found?.url ?? "";
 }
