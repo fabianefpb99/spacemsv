@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Plus, Pencil, Trash2, Upload, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -108,6 +108,8 @@ export function MissionsSection() {
 
   return (
     <div className="space-y-4">
+      <SpecialEventPanel />
+
       <Panel
         title="Eventos y Misiones"
         actions={
@@ -535,6 +537,125 @@ function autoLabel(m: Partial<Mission>): string {
   if (m.reward_kind === "xp") return `+${Number(m.reward_value ?? 0)} XP`;
   if (m.reward_kind === "avatar") return "Avatar exclusivo";
   return "";
+}
+
+type SpecialEvent = {
+  active: boolean;
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  badge_value: string;
+  badge_label: string;
+  accent: Accent;
+  ends_at: string | null; // ISO; null = usar contador de fin de semana
+};
+
+const SPECIAL_EVENT_DEFAULT: SpecialEvent = {
+  active: true,
+  eyebrow: "Evento especial",
+  title: "DOBLE XP DE FIN DE SEMANA",
+  subtitle: "Sube de nivel el doble de rápido",
+  badge_value: "x2",
+  badge_label: "XP",
+  accent: "amber",
+  ends_at: null,
+};
+
+function SpecialEventPanel() {
+  const qc = useQueryClient();
+  const [s, setS] = useState<SpecialEvent>(SPECIAL_EVENT_DEFAULT);
+  const [saving, setSaving] = useState(false);
+
+  const q = useQuery({
+    queryKey: ["site-setting", "eventos_special_event"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "eventos_special_event")
+        .maybeSingle();
+      if (error) throw error;
+      return (data?.value ?? null) as SpecialEvent | null;
+    },
+  });
+
+  useEffect(() => {
+    if (q.data) setS({ ...SPECIAL_EVENT_DEFAULT, ...q.data });
+  }, [q.data]);
+
+  function up<K extends keyof SpecialEvent>(k: K, v: SpecialEvent[K]) {
+    setS((p) => ({ ...p, [k]: v }));
+  }
+
+  async function save() {
+    setSaving(true);
+    const { error } = await supabase
+      .from("site_settings")
+      .upsert({ key: "eventos_special_event", value: s as any }, { onConflict: "key" });
+    setSaving(false);
+    if (error) return toast.error(error.message);
+    toast.success("Evento especial actualizado");
+    qc.invalidateQueries({ queryKey: ["site-setting", "eventos_special_event"] });
+    qc.invalidateQueries({ queryKey: ["eventos-special-event"] });
+  }
+
+  return (
+    <Panel title="Evento especial (banner /eventos)" actions={null}>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <Field label="Estado" className="sm:col-span-2">
+          <label className="flex cursor-pointer items-center gap-2 text-xs text-purple-100">
+            <input type="checkbox" checked={s.active} onChange={(e) => up("active", e.target.checked)} />
+            Mostrar banner en /eventos
+          </label>
+        </Field>
+        <Field label="Etiqueta superior">
+          <input className={inputCls} value={s.eyebrow} onChange={(e) => up("eyebrow", e.target.value)} />
+        </Field>
+        <Field label="Color (acento)">
+          <select className={inputCls} value={s.accent} onChange={(e) => up("accent", e.target.value as Accent)}>
+            <option value="amber">Dorado</option>
+            <option value="purple">Morado</option>
+            <option value="emerald">Verde</option>
+            <option value="rose">Rosa</option>
+            <option value="blue">Azul</option>
+          </select>
+        </Field>
+        <Field label="Título" className="sm:col-span-2">
+          <input className={inputCls} value={s.title} onChange={(e) => up("title", e.target.value)} />
+        </Field>
+        <Field label="Subtítulo" className="sm:col-span-2">
+          <input className={inputCls} value={s.subtitle} onChange={(e) => up("subtitle", e.target.value)} />
+        </Field>
+        <Field label="Insignia (valor)">
+          <input className={inputCls} value={s.badge_value} onChange={(e) => up("badge_value", e.target.value)} placeholder="x2" />
+        </Field>
+        <Field label="Insignia (etiqueta)">
+          <input className={inputCls} value={s.badge_label} onChange={(e) => up("badge_label", e.target.value)} placeholder="XP" />
+        </Field>
+        <Field label="Termina en (opcional, ISO)" className="sm:col-span-2">
+          <input
+            className={inputCls}
+            type="datetime-local"
+            value={s.ends_at ? s.ends_at.slice(0, 16) : ""}
+            onChange={(e) => up("ends_at", e.target.value ? new Date(e.target.value).toISOString() : null)}
+          />
+          <p className="mt-1 text-[10px] text-purple-300/60">
+            Si lo dejas vacío, se muestra el contador automático al fin de semana.
+          </p>
+        </Field>
+      </div>
+      <div className="mt-3 flex justify-end">
+        <button
+          onClick={save}
+          disabled={saving || q.isLoading}
+          className="inline-flex items-center gap-2 rounded-md bg-fuchsia-600 px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-white hover:bg-fuchsia-500 disabled:opacity-60"
+        >
+          {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
+          Guardar evento
+        </button>
+      </div>
+    </Panel>
+  );
 }
 
 const inputCls =
