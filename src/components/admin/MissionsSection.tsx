@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Plus, Pencil, Trash2, Upload, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -579,12 +579,9 @@ function SpecialEventPanel() {
     },
   });
 
-  useState(() => {});
-  // sync when query resolves
-  if (q.data && s === SPECIAL_EVENT_DEFAULT && !q.isFetching) {
-    // one-shot hydrate
-    queueMicrotask(() => setS({ ...SPECIAL_EVENT_DEFAULT, ...q.data }));
-  }
+  useEffect(() => {
+    if (q.data) setS({ ...SPECIAL_EVENT_DEFAULT, ...q.data });
+  }, [q.data]);
 
   function up<K extends keyof SpecialEvent>(k: K, v: SpecialEvent[K]) {
     setS((p) => ({ ...p, [k]: v }));
