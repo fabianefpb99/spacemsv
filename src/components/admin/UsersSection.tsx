@@ -12,6 +12,8 @@ import {
   RefreshCw,
   Search,
   Sparkles,
+  ChevronDown,
+  UserCircle2,
   Wallet as WalletIcon,
   X,
 } from "lucide-react";
@@ -347,6 +349,9 @@ function UserDetailDrawer({ userId, onClose }: { userId: string; onClose: () => 
               />
             </div>
 
+            {/* Personal data (collapsible) */}
+            <PersonalDataPanel profile={detail.data.profile} />
+
             {/* Stats */}
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
               <StatChip
@@ -586,6 +591,89 @@ function UserDetailDrawer({ userId, onClose }: { userId: string; onClose: () => 
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function PersonalDataPanel({ profile }: { profile: any }) {
+  const [open, setOpen] = useState(false);
+  if (!profile) return null;
+  const fullName = [profile.first_name, profile.second_name, profile.last_name, profile.second_last_name]
+    .filter(Boolean)
+    .join(" ");
+  const hasAny =
+    profile.first_name ||
+    profile.last_name ||
+    profile.document_number ||
+    profile.phone ||
+    profile.birth_date;
+  return (
+    <div className="rounded-xl border border-purple-500/30 bg-[#0c0620]/80">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left"
+        aria-expanded={open}
+      >
+        <div className="flex min-w-0 items-center gap-2">
+          <UserCircle2 className="h-4 w-4 shrink-0 text-fuchsia-300" />
+          <div className="min-w-0">
+            <div className="text-[10px] font-bold uppercase tracking-widest text-purple-200/80">
+              Datos personales
+            </div>
+            <div className="truncate text-[11px] text-purple-100/90">
+              {hasAny ? fullName || "—" : "Sin datos registrados"}
+              {profile.profile_completed ? (
+                <span className="ml-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-300">
+                  Completo
+                </span>
+              ) : (
+                <span className="ml-2 rounded-full border border-amber-500/40 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-300">
+                  Incompleto
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+        <ChevronDown
+          className={`h-4 w-4 shrink-0 text-purple-300 transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {open && (
+        <div className="border-t border-purple-500/20 px-3 py-3">
+          <dl className="grid grid-cols-1 gap-x-3 gap-y-2 text-[11px] sm:grid-cols-2">
+            <Field k="Primer nombre" v={profile.first_name} />
+            <Field k="Segundo nombre" v={profile.second_name} />
+            <Field k="Primer apellido" v={profile.last_name} />
+            <Field k="Segundo apellido" v={profile.second_last_name} />
+            <Field k="Género" v={profile.gender} />
+            <Field k="Fecha de nacimiento" v={profile.birth_date} />
+            <Field k="Teléfono" v={profile.phone} />
+            <Field k="Tipo de documento" v={profile.document_type} />
+            <Field k="Número de documento" v={profile.document_number} />
+            <Field k="Fecha de expedición" v={profile.document_issue_date} />
+            <Field
+              k="Términos aceptados"
+              v={
+                profile.terms_accepted_at
+                  ? new Date(profile.terms_accepted_at).toLocaleString("es-CO")
+                  : null
+              }
+            />
+            <Field k="Email" v={profile.email} />
+          </dl>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Field({ k, v }: { k: string; v: any }) {
+  const value = v == null || v === "" ? "—" : String(v);
+  return (
+    <div className="flex flex-col gap-0.5 rounded-md border border-purple-500/15 bg-[#150830]/40 px-2 py-1.5">
+      <span className="text-[9px] font-bold uppercase tracking-widest text-purple-300/70">{k}</span>
+      <span className="break-words text-[11px] text-white">{value}</span>
     </div>
   );
 }

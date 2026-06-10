@@ -10,6 +10,7 @@ import {
   Info,
   Lock,
   ShieldCheck,
+  UserCircle2,
   Wallet as WalletIcon,
   X,
 } from "lucide-react";
@@ -22,6 +23,8 @@ import { AuthControl } from "@/components/auth/AuthControl";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { useMe } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { PersonalDataDialog } from "@/components/profile/PersonalDataDialog";
 import {
   cancelMyWithdrawal,
   createWithdrawal,
@@ -94,6 +97,26 @@ function RetirosPage() {
   const balance = me.data?.balance ?? 0;
   const balanceText = me.data ? formatCOP(balance) : "—";
   const qc = useQueryClient();
+
+  // Personal data gate — withdrawals require a fully completed profile
+  const fullProfile = useQuery({
+    queryKey: ["perfil-full", user?.id ?? null],
+    enabled: !!user,
+    staleTime: 30_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select(
+          "first_name, second_name, last_name, second_last_name, gender, birth_date, phone, document_type, document_number, document_issue_date, terms_accepted_at, profile_completed",
+        )
+        .eq("id", user!.id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+  const [dataDialogOpen, setDataDialogOpen] = useState(false);
+  const profileBlocked = !!user && fullProfile.isSuccess && !fullProfile.data?.profile_completed;
 
   const listAccountsFn = useServerFn(listMyWithdrawalAccounts);
   const listWdFn = useServerFn(listMyWithdrawals);
@@ -262,6 +285,13 @@ function RetirosPage() {
           </div>
         </header>
 
+        {profileBlocked ? (
+          <ProfileGate
+            onOpen={() => setDataDialogOpen(true)}
+            balanceText={balanceText}
+          />
+        ) : (
+        <>
         {/* Balance card */}
         <div className="relative mt-5 overflow-hidden rounded-2xl border border-purple-500/40 bg-gradient-to-b from-[#180a3a] to-[#0a0420] p-4 shadow-[0_0_30px_-10px_rgba(168,85,247,0.55)]">
           <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-fuchsia-500/15 blur-3xl" />
@@ -453,6 +483,8 @@ function RetirosPage() {
             <span className="text-purple-200/60">Tiempo estimado: 10 minutos a 24 horas hábiles.</span>
           </p>
         </div>
+        </>
+        )}
       </div>
 
       {/* Add-account modal */}
@@ -465,6 +497,20 @@ function RetirosPage() {
             setPendingAccount({ ...acc, isDefault: true });
             setSelectedMethod(acc.method);
             setOpenAdd(null);
+          }}
+        />
+      )}
+
+      {user && (
+        <PersonalDataDialog
+          open={dataDialogOpen}
+          onOpenChange={setDataDialogOpen}
+          userId={user.id}
+          initial={fullProfile.data ?? undefined}
+          title="Completa tus datos para retirar"
+          subtitle="Es obligatorio registrar tu información personal antes de solicitar retiros."
+          onSaved={() => {
+            qc.invalidateQueries({ queryKey: ["perfil-full", user.id] });
           }}
         />
       )}
@@ -496,6 +542,51 @@ function RetirosPage() {
 }
 
 /* ---------------- Subcomponents ---------------- */
+
+function ProfileGate({ onOpen, balanceText }: { onOpen: () => void; balanceText: string }) {
+  return (
+    <div className="mt-6 space-y-4">
+      <div className="relative overflow-hidden rounded-2xl border border-amber-400/40 bg-gradient-to-b from-[#2a1306] to-[#0a0420] p-5 shadow-[0_0_30px_-10px_rgba(251,191,36,0.55)]">
+        <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-amber-500/15 blur-3xl" />
+        <div className="flex items-start gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-amber-400/50 bg-amber-500/15">
+            <UserCircle2 className="h-7 w-7 text-amber-200" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-200/80">
+              Verificación requerida
+            </div>
+            <h2 className="mt-1 font-display text-base font-black leading-tight text-white">
+              Completa tus datos personales para retirar
+            </h2>
+            <p className="mt-1.5 text-[12px] leading-snug text-purple-100/80">
+              Por seguridad y cumplimiento, necesitamos tus datos completos antes de procesar
+              cualquier retiro. Solo te tomará un minuto.
+            </p>
+          </div>
+        </div>
+        <div className="mt-3 rounded-xl border border-purple-500/25 bg-[#0c0620]/70 px-3 py-2 text-[11px] text-purple-200/80">
+          <span className="text-purple-200/60">Balance disponible:</span>{" "}
+          <span className="font-display font-bold text-white">${balanceText} COP</span>
+        </div>
+        <button
+          onClick={onOpen}
+          className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 to-fuchsia-500 px-4 py-3 text-sm font-extrabold uppercase tracking-wide text-white shadow-[0_0_24px_-6px_rgba(251,191,36,0.75)] transition hover:from-amber-300 hover:to-fuchsia-400"
+        >
+          <UserCircle2 className="h-4 w-4" />
+          Completar datos ahora
+        </button>
+      </div>
+      <div className="flex items-start gap-2 rounded-2xl border border-purple-500/25 bg-[#0c0620] p-3">
+        <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />
+        <p className="text-[11px] leading-snug text-purple-100/80">
+          Tus datos están protegidos y solo se usan para verificar tu identidad y procesar tus
+          pagos.
+        </p>
+      </div>
+    </div>
+  );
+}
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
