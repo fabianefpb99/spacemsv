@@ -50,6 +50,41 @@ function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
 }
 
+function periodStartFor(type: string): number {
+  // Igual que la función SQL `_mission_period_start`, en hora Colombia (UTC-5, sin DST).
+  const TZ_OFFSET_MS = 5 * 60 * 60 * 1000;
+  const nowLocal = new Date(Date.now() - TZ_OFFSET_MS);
+  const d = new Date(nowLocal);
+  if (type === "daily") {
+    d.setUTCHours(0, 0, 0, 0);
+  } else if (type === "weekly") {
+    // date_trunc('week', ...) → lunes 00:00
+    const day = d.getUTCDay(); // 0=dom..6=sáb
+    const diff = (day + 6) % 7; // días desde lunes
+    d.setUTCDate(d.getUTCDate() - diff);
+    d.setUTCHours(0, 0, 0, 0);
+  } else {
+    return 0; // 'epoch'
+  }
+  return d.getTime() + TZ_OFFSET_MS;
+}
+
+type UserMissionRow = {
+  mission_id: string;
+  period_start: string;
+  progress: number | string;
+  completed_at: string | null;
+};
+
+function progressForMission(m: any, rows: UserMissionRow[]): number {
+  const target = periodStartFor(m.type);
+  const found = rows.find(
+    (r) => r.mission_id === m.id && Math.abs(new Date(r.period_start).getTime() - target) < 5_000,
+  );
+  if (!found) return 0;
+  return Math.min(Number(m.goal) || 1, Number(found.progress) || 0);
+}
+
 type RewardKind = "bonus" | "spins" | "avatar";
 type MissionType = "daily" | "weekly" | "special";
 
