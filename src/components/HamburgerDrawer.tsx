@@ -2,12 +2,9 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import {
   Gift,
   History,
-  Users,
-  Settings,
   Headphones,
   Wallet,
   Trophy,
-  User as UserIcon,
   Sun,
   Moon,
   X,
@@ -38,14 +35,11 @@ type Item = {
 };
 
 const ITEMS: Item[] = [
-  { label: "Bonus", icon: Gift },
-  { label: "Historial", icon: History },
-  { label: "Referidos", icon: Users },
+  { label: "Eventos y Bonos", icon: Gift, to: "/eventos" },
+  { label: "Mis Recargas", icon: History, to: "/mis-recargas" },
   { label: "Depósito", icon: Wallet, to: "/pay" },
   { label: "Ranking", icon: Trophy, to: "/ranking" },
-  { label: "Perfil", icon: UserIcon, to: "/perfil" },
-  { label: "Configuración", icon: Settings },
-  { label: "Soporte", icon: Headphones },
+  { label: "Soporte", icon: Headphones, to: "/soporte" },
 ];
 
 const SOCIAL_ICONS: Record<string, LucideIcon> = {
