@@ -108,6 +108,8 @@ export function MissionsSection() {
 
   return (
     <div className="space-y-4">
+      <SpecialEventPanel />
+
       <Panel
         title="Eventos y Misiones"
         actions={
