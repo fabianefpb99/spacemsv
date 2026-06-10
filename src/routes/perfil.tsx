@@ -28,7 +28,7 @@ import { useMe } from "@/hooks/useMe";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import { AvatarPickerDialog } from "@/components/profile/AvatarPickerDialog";
-import { getAvatarUrl } from "@/lib/avatars";
+import { UserAvatar } from "@/components/UserAvatar";
 import { useUnlockedAvatars } from "@/hooks/useUnlockedAvatars";
 import { VipLevelUpToast } from "@/components/vip/VipLevelUpToast";
 import { VipBadge } from "@/components/vip/VipBadge";
