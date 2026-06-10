@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import eventosHero from "@/assets/eventos-hero.jpg";
+import avatarArenaAsset from "@/assets/avatar-astronauta-arena.png.asset.json";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { NotificationBell } from "@/components/admin/NotificationBell";
 import { AuthDialog } from "@/components/auth/AuthDialog";
@@ -55,6 +56,7 @@ type Mission = {
   cta: { label: string; to: string };
   accent: "purple" | "emerald" | "amber" | "rose" | "blue";
   icon: React.ReactNode;
+  rewardImage?: string;
 };
 
 const MISSIONS: Mission[] = [
@@ -103,8 +105,8 @@ const MISSIONS: Mission[] = [
     goal: 3,
     reward: { kind: "bonus", value: 2500, label: "2.500 Bonus" },
     cta: { label: "Ir a Arena", to: "/arena" },
-    accent: "amber",
-    icon: <Swords className="h-6 w-6 text-amber-200" />,
+    accent: "purple",
+    icon: <Swords className="h-6 w-6 text-purple-200" />,
   },
   {
     id: "m5",
@@ -115,8 +117,8 @@ const MISSIONS: Mission[] = [
     goal: 50000,
     reward: { kind: "bonus", value: 1500, label: "1.500 Bonus" },
     cta: { label: "Jugar", to: "/home" },
-    accent: "amber",
-    icon: <Coins className="h-6 w-6 text-amber-200" />,
+    accent: "purple",
+    icon: <Coins className="h-6 w-6 text-purple-200" />,
   },
   {
     id: "m6",
@@ -133,14 +135,15 @@ const MISSIONS: Mission[] = [
   {
     id: "m7",
     type: "special",
-    title: "Desbloquea el avatar",
-    subtitle: "ASTRONAUTA DORADO",
+    title: "Gana 10 veces en",
+    subtitle: "ARENA",
     progress: 0,
-    goal: 1,
-    reward: { kind: "avatar", value: "Astronauta Dorado", label: "Avatar exclusivo" },
-    cta: { label: "Ver reto", to: "/eventos" },
+    goal: 10,
+    reward: { kind: "avatar", value: "Astronauta Arena", label: "Avatar exclusivo" },
+    cta: { label: "Ir a Arena", to: "/arena" },
     accent: "amber",
-    icon: <Gift className="h-6 w-6 text-amber-200" />,
+    icon: <Swords className="h-6 w-6 text-amber-200" />,
+    rewardImage: avatarArenaAsset.url,
   },
 ];
 
@@ -366,28 +369,25 @@ function EventosPage() {
               />
               <div className="relative flex items-center gap-3">
                 <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-400/20 ring-2 ring-amber-300/40">
-                  <Gift className="h-7 w-7 text-amber-200 drop-shadow-[0_0_10px_rgba(251,191,36,0.9)]" />
+                  <Sparkles className="h-7 w-7 text-amber-200 drop-shadow-[0_0_10px_rgba(251,191,36,0.9)]" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-[10px] font-bold uppercase tracking-widest text-amber-200">
                     Evento especial
                   </div>
                   <div className="font-display text-lg font-black leading-tight text-white">
-                    FIN DE SEMANA EXPLOSIVO
+                    DOBLE XP DE FIN DE SEMANA
                   </div>
                   <div className="text-[11px] text-purple-100/80">
-                    ¡Más apuestas, más recompensas!
+                    Sube de nivel el doble de rápido
                   </div>
                 </div>
                 <div className="flex shrink-0 flex-col items-center rounded-xl border border-amber-300/50 bg-amber-400/15 px-3 py-2 text-center">
-                  <div className="text-[9px] font-bold uppercase tracking-wider text-amber-200">
-                    Hasta
-                  </div>
-                  <div className="font-display text-xl font-black text-amber-200 drop-shadow-[0_0_8px_rgba(251,191,36,0.7)]">
+                  <div className="font-display text-xl font-black text-amber-200 drop-shadow-[0_0_8px_rgba(251,191,36,0.7)] leading-none">
                     x2
                   </div>
-                  <div className="text-[9px] font-bold uppercase tracking-wider text-amber-200">
-                    Recomp.
+                  <div className="mt-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-200">
+                    XP
                   </div>
                 </div>
               </div>
@@ -414,7 +414,7 @@ function EventosPage() {
         {/* Misiones semanales */}
         {(tab === "all" || tab === "weekly") && weekly.length > 0 && (
           <section className="mt-5">
-            <h3 className="font-display text-[11px] font-bold uppercase tracking-widest text-amber-200">
+            <h3 className="font-display text-[11px] font-bold uppercase tracking-widest text-purple-200">
               Misiones semanales
             </h3>
             <div className="mt-2 flex flex-col gap-2.5">
@@ -499,7 +499,15 @@ function MissionCard({ mission }: { mission: Mission }) {
               <span className="text-rose-200">{mission.reward.value} Spins</span>
             )}
             {mission.reward.kind === "avatar" && (
-              <span className="text-amber-200">Avatar</span>
+              mission.rewardImage ? (
+                <img
+                  src={mission.rewardImage}
+                  alt={String(mission.reward.value)}
+                  className="h-12 w-12 rounded-lg border border-amber-400/50 object-cover shadow-[0_0_10px_rgba(251,191,36,0.45)]"
+                />
+              ) : (
+                <span className="text-amber-200">Avatar</span>
+              )
             )}
           </div>
           {mission.reward.kind === "bonus" && (
