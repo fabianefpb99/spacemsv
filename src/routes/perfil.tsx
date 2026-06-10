@@ -30,7 +30,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { AvatarPickerDialog } from "@/components/profile/AvatarPickerDialog";
 import { getAvatarUrl, COLLECTIBLE_AVATARS } from "@/lib/avatars";
 import { useUnlockedAvatars } from "@/hooks/useUnlockedAvatars";
-import { Lock } from "lucide-react";
 import { VipLevelUpToast } from "@/components/vip/VipLevelUpToast";
 import { VipBadge } from "@/components/vip/VipBadge";
 import { useVip } from "@/hooks/useVip";
