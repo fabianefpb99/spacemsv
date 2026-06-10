@@ -12,6 +12,7 @@ export type AdminSection =
   | "retiros"
   | "home_content"
   | "drawer"
+  | "eventos"
   | "bonos"
   | "transacciones"
   | "reportes"
