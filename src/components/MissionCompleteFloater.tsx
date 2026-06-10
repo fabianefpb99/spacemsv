@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Sparkles, X } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 export type MissionCompletePayload = {
   id: string;
@@ -45,6 +47,26 @@ function rewardText(r: MissionCompletePayload["reward"]) {
 export function MissionCompleteFloater() {
   const [mounted, setMounted] = useState(false);
   const [item, setItem] = useState<(MissionCompletePayload & { visible: boolean }) | null>(null);
+  const { user } = useAuth();
+  const hideTimers = useRef<{ fade?: number; remove?: number }>({});
+
+  const dismiss = () => {
+    if (hideTimers.current.fade) window.clearTimeout(hideTimers.current.fade);
+    if (hideTimers.current.remove) window.clearTimeout(hideTimers.current.remove);
+    setItem((p) => (p ? { ...p, visible: false } : p));
+    window.setTimeout(() => setItem(null), 350);
+  };
+
+  const show = (detail: MissionCompletePayload) => {
+    if (hideTimers.current.fade) window.clearTimeout(hideTimers.current.fade);
+    if (hideTimers.current.remove) window.clearTimeout(hideTimers.current.remove);
+    setItem({ ...detail, visible: true });
+    hideTimers.current.fade = window.setTimeout(
+      () => setItem((p) => (p ? { ...p, visible: false } : p)),
+      4500,
+    );
+    hideTimers.current.remove = window.setTimeout(() => setItem(null), 4900);
+  };
 
   useEffect(() => setMounted(true), []);
 
@@ -52,13 +74,99 @@ export function MissionCompleteFloater() {
     function onEvent(e: Event) {
       const detail = (e as CustomEvent<MissionCompletePayload>).detail;
       if (!detail) return;
-      setItem({ ...detail, visible: true });
-      window.setTimeout(() => setItem((p) => (p ? { ...p, visible: false } : p)), 4000);
-      window.setTimeout(() => setItem(null), 4400);
+      show(detail);
     }
     window.addEventListener(EVT, onEvent as EventListener);
     return () => window.removeEventListener(EVT, onEvent as EventListener);
   }, []);
+
+  // Global subscriber: listen for any user_mission row that completes for the
+  // current user (on any view), fetch the mission metadata, and trigger the
+  // floater. Uses an in-session dedup set so old completions don't fire again.
+  useEffect(() => {
+    if (!user) return;
+    const SEEN_KEY = "betspace:missions-notified-global-v1";
+    let seen = new Set<string>();
+    try {
+      seen = new Set<string>(JSON.parse(sessionStorage.getItem(SEEN_KEY) ?? "[]"));
+    } catch {}
+    const mountedAt = Date.now();
+
+    const handleRow = async (row: any) => {
+      if (!row || row.user_id !== user.id) return;
+      if (!row.completed_at) return;
+      const completedAt = new Date(row.completed_at).getTime();
+      if (completedAt < mountedAt - 10_000) return;
+      const key = `${row.mission_id}:${row.period_start}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+      sessionStorage.setItem(SEEN_KEY, JSON.stringify(Array.from(seen)));
+      try {
+        const { data: mission } = await supabase
+          .from("missions")
+          .select("id, title, subtitle, reward_kind, reward_value, reward_label, reward_image_url")
+          .eq("id", row.mission_id)
+          .maybeSingle();
+        if (!mission) return;
+        notifyMissionComplete({
+          id: mission.id,
+          title: mission.title,
+          subtitle: mission.subtitle ?? undefined,
+          reward: {
+            kind: mission.reward_kind as MissionCompletePayload["reward"]["kind"],
+            value: Number(mission.reward_value ?? 0),
+            label: mission.reward_label || undefined,
+            image: mission.reward_image_url ?? null,
+          },
+        });
+      } catch {
+        /* swallow — notification is best-effort */
+      }
+    };
+
+    const channel = supabase
+      .channel(`user-missions:${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "user_missions", filter: `user_id=eq.${user.id}` },
+        (payload) => handleRow(payload.new),
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "user_missions", filter: `user_id=eq.${user.id}` },
+        (payload) => handleRow(payload.new),
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id]);
+
+  // Swipe-to-close (vertical or horizontal flick)
+  const dragRef = useRef<{ x: number; y: number; active: boolean } | null>(null);
+  const [drag, setDrag] = useState<{ dx: number; dy: number }>({ dx: 0, dy: 0 });
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    const t = e.touches[0];
+    dragRef.current = { x: t.clientX, y: t.clientY, active: true };
+    setDrag({ dx: 0, dy: 0 });
+  };
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (!dragRef.current?.active) return;
+    const t = e.touches[0];
+    setDrag({ dx: t.clientX - dragRef.current.x, dy: t.clientY - dragRef.current.y });
+  };
+  const onTouchEnd = () => {
+    if (!dragRef.current?.active) return;
+    const { dx, dy } = drag;
+    dragRef.current.active = false;
+    if (Math.abs(dx) > 80 || dy < -50) {
+      dismiss();
+    } else {
+      setDrag({ dx: 0, dy: 0 });
+    }
+  };
 
   if (!mounted || !item) return null;
 
@@ -69,6 +177,19 @@ export function MissionCompleteFloater() {
       aria-live="polite"
     >
       <div
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        style={{
+          transform: item.visible
+            ? `translate(${drag.dx}px, ${Math.min(0, drag.dy)}px)`
+            : "translateY(-12px)",
+          opacity: item.visible
+            ? Math.max(0, 1 - Math.abs(drag.dx) / 200 - Math.max(0, -drag.dy) / 120)
+            : 0,
+          transition: dragRef.current?.active ? "none" : "transform 300ms, opacity 300ms",
+          touchAction: "pan-y",
+        }}
         className={`pointer-events-auto w-full max-w-sm overflow-hidden rounded-xl border border-amber-300/50 bg-gradient-to-r from-[#1a0930]/95 via-[#240a3a]/95 to-[#1a0930]/95 shadow-[0_8px_22px_-6px_rgba(217,70,239,0.55)] backdrop-blur transition-all duration-300 ${
           item.visible ? "translate-y-0 opacity-100" : "-translate-y-3 opacity-0"
         }`}
@@ -97,7 +218,7 @@ export function MissionCompleteFloater() {
             </div>
           </div>
           <button
-            onClick={() => setItem((p) => (p ? { ...p, visible: false } : p))}
+            onClick={dismiss}
             aria-label="Cerrar"
             className="ml-1 shrink-0 rounded-md p-1 text-purple-300/70 hover:bg-white/5 hover:text-white"
           >
