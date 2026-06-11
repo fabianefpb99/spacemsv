@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 export const Route = createFileRoute("/terminos")({
   head: () => ({
     meta: [
-      { title: "Términos y Condiciones — BetSpaceman" },
+      { title: "Términos y Condiciones — BETSPACE Casino" },
       { name: "description", content: "Términos y condiciones de uso y política de tratamiento de datos." },
     ],
   }),

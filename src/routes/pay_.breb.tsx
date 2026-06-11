@@ -20,7 +20,7 @@ export const Route = createFileRoute("/pay_/breb")({
   },
   head: () => ({
     meta: [
-      { title: "Confirmar pago — BetSpaceman" },
+      { title: "Confirmar pago — BETSPACE Casino" },
       { name: "description", content: "Sigue las instrucciones para completar tu depósito de forma segura." },
     ],
   }),

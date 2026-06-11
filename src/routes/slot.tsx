@@ -6,10 +6,10 @@ import { RequireAuth } from "@/components/auth/RequireAuth";
 export const Route = createFileRoute("/slot")({
   head: () => ({
     meta: [
-      { title: "Mafia Slots — BetSpaceman" },
-      { name: "description", content: "Tragamonedas estilo gánsters de los años 20 en BetSpaceman." },
-      { property: "og:title", content: "Mafia Slots — BetSpaceman" },
-      { property: "og:description", content: "Tragamonedas estilo gánsters de los años 20 en BetSpaceman." },
+      { title: "Mafia Slots — BETSPACE Casino" },
+      { name: "description", content: "Tragamonedas estilo gánsters de los años 20 en BETSPACE Casino." },
+      { property: "og:title", content: "Mafia Slots — BETSPACE Casino" },
+      { property: "og:description", content: "Tragamonedas estilo gánsters de los años 20 en BETSPACE Casino." },
     ],
   }),
   component: Page,

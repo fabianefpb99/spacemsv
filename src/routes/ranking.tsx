@@ -21,10 +21,10 @@ import {
 export const Route = createFileRoute("/ranking")({
   head: () => ({
     meta: [
-      { title: "Ranking — BetSpaceman" },
-      { name: "description", content: "Top ganadores del día en BetSpaceman: ranking general y arena." },
-      { property: "og:title", content: "Ranking — BetSpaceman" },
-      { property: "og:description", content: "Top ganadores del día en BetSpaceman: ranking general y arena." },
+      { title: "Ranking — BETSPACE Casino" },
+      { name: "description", content: "Top ganadores del día en BETSPACE Casino: ranking general y arena." },
+      { property: "og:title", content: "Ranking — BETSPACE Casino" },
+      { property: "og:description", content: "Top ganadores del día en BETSPACE Casino: ranking general y arena." },
     ],
   }),
   component: RankingPage,

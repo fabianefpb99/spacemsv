@@ -18,13 +18,13 @@ import { VipBadge } from "@/components/vip/VipBadge";
 export const Route = createFileRoute("/vip")({
   head: () => ({
     meta: [
-      { title: "Programa VIP — BetSpaceman" },
+      { title: "Programa VIP — BETSPACE Casino" },
       {
         name: "description",
         content:
-          "100 niveles de prestigio en BetSpaceman. Sube de Bronce a Leyenda apostando en tus juegos favoritos.",
+          "100 niveles de prestigio en BETSPACE Casino. Sube de Bronce a Leyenda apostando en tus juegos favoritos.",
       },
-      { property: "og:title", content: "Programa VIP — BetSpaceman" },
+      { property: "og:title", content: "Programa VIP — BETSPACE Casino" },
       {
         property: "og:description",
         content:

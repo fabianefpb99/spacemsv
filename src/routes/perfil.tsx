@@ -45,8 +45,8 @@ import { BrandLoader } from "@/components/BrandLoader";
 export const Route = createFileRoute("/perfil")({
   head: () => ({
     meta: [
-      { title: "Mi Perfil — BetSpaceman" },
-      { name: "description", content: "Tu cuenta, seguridad, balance y estadísticas en BetSpaceman." },
+      { title: "Mi Perfil — BETSPACE Casino" },
+      { name: "description", content: "Tu cuenta, seguridad, balance y estadísticas en BETSPACE Casino." },
     ],
   }),
   component: PerfilPage,

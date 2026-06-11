@@ -5,7 +5,7 @@ import { LoadingScreen } from "@/components/LoadingScreen";
 export const Route = createFileRoute("/slotpruebas")({
   head: () => ({
     meta: [
-      { title: "Slot Pruebas — BetSpaceman" },
+      { title: "Slot Pruebas — BETSPACE Casino" },
       { name: "description", content: "Modo de pruebas del slot con premios grandes y medianos frecuentes." },
       { name: "robots", content: "noindex,nofollow" },
     ],

@@ -6,10 +6,10 @@ import { RequireAuth } from "@/components/auth/RequireAuth";
 export const Route = createFileRoute("/spaceman")({
   head: () => ({
     meta: [
-      { title: "Spaceman — BetSpaceman" },
-      { name: "description", content: "Juega Spaceman en vivo en BetSpaceman." },
-      { property: "og:title", content: "Spaceman — BetSpaceman" },
-      { property: "og:description", content: "Juega Spaceman en vivo en BetSpaceman." },
+      { title: "Spaceman — BETSPACE Casino" },
+      { name: "description", content: "Juega Spaceman en vivo en BETSPACE Casino." },
+      { property: "og:title", content: "Spaceman — BETSPACE Casino" },
+      { property: "og:description", content: "Juega Spaceman en vivo en BETSPACE Casino." },
     ],
   }),
   component: Page,

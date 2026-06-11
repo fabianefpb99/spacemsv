@@ -6,13 +6,13 @@ import { LoadingScreen } from "@/components/LoadingScreen";
 export const Route = createFileRoute("/arena")({
   head: () => ({
     meta: [
-      { title: "Arena Galáctica — BetSpaceman" },
+      { title: "Arena Galáctica — BETSPACE Casino" },
       {
         name: "description",
         content:
-          "Apuesta a tu peleador favorito en la Arena Galáctica de BetSpaceman. Nova, Shadow, Titan o Blaze — solo uno sobrevive.",
+          "Apuesta a tu peleador favorito en la Arena Galáctica de BETSPACE Casino. Nova, Shadow, Titan o Blaze — solo uno sobrevive.",
       },
-      { property: "og:title", content: "Arena Galáctica — BetSpaceman" },
+      { property: "og:title", content: "Arena Galáctica — BETSPACE Casino" },
       {
         property: "og:description",
         content: "Apuesta a tu peleador favorito y multiplica tu saldo.",
