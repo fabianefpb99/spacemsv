@@ -649,6 +649,7 @@ export type Database = {
           document_number: string | null
           document_type: string | null
           email: string | null
+          first_deposit_at: string | null
           first_name: string | null
           gender: string | null
           id: string
@@ -657,6 +658,8 @@ export type Database = {
           phone: string | null
           phone_verified: boolean
           profile_completed: boolean
+          referral_code: string | null
+          referred_by: string | null
           second_last_name: string | null
           second_name: string | null
           terms_accepted_at: string | null
@@ -673,6 +676,7 @@ export type Database = {
           document_number?: string | null
           document_type?: string | null
           email?: string | null
+          first_deposit_at?: string | null
           first_name?: string | null
           gender?: string | null
           id: string
@@ -681,6 +685,8 @@ export type Database = {
           phone?: string | null
           phone_verified?: boolean
           profile_completed?: boolean
+          referral_code?: string | null
+          referred_by?: string | null
           second_last_name?: string | null
           second_name?: string | null
           terms_accepted_at?: string | null
@@ -697,6 +703,7 @@ export type Database = {
           document_number?: string | null
           document_type?: string | null
           email?: string | null
+          first_deposit_at?: string | null
           first_name?: string | null
           gender?: string | null
           id?: string
@@ -705,6 +712,8 @@ export type Database = {
           phone?: string | null
           phone_verified?: boolean
           profile_completed?: boolean
+          referral_code?: string | null
+          referred_by?: string | null
           second_last_name?: string | null
           second_name?: string | null
           terms_accepted_at?: string | null
@@ -713,7 +722,22 @@ export type Database = {
           verification_status?: Database["public"]["Enums"]["verification_status"]
           vip_last_seen_level?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "admin_users_overview"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       site_settings: {
         Row: {
@@ -1205,6 +1229,7 @@ export type Database = {
         }[]
       }
       _gen_deposit_reference: { Args: never; Returns: string }
+      _gen_referral_code: { Args: never; Returns: string }
       _mission_period_start: { Args: { p_type: string }; Returns: string }
       _spaceman_gen_crash: { Args: { p_server_seed: string }; Returns: number }
       adjust_balance: {
@@ -1721,6 +1746,7 @@ export type Database = {
           read_ct: number
         }[]
       }
+      redeem_referral: { Args: { p_code: string }; Returns: Json }
       spaceman_cashout: {
         Args: {
           p_client_action_id: string
