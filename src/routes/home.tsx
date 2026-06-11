@@ -81,7 +81,8 @@ function OnlineRotator({ online, username }: { online: number; username?: string
   const phrases = [
     welcome,
     "¿QUE *JUGAREMOS* HOY?",
-    "TE SIENTES CON SUERTE, *APUESTA AHORA*",
+    "*APUESTA* AHORA",
+    "LA *GALAXIA* ESTÁ ABIERTA",
   ];
 
   // mode: "online" shows the dot+count; "typing" shows rotating typewriter phrases
