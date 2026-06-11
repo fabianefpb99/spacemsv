@@ -25,6 +25,13 @@ const signUpSchema = z.object({
     .min(6, "Contraseña: mínimo 6 caracteres")
     .regex(/[A-Za-z]/, "Contraseña: debe incluir al menos una letra")
     .regex(/[0-9]/, "Contraseña: debe incluir al menos un número"),
+  referralCode: z
+    .string()
+    .trim()
+    .max(12, "Código de referido demasiado largo")
+    .regex(/^[A-Za-z0-9]*$/, "Código inválido")
+    .optional()
+    .or(z.literal("")),
 });
 
 const signInSchema = z.object({
@@ -242,6 +249,7 @@ function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [referralCode, setReferralCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -254,7 +262,13 @@ function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
     setInfo(null);
     const cleanEmail = email.trim();
     const cleanUsername = username.trim();
-    const parsed = signUpSchema.safeParse({ email: cleanEmail, username: cleanUsername, password });
+    const cleanReferral = referralCode.trim().toUpperCase();
+    const parsed = signUpSchema.safeParse({
+      email: cleanEmail,
+      username: cleanUsername,
+      password,
+      referralCode: cleanReferral,
+    });
     if (!parsed.success) {
       setError(parsed.error.issues[0].message);
       return;
@@ -275,6 +289,19 @@ function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
     }
     if (data.session) {
       await refreshSession();
+      if (cleanReferral) {
+        const { error: refError } = await supabase.rpc("redeem_referral", { p_code: cleanReferral });
+        if (refError) {
+          const msg = refError.message ?? "";
+          let friendly = "El código de referido no se pudo aplicar.";
+          if (msg.includes("invalid_code")) friendly = "El código de referido no existe.";
+          else if (msg.includes("self_referral")) friendly = "No puedes usar tu propio código.";
+          else if (msg.includes("already_referred")) friendly = "Ya usaste un código de referido.";
+          setInfo(`Cuenta creada, pero ${friendly}`);
+        } else {
+          setInfo("¡Código aplicado! Recibiste $2.000 de saldo bonus.");
+        }
+      }
       if (data.user) {
         setUserId(data.user.id);
         setStep(2);
@@ -321,6 +348,17 @@ function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
       <div className="space-y-1.5">
         <Label htmlFor="signup-password">Contraseña</Label>
         <Input id="signup-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" required />
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="signup-referral">Código de referido <span className="text-purple-300/60">(opcional)</span></Label>
+        <Input
+          id="signup-referral"
+          value={referralCode}
+          onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+          placeholder="Ej: AB23CDEF"
+          maxLength={12}
+          autoComplete="off"
+        />
       </div>
       {error && <p className="text-xs text-rose-400">{error}</p>}
       {info && <p className="text-xs text-emerald-300">{info}</p>}
