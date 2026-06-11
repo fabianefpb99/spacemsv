@@ -74,6 +74,46 @@ function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
 }
 
+function OnlineRotator({ online }: { online: number }) {
+  const [idx, setIdx] = useState(0);
+  // 0 = ONLINE, 1..3 = taglines
+  useEffect(() => {
+    const delay = idx === 0 ? 3000 : 2500;
+    const t = setTimeout(() => setIdx((i) => (i + 1) % 4), delay);
+    return () => clearTimeout(t);
+  }, [idx]);
+
+  const phrases = [
+    "¿Te sientes con suerte hoy?",
+    "Apuesta ahora",
+    "¿Qué jugaremos hoy?",
+  ];
+
+  return (
+    <div className="relative mt-3 h-6 overflow-hidden">
+      <div
+        className={`absolute inset-0 flex items-center gap-2 transition-opacity duration-500 ${idx === 0 ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+      >
+        <span className="relative inline-flex h-2 w-2">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+        </span>
+        <span className="text-xs font-semibold text-white/90 light-text-muted">{online} ONLINE</span>
+      </div>
+      {phrases.map((p, i) => (
+        <div
+          key={i}
+          className={`absolute inset-0 flex items-center transition-opacity duration-500 ${idx === i + 1 ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        >
+          <span className="text-xs font-semibold tracking-wide text-fuchsia-200/95 light-text-muted">
+            {p}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 const GAMES = [
   { name: "SPACEMAN", img: gameSpaceman, tag: "POPULAR", tagCls: "bg-purple-600/40 text-purple-200 border-purple-500/50", to: "/spaceman" },
   { name: "SLOT", img: gameSlotMafia, tag: "NUEVO", tagCls: "bg-emerald-600/30 text-emerald-200 border-emerald-500/50", to: "/slot" },
@@ -362,14 +402,8 @@ function HomePage() {
         </header>
         <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
 
-        {/* Online indicator */}
-        <div className="mt-3 flex items-center gap-2">
-          <span className="relative inline-flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-          </span>
-          <span className="text-xs font-semibold text-white/90 light-text-muted">{online} ONLINE</span>
-        </div>
+        {/* Online indicator / rotating tagline */}
+        <OnlineRotator online={online} />
 
         {/* Hero banner */}
         <section className="slider-neon-frame mt-3 overflow-hidden rounded-2xl border border-fuchsia-500/70 bg-[#1a0b3a] shadow-[0_0_8px_rgba(217,70,239,0.25)]">
