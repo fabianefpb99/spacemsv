@@ -85,79 +85,56 @@ function OnlineRotator({ online, username }: { online: number; username?: string
     "LA *GALAXIA* ESTÁ ABIERTA",
   ];
 
-  // mode: "online" shows the dot+count; "typing" shows rotating typewriter phrases
-  const [mode, setMode] = useState<"online" | "typing">("online");
+  // mode: "online" shows the dot+count; "phrases" cycles the rotating phrases
+  const [mode, setMode] = useState<"online" | "phrases">("online");
   const [phraseIdx, setPhraseIdx] = useState(0);
-  const [typed, setTyped] = useState(0);
+  const [exiting, setExiting] = useState(false);
 
-  // After 3.8s of ONLINE -> start typing
+  // After 4.5s of ONLINE -> start cycling phrases
   useEffect(() => {
     if (mode !== "online") return;
     const t = setTimeout(() => {
       setPhraseIdx(0);
-      setTyped(0);
-      setMode("typing");
+      setExiting(false);
+      setMode("phrases");
     }, 4500);
     return () => clearTimeout(t);
   }, [mode]);
 
   const currentRaw = phrases[phraseIdx] ?? "";
-  const plain = currentRaw.replace(/\*/g, "");
 
-  // Typewriter: advance chars; when finished, wait then next phrase or back to online
+  // Cycle each phrase: hold ~2.2s, then flip out, then next (or back to online)
   useEffect(() => {
-    if (mode !== "typing") return;
-    if (typed < plain.length) {
-      const t = setTimeout(() => setTyped((n) => n + 1), 22);
-      return () => clearTimeout(t);
-    }
-    const t = setTimeout(() => {
+    if (mode !== "phrases") return;
+    const holdMs = 2200;
+    const flipMs = 550;
+    const hold = setTimeout(() => setExiting(true), holdMs);
+    const next = setTimeout(() => {
       if (phraseIdx < phrases.length - 1) {
         setPhraseIdx((i) => i + 1);
-        setTyped(0);
+        setExiting(false);
       } else {
         setMode("online");
+        setExiting(false);
       }
-    }, 3000);
-    return () => clearTimeout(t);
-  }, [mode, typed, plain.length, phraseIdx, phrases.length]);
+    }, holdMs + flipMs);
+    return () => { clearTimeout(hold); clearTimeout(next); };
+  }, [mode, phraseIdx, phrases.length]);
 
-  // Build visible text honoring *bold* markers up to `typed` plain chars
-  function renderTypewriter(raw: string, count: number) {
-    const out: React.ReactNode[] = [];
-    let plainPos = 0;
-    let i = 0;
-    let bold = false;
-    let buf = "";
-    const flush = (key: number) => {
-      if (!buf) return;
-      out.push(
-        bold ? (
-          <span key={key} className="font-extrabold">{buf}</span>
-        ) : (
-          <span key={key}>{buf}</span>
-        ),
-      );
-      buf = "";
-    };
-    while (i < raw.length && plainPos < count) {
-      const ch = raw[i];
-      if (ch === "*") {
-        flush(i);
-        bold = !bold;
-        i++;
-        continue;
-      }
-      buf += ch;
-      plainPos++;
-      i++;
-    }
-    flush(i);
-    return out;
+  // Render a raw phrase honoring *bold* markers
+  function renderPhrase(raw: string) {
+    const parts = raw.split("*");
+    return parts.map((p, i) =>
+      i % 2 === 1 ? (
+        <span key={i} className="font-extrabold">{p}</span>
+      ) : (
+        <span key={i}>{p}</span>
+      ),
+    );
   }
 
   return (
-    <div className="relative mt-[10px] h-6 overflow-hidden">
+    <div className="relative mt-[10px] h-6 overflow-hidden" style={{ perspective: "600px" }}>
       <div
         className={`absolute inset-0 flex items-center justify-center gap-2 transition-opacity duration-700 ${mode === "online" ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       >
@@ -168,11 +145,15 @@ function OnlineRotator({ online, username }: { online: number; username?: string
         <span className="text-xs font-semibold text-white/90 light-text-muted">{online} ONLINE</span>
       </div>
       <div
-        className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${mode === "typing" ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        className={`absolute inset-0 flex items-center justify-center ${mode === "phrases" ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        style={{ transformStyle: "preserve-3d" }}
       >
-        <span className="text-[13px] font-semibold tracking-wide text-white whitespace-nowrap">
-          {renderTypewriter(currentRaw, typed)}
-          <span className="ml-0.5 inline-block w-[2px] h-3 align-middle bg-white animate-pulse" />
+        <span
+          key={`${phraseIdx}-${exiting ? "out" : "in"}`}
+          className={`text-[13px] font-semibold tracking-wide text-white whitespace-nowrap ${exiting ? "animate-cube-out" : "animate-cube-in"}`}
+          style={{ transformOrigin: "center center", backfaceVisibility: "hidden" }}
+        >
+          {renderPhrase(currentRaw)}
         </span>
       </div>
     </div>
