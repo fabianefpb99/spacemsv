@@ -74,18 +74,6 @@ function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
 }
 
-function renderBold(text: string) {
-  // Split on *...* markers; odd indexes are bold
-  const parts = text.split("*");
-  return parts.map((p, i) =>
-    i % 2 === 1 ? (
-      <span key={i} className="font-extrabold">{p}</span>
-    ) : (
-      <span key={i}>{p}</span>
-    ),
-  );
-}
-
 function OnlineRotator({ online, username }: { online: number; username?: string | null }) {
   const welcome = username
     ? `BIENVENIDO *@${username}*`
