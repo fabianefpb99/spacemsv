@@ -801,13 +801,13 @@ function ReferralCard({ code }: { code: string | null }) {
     }
   }
   return (
-    <section className="mt-2 rounded-xl border border-fuchsia-500/40 bg-gradient-to-b from-[#2a0a3a] to-[#0c0620] px-2.5 py-2 shadow-[0_0_8px_rgba(217,70,239,0.2)]">
+    <section className="mt-2 rounded-xl border border-fuchsia-500/40 bg-gradient-to-b from-[#2a0a3a] to-[#0c0620] px-3 py-2.5 shadow-[0_0_10px_rgba(217,70,239,0.22)]">
       <div className="flex items-center gap-2">
-        <Users className="h-3 w-3 shrink-0 text-fuchsia-300" />
-        <span className="text-[9px] font-semibold uppercase tracking-widest text-fuchsia-200/90">
+        <Users className="h-4 w-4 shrink-0 text-fuchsia-300" />
+        <span className="text-[11px] font-semibold uppercase tracking-widest text-fuchsia-200/90">
           Código de referido
         </span>
-        <code className="font-display ml-auto truncate rounded bg-black/40 px-2 py-0.5 text-[12px] font-black tracking-[0.18em] text-white">
+        <code className="font-display ml-auto truncate rounded bg-black/40 px-2 py-0.5 text-sm font-black tracking-[0.18em] text-white">
           {code ?? "—"}
         </code>
         <button
@@ -817,10 +817,10 @@ function ReferralCard({ code }: { code: string | null }) {
           aria-label="Copiar código"
           className="flex shrink-0 items-center justify-center rounded bg-fuchsia-600 p-1.5 text-white transition hover:bg-fuchsia-500 disabled:opacity-50"
         >
-          {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+          {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
         </button>
       </div>
-      <p className="mt-1 text-[9px] leading-snug text-fuchsia-200/70">
+      <p className="mt-1.5 text-[11px] leading-snug text-fuchsia-200/75">
         Tu amigo gana <b className="text-white">$2.000</b> · Tú <b className="text-white">$3.000</b> + <b className="text-white">5%</b> de su 1ª recarga.
       </p>
     </section>
