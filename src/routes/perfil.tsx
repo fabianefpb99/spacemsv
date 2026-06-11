@@ -801,27 +801,27 @@ function ReferralCard({ code }: { code: string | null }) {
     }
   }
   return (
-    <section className="mt-3 rounded-2xl border border-fuchsia-500/40 bg-gradient-to-b from-[#2a0a3a] to-[#0c0620] p-3 shadow-[0_0_12px_rgba(217,70,239,0.25)]">
-      <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-fuchsia-200/90">
-        <Users className="h-3.5 w-3.5" />
-        Tu código de referido
-      </div>
-      <div className="mt-2 flex items-center gap-2">
-        <code className="font-display flex-1 truncate rounded-md border border-fuchsia-400/40 bg-black/40 px-3 py-2 text-base font-black tracking-[0.25em] text-white">
+    <section className="mt-2 rounded-xl border border-fuchsia-500/40 bg-gradient-to-b from-[#2a0a3a] to-[#0c0620] px-2.5 py-2 shadow-[0_0_8px_rgba(217,70,239,0.2)]">
+      <div className="flex items-center gap-2">
+        <Users className="h-3 w-3 shrink-0 text-fuchsia-300" />
+        <span className="text-[9px] font-semibold uppercase tracking-widest text-fuchsia-200/90">
+          Código de referido
+        </span>
+        <code className="font-display ml-auto truncate rounded bg-black/40 px-2 py-0.5 text-[12px] font-black tracking-[0.18em] text-white">
           {code ?? "—"}
         </code>
         <button
           type="button"
           onClick={onCopy}
           disabled={!code}
-          className="flex shrink-0 items-center gap-1 rounded-md bg-fuchsia-600 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-white transition hover:bg-fuchsia-500 disabled:opacity-50"
+          aria-label="Copiar código"
+          className="flex shrink-0 items-center justify-center rounded bg-fuchsia-600 p-1.5 text-white transition hover:bg-fuchsia-500 disabled:opacity-50"
         >
-          {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-          {copied ? "Copiado" : "Copiar"}
+          {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
         </button>
       </div>
-      <p className="mt-2 text-[10px] leading-relaxed text-fuchsia-200/70">
-        Comparte tu código. Tu amigo recibe <b className="text-white">$2.000 bonus</b> al registrarse y tú ganas <b className="text-white">$3.000 bonus</b> (una sola vez) + <b className="text-white">5%</b> de su primera recarga.
+      <p className="mt-1 text-[9px] leading-snug text-fuchsia-200/70">
+        Tu amigo gana <b className="text-white">$2.000</b> · Tú <b className="text-white">$3.000</b> + <b className="text-white">5%</b> de su 1ª recarga.
       </p>
     </section>
   );
