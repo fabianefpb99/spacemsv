@@ -106,7 +106,7 @@ function OnlineRotator({ online, username }: { online: number; username?: string
   // Cycle each phrase: hold ~2.2s, then flip out, then next (or back to online)
   useEffect(() => {
     if (mode !== "phrases") return;
-    const holdMs = 2200;
+    const holdMs = 3200;
     const flipMs = 550;
     const hold = setTimeout(() => setExiting(true), holdMs);
     const next = setTimeout(() => {
@@ -135,15 +135,15 @@ function OnlineRotator({ online, username }: { online: number; username?: string
 
   return (
     <div className="relative mt-[10px] h-6 overflow-hidden" style={{ perspective: "600px" }}>
-      <div
-        className={`absolute inset-0 flex items-center justify-center gap-2 transition-opacity duration-700 ${mode === "online" ? "opacity-100" : "opacity-0 pointer-events-none"}`}
-      >
-        <span className="relative inline-flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-        </span>
-        <span className="text-xs font-semibold text-white/90 light-text-muted">{online} ONLINE</span>
-      </div>
+      {mode === "online" && (
+        <div className="absolute inset-0 flex items-center justify-start gap-2 pl-1 animate-fade-in">
+          <span className="relative inline-flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+          </span>
+          <span className="text-xs font-semibold text-white/90 light-text-muted">{online} ONLINE</span>
+        </div>
+      )}
       <div
         className={`absolute inset-0 flex items-center justify-center ${mode === "phrases" ? "opacity-100" : "opacity-0 pointer-events-none"}`}
         style={{ transformStyle: "preserve-3d" }}
