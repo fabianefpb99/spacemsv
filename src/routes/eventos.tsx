@@ -531,12 +531,13 @@ function EventosPage() {
         {/* Hero banner horizontal */}
         <section className="relative mt-4 overflow-hidden rounded-2xl border border-amber-400/40 shadow-[0_0_22px_rgba(251,191,36,0.25)]">
           <div className="relative h-24 w-full sm:h-28">
-            <img
+            <SkeletonImage
               src={eventosHero}
               alt="Eventos BETSPACE Casino"
               width={1920}
               height={512}
-              className="absolute inset-0 h-full w-full object-cover"
+              wrapperClassName="absolute inset-0 h-full w-full"
+              className="h-full w-full object-cover"
             />
             <div
               aria-hidden="true"
