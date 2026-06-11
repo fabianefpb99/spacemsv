@@ -23,6 +23,7 @@ import {
   Phone,
   Receipt,
 } from "lucide-react";
+import { Copy, Check, Users } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
