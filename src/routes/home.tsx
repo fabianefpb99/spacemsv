@@ -96,7 +96,7 @@ function OnlineRotator({ online, username }: { online: number; username?: string
       setPhraseIdx(0);
       setTyped(0);
       setMode("typing");
-    }, 3800);
+    }, 4500);
     return () => clearTimeout(t);
   }, [mode]);
 
@@ -107,7 +107,7 @@ function OnlineRotator({ online, username }: { online: number; username?: string
   useEffect(() => {
     if (mode !== "typing") return;
     if (typed < plain.length) {
-      const t = setTimeout(() => setTyped((n) => n + 1), 38);
+      const t = setTimeout(() => setTyped((n) => n + 1), 22);
       return () => clearTimeout(t);
     }
     const t = setTimeout(() => {
@@ -117,7 +117,7 @@ function OnlineRotator({ online, username }: { online: number; username?: string
       } else {
         setMode("online");
       }
-    }, 1800);
+    }, 3000);
     return () => clearTimeout(t);
   }, [mode, typed, plain.length, phraseIdx, phrases.length]);
 
@@ -169,7 +169,7 @@ function OnlineRotator({ online, username }: { online: number; username?: string
       <div
         className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${mode === "typing" ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       >
-        <span className="text-xs font-semibold tracking-wide text-white whitespace-nowrap">
+        <span className="text-[13px] font-semibold tracking-wide text-white whitespace-nowrap">
           {renderTypewriter(currentRaw, typed)}
           <span className="ml-0.5 inline-block w-[2px] h-3 align-middle bg-white animate-pulse" />
         </span>
