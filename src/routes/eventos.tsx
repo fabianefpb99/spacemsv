@@ -37,9 +37,9 @@ import { notifyMissionComplete } from "@/components/MissionCompleteFloater";
 export const Route = createFileRoute("/eventos")({
   head: () => ({
     meta: [
-      { title: "Eventos — BetSpaceman" },
+      { title: "Eventos — BETSPACE Casino" },
       { name: "description", content: "Completa desafíos diarios y semanales y gana saldo bonus, free spins y avatares exclusivos." },
-      { property: "og:title", content: "Eventos — BetSpaceman" },
+      { property: "og:title", content: "Eventos — BETSPACE Casino" },
       { property: "og:description", content: "Completa desafíos diarios y semanales y gana saldo bonus, free spins y avatares exclusivos." },
     ],
   }),
@@ -533,7 +533,7 @@ function EventosPage() {
           <div className="relative h-24 w-full sm:h-28">
             <img
               src={eventosHero}
-              alt="Eventos BetSpaceman"
+              alt="Eventos BETSPACE Casino"
               width={1920}
               height={512}
               className="absolute inset-0 h-full w-full object-cover"

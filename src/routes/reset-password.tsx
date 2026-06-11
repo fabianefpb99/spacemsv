@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
-    meta: [{ title: "Restablecer contraseña — BetSpaceman" }],
+    meta: [{ title: "Restablecer contraseña — BETSPACE Casino" }],
   }),
   component: ResetPasswordPage,
 });

@@ -10,7 +10,7 @@ import { RequireAuth } from "@/components/auth/RequireAuth";
 export const Route = createFileRoute("/mis-recargas")({
   head: () => ({
     meta: [
-      { title: "Mis Recargas — BetSpaceman" },
+      { title: "Mis Recargas — BETSPACE Casino" },
       { name: "description", content: "Historial de tus depósitos y recargas." },
     ],
   }),

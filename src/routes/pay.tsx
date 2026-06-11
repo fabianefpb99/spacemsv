@@ -16,10 +16,10 @@ import { useAuth } from "@/hooks/useAuth";
 export const Route = createFileRoute("/pay")({
   head: () => ({
     meta: [
-      { title: "Recargar saldo — BetSpaceman" },
-      { name: "description", content: "Recarga tu saldo en BetSpaceman con Nequi, Daviplata, Bancolombia o tarjeta de débito." },
-      { property: "og:title", content: "Recargar saldo — BetSpaceman" },
-      { property: "og:description", content: "Recarga tu saldo en BetSpaceman con Nequi, Daviplata, Bancolombia o tarjeta de débito." },
+      { title: "Recargar saldo — BETSPACE Casino" },
+      { name: "description", content: "Recarga tu saldo en BETSPACE Casino con Nequi, Daviplata, Bancolombia o tarjeta de débito." },
+      { property: "og:title", content: "Recargar saldo — BETSPACE Casino" },
+      { property: "og:description", content: "Recarga tu saldo en BETSPACE Casino con Nequi, Daviplata, Bancolombia o tarjeta de débito." },
     ],
   }),
   component: PayPageGated,

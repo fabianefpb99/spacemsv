@@ -61,10 +61,10 @@ const LAST_WINS = [
 export const Route = createFileRoute("/home")({
   head: () => ({
     meta: [
-      { title: "Inicio — BetSpaceman" },
-      { name: "description", content: "Tu home en BetSpaceman: juegos destacados, jackpot y más." },
-      { property: "og:title", content: "Inicio — BetSpaceman" },
-      { property: "og:description", content: "Tu home en BetSpaceman: juegos destacados, jackpot y más." },
+      { title: "Inicio — BETSPACE Casino" },
+      { name: "description", content: "Tu home en BETSPACE Casino: juegos destacados, jackpot y más." },
+      { property: "og:title", content: "Inicio — BETSPACE Casino" },
+      { property: "og:description", content: "Tu home en BETSPACE Casino: juegos destacados, jackpot y más." },
     ],
   }),
   component: HomePage,

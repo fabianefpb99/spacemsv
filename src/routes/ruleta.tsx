@@ -6,10 +6,10 @@ import { RequireAuth } from "@/components/auth/RequireAuth";
 export const Route = createFileRoute("/ruleta")({
   head: () => ({
     meta: [
-      { title: "Ruleta — BetSpaceman" },
-      { name: "description", content: "Juega Ruleta en BetSpaceman. Apuesta a rojo, negro o verde y multiplica tu saldo." },
-      { property: "og:title", content: "Ruleta — BetSpaceman" },
-      { property: "og:description", content: "Juega Ruleta en BetSpaceman. Apuesta a rojo, negro o verde y multiplica tu saldo." },
+      { title: "Ruleta — BETSPACE Casino" },
+      { name: "description", content: "Juega Ruleta en BETSPACE Casino. Apuesta a rojo, negro o verde y multiplica tu saldo." },
+      { property: "og:title", content: "Ruleta — BETSPACE Casino" },
+      { property: "og:description", content: "Juega Ruleta en BETSPACE Casino. Apuesta a rojo, negro o verde y multiplica tu saldo." },
     ],
   }),
   component: Page,

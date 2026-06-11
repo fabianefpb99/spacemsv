@@ -42,7 +42,7 @@ import { MissionsSection } from "@/components/admin/MissionsSection";
 export const Route = createFileRoute("/adminpanel")({
   head: () => ({
     meta: [
-      { title: "Panel de Administración — BetSpaceman" },
+      { title: "Panel de Administración — BETSPACE Casino" },
       { name: "robots", content: "noindex,nofollow" },
     ],
   }),

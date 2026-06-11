@@ -1688,6 +1688,13 @@ export type Database = {
           rank: number
         }[]
       }
+      get_referral_stats: {
+        Args: never
+        Returns: {
+          deposited: number
+          invited: number
+        }[]
+      }
       get_today_top_arena: {
         Args: { p_limit?: number }
         Returns: {

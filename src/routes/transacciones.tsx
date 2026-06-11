@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/transacciones")({
   head: () => ({
     meta: [
-      { title: "Historial de Transacciones — BetSpaceman" },
+      { title: "Historial de Transacciones — BETSPACE Casino" },
       { name: "description", content: "Todos tus movimientos: depósitos, retiros, apuestas, ganancias y bonos." },
     ],
   }),
