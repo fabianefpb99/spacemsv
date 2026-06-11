@@ -479,7 +479,16 @@ function HomePage() {
         <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
 
         {/* Online indicator / rotating tagline */}
-        <OnlineRotator online={online} />
+        <OnlineRotator
+          online={online}
+          username={
+            user
+              ? (me.data?.profile?.username ??
+                  (user.user_metadata?.full_name as string | undefined) ??
+                  (user.email ? user.email.split("@")[0] : null))
+              : null
+          }
+        />
 
         {/* Hero banner */}
         <section className="slider-neon-frame mt-3 overflow-hidden rounded-2xl border border-fuchsia-500/70 bg-[#1a0b3a] shadow-[0_0_8px_rgba(217,70,239,0.25)]">
