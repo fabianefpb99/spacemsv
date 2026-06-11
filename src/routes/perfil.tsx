@@ -813,15 +813,15 @@ function ReferralCard({ code }: { code: string | null }) {
     }
   }
   return (
-    <section className="mt-2 rounded-xl border border-fuchsia-500/40 bg-gradient-to-b from-[#2a0a3a] to-[#0c0620] px-3 py-2.5 shadow-[0_0_10px_rgba(217,70,239,0.22)]">
+    <section className="mt-2 rounded-xl border border-purple-500/30 bg-gradient-to-b from-[#2a0a3a] to-[#0c0620] px-3 py-2.5 ">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="flex w-full items-center gap-2 text-left"
         aria-expanded={open}
       >
-        <Users className="h-4 w-4 shrink-0 text-fuchsia-300" />
-        <span className="text-[11px] font-semibold uppercase tracking-widest text-fuchsia-200/90">
+        <Users className="h-4 w-4 shrink-0 text-purple-300" />
+        <span className="text-[11px] font-semibold uppercase tracking-widest text-purple-200/80">
           Código de referido
         </span>
         <code className="font-display ml-auto truncate rounded bg-black/40 px-2 py-0.5 text-sm font-black tracking-[0.18em] text-white">
@@ -835,21 +835,21 @@ function ReferralCard({ code }: { code: string | null }) {
           aria-label="Copiar código"
           aria-disabled={!code}
           className={cn(
-            "flex shrink-0 items-center justify-center rounded bg-fuchsia-600 p-1.5 text-white transition hover:bg-fuchsia-500",
+            "flex shrink-0 items-center justify-center rounded bg-purple-600 p-1.5 text-white transition hover:bg-purple-500",
             !code && "pointer-events-none opacity-50"
           )}
         >
           {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
         </span>
-        <ChevronDown className={cn("h-4 w-4 shrink-0 text-fuchsia-300 transition-transform", open && "rotate-180")} />
+        <ChevronDown className={cn("h-4 w-4 shrink-0 text-purple-300 transition-transform", open && "rotate-180")} />
       </button>
-      <p className="mt-1.5 text-[11px] leading-snug text-fuchsia-200/75">
+      <p className="mt-1.5 text-[11px] leading-snug text-purple-200/70">
         Tu amigo gana <b className="text-white">$2.000</b> · Tú <b className="text-white">$3.000</b> + <b className="text-white">5%</b> de su 1ª recarga.
       </p>
       {open && (
-        <div className="mt-2.5 grid grid-cols-2 gap-2 border-t border-fuchsia-500/20 pt-2.5">
+        <div className="mt-2.5 grid grid-cols-2 gap-2 border-t border-purple-500/20 pt-2.5">
           <div className="rounded-lg bg-black/30 px-2.5 py-2">
-            <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-fuchsia-200/70">
+            <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-purple-200/70">
               <UserPlus className="h-3 w-3" /> Invitados
             </div>
             <div className="font-display mt-0.5 text-lg font-black text-white">
@@ -857,7 +857,7 @@ function ReferralCard({ code }: { code: string | null }) {
             </div>
           </div>
           <div className="rounded-lg bg-black/30 px-2.5 py-2">
-            <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-fuchsia-200/70">
+            <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-purple-200/70">
               <Wallet className="h-3 w-3" /> Con recarga
             </div>
             <div className="font-display mt-0.5 text-lg font-black text-white">
