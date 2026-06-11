@@ -1560,3 +1560,17 @@ body[data-scroll-locked] [data-radix-portal] {
 body[data-scroll-locked] {
   --removed-body-scroll-bar-size: 0px !important;
 }
+
+/* Cube flip-down animation: text enters from top rotating, exits to bottom rotating */
+@keyframes cube-flip-in {
+  0%   { transform: translateY(-100%) rotateX(90deg); opacity: 0; }
+  60%  { opacity: 1; }
+  100% { transform: translateY(0) rotateX(0deg); opacity: 1; }
+}
+@keyframes cube-flip-out {
+  0%   { transform: translateY(0) rotateX(0deg); opacity: 1; }
+  40%  { opacity: 1; }
+  100% { transform: translateY(100%) rotateX(-90deg); opacity: 0; }
+}
+.animate-cube-in  { animation: cube-flip-in  0.55s cubic-bezier(.2,.8,.2,1) both; }
+.animate-cube-out { animation: cube-flip-out 0.55s cubic-bezier(.6,.0,.8,.2) both; }
