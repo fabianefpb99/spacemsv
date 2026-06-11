@@ -480,7 +480,7 @@ function HomePage() {
         />
 
         {/* Hero banner */}
-        <section className="slider-neon-frame mt-3 overflow-hidden rounded-2xl border border-fuchsia-500/70 bg-[#1a0b3a] shadow-[0_0_8px_rgba(217,70,239,0.25)]">
+        <section className="slider-neon-frame mt-2 overflow-hidden rounded-2xl border border-fuchsia-500/70 bg-[#1a0b3a] shadow-[0_0_8px_rgba(217,70,239,0.25)]">
           <div
             className="relative h-44 touch-pan-y select-none sm:h-52"
             onPointerDown={(e) => {
