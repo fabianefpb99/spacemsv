@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import eventosHero from "@/assets/eventos-hero.jpg";
+import { SkeletonImage } from "@/components/SkeletonImage";
 import avatarArenaAsset from "@/assets/avatar-astronauta-arena.png.asset.json";
 import iconSwords from "@/assets/mission-swords.png.asset.json";
 import iconCoins from "@/assets/mission-coins.png.asset.json";
