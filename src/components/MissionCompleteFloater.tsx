@@ -39,6 +39,34 @@ function rewardText(r: MissionCompletePayload["reward"]) {
   return "Avatar";
 }
 
+/** Soft "blip" notification sound via WebAudio (no asset needed). */
+function playBlip() {
+  if (typeof window === "undefined") return;
+  try {
+    const Ctx: typeof AudioContext =
+      (window as any).AudioContext || (window as any).webkitAudioContext;
+    if (!Ctx) return;
+    const ctx = new Ctx();
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    // Quick two-step blip: 880Hz -> 1320Hz
+    osc.frequency.setValueAtTime(880, now);
+    osc.frequency.exponentialRampToValueAtTime(1320, now + 0.09);
+    // Soft, low volume envelope
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.06, now + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.24);
+    osc.onended = () => ctx.close().catch(() => {});
+  } catch {
+    /* ignore – audio is best-effort */
+  }
+}
+
 /**
  * Banner flotante superior que aparece ~4s cuando una misión se completa.
  * Compacto (no ocupa mucha altura) y con la recompensa visible (avatar img,
@@ -61,6 +89,7 @@ export function MissionCompleteFloater() {
     if (hideTimers.current.fade) window.clearTimeout(hideTimers.current.fade);
     if (hideTimers.current.remove) window.clearTimeout(hideTimers.current.remove);
     setItem({ ...detail, visible: true });
+    playBlip();
     hideTimers.current.fade = window.setTimeout(
       () => setItem((p) => (p ? { ...p, visible: false } : p)),
       4500,
@@ -173,7 +202,7 @@ export function MissionCompleteFloater() {
   return createPortal(
     <div
       className="pointer-events-none fixed inset-x-0 z-[100] flex justify-center px-3"
-      style={{ top: "calc(env(safe-area-inset-top, 0px) + 8px)" }}
+      style={{ top: "calc(env(safe-area-inset-top, 0px) + 56px)" }}
       aria-live="polite"
     >
       <div
