@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import eventosHero from "@/assets/eventos-hero.jpg";
+import { SkeletonImage } from "@/components/SkeletonImage";
 import avatarArenaAsset from "@/assets/avatar-astronauta-arena.png.asset.json";
 import iconSwords from "@/assets/mission-swords.png.asset.json";
 import iconCoins from "@/assets/mission-coins.png.asset.json";
@@ -531,12 +532,13 @@ function EventosPage() {
         {/* Hero banner horizontal */}
         <section className="relative mt-4 overflow-hidden rounded-2xl border border-amber-400/40 shadow-[0_0_22px_rgba(251,191,36,0.25)]">
           <div className="relative h-24 w-full sm:h-28">
-            <img
+            <SkeletonImage
               src={eventosHero}
               alt="Eventos BETSPACE Casino"
               width={1920}
               height={512}
-              className="absolute inset-0 h-full w-full object-cover"
+              wrapperClassName="absolute inset-0 h-full w-full"
+              className="h-full w-full object-cover"
             />
             <div
               aria-hidden="true"
