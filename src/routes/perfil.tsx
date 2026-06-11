@@ -416,6 +416,9 @@ function PerfilPage() {
           </div>
         </section>
 
+        {/* Referidos */}
+        <ReferralCard code={me.data?.profile?.referral_code ?? null} />
+
         {/* Colección */}
         <SectionTitle>Colección</SectionTitle>
         <section className="rounded-2xl border border-purple-500/30 bg-[#0c0620]/80 p-3">
