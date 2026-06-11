@@ -9,6 +9,7 @@ export type MeData = {
     username: string | null;
     verification_status: string;
     avatar_key: string | null;
+    referral_code: string | null;
   } | null;
   balance: number;
   bonus_balance: number;
@@ -31,7 +32,7 @@ export function useMe() {
       const [{ data: profile, error: profileError }, { data: bal, error: balanceError }] = await Promise.all([
         supabase
           .from("profiles")
-          .select("id, email, username, verification_status, avatar_key")
+          .select("id, email, username, verification_status, avatar_key, referral_code")
           .eq("id", user.id)
           .maybeSingle(),
         supabase
