@@ -61,6 +61,7 @@ export function MissionCompleteFloater() {
     if (hideTimers.current.fade) window.clearTimeout(hideTimers.current.fade);
     if (hideTimers.current.remove) window.clearTimeout(hideTimers.current.remove);
     setItem({ ...detail, visible: true });
+    playBlip();
     hideTimers.current.fade = window.setTimeout(
       () => setItem((p) => (p ? { ...p, visible: false } : p)),
       4500,
@@ -173,7 +174,7 @@ export function MissionCompleteFloater() {
   return createPortal(
     <div
       className="pointer-events-none fixed inset-x-0 z-[100] flex justify-center px-3"
-      style={{ top: "calc(env(safe-area-inset-top, 0px) + 8px)" }}
+      style={{ top: "calc(env(safe-area-inset-top, 0px) + 56px)" }}
       aria-live="polite"
     >
       <div
