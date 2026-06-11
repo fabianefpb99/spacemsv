@@ -74,25 +74,91 @@ function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
 }
 
-function OnlineRotator({ online }: { online: number }) {
-  const [idx, setIdx] = useState(0);
-  // 0 = ONLINE, 1..3 = taglines
-  useEffect(() => {
-    const delay = idx === 0 ? 3800 : 3200;
-    const t = setTimeout(() => setIdx((i) => (i + 1) % 4), delay);
-    return () => clearTimeout(t);
-  }, [idx]);
-
+function OnlineRotator({ online, username }: { online: number; username?: string | null }) {
+  const welcome = username
+    ? `BIENVENIDO *@${username}*`
+    : "BIENVENIDO A *BETSPACE*";
   const phrases = [
-    "¿Te sientes con suerte hoy?",
-    "Apuesta ahora",
-    "¿Qué jugaremos hoy?",
+    welcome,
+    "¿QUE *JUGAREMOS* HOY?",
+    "TE SIENTES CON SUERTE, *APUESTA AHORA*",
   ];
+
+  // mode: "online" shows the dot+count; "typing" shows rotating typewriter phrases
+  const [mode, setMode] = useState<"online" | "typing">("online");
+  const [phraseIdx, setPhraseIdx] = useState(0);
+  const [typed, setTyped] = useState(0);
+
+  // After 3.8s of ONLINE -> start typing
+  useEffect(() => {
+    if (mode !== "online") return;
+    const t = setTimeout(() => {
+      setPhraseIdx(0);
+      setTyped(0);
+      setMode("typing");
+    }, 3800);
+    return () => clearTimeout(t);
+  }, [mode]);
+
+  const currentRaw = phrases[phraseIdx] ?? "";
+  const plain = currentRaw.replace(/\*/g, "");
+
+  // Typewriter: advance chars; when finished, wait then next phrase or back to online
+  useEffect(() => {
+    if (mode !== "typing") return;
+    if (typed < plain.length) {
+      const t = setTimeout(() => setTyped((n) => n + 1), 38);
+      return () => clearTimeout(t);
+    }
+    const t = setTimeout(() => {
+      if (phraseIdx < phrases.length - 1) {
+        setPhraseIdx((i) => i + 1);
+        setTyped(0);
+      } else {
+        setMode("online");
+      }
+    }, 1800);
+    return () => clearTimeout(t);
+  }, [mode, typed, plain.length, phraseIdx, phrases.length]);
+
+  // Build visible text honoring *bold* markers up to `typed` plain chars
+  function renderTypewriter(raw: string, count: number) {
+    const out: React.ReactNode[] = [];
+    let plainPos = 0;
+    let i = 0;
+    let bold = false;
+    let buf = "";
+    const flush = (key: number) => {
+      if (!buf) return;
+      out.push(
+        bold ? (
+          <span key={key} className="font-extrabold">{buf}</span>
+        ) : (
+          <span key={key}>{buf}</span>
+        ),
+      );
+      buf = "";
+    };
+    while (i < raw.length && plainPos < count) {
+      const ch = raw[i];
+      if (ch === "*") {
+        flush(i);
+        bold = !bold;
+        i++;
+        continue;
+      }
+      buf += ch;
+      plainPos++;
+      i++;
+    }
+    flush(i);
+    return out;
+  }
 
   return (
     <div className="relative mt-3 h-6 overflow-hidden">
       <div
-        className={`absolute inset-0 flex items-center gap-2 transition-opacity duration-900 ${idx === 0 ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        className={`absolute inset-0 flex items-center justify-center gap-2 transition-opacity duration-700 ${mode === "online" ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       >
         <span className="relative inline-flex h-2 w-2">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
@@ -100,16 +166,14 @@ function OnlineRotator({ online }: { online: number }) {
         </span>
         <span className="text-xs font-semibold text-white/90 light-text-muted">{online} ONLINE</span>
       </div>
-      {phrases.map((p, i) => (
-        <div
-          key={i}
-          className={`absolute inset-0 flex items-center justify-center transition-opacity duration-1000 ${idx === i + 1 ? "opacity-100" : "opacity-0 pointer-events-none"}`}
-        >
-          <span className="text-xs font-semibold tracking-wide text-white">
-            {p}
-          </span>
-        </div>
-      ))}
+      <div
+        className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${mode === "typing" ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+      >
+        <span className="text-xs font-semibold tracking-wide text-white whitespace-nowrap">
+          {renderTypewriter(currentRaw, typed)}
+          <span className="ml-0.5 inline-block w-[2px] h-3 align-middle bg-white animate-pulse" />
+        </span>
+      </div>
     </div>
   );
 }
@@ -403,7 +467,16 @@ function HomePage() {
         <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
 
         {/* Online indicator / rotating tagline */}
-        <OnlineRotator online={online} />
+        <OnlineRotator
+          online={online}
+          username={
+            user
+              ? (me.data?.profile?.username ??
+                  (user.user_metadata?.full_name as string | undefined) ??
+                  (user.email ? user.email.split("@")[0] : null))
+              : null
+          }
+        />
 
         {/* Hero banner */}
         <section className="slider-neon-frame mt-3 overflow-hidden rounded-2xl border border-fuchsia-500/70 bg-[#1a0b3a] shadow-[0_0_8px_rgba(217,70,239,0.25)]">
