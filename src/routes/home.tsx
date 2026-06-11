@@ -78,7 +78,7 @@ function OnlineRotator({ online }: { online: number }) {
   const [idx, setIdx] = useState(0);
   // 0 = ONLINE, 1..3 = taglines
   useEffect(() => {
-    const delay = idx === 0 ? 3000 : 2500;
+    const delay = idx === 0 ? 3800 : 3200;
     const t = setTimeout(() => setIdx((i) => (i + 1) % 4), delay);
     return () => clearTimeout(t);
   }, [idx]);
@@ -92,7 +92,7 @@ function OnlineRotator({ online }: { online: number }) {
   return (
     <div className="relative mt-3 h-6 overflow-hidden">
       <div
-        className={`absolute inset-0 flex items-center gap-2 transition-opacity duration-500 ${idx === 0 ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        className={`absolute inset-0 flex items-center gap-2 transition-opacity duration-900 ${idx === 0 ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       >
         <span className="relative inline-flex h-2 w-2">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
@@ -103,9 +103,9 @@ function OnlineRotator({ online }: { online: number }) {
       {phrases.map((p, i) => (
         <div
           key={i}
-          className={`absolute inset-0 flex items-center transition-opacity duration-500 ${idx === i + 1 ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+          className={`absolute inset-0 flex items-center justify-center transition-opacity duration-1000 ${idx === i + 1 ? "opacity-100" : "opacity-0 pointer-events-none"}`}
         >
-          <span className="text-xs font-semibold tracking-wide text-fuchsia-200/95 light-text-muted">
+          <span className="text-xs font-semibold tracking-wide text-white">
             {p}
           </span>
         </div>
