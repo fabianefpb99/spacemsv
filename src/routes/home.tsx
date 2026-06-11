@@ -362,14 +362,8 @@ function HomePage() {
         </header>
         <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
 
-        {/* Online indicator */}
-        <div className="mt-3 flex items-center gap-2">
-          <span className="relative inline-flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-          </span>
-          <span className="text-xs font-semibold text-white/90 light-text-muted">{online} ONLINE</span>
-        </div>
+        {/* Online indicator / rotating tagline */}
+        <OnlineRotator online={online} />
 
         {/* Hero banner */}
         <section className="slider-neon-frame mt-3 overflow-hidden rounded-2xl border border-fuchsia-500/70 bg-[#1a0b3a] shadow-[0_0_8px_rgba(217,70,239,0.25)]">
