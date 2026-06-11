@@ -157,7 +157,7 @@ function OnlineRotator({ online, username }: { online: number; username?: string
   }
 
   return (
-    <div className="relative mt-3 h-6 overflow-hidden">
+    <div className="relative mt-2 h-6 overflow-hidden">
       <div
         className={`absolute inset-0 flex items-center justify-center gap-2 transition-opacity duration-700 ${mode === "online" ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       >
