@@ -230,7 +230,7 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
                 </nav>
 
                 {socials.length > 0 && (
-                  <div className="border-t border-purple-500/15 px-4 pt-3">
+                  <div className="border-t border-purple-500/15 px-4 pb-3 pt-3">
                     <div className="mb-2 text-[9px] font-bold uppercase tracking-[0.18em] text-purple-300/70">
                       Síguenos
                     </div>
