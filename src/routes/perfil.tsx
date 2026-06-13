@@ -824,7 +824,7 @@ function ReferralCard({ code }: { code: string | null }) {
         <span className="text-[11px] font-semibold uppercase tracking-widest text-purple-200/80">
           Código de referido
         </span>
-        <code className="font-display ml-auto truncate rounded bg-black/40 px-2 py-0.5 text-sm font-black tracking-[0.18em] text-white">
+        <code className="font-display ml-auto rounded bg-black/40 px-1.5 py-0.5 text-[11px] font-black tracking-[0.12em] text-white">
           {code ?? "—"}
         </code>
         <span
