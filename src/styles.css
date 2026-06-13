@@ -324,6 +324,10 @@ html, body {
   -ms-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  touch-action: pan-x pan-y; /* allow scrolling, block pinch & double-tap zoom */
+  -ms-content-zooming: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 input,
 textarea,
