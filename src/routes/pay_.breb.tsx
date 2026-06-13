@@ -87,7 +87,8 @@ function PayBrebPage() {
   const reference = row?.reference ?? "SPM-XXXX-XXXX";
   const balance = me.data?.balance ?? 0;
   const balanceText = user && me.data ? formatCOP(me.data.balance) : "—";
-  const brebAlias = "@spaceman.breb";
+  // Both NEQUI and BRE-B share the same destination account number.
+  const destinationAccount = "0092255552";
 
   const isNequi = method === "nequi";
   const brandName = isNequi ? "NEQUI" : "BRE-B";
@@ -300,14 +301,14 @@ function PayBrebPage() {
         </Field>
 
         {/* Alias */}
-        <Field label={isNequi ? "UTILIZA ENVIAR POR BRE-B:" : "BRE-B"}>
+        <Field label={isNequi ? "UTILIZA ENVIAR POR BRE-B:" : "NÚMERO DE CUENTA"}>
           <div className="flex items-center justify-between gap-3">
             <div className="font-mono text-base font-bold tracking-wide text-white">
-              {isNequi ? "0092255552" : brebAlias}
+              {destinationAccount}
             </div>
             <CopyButton
               copied={copied === "alias"}
-              onClick={() => copy("alias", isNequi ? "0092255552" : brebAlias)}
+              onClick={() => copy("alias", destinationAccount)}
             />
           </div>
         </Field>
