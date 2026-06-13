@@ -49,6 +49,24 @@ export const AVATAR_OPTIONS: AvatarOption[] = [
 export const COLLECTIBLE_AVATARS = AVATAR_OPTIONS.filter((o) => o.collectible);
 
 export const DEFAULT_AVATAR_KEY: AvatarKey = "avatar-8";
+
+/**
+ * Resolved URL of the default avatar. Exposed so we can preload it eagerly
+ * (see below) and reference it from `getAvatarUrl` without re-running the
+ * lookup on every call.
+ */
+export const DEFAULT_AVATAR_URL: string =
+  AVATAR_OPTIONS.find((o) => o.key === DEFAULT_AVATAR_KEY)?.url ?? "";
+
+// Eagerly warm the browser cache for the default avatar so new users — who
+// have no `avatar_key` yet — never see a spinner in the header, ranking,
+// floater or perfil card on first paint.
+if (typeof window !== "undefined" && DEFAULT_AVATAR_URL) {
+  const img = new Image();
+  img.decoding = "async";
+  img.src = DEFAULT_AVATAR_URL;
+}
+
 /**
  * Empty string fallback. Consumers that render avatars should use the
  * <UserAvatar /> component, which displays a professional loading spinner
@@ -78,20 +96,11 @@ export function getAvatarUrl(key: string | null | undefined): string {
     // New users have no avatar_key set yet. Fall back to the default
     // astronaut so header, ranking and floater never render an empty
     // (forever-spinning) avatar.
-    const def = AVATAR_OPTIONS.find((o) => o.key === DEFAULT_AVATAR_KEY);
-    return def?.url ?? "";
+    return DEFAULT_AVATAR_URL;
   }
   if (key.startsWith("mission:")) {
-    return (
-      missionAvatarUrlCache.get(key) ??
-      AVATAR_OPTIONS.find((o) => o.key === DEFAULT_AVATAR_KEY)?.url ??
-      ""
-    );
+    return missionAvatarUrlCache.get(key) ?? DEFAULT_AVATAR_URL;
   }
   const found = AVATAR_OPTIONS.find((o) => o.key === key);
-  return (
-    found?.url ??
-    AVATAR_OPTIONS.find((o) => o.key === DEFAULT_AVATAR_KEY)?.url ??
-    ""
-  );
+  return found?.url ?? DEFAULT_AVATAR_URL;
 }
