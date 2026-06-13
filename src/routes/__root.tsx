@@ -14,6 +14,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
 import { supabase } from "@/integrations/supabase/client";
 import { MissionCompleteFloater } from "@/components/MissionCompleteFloater";
+import { DEFAULT_AVATAR_URL } from "@/lib/avatars";
 
 function NotFoundComponent() {
   return (
@@ -106,6 +107,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      // Preload the default avatar so new users (no avatar_key yet) see it
+      // instantly in header, ranking and floater on first paint.
+      ...(DEFAULT_AVATAR_URL
+        ? [{ rel: "preload", as: "image", href: DEFAULT_AVATAR_URL }]
+        : []),
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Orbitron:wght@500;700;900&family=Inter:wght@400;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap",
