@@ -233,7 +233,7 @@ function PerfilPage() {
               "--vip-c1": vipTheme?.frameC1 ?? "rgba(217,70,239,0.9)",
               "--vip-c2": vipTheme?.frameC2 ?? "rgba(168,85,247,0.65)",
               "--vip-c3": vipTheme?.frameC3 ?? "rgba(126,34,206,0.5)",
-              filter: `drop-shadow(0 0 6px ${vipTheme?.glow ?? "rgba(217,70,239,0.18)"})`,
+              filter: `drop-shadow(0 0 1.5px ${vipTheme?.glow ?? "rgba(217,70,239,0.08)"})`,
             } as React.CSSProperties
           }
         >
@@ -242,7 +242,7 @@ function PerfilPage() {
             {vipTheme && (
               <div
                 aria-hidden
-                className="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full blur-3xl"
+                className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full opacity-30 blur-2xl"
                 style={{ background: vipTheme.haloColor }}
               />
             )}
@@ -328,7 +328,7 @@ function PerfilPage() {
                     alt={`Insignia ${RANK_META[vipProgress.rank].label}`}
                     className="h-20 w-20 object-contain"
                     style={{
-                      filter: `drop-shadow(0 0 5px ${vipMeta?.glow ?? "rgba(168,85,247,0.25)"})`,
+                    filter: `drop-shadow(0 1px 2px rgba(0,0,0,0.35))`,
                     }}
                     draggable={false}
                   />
