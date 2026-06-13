@@ -74,10 +74,24 @@ export function getMissionAvatarUrl(key: string): string | undefined {
 }
 
 export function getAvatarUrl(key: string | null | undefined): string {
-  if (!key) return "";
+  if (!key) {
+    // New users have no avatar_key set yet. Fall back to the default
+    // astronaut so header, ranking and floater never render an empty
+    // (forever-spinning) avatar.
+    const def = AVATAR_OPTIONS.find((o) => o.key === DEFAULT_AVATAR_KEY);
+    return def?.url ?? "";
+  }
   if (key.startsWith("mission:")) {
-    return missionAvatarUrlCache.get(key) ?? "";
+    return (
+      missionAvatarUrlCache.get(key) ??
+      AVATAR_OPTIONS.find((o) => o.key === DEFAULT_AVATAR_KEY)?.url ??
+      ""
+    );
   }
   const found = AVATAR_OPTIONS.find((o) => o.key === key);
-  return found?.url ?? "";
+  return (
+    found?.url ??
+    AVATAR_OPTIONS.find((o) => o.key === DEFAULT_AVATAR_KEY)?.url ??
+    ""
+  );
 }
