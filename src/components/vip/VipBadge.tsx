@@ -30,8 +30,8 @@ export function VipBadge({ rank, sub, size = "md", className, showLabel = false,
           <img
             src={RANK_ART[rank]}
             alt={`Insignia ${meta.label}`}
-            className="h-full w-full object-contain drop-shadow-[0_2px_6px_rgba(0,0,0,0.45)]"
-            style={{ filter: `drop-shadow(0 0 4px ${meta.glow})` }}
+            className="h-full w-full object-contain drop-shadow-[0_1px_3px_rgba(0,0,0,0.35)]"
+            style={{ filter: `drop-shadow(0 0 1.5px ${meta.glow})` }}
             loading="lazy"
             draggable={false}
           />
