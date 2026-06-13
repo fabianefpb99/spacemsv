@@ -666,7 +666,7 @@ function HomePage() {
                 Arena
               </div>
               <div className="mt-1 inline-block rounded-sm bg-fuchsia-600/80 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white shadow-[0_0_8px_rgba(217,70,239,0.6)]">
-                Paga hasta 6.5x
+                Paga hasta 8.0x
               </div>
             </div>
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-fuchsia-400/70 bg-black/50 text-fuchsia-100 backdrop-blur-sm shadow-[0_0_10px_rgba(217,70,239,0.5)]">
