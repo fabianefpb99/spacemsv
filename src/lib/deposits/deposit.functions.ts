@@ -62,12 +62,31 @@ export const createDeposit = createServerFn({ method: "POST" })
 
     if (activeRequest?.status === "pendiente_pago") {
       const expiresAt = activeRequest.expires_at ? new Date(activeRequest.expires_at).getTime() : 0;
-      if (expiresAt > Date.now()) {
+      const sameSelection =
+        Number(activeRequest.amount) === data.amount &&
+        Number(activeRequest.bonus) === data.bonus &&
+        activeRequest.method === data.method;
+      if (expiresAt > Date.now() && sameSelection) {
         console.log("[createDeposit] reusing pending payment request", {
           userId: context.userId,
           depositId: activeRequest.id,
         });
         return activeRequest;
+      }
+      // User changed combo/method (or the previous one expired): retire the
+      // stale pending row so a fresh one with the new amount can be created.
+      const { error: expireErr } = await supabaseAdmin
+        .from("deposit_requests")
+        .update({ status: "expirada", updated_at: new Date().toISOString() })
+        .eq("id", activeRequest.id)
+        .eq("status", "pendiente_pago");
+      if (expireErr) {
+        console.error("[createDeposit] failed to expire stale pending request", {
+          userId: context.userId,
+          depositId: activeRequest.id,
+          message: expireErr.message,
+        });
+        throw new Error(expireErr.message);
       }
     }
 
