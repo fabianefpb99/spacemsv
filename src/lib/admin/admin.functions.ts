@@ -452,3 +452,71 @@ export const adminGetDashboardKpis = createServerFn({ method: "GET" })
       ggrToday: bets - wins,
     };
   });
+
+/* --------------------- High winners alert (net casino P/L) --------------------- */
+
+/**
+ * Returns users whose net casino profit (sum(win) - sum(bet)) exceeds the
+ * threshold. This is pure casino-derived profit and naturally excludes the
+ * seeded initial real balance and deposits (those aren't `win` transactions).
+ */
+export const adminGetHighWinners = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ threshold: z.number().min(1).max(10_000_000).default(50000) }).parse(input)
+  )
+  .handler(async ({ data, context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
+    await assertAdmin(context.userId);
+
+    // Paginate transactions to avoid PostgREST row cap.
+    type TxRow = { user_id: string; type: string; amount: number | string | null };
+    const perUser: Record<string, { bet: number; win: number }> = {};
+    const pageSize = 1000;
+    for (let start = 0; ; start += pageSize) {
+      const { data: page, error } = await supabaseAdmin
+        .from("transactions")
+        .select("user_id, type, amount")
+        .in("type", ["bet", "win"])
+        .order("created_at", { ascending: true })
+        .range(start, start + pageSize - 1);
+      if (error) throw new Error(error.message);
+      if (!page || page.length === 0) break;
+      for (const t of page as TxRow[]) {
+        if (!t.user_id) continue;
+        perUser[t.user_id] ??= { bet: 0, win: 0 };
+        const a = Number(t.amount) || 0;
+        if (t.type === "bet") perUser[t.user_id].bet += Math.abs(a);
+        else if (t.type === "win") perUser[t.user_id].win += a;
+      }
+      if (page.length < pageSize) break;
+      if (start > 500_000) break;
+    }
+
+    const winners = Object.entries(perUser)
+      .map(([user_id, v]) => ({ user_id, bet: v.bet, win: v.win, net: v.win - v.bet }))
+      .filter((u) => u.net >= data.threshold)
+      .sort((a, b) => b.net - a.net)
+      .slice(0, 50);
+
+    if (winners.length === 0) return { winners: [] };
+
+    const ids = winners.map((w) => w.user_id);
+    const [{ data: profs }, { data: bals }] = await Promise.all([
+      supabaseAdmin.from("profiles").select("id, username, email").in("id", ids),
+      supabaseAdmin.from("user_balances").select("user_id, balance, bonus_balance").in("user_id", ids),
+    ]);
+    const profMap: Record<string, { username: string | null; email: string | null }> = {};
+    for (const p of profs ?? []) profMap[p.id] = { username: p.username, email: p.email };
+    const balMap: Record<string, { balance: number; bonus_balance: number }> = {};
+    for (const b of bals ?? []) balMap[b.user_id] = { balance: Number(b.balance ?? 0), bonus_balance: Number(b.bonus_balance ?? 0) };
+
+    return {
+      winners: winners.map((w) => ({
+        ...w,
+        username: profMap[w.user_id]?.username ?? null,
+        email: profMap[w.user_id]?.email ?? null,
+        balance: balMap[w.user_id]?.balance ?? 0,
+      })),
+    };
+  });

@@ -125,7 +125,7 @@ export function Panel({
   children,
   actions,
 }: {
-  title: string;
+  title: React.ReactNode;
   children: React.ReactNode;
   actions?: React.ReactNode;
 }) {
