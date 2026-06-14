@@ -22,6 +22,19 @@ const TAB_LABELS: Record<Tab, string> = {
   game_red_alert: "Juegos",
 };
 
+function sectionForNotification(type: string): string {
+  switch (type) {
+    case "recharge_request":
+      return "recargas";
+    case "new_user":
+      return "usuarios";
+    case "game_red_alert":
+      return "dashboard";
+    default:
+      return "dashboard";
+  }
+}
+
 function relativeTime(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();
   const s = Math.floor(diff / 1000);
@@ -189,7 +202,8 @@ function BellInner({ userId }: { userId: string }) {
                   }`}
                 >
                   <Link
-                    to={(n.link ?? "/adminpanel") as "/adminpanel"}
+                    to="/adminpanel"
+                    search={{ section: sectionForNotification(n.type) }}
                     onClick={() => {
                       if (!n.read) markMut.mutate(n.id);
                       setOpen(false);

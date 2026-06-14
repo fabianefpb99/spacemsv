@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { z } from "zod";
 import {
   ArrowLeft,
   BarChart3,
@@ -46,6 +47,10 @@ export const Route = createFileRoute("/adminpanel")({
       { name: "robots", content: "noindex,nofollow" },
     ],
   }),
+  validateSearch: (search) =>
+    z
+      .object({ section: z.string().optional() })
+      .parse(search),
   component: AdminPanelPage,
 });
 
@@ -70,8 +75,19 @@ function AdminPanelPage() {
   const { user, loading, signOut } = useAuth();
   const isAdminQ = useIsAdmin();
   const navigate = useNavigate();
-  const [section, setSection] = useState<AdminSection>("dashboard");
+  const search = Route.useSearch();
+  const initialSection = (SECTIONS.some((s) => s.id === search.section)
+    ? (search.section as AdminSection)
+    : "dashboard") as AdminSection;
+  const [section, setSection] = useState<AdminSection>(initialSection);
   const [navOpen, setNavOpen] = useState(false);
+
+  // Sync state when the URL ?section= changes (e.g. clicking a notification while on /adminpanel).
+  useEffect(() => {
+    if (search.section && SECTIONS.some((s) => s.id === search.section)) {
+      setSection(search.section as AdminSection);
+    }
+  }, [search.section]);
 
   // Admin panel is always dark, regardless of user's theme preference.
   useEffect(() => {
