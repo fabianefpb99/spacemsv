@@ -40,7 +40,20 @@ export const markAdminNotificationRead = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     if (!(await isAdmin(context.userId))) return { ok: false };
     const admin = await getSupabaseAdmin();
-    const { error } = await admin.rpc("mark_admin_notification_read", { p_id: data.id });
+    // Read current read_by, append our user id if missing, then write back.
+    const { data: row, error: readErr } = await admin
+      .from("admin_notifications")
+      .select("read_by")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (readErr) throw new Error(readErr.message);
+    const current: string[] = Array.isArray(row?.read_by) ? (row!.read_by as string[]) : [];
+    if (current.includes(context.userId)) return { ok: true };
+    const next = Array.from(new Set([...current, context.userId]));
+    const { error } = await admin
+      .from("admin_notifications")
+      .update({ read_by: next })
+      .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -50,7 +63,21 @@ export const markAllAdminNotificationsRead = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     if (!(await isAdmin(context.userId))) return { count: 0 };
     const admin = await getSupabaseAdmin();
-    const { data, error } = await admin.rpc("mark_all_admin_notifications_read");
-    if (error) throw new Error(error.message);
-    return { count: (data as number) ?? 0 };
+    const { data: rows, error: readErr } = await admin
+      .from("admin_notifications")
+      .select("id, read_by")
+      .not("read_by", "cs", `{${context.userId}}`);
+    if (readErr) throw new Error(readErr.message);
+    let count = 0;
+    for (const r of rows ?? []) {
+      const current: string[] = Array.isArray(r.read_by) ? (r.read_by as string[]) : [];
+      if (current.includes(context.userId)) continue;
+      const next = Array.from(new Set([...current, context.userId]));
+      const { error } = await admin
+        .from("admin_notifications")
+        .update({ read_by: next })
+        .eq("id", r.id);
+      if (!error) count++;
+    }
+    return { count };
   });
