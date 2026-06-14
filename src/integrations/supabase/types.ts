@@ -1667,15 +1667,35 @@ export type Database = {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
       }
-      detect_games_in_red: {
+      detect_big_single_payouts: {
         Args: {
-          p_cooldown_minutes?: number
-          p_min_loss?: number
-          p_min_txs?: number
+          p_min_net?: number
+          p_min_win?: number
           p_window_minutes?: number
         }
         Returns: number
       }
+      detect_games_in_red:
+        | {
+            Args: {
+              p_cooldown_minutes?: number
+              p_min_handle?: number
+              p_min_loss?: number
+              p_min_payout_ratio?: number
+              p_min_txs?: number
+              p_window_minutes?: number
+            }
+            Returns: number
+          }
+        | {
+            Args: {
+              p_cooldown_minutes?: number
+              p_min_loss?: number
+              p_min_txs?: number
+              p_window_minutes?: number
+            }
+            Returns: number
+          }
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
