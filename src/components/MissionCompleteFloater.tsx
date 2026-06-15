@@ -249,7 +249,7 @@ export function MissionCompleteFloater() {
           <button
             onClick={dismiss}
             aria-label="Cerrar"
-            className="ml-1 shrink-0 rounded-md p-1 text-purple-300/70 hover:bg-white/5 hover:text-white"
+            className="ml-1 shrink-0 rounded-md p-1 text-white hover:bg-white/10"
           >
             <X className="h-3.5 w-3.5" />
           </button>
