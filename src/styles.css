@@ -209,14 +209,14 @@ html.light :is(.bg-\[\#0c0620\]\/80, .bg-\[\#0c0620\]\/85, .bg-\[\#0c0620\]\/60)
  * Light mode — section titles that "scream" (amber-200 / emerald-200 /
  * purple-200 on white). Tone them down to a deeper, readable hue.
  * ------------------------------------------------------------------ */
-html.light :is(h1, h2, h3, h4, span, div).text-amber-200:not(:is(header, nav) *) {
+html.light :is(h1, h2, h3, h4, span, div).text-amber-200:not(:is(header, nav) *):not(.theme-dark-fixed *):not(.theme-dark-fixed) {
   color: #a16207 !important; /* amber-700 */
   text-shadow: none !important;
 }
-html.light :is(h1, h2, h3, h4, span, div).text-emerald-200:not(:is(header, nav) *) {
+html.light :is(h1, h2, h3, h4, span, div).text-emerald-200:not(:is(header, nav) *):not(.theme-dark-fixed *) {
   color: #047857 !important; /* emerald-700 */
 }
-html.light :is(h1, h2, h3, h4).text-purple-200:not(:is(header, nav) *) {
+html.light :is(h1, h2, h3, h4).text-purple-200:not(:is(header, nav) *):not(.theme-dark-fixed *) {
   color: #6b21a8 !important; /* purple-800 */
 }
 html.light .text-emerald-300\/80:not(:is(header, nav) *) {
