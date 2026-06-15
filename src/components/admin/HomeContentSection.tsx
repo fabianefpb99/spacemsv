@@ -154,6 +154,7 @@ function SlidesEditor() {
       }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-home-slides"] });
+      qc.invalidateQueries({ queryKey: ["public-home-slides"] });
       setDrafts({});
       toast.success("Slide guardado");
     },
@@ -164,6 +165,7 @@ function SlidesEditor() {
     mutationFn: (id: string) => delFn({ data: { id } }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-home-slides"] });
+      qc.invalidateQueries({ queryKey: ["public-home-slides"] });
       toast.success("Slide eliminado");
     },
   });
@@ -228,6 +230,7 @@ function SlidesEditor() {
         });
       }
       qc.invalidateQueries({ queryKey: ["admin-home-slides"] });
+      qc.invalidateQueries({ queryKey: ["public-home-slides"] });
       toast.success("Slides actuales cargados");
     } catch (e) {
       toast.error((e as Error).message);
@@ -517,6 +520,7 @@ function FeaturedEditor() {
       }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-home-featured"] });
+      qc.invalidateQueries({ queryKey: ["public-featured-games"] });
       setDrafts({});
       toast.success("Juego guardado");
     },
@@ -527,6 +531,7 @@ function FeaturedEditor() {
     mutationFn: (id: string) => delFn({ data: { id } }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-home-featured"] });
+      qc.invalidateQueries({ queryKey: ["public-featured-games"] });
       toast.success("Juego eliminado");
     },
   });
@@ -596,6 +601,7 @@ function FeaturedEditor() {
         });
       }
       qc.invalidateQueries({ queryKey: ["admin-home-featured"] });
+      qc.invalidateQueries({ queryKey: ["public-featured-games"] });
       toast.success("Juegos destacados cargados");
     } catch (e) {
       toast.error((e as Error).message);
