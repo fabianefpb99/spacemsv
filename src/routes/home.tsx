@@ -161,18 +161,18 @@ function OnlineRotator({ online, username }: { online: number; username?: string
 }
 
 const GAMES = [
-  { name: "SPACEMAN", img: gameSpaceman, tag: "POPULAR", tagCls: "bg-purple-600/40 text-purple-200 border-purple-500/50", to: "/spaceman" },
-  { name: "SLOT", img: gameSlotMafia, tag: "NUEVO", tagCls: "bg-emerald-600/30 text-emerald-200 border-emerald-500/50", to: "/slot" },
-  { name: "MINAS", img: gameMines, tag: "POPULAR", tagCls: "bg-purple-600/40 text-purple-200 border-purple-500/50", to: "/mines" },
-  { name: "DICE", img: gameDice, tag: "CLÁSICO", tagCls: "bg-rose-600/30 text-rose-200 border-rose-500/50", to: "/dados" },
+  { name: "SPACEMAN", img: gameSpaceman, tag: "POPULAR", tagCls: "bg-purple-600 text-white border-purple-400", to: "/spaceman" },
+  { name: "SLOT", img: gameSlotMafia, tag: "NUEVO", tagCls: "bg-emerald-600 text-white border-emerald-400", to: "/slot" },
+  { name: "MINAS", img: gameMines, tag: "POPULAR", tagCls: "bg-purple-600 text-white border-purple-400", to: "/mines" },
+  { name: "DICE", img: gameDice, tag: "CLÁSICO", tagCls: "bg-rose-600 text-white border-rose-400", to: "/dados" },
 ];
 
 const TAG_CLS: Record<string, string> = {
-  purple: "bg-purple-600/40 text-purple-200 border-purple-500/50",
-  emerald: "bg-emerald-600/30 text-emerald-200 border-emerald-500/50",
-  rose: "bg-rose-600/30 text-rose-200 border-rose-500/50",
-  amber: "bg-amber-600/30 text-amber-200 border-amber-500/50",
-  fuchsia: "bg-fuchsia-600/30 text-fuchsia-200 border-fuchsia-500/50",
+  purple: "bg-purple-600 text-white border-purple-400",
+  emerald: "bg-emerald-600 text-white border-emerald-400",
+  rose: "bg-rose-600 text-white border-rose-400",
+  amber: "bg-amber-600 text-white border-amber-400",
+  fuchsia: "bg-fuchsia-600 text-white border-fuchsia-400",
 };
 
 const SLIDES = [
@@ -463,7 +463,7 @@ function HomePage() {
         />
 
         {/* Hero banner */}
-        <section className="slider-neon-frame mt-[10px] overflow-hidden rounded-2xl border border-fuchsia-500/70 bg-[#1a0b3a] shadow-[0_0_8px_rgba(217,70,239,0.25)]">
+        <section className="theme-dark-fixed slider-neon-frame mt-[10px] overflow-hidden rounded-2xl border border-fuchsia-500/70 bg-[#1a0b3a] shadow-[0_0_8px_rgba(217,70,239,0.25)]">
           <div
             className="relative h-44 touch-pan-y select-none sm:h-52"
             onPointerDown={(e) => {
@@ -512,11 +512,13 @@ function HomePage() {
             </button>
             {/* overlay removed to show full slider image */}
             <div key={slide} className="absolute inset-0 flex flex-col justify-center gap-2 p-4 sm:p-5">
-              <p className="font-display text-xs tracking-widest text-purple-100/80">{current.eyebrow}</p>
-              <h2 className="font-display text-2xl font-black leading-tight tracking-wide text-white drop-shadow sm:text-3xl">
+              <span className="inline-flex w-fit items-center rounded-md bg-white/95 px-2 py-0.5 font-display text-[10px] font-bold uppercase tracking-widest text-purple-700 shadow-sm">
+                {current.eyebrow}
+              </span>
+              <h2 className="font-display text-2xl font-black leading-tight tracking-wide text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] sm:text-3xl">
                 {current.title}
               </h2>
-              <p className="max-w-[55%] whitespace-pre-line text-xs text-purple-100/80 sm:text-sm">
+              <p className="max-w-[55%] whitespace-pre-line text-xs text-white/95 drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] sm:text-sm">
                 {current.desc}
               </p>
               <Link
@@ -554,7 +556,7 @@ function HomePage() {
               <Link
                 key={g.name}
                 to={g.to}
-                className="group flex flex-col overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400"
+                className="theme-dark-fixed group flex flex-col overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400"
               >
                 <div className="aspect-square w-full overflow-hidden">
                   <SkeletonImage
