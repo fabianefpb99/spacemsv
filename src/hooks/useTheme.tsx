@@ -3,6 +3,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useState,
   type ReactNode,
 } from "react";
 
@@ -45,7 +46,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 }
 
 function useStoredTheme(): [Theme, (t: Theme) => void] {
-  const [theme, setTheme] = useStateInitialized<Theme>(() => {
+  const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window === "undefined") return "dark";
     try {
       const v = localStorage.getItem(STORAGE_KEY);
@@ -58,13 +59,6 @@ function useStoredTheme(): [Theme, (t: Theme) => void] {
     try { localStorage.setItem(STORAGE_KEY, t); } catch { /* ignore */ }
   };
   return [theme, set];
-}
-
-// tiny wrapper so the hook order stays stable without pulling useState import twice
-import { useState as useStateInitialized } from "react";
-
-export function _noop() {
-  return null;
 }
 
 export function useTheme(): Ctx {
