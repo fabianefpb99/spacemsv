@@ -600,7 +600,7 @@ function HomePage() {
           {/* Texto encima */}
           <div className="relative z-10 flex h-full items-center justify-between gap-3 px-4 sm:px-5">
             <div className="min-w-0 flex-1">
-              <div className="text-[10px] font-semibold uppercase tracking-widest text-fuchsia-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+              <div className="text-[10px] font-semibold uppercase tracking-widest text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
                 Nuevo juego
               </div>
               <div className="mt-0.5 font-display text-2xl font-black leading-none tracking-wide text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] sm:text-3xl">
@@ -631,7 +631,7 @@ function HomePage() {
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent" />
           <div className="relative z-10 flex h-full items-center justify-between gap-3 px-4 sm:px-5">
             <div className="min-w-0 flex-1">
-              <div className="text-[10px] font-semibold uppercase tracking-widest text-purple-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+              <div className="text-[10px] font-semibold uppercase tracking-widest text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
                 Gira y gana
               </div>
               <div className="mt-0.5 font-display text-2xl font-black leading-none tracking-wide text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] sm:text-3xl">
@@ -663,7 +663,7 @@ function HomePage() {
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent" />
           <div className="relative z-10 flex h-full items-center justify-between gap-3 px-4 sm:px-5">
             <div className="min-w-0 flex-1">
-              <div className="text-[10px] font-semibold uppercase tracking-widest text-fuchsia-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+              <div className="text-[10px] font-semibold uppercase tracking-widest text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
                 Apuesta y gana
               </div>
               <div className="mt-0.5 font-display text-2xl font-black leading-none tracking-wide text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] sm:text-3xl">
@@ -691,7 +691,7 @@ function HomePage() {
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent" />
           <div className="relative z-10 flex h-full items-center justify-between gap-3 px-4 sm:px-5">
             <div className="min-w-0 flex-1">
-              <div className="text-[10px] font-semibold uppercase tracking-widest text-amber-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+              <div className="text-[10px] font-semibold uppercase tracking-widest text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
                 Jackpot activo
               </div>
               <div className="mt-0.5 font-display text-lg font-black leading-none tracking-wide text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] sm:text-xl">
