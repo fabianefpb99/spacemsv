@@ -3,6 +3,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useState,
   type ReactNode,
 } from "react";
 
@@ -26,22 +27,38 @@ function applyTheme(t: Theme) {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  // Theme switching temporarily disabled — force dark globally.
+  const [theme, setThemeState] = useStoredTheme();
+
   useEffect(() => {
-    applyTheme("dark");
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-    } catch {
-      /* ignore */
-    }
-  }, []);
+    applyTheme(theme);
+  }, [theme]);
 
   const value = useMemo<Ctx>(
-    () => ({ theme: "dark", toggle: () => {}, setTheme: () => {} }),
-    [],
+    () => ({
+      theme,
+      toggle: () => setThemeState(theme === "dark" ? "light" : "dark"),
+      setTheme: (t) => setThemeState(t),
+    }),
+    [theme, setThemeState],
   );
 
   return <ThemeCtx.Provider value={value}>{children}</ThemeCtx.Provider>;
+}
+
+function useStoredTheme(): [Theme, (t: Theme) => void] {
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window === "undefined") return "dark";
+    try {
+      const v = localStorage.getItem(STORAGE_KEY);
+      if (v === "light" || v === "dark") return v;
+    } catch { /* ignore */ }
+    return "dark";
+  });
+  const set = (t: Theme) => {
+    setTheme(t);
+    try { localStorage.setItem(STORAGE_KEY, t); } catch { /* ignore */ }
+  };
+  return [theme, set];
 }
 
 export function useTheme(): Ctx {
