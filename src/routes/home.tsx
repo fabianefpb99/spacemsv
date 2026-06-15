@@ -250,12 +250,14 @@ function HomePage() {
   const slidesQ = useQuery({
     queryKey: ["public-home-slides"],
     queryFn: () => fetchSlides(),
-    staleTime: 60_000,
+    staleTime: 0,
+    refetchOnMount: "always",
   });
   const featuredQ = useQuery({
     queryKey: ["public-featured-games"],
     queryFn: () => fetchFeatured(),
-    staleTime: 60_000,
+    staleTime: 0,
+    refetchOnMount: "always",
   });
 
   const slidesList = (slidesQ.data && slidesQ.data.length > 0)
