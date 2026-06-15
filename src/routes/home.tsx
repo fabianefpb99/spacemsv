@@ -707,7 +707,7 @@ function HomePage() {
         </div>
 
         {/* Últimas ganancias */}
-        <section className="mt-5 rounded-xl border border-purple-500/30 bg-[#0c0620]/80 p-3 sm:p-4">
+        <section className="theme-dark-fixed mt-5 rounded-xl border border-purple-500/30 bg-[#0c0620] p-3 sm:p-4">
           <h3 className="font-display text-xs font-bold uppercase tracking-widest text-white">
             Últimas ganancias
           </h3>
