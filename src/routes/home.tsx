@@ -161,18 +161,18 @@ function OnlineRotator({ online, username }: { online: number; username?: string
 }
 
 const GAMES = [
-  { name: "SPACEMAN", img: gameSpaceman, tag: "POPULAR", tagCls: "bg-purple-600/40 text-purple-200 border-purple-500/50", to: "/spaceman" },
-  { name: "SLOT", img: gameSlotMafia, tag: "NUEVO", tagCls: "bg-emerald-600/30 text-emerald-200 border-emerald-500/50", to: "/slot" },
-  { name: "MINAS", img: gameMines, tag: "POPULAR", tagCls: "bg-purple-600/40 text-purple-200 border-purple-500/50", to: "/mines" },
-  { name: "DICE", img: gameDice, tag: "CLÁSICO", tagCls: "bg-rose-600/30 text-rose-200 border-rose-500/50", to: "/dados" },
+  { name: "SPACEMAN", img: gameSpaceman, tag: "POPULAR", tagCls: "bg-purple-600 text-white border-purple-400", to: "/spaceman" },
+  { name: "SLOT", img: gameSlotMafia, tag: "NUEVO", tagCls: "bg-emerald-600 text-white border-emerald-400", to: "/slot" },
+  { name: "MINAS", img: gameMines, tag: "POPULAR", tagCls: "bg-purple-600 text-white border-purple-400", to: "/mines" },
+  { name: "DICE", img: gameDice, tag: "CLÁSICO", tagCls: "bg-rose-600 text-white border-rose-400", to: "/dados" },
 ];
 
 const TAG_CLS: Record<string, string> = {
-  purple: "bg-purple-600/40 text-purple-200 border-purple-500/50",
-  emerald: "bg-emerald-600/30 text-emerald-200 border-emerald-500/50",
-  rose: "bg-rose-600/30 text-rose-200 border-rose-500/50",
-  amber: "bg-amber-600/30 text-amber-200 border-amber-500/50",
-  fuchsia: "bg-fuchsia-600/30 text-fuchsia-200 border-fuchsia-500/50",
+  purple: "bg-purple-600 text-white border-purple-400",
+  emerald: "bg-emerald-600 text-white border-emerald-400",
+  rose: "bg-rose-600 text-white border-rose-400",
+  amber: "bg-amber-600 text-white border-amber-400",
+  fuchsia: "bg-fuchsia-600 text-white border-fuchsia-400",
 };
 
 const SLIDES = [
