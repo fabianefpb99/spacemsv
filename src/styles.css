@@ -76,15 +76,118 @@ html.light .bg-white\/\[0\.06\] {
  * fully dark, regardless of which background utility it uses.
  * ------------------------------------------------------------------ */
 html.light nav,
-html.light nav *,
-html.light header,
-html.light header * {
+html.light nav * {
   color-scheme: dark;
 }
 html.light nav .bg-\[\#060210\],
-html.light nav .bg-\[\#060210\]\/95,
-html.light header .bg-\[\#060210\] {
+html.light nav .bg-\[\#060210\]\/95 {
   background-color: #060210 !important;
+}
+
+/* ------------------------------------------------------------------
+ * Light mode — HEADER goes white with an inverted logo (dark on light)
+ * and a stronger bottom divider so it doesn't blur into the page.
+ * ------------------------------------------------------------------ */
+html.light header.bg-\[\#060210\] {
+  background-color: #ffffff !important;
+  border-bottom-color: rgba(30, 18, 60, 0.12) !important;
+  border-bottom-width: 1px !important;
+  box-shadow: 0 1px 0 rgba(30, 18, 60, 0.04), 0 6px 18px -14px rgba(30, 18, 60, 0.25);
+}
+/* Invert the white-fill SVG logo to dark inside light-mode headers */
+html.light header.bg-\[\#060210\] .logo-shine img {
+  filter: invert(1) brightness(0.18);
+}
+/* Header text/labels readable on white */
+html.light header.bg-\[\#060210\] .text-white,
+html.light header.bg-\[\#060210\] .text-purple-200\/70 {
+  color: #2a1d4d !important;
+}
+html.light header.bg-\[\#060210\] .text-purple-200\/70 {
+  color: rgb(107 70 193) !important;
+}
+html.light header.bg-\[\#060210\] button.text-white {
+  color: #2a1d4d !important;
+}
+html.light header.bg-\[\#060210\] button:hover.hover\:bg-white\/10:hover,
+html.light header.bg-\[\#060210\] .hover\:bg-white\/10:hover {
+  background-color: rgba(30, 18, 60, 0.06) !important;
+}
+
+/* ------------------------------------------------------------------
+ * Light mode — surface cards (modules, mission cards, ranking panels,
+ * profile panels). Replace the dark navy fills with a soft tinted
+ * surface + clear border so blocks are legible on white without the
+ * old neon shout.
+ * ------------------------------------------------------------------ */
+html.light :is(
+  .bg-\[\#0c0620\]\/80,
+  .bg-\[\#0c0620\]\/85,
+  .bg-\[\#0c0620\]\/60,
+  .bg-\[\#0c0620\]
+):not(:is(header, nav) *):not(header):not(nav) {
+  background-color: #ffffff !important;
+  border-color: rgba(30, 18, 60, 0.10) !important;
+  box-shadow: 0 1px 2px rgba(30, 18, 60, 0.04);
+}
+
+/* Text inside those cards: violet body & headings on white */
+html.light :is(.bg-\[\#0c0620\]\/80, .bg-\[\#0c0620\]\/85, .bg-\[\#0c0620\]\/60) :is(
+  .text-white,
+  .text-purple-100\/80,
+  .text-purple-200\/80,
+  .text-purple-200\/70
+) {
+  color: #2a1d4d !important;
+}
+html.light :is(.bg-\[\#0c0620\]\/80, .bg-\[\#0c0620\]\/85, .bg-\[\#0c0620\]\/60) :is(
+  .text-purple-300\/70,
+  .text-purple-300\/80
+) {
+  color: rgb(107 70 193 / 0.85) !important;
+}
+
+/* ------------------------------------------------------------------
+ * Light mode — section titles that "scream" (amber-200 / emerald-200 /
+ * purple-200 on white). Tone them down to a deeper, readable hue.
+ * ------------------------------------------------------------------ */
+html.light :is(h1, h2, h3, h4, span, div).text-amber-200:not(:is(header, nav) *) {
+  color: #a16207 !important; /* amber-700 */
+  text-shadow: none !important;
+}
+html.light :is(h1, h2, h3, h4, span, div).text-emerald-200:not(:is(header, nav) *) {
+  color: #047857 !important; /* emerald-700 */
+}
+html.light :is(h1, h2, h3, h4).text-purple-200:not(:is(header, nav) *) {
+  color: #6b21a8 !important; /* purple-800 */
+}
+html.light .text-emerald-300\/80:not(:is(header, nav) *) {
+  color: #047857 !important;
+}
+html.light .font-mono.text-emerald-200:not(:is(header, nav) *) {
+  color: #065f46 !important;
+}
+
+/* Progress bar track was bg-white/5 — invisible on white. Use a soft
+ * violet tint so the colored bar reads against it. */
+html.light .h-1\.5.bg-white\/5,
+html.light .h-2.bg-white\/5,
+html.light .h-2\.5.bg-white\/5 {
+  background-color: rgba(30, 18, 60, 0.10) !important;
+}
+
+/* Eventos tabs container (border + soft tint) */
+html.light .grid.bg-\[\#0c0620\]\/80 {
+  background-color: #ffffff !important;
+  border-color: rgba(30, 18, 60, 0.10) !important;
+}
+html.light .grid.bg-\[\#0c0620\]\/80 button:not(.bg-gradient-to-b) {
+  color: #6b21a8 !important;
+}
+
+/* Inner "termina en" pill on the special-event card stays legible */
+html.light .bg-black\/30:not(:is(header, nav) *) {
+  background-color: rgba(30, 18, 60, 0.06) !important;
 }
 
 /* ------------------------------------------------------------------
