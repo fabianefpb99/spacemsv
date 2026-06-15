@@ -138,10 +138,10 @@ function OnlineRotator({ online, username }: { online: number; username?: string
       {mode === "online" && (
         <div className="absolute inset-0 flex items-center justify-start gap-2 pl-1 animate-fade-in">
           <span className="relative inline-flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+            <span className="home-online-dot absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-80" />
+            <span className="home-online-dot relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
           </span>
-          <span className="text-xs font-semibold text-white/90 light-text-muted">{online} ONLINE</span>
+          <span className="home-online-text text-xs font-extrabold text-white/95">{online} ONLINE</span>
         </div>
       )}
       <div
@@ -556,7 +556,7 @@ function HomePage() {
               <Link
                 key={g.name}
                 to={g.to}
-                className="theme-dark-fixed group flex flex-col overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400"
+                className="theme-dark-fixed home-game-card group flex flex-col overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400"
               >
                 <div className="aspect-square w-full overflow-hidden">
                   <SkeletonImage
@@ -570,7 +570,7 @@ function HomePage() {
                   />
                 </div>
                 <div className="flex flex-col items-center gap-1 px-1 py-2">
-                  <span className="font-display text-[10px] font-bold tracking-wider text-white sm:text-xs">
+                  <span className="home-game-title font-display text-[10px] font-black tracking-wider text-white sm:text-xs">
                     {g.name}
                   </span>
                   <span className={`rounded-full border px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider sm:text-[9px] ${g.tagCls}`}>
