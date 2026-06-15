@@ -126,7 +126,8 @@ html.light header.bg-\[\#060210\] {
 }
 /* Invert the white-fill SVG logo to dark inside light-mode headers */
 html.light header.bg-\[\#060210\] .logo-shine img {
-  filter: invert(1) brightness(0.18);
+  /* Brand dark-purple (#2a1d4d) tint instead of flat black */
+  filter: brightness(0) saturate(100%) invert(11%) sepia(58%) saturate(2400%) hue-rotate(245deg) brightness(92%) contrast(108%);
 }
 /* Header text/labels readable on white */
 html.light header.bg-\[\#060210\] .text-white,
