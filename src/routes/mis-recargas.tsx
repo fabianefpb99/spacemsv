@@ -65,7 +65,7 @@ function MisRecargasPage() {
   }>;
 
   return (
-    <div className="min-h-screen bg-[#0b0420] text-white">
+    <div className="theme-dark-fixed min-h-screen bg-[#0b0420] text-white">
       <header
         className="sticky top-0 z-30 border-b border-purple-500/30 bg-[#0b0420]/95 px-4 pb-3 backdrop-blur"
         style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.75rem)" }}
