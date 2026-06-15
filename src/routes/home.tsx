@@ -141,7 +141,7 @@ function OnlineRotator({ online, username }: { online: number; username?: string
             <span className="home-online-dot absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-80" />
             <span className="home-online-dot relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
           </span>
-          <span className="home-online-text text-xs font-extrabold text-white/95">{online} ONLINE</span>
+          <span className="home-online-text text-xs font-semibold text-white/90">{online} ONLINE</span>
         </div>
       )}
       <div
@@ -556,7 +556,7 @@ function HomePage() {
               <Link
                 key={g.name}
                 to={g.to}
-                className="theme-dark-fixed home-game-card group flex flex-col overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400"
+                className="home-game-card group flex flex-col overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400"
               >
                 <div className="aspect-square w-full overflow-hidden">
                   <SkeletonImage
