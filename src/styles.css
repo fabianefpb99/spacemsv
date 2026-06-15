@@ -342,16 +342,64 @@ html.light .auth-popover :is(a, button) {
   box-shadow: none !important;
 }
 html.light .profile-balance-card {
-  background: #ffffff !important;
-  border-color: rgba(59, 20, 104, 0.16) !important;
   box-shadow: none !important;
   color: #3b1468 !important;
   filter: none !important;
+  background-image: none !important;
 }
-html.light .profile-balance-card :is(.text-white, .text-purple-200\/80, .text-amber-200\/90, .text-amber-200, .neon-green) {
+/* Balance Principal — soft lavender */
+html.light .profile-balance-card.border-purple-500\/40 {
+  background: #f3eaff !important;
+  border-color: #c4a8f0 !important;
+}
+/* Balance Bonus — soft cream/amber */
+html.light .profile-balance-card.border-amber-400\/60 {
+  background: #fff4dc !important;
+  border-color: #f0c46a !important;
+}
+html.light .profile-balance-card :is(.text-white, .text-purple-200\/80) {
   color: #3b1468 !important;
   text-shadow: none !important;
   filter: none !important;
+}
+html.light .profile-balance-card :is(.text-amber-200\/90, .text-amber-200) {
+  color: #a25b00 !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+/* Green dollar sign stays vibrant green, no glow */
+html.light .profile-balance-card .neon-green {
+  color: #16a34a !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+/* Depositar — solid purple, white text */
+html.light .profile-balance-card.border-purple-500\/40 a {
+  background: #7c3aed !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+/* Ver eventos — amber outline */
+html.light .profile-balance-card.border-amber-400\/60 a {
+  background: transparent !important;
+  color: #a25b00 !important;
+  border: 1.5px solid #f0c46a !important;
+}
+
+/* VIP progress strip — solid white in light mode */
+html.light .profile-vip-progress {
+  background: #ffffff !important;
+  background-image: none !important;
+  border-color: rgba(59, 20, 104, 0.18) !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+html.light .profile-vip-progress :is(.text-white, .text-purple-200\/70, .text-amber-300, .text-yellow-300, .text-slate-100, .text-cyan-200, .text-sky-200, .text-fuchsia-200, .text-fuchsia-300, .text-amber-200) {
+  color: #3b1468 !important;
+  text-shadow: none !important;
+}
+html.light .profile-vip-progress .bg-purple-500\/20 {
+  background: #ede4ff !important;
 }
 html.light header.bg-\[\#060210\] svg {
   color: #2a1d4d !important;

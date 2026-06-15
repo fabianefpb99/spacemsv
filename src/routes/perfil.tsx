@@ -343,7 +343,7 @@ function PerfilPage() {
           <Link
             to="/vip"
             className={cn(
-              "mt-2 flex items-center gap-2.5 rounded-xl border bg-gradient-to-r px-3 py-2 transition hover:brightness-110",
+              "profile-vip-progress mt-2 flex items-center gap-2.5 rounded-xl border bg-gradient-to-r px-3 py-2 transition hover:brightness-110",
               vipTheme.cardBg,
               vipTheme.borderClass,
             )}
