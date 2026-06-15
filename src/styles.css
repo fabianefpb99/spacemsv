@@ -295,6 +295,34 @@ html.light :is(
 ):not(:is(header, nav) *):not(.theme-dark-fixed *) {
   color: #6b21a8 !important;
 }
+/* Lighter / more-transparent purple text tokens that vanish on white */
+html.light :is(
+  .text-purple-200\/60,
+  .text-purple-200\/90,
+  .text-purple-100\/80,
+  .text-purple-100
+):not(:is(header, nav) *):not(.theme-dark-fixed *) {
+  color: #6b21a8 !important;
+}
+/* Heavier black tints used in referral / inner pills */
+html.light :is(.bg-black\/40, .bg-black\/50):not(:is(header, nav) *):not(.theme-dark-fixed *):not(.theme-dark-fixed) {
+  background-color: rgba(30, 18, 60, 0.06) !important;
+}
+html.light :is(.bg-black\/40, .bg-black\/50) :is(.text-white, code):not(.theme-dark-fixed *) {
+  color: #2a1d4d !important;
+}
+/* Soft tinted action buttons (Editar datos / Cerrar sesión) — keep tint, fix label */
+html.light button.bg-purple-500\/10:not(.theme-dark-fixed *) {
+  background-color: rgba(139, 92, 246, 0.10) !important;
+  color: #5b21b6 !important;
+}
+html.light button.bg-rose-500\/10:not(.theme-dark-fixed *) {
+  background-color: rgba(244, 63, 94, 0.10) !important;
+  color: #9f1239 !important;
+}
+html.light button.bg-rose-500\/10 :is(.text-rose-300, svg) {
+  color: #9f1239 !important;
+}
 /* Headings that were plain white on dark — make them dark on light */
 html.light h1.text-white:not(:is(header, nav) *),
 html.light h2.text-white:not(:is(header, nav) *),
