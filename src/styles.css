@@ -62,17 +62,20 @@ html.light .theme-dark-fixed .bg-white\/\[0\.06\] {
 
 /* Home: fixed contrast for the online counter and featured-game labels. */
 html.light .home-online-text {
-  color: #4c1d95 !important;
+  color: #3b1468 !important;
+  text-shadow: none !important;
 }
 html.light .home-online-dot {
   background-color: #00c853 !important;
 }
 html.light .home-game-card {
-  background-color: #100624 !important;
+  background-color: #ffffff !important;
+  border-color: rgba(59, 20, 104, 0.18) !important;
+  box-shadow: none !important;
 }
 html.light .home-game-title {
-  color: #ffffff !important;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.9) !important;
+  color: #3b1468 !important;
+  text-shadow: none !important;
 }
 
 /* Light-mode text helpers for page content (NOT header/nav, which stay dark) */
