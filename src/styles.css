@@ -63,6 +63,7 @@ html.light .theme-dark-fixed .bg-white\/\[0\.06\] {
 /* Home: fixed contrast for the online counter and featured-game labels. */
 html.light .home-online-text {
   color: #3b1468 !important;
+  font-weight: 600 !important;
   text-shadow: none !important;
 }
 html.light .home-online-dot {
@@ -76,6 +77,48 @@ html.light .home-game-card {
 html.light .home-game-title {
   color: #3b1468 !important;
   text-shadow: none !important;
+}
+html.light .home-wins-panel {
+  background-color: #ffffff !important;
+  border-color: rgba(59, 20, 104, 0.16) !important;
+  box-shadow: none !important;
+  color: #3b1468 !important;
+}
+html.light .home-wins-heading,
+html.light .home-win-user,
+html.light .home-win-amount,
+html.light .home-win-amount .text-white {
+  color: #3b1468 !important;
+  text-shadow: none !important;
+}
+html.light .home-win-row {
+  background-color: #7a708b !important;
+  border-color: #7a708b !important;
+  box-shadow: none !important;
+}
+html.light .home-win-row :is(.home-win-user, .home-win-amount, .home-win-amount .text-white) {
+  color: #ffffff !important;
+}
+html.light .home-win-game,
+html.light .home-win-mult {
+  color: #ffffff !important;
+  opacity: 0.92 !important;
+}
+html.light .home-win-avatar {
+  background-color: #5b21b6 !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+  --tw-ring-color: transparent !important;
+}
+html.light .home-win-avatar svg,
+html.light .home-money-sign {
+  color: #ffffff !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+html.light .home-wins-viewport {
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
 }
 
 /* Light-mode text helpers for page content (NOT header/nav, which stay dark) */
@@ -140,7 +183,7 @@ html.light header.bg-\[\#060210\] {
   background-color: #ffffff !important;
   border-bottom-color: rgba(30, 18, 60, 0.12) !important;
   border-bottom-width: 1px !important;
-  box-shadow: 0 1px 0 rgba(30, 18, 60, 0.04), 0 6px 18px -14px rgba(30, 18, 60, 0.25);
+  box-shadow: none !important;
 }
 /* Invert the white-fill SVG logo to dark inside light-mode headers */
 html.light header.bg-\[\#060210\] .logo-shine img {
