@@ -67,7 +67,6 @@ html.light :is(
  * disappear and bright cards get a neutral frame. */
 html.light .bg-white\/5,
 html.light .bg-white\/10,
-html.light .bg-white\/[\.06\],
 html.light .bg-white\/\[0\.06\] {
   background-color: rgba(30, 18, 60, 0.04) !important;
 }
