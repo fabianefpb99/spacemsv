@@ -709,16 +709,14 @@ function HomePage() {
         </div>
 
         {/* Últimas ganancias */}
-        <section className="theme-dark-fixed mt-5 rounded-xl border border-purple-500/30 bg-[#0c0620] p-3 sm:p-4">
-          <h3 className="font-display text-xs font-bold uppercase tracking-widest text-white">
+        <section className="home-wins-panel mt-5 rounded-xl border border-purple-500/30 bg-[#0c0620] p-3 sm:p-4">
+          <h3 className="home-wins-heading font-display text-xs font-bold uppercase tracking-widest text-white">
             Últimas ganancias
           </h3>
           <div
-            className="relative mt-3 overflow-hidden"
+            className="home-wins-viewport relative mt-3 overflow-hidden"
             style={{
               height: "calc(4 * 52px)",
-              maskImage: "linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent)",
-              WebkitMaskImage: "linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent)",
             }}
           >
             <ul
@@ -728,21 +726,21 @@ function HomePage() {
               {[...LAST_WINS, ...LAST_WINS].map((w, i) => (
                 <li
                   key={`${w.user}-${i}`}
-                  className="flex h-[44px] items-center gap-3 rounded-lg border border-purple-500/20 bg-[#150830]/60 px-2.5"
+                  className="home-win-row flex h-[44px] items-center gap-3 rounded-lg border border-purple-500/20 bg-[#150830]/60 px-2.5"
                 >
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-purple-600/30 ring-1 ring-purple-400/30">
+                  <div className="home-win-avatar flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-purple-600/30 ring-1 ring-purple-400/30">
                     <User className="h-4 w-4 text-purple-200" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-xs font-semibold text-white">{w.user}</div>
-                    <div className="text-[10px] uppercase tracking-wider text-purple-300/70">{w.game}</div>
+                    <div className="home-win-user truncate text-xs font-semibold text-white">{w.user}</div>
+                    <div className="home-win-game text-[10px] uppercase tracking-wider text-purple-300/70">{w.game}</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-display text-xs font-bold">
-                      <span className="neon-green mr-0.5">$</span>
+                    <div className="home-win-amount font-display text-xs font-bold">
+                      <span className="home-money-sign neon-green mr-0.5">$</span>
                       <span className="text-white">{formatCOP(w.amount)} COP</span>
                     </div>
-                    <div className="text-[10px] font-bold text-purple-300">{w.mult.toFixed(2)}x</div>
+                    <div className="home-win-mult text-[10px] font-bold text-purple-300">{w.mult.toFixed(2)}x</div>
                   </div>
                 </li>
               ))}
