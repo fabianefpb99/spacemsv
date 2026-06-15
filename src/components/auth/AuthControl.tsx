@@ -65,7 +65,7 @@ export function AuthControl({ className }: { className?: string }) {
         align="end"
         sideOffset={8}
         collisionPadding={12}
-        className="z-50 w-[min(16rem,calc(100vw-1.5rem))] max-w-[calc(100vw-1.5rem)] border-purple-500/40 bg-[#0c0620] text-white"
+        className="auth-popover z-50 w-[min(16rem,calc(100vw-1.5rem))] max-w-[calc(100vw-1.5rem)] border-purple-500/40 bg-[#0c0620] text-white"
       >
         <div className="flex items-center gap-2 border-b border-purple-500/20 pb-3">
           <div className="relative h-10 w-10 shrink-0">
@@ -93,7 +93,7 @@ export function AuthControl({ className }: { className?: string }) {
             Balance
           </div>
           <div className="font-display text-sm font-bold">
-            <span className="neon-green mr-0.5">$</span>
+            <span className="auth-money-sign neon-green mr-0.5">$</span>
             <span className="text-white">{balanceText} COP</span>
           </div>
           {bonusText && me.data!.bonus_balance > 0 && (
