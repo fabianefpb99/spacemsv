@@ -341,6 +341,18 @@ html.light .auth-popover :is(a, button) {
   color: #5b21b6 !important;
   box-shadow: none !important;
 }
+html.light .profile-balance-card {
+  background: #ffffff !important;
+  border-color: rgba(59, 20, 104, 0.16) !important;
+  box-shadow: none !important;
+  color: #3b1468 !important;
+  filter: none !important;
+}
+html.light .profile-balance-card :is(.text-white, .text-purple-200\/80, .text-amber-200\/90, .text-amber-200, .neon-green) {
+  color: #3b1468 !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
 html.light header.bg-\[\#060210\] svg {
   color: #2a1d4d !important;
 }
