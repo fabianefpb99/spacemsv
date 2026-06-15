@@ -556,7 +556,7 @@ function HomePage() {
               <Link
                 key={g.name}
                 to={g.to}
-                className="group flex flex-col overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400"
+                className="theme-dark-fixed group flex flex-col overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400"
               >
                 <div className="aspect-square w-full overflow-hidden">
                   <SkeletonImage
