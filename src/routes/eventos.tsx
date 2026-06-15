@@ -581,7 +581,7 @@ function EventosPage() {
         {/* Evento especial fin de semana */}
         {spActive && (tab === "all" || tab === "special") && (
           <section className="mt-5">
-            <div className="relative overflow-hidden rounded-2xl border border-amber-400/40 bg-gradient-to-br from-fuchsia-700/40 via-purple-800/40 to-amber-600/30 p-4 shadow-[0_0_22px_rgba(217,70,239,0.35)]">
+            <div className="theme-dark-fixed relative overflow-hidden rounded-2xl border border-amber-400/40 bg-[#1a0a3a] bg-gradient-to-br from-fuchsia-700/55 via-purple-800/55 to-amber-600/40 p-4 shadow-[0_0_22px_rgba(217,70,239,0.35)]">
               <div
                 aria-hidden="true"
                 className="pointer-events-none absolute -right-6 -top-6 h-32 w-32 rounded-full bg-amber-400/30 blur-3xl"
