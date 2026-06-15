@@ -92,17 +92,17 @@ html.light .home-win-amount .text-white {
   text-shadow: none !important;
 }
 html.light .home-win-row {
-  background-color: #7a708b !important;
-  border-color: #7a708b !important;
+  background-color: #f4f1f9 !important;
+  border-color: rgba(59, 20, 104, 0.14) !important;
   box-shadow: none !important;
 }
 html.light .home-win-row :is(.home-win-user, .home-win-amount, .home-win-amount .text-white) {
-  color: #ffffff !important;
+  color: #3b1468 !important;
 }
 html.light .home-win-game,
 html.light .home-win-mult {
-  color: #ffffff !important;
-  opacity: 0.92 !important;
+  color: #4b286d !important;
+  opacity: 1 !important;
 }
 html.light .home-win-avatar {
   background-color: #5b21b6 !important;
@@ -112,7 +112,7 @@ html.light .home-win-avatar {
 }
 html.light .home-win-avatar svg,
 html.light .home-money-sign {
-  color: #ffffff !important;
+  color: #3b1468 !important;
   text-shadow: none !important;
   filter: none !important;
 }
