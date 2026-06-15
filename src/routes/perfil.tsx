@@ -382,7 +382,7 @@ function PerfilPage() {
 
         {/* Balances */}
         <section className="mt-3 grid grid-cols-2 gap-3">
-          <div className="rounded-2xl border border-purple-500/40 bg-gradient-to-b from-[#1a0b3a] to-[#0c0620] px-3 py-2.5 shadow-[0_0_6px_rgba(168,85,247,0.12)]">
+          <div className="profile-balance-card rounded-2xl border border-purple-500/40 bg-gradient-to-b from-[#1a0b3a] to-[#0c0620] px-3 py-2.5 shadow-[0_0_6px_rgba(168,85,247,0.12)]">
             <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-purple-200/80">
               <WalletIcon className="h-3.5 w-3.5" />
               Balance Principal
@@ -398,7 +398,7 @@ function PerfilPage() {
               + Depositar
             </Link>
           </div>
-          <div className="rounded-2xl border border-amber-400/60 bg-gradient-to-b from-[#2a1a05] to-[#0c0620] px-3 py-2.5 shadow-[0_0_6px_rgba(251,191,36,0.15)]">
+          <div className="profile-balance-card rounded-2xl border border-amber-400/60 bg-gradient-to-b from-[#2a1a05] to-[#0c0620] px-3 py-2.5 shadow-[0_0_6px_rgba(251,191,36,0.15)]">
             <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-amber-200/90">
               <Gift className="h-3.5 w-3.5" />
               Balance Bonus
