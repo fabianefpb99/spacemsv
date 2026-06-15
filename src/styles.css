@@ -15,14 +15,14 @@
  * untouched for now — we'll migrate the rest progressively.
  * ------------------------------------------------------------------ */
 html.light body {
-  background-color: #ffffff;
-  color: #111111;
+  background-color: #f4f1f9;
+  color: #1f1530;
 }
 
 /* Page-level outer wrappers */
 html.light .bg-\[\#060210\]:not(header):not(nav):not(.theme-dark-fixed) {
-  background-color: #ffffff !important;
-  color: #111111;
+  background-color: #f4f1f9 !important;
+  color: #1f1530;
 }
 
 html.light .theme-dark-fixed {
@@ -31,9 +31,46 @@ html.light .theme-dark-fixed {
 }
 
 /* Light-mode text helpers for page content (NOT header/nav, which stay dark) */
-html.light .light-text-dark { color: #1a0b3a !important; }
-html.light .light-text-purple { color: rgb(126 34 206) !important; }
-html.light .light-text-muted { color: rgb(88 28 135 / 0.85) !important; }
+html.light .light-text-dark { color: #2a1d4d !important; }
+html.light .light-text-purple { color: rgb(107 70 193) !important; }
+html.light .light-text-muted { color: rgb(88 70 130 / 0.72) !important; }
+
+/* ------------------------------------------------------------------
+ * Light mode — desaturate the most aggressive solid color blocks
+ * (fuchsia/purple/violet/rose gradients used as card backgrounds in
+ * the Home). We don't kill the brand: we mix them with the soft
+ * lavender canvas so they read as tinted surfaces, not neon shouts.
+ * Scoped away from header/nav which stay dark.
+ * ------------------------------------------------------------------ */
+html.light .bg-fuchsia-500,
+html.light .bg-fuchsia-600,
+html.light .bg-purple-500,
+html.light .bg-purple-600,
+html.light .bg-violet-500,
+html.light .bg-violet-600 {
+  filter: saturate(0.78) brightness(1.05);
+}
+
+/* Gradient banners (from-* / via-* / to-*) inside content cards — pull
+ * the saturation back so the white canvas doesn't make them buzz. */
+html.light :is(
+  [class*="from-fuchsia-"],
+  [class*="from-purple-"],
+  [class*="from-violet-"],
+  [class*="from-rose-"],
+  [class*="from-pink-"]
+):not(:is(header, nav) *):not(header):not(nav) {
+  filter: saturate(0.82);
+}
+
+/* Soft, tinted card surface so white cards on white canvas don't
+ * disappear and bright cards get a neutral frame. */
+html.light .bg-white\/5,
+html.light .bg-white\/10,
+html.light .bg-white\/[\.06\],
+html.light .bg-white\/\[0\.06\] {
+  background-color: rgba(30, 18, 60, 0.04) !important;
+}
 
 /* ------------------------------------------------------------------
  * Light mode — keep bottom nav (and any element inside <nav>/<header>)
