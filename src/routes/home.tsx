@@ -463,7 +463,7 @@ function HomePage() {
         />
 
         {/* Hero banner */}
-        <section className="slider-neon-frame mt-[10px] overflow-hidden rounded-2xl border border-fuchsia-500/70 bg-[#1a0b3a] shadow-[0_0_8px_rgba(217,70,239,0.25)]">
+        <section className="theme-dark-fixed slider-neon-frame mt-[10px] overflow-hidden rounded-2xl border border-fuchsia-500/70 bg-[#1a0b3a] shadow-[0_0_8px_rgba(217,70,239,0.25)]">
           <div
             className="relative h-44 touch-pan-y select-none sm:h-52"
             onPointerDown={(e) => {
@@ -512,11 +512,13 @@ function HomePage() {
             </button>
             {/* overlay removed to show full slider image */}
             <div key={slide} className="absolute inset-0 flex flex-col justify-center gap-2 p-4 sm:p-5">
-              <p className="font-display text-xs tracking-widest text-purple-100/80">{current.eyebrow}</p>
-              <h2 className="font-display text-2xl font-black leading-tight tracking-wide text-white drop-shadow sm:text-3xl">
+              <span className="inline-flex w-fit items-center rounded-md bg-white/95 px-2 py-0.5 font-display text-[10px] font-bold uppercase tracking-widest text-purple-700 shadow-sm">
+                {current.eyebrow}
+              </span>
+              <h2 className="font-display text-2xl font-black leading-tight tracking-wide text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] sm:text-3xl">
                 {current.title}
               </h2>
-              <p className="max-w-[55%] whitespace-pre-line text-xs text-purple-100/80 sm:text-sm">
+              <p className="max-w-[55%] whitespace-pre-line text-xs text-white/95 drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] sm:text-sm">
                 {current.desc}
               </p>
               <Link
