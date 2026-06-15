@@ -678,6 +678,26 @@ html.light .slider-neon-frame::before {
     0 var(--vip-notch)
   );
 }
+html.light .vip-frame {
+  background: #3b1468 !important;
+  filter: none !important;
+}
+html.light .vip-frame > .vip-frame-inner {
+  background: #ffffff !important;
+  color: #3b1468 !important;
+}
+html.light .vip-frame-inner::before,
+html.light .vip-frame-inner::after {
+  background: #3b1468 !important;
+  box-shadow: none !important;
+}
+html.light .vip-frame-inner :is(.text-white, .text-white\/90, .text-purple-200\/70, .text-amber-300, .text-yellow-300, .text-slate-100, .text-cyan-200, .text-sky-200, .text-fuchsia-200, .text-amber-200) {
+  color: #3b1468 !important;
+  text-shadow: none !important;
+}
+html.light .vip-frame-inner [style*="drop-shadow"] {
+  filter: none !important;
+}
 /* Bright corner accents along the bevels (4 short bars). */
 .vip-frame-inner::before,
 .vip-frame-inner::after {
