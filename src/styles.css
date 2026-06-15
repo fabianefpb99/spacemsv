@@ -320,6 +320,27 @@ html.light header.bg-\[\#060210\] .neon-green {
   text-shadow: none !important;
   filter: none !important;
 }
+html.light .auth-popover {
+  background-color: #ffffff !important;
+  border-color: rgba(59, 20, 104, 0.18) !important;
+  box-shadow: none !important;
+  color: #3b1468 !important;
+}
+html.light .auth-popover :is(.text-white, .text-purple-100, .text-purple-100\/80, .text-purple-100\/90, .text-purple-200\/60, .text-purple-200\/70) {
+  color: #3b1468 !important;
+}
+html.light .auth-popover .auth-money-sign,
+html.light .auth-popover .neon-green {
+  color: #3b1468 !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+html.light .auth-popover :is(a, button) {
+  background-color: #ffffff !important;
+  border-color: #7c3aed !important;
+  color: #5b21b6 !important;
+  box-shadow: none !important;
+}
 html.light header.bg-\[\#060210\] svg {
   color: #2a1d4d !important;
 }
@@ -417,8 +438,9 @@ html.light h4.text-white:not(:is(header, nav) *) {
 }
 /* Body white spans / divs inside cards (player name, amount labels) */
 html.light :is(.bg-\[\#0c0620\]\/80, .bg-\[\#0c0620\]\/85, .bg-\[\#0c0620\]\/60) .neon-green {
-  color: #047857 !important;
+  color: #3b1468 !important;
   text-shadow: none !important;
+  filter: none !important;
 }
 
 /* ------------------------------------------------------------------
