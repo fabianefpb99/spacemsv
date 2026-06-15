@@ -813,7 +813,7 @@ function ReferralCard({ code }: { code: string | null }) {
     }
   }
   return (
-    <section className="mt-2 rounded-xl border border-purple-500/30 bg-gradient-to-b from-[#2a0a3a] to-[#0c0620] px-3 py-2.5 ">
+    <section className="mt-2 rounded-xl border border-purple-500/30 bg-[#0c0620]/80 px-3 py-2.5 ">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
