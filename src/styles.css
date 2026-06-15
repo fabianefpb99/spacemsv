@@ -167,8 +167,36 @@ html.light :is(.bg-\[\#0c0620\]\/80, .bg-\[\#0c0620\]\/85, .bg-\[\#0c0620\]\/60)
   .text-purple-100\/80,
   .text-purple-200\/80,
   .text-purple-200\/70
-) {
+):not(a):not(button):not(a *):not(button *) {
   color: #2a1d4d !important;
+}
+
+/* Buttons / links with colored backgrounds keep their white label in light
+ * mode (purple, emerald, fuchsia, rose, sky, violet). Amber/yellow stays
+ * dark-on-yellow — handled by NOT including amber/yellow here. */
+html.light :is(a, button):is(
+  [class*="bg-purple-"],
+  [class*="bg-fuchsia-"],
+  [class*="bg-violet-"],
+  [class*="bg-emerald-"],
+  [class*="bg-teal-"],
+  [class*="bg-rose-"],
+  [class*="bg-pink-"],
+  [class*="bg-sky-"],
+  [class*="bg-indigo-"]
+),
+html.light :is(a, button):is(
+  [class*="bg-purple-"],
+  [class*="bg-fuchsia-"],
+  [class*="bg-violet-"],
+  [class*="bg-emerald-"],
+  [class*="bg-teal-"],
+  [class*="bg-rose-"],
+  [class*="bg-pink-"],
+  [class*="bg-sky-"],
+  [class*="bg-indigo-"]
+) * {
+  color: #ffffff !important;
 }
 html.light :is(.bg-\[\#0c0620\]\/80, .bg-\[\#0c0620\]\/85, .bg-\[\#0c0620\]\/60) :is(
   .text-purple-300\/70,
