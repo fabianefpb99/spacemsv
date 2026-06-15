@@ -89,7 +89,7 @@ html.light :is(
   [class*="from-violet-"],
   [class*="from-rose-"],
   [class*="from-pink-"]
-):not(:is(header, nav) *):not(header):not(nav) {
+):not(:is(header, nav) *):not(header):not(nav):not(.theme-dark-fixed):not(.theme-dark-fixed *) {
   filter: saturate(0.82);
 }
 
@@ -270,7 +270,7 @@ html.light header.bg-\[\#060210\] [class*="shadow-["] {
  * Light mode — kill heavy drop-shadows on mission/event icons and
  * neon text glows (DOBLE XP, etc.) that look muddy on white.
  * ------------------------------------------------------------------ */
-html.light [class*="drop-shadow-["]:not(:is(header, nav) *) {
+html.light [class*="drop-shadow-["]:not(:is(header, nav) *):not(.theme-dark-fixed *) {
   filter: none !important;
 }
 
@@ -324,7 +324,7 @@ html.light :is(
   border-color: rgba(148, 130, 180, 0.18) !important;
 }
 
-html.light [class*="shadow-[0_0_"]:not(:is(header, nav) *) {
+html.light [class*="shadow-[0_0_"]:not(:is(header, nav) *):not(.theme-dark-fixed):not(.theme-dark-fixed *) {
   box-shadow: none !important;
 }
 
