@@ -30,6 +30,36 @@ html.light .theme-dark-fixed {
   color: #ffffff !important;
 }
 
+/* The .theme-dark-fixed subtree (deposit / withdrawal flows, header
+ * pills, etc.) opts out of every light-mode rewrite below. Any dark
+ * surface inside it stays dark. */
+html.light .theme-dark-fixed,
+html.light .theme-dark-fixed * {
+  color-scheme: dark;
+}
+html.light .theme-dark-fixed .bg-\[\#060210\],
+html.light .theme-dark-fixed .bg-\[\#0b0420\],
+html.light .theme-dark-fixed .bg-\[\#0b0420\]\/95,
+html.light .theme-dark-fixed .bg-\[\#0c0620\],
+html.light .theme-dark-fixed .bg-\[\#0c0620\]\/60,
+html.light .theme-dark-fixed .bg-\[\#0c0620\]\/80,
+html.light .theme-dark-fixed .bg-\[\#0c0620\]\/85,
+html.light .theme-dark-fixed .bg-\[\#150830\] {
+  background-color: #0c0620 !important;
+}
+html.light .theme-dark-fixed .bg-\[\#060210\] {
+  background-color: #060210 !important;
+}
+html.light .theme-dark-fixed :is(.text-white, .text-purple-100\/80, .text-purple-200, .text-purple-200\/80, .text-purple-300\/70) {
+  color: inherit !important;
+}
+/* Stop tinted-card and shadow-strip rules from leaking into this subtree */
+html.light .theme-dark-fixed .bg-white\/5,
+html.light .theme-dark-fixed .bg-white\/10,
+html.light .theme-dark-fixed .bg-white\/\[0\.06\] {
+  background-color: rgba(255,255,255,0.05) !important;
+}
+
 /* Light-mode text helpers for page content (NOT header/nav, which stay dark) */
 html.light .light-text-dark { color: #2a1d4d !important; }
 html.light .light-text-purple { color: rgb(107 70 193) !important; }
@@ -188,6 +218,65 @@ html.light .grid.bg-\[\#0c0620\]\/80 button:not(.bg-gradient-to-b) {
 /* Inner "termina en" pill on the special-event card stays legible */
 html.light .bg-black\/30:not(:is(header, nav) *) {
   background-color: rgba(30, 18, 60, 0.06) !important;
+}
+
+/* ------------------------------------------------------------------
+ * Light mode — HEADER fine-tuning per user feedback:
+ *   - dollar sign ($) must be dark, not neon green
+ *   - gear / bell icons must be dark, not pastel
+ * ------------------------------------------------------------------ */
+html.light header.bg-\[\#060210\] .neon-green {
+  color: #2a1d4d !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+html.light header.bg-\[\#060210\] svg {
+  color: #2a1d4d !important;
+}
+/* Avatar control button glow / pill stays calm */
+html.light header.bg-\[\#060210\] [class*="shadow-["] {
+  box-shadow: none !important;
+}
+
+/* ------------------------------------------------------------------
+ * Light mode — kill heavy drop-shadows on mission/event icons and
+ * neon text glows (DOBLE XP, etc.) that look muddy on white.
+ * ------------------------------------------------------------------ */
+html.light [class*="drop-shadow-["]:not(:is(header, nav) *) {
+  filter: none !important;
+}
+
+/* ------------------------------------------------------------------
+ * Light mode — small uppercase labels inside cards
+ * (TU POSICIÓN, SEGURIDAD DE LA CUENTA, ARENA, TOP GANADORES,
+ * "10.000 o más", "BLAZE en ARENA"). They were rendered in
+ * purple-200/80, purple-300/90, fuchsia-300 or white — all of which
+ * vanish on white. Force a strong purple in light mode.
+ * ------------------------------------------------------------------ */
+html.light :is(
+  .text-purple-200\/80,
+  .text-purple-200\/70,
+  .text-purple-300\/90,
+  .text-purple-300\/80,
+  .text-purple-300\/70,
+  .text-purple-300,
+  .text-purple-200,
+  .text-fuchsia-300,
+  .text-fuchsia-200
+):not(:is(header, nav) *):not(.theme-dark-fixed *) {
+  color: #6b21a8 !important;
+}
+/* Headings that were plain white on dark — make them dark on light */
+html.light h1.text-white:not(:is(header, nav) *),
+html.light h2.text-white:not(:is(header, nav) *),
+html.light h3.text-white:not(:is(header, nav) *),
+html.light h4.text-white:not(:is(header, nav) *) {
+  color: #1f1530 !important;
+}
+/* Body white spans / divs inside cards (player name, amount labels) */
+html.light :is(.bg-\[\#0c0620\]\/80, .bg-\[\#0c0620\]\/85, .bg-\[\#0c0620\]\/60) .neon-green {
+  color: #047857 !important;
+  text-shadow: none !important;
 }
 
 /* ------------------------------------------------------------------

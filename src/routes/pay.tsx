@@ -115,7 +115,7 @@ function PayPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#060210] text-white font-pay">
+    <div className="theme-dark-fixed min-h-screen bg-[#060210] text-white font-pay">
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-10 pt-4 sm:max-w-lg sm:px-4">
         {/* Header — same as Home */}
         <header
