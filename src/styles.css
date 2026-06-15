@@ -221,6 +221,65 @@ html.light .bg-black\/30:not(:is(header, nav) *) {
 }
 
 /* ------------------------------------------------------------------
+ * Light mode — HEADER fine-tuning per user feedback:
+ *   - dollar sign ($) must be dark, not neon green
+ *   - gear / bell icons must be dark, not pastel
+ * ------------------------------------------------------------------ */
+html.light header.bg-\[\#060210\] .neon-green {
+  color: #2a1d4d !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+html.light header.bg-\[\#060210\] svg {
+  color: #2a1d4d !important;
+}
+/* Avatar control button glow / pill stays calm */
+html.light header.bg-\[\#060210\] [class*="shadow-["] {
+  box-shadow: none !important;
+}
+
+/* ------------------------------------------------------------------
+ * Light mode — kill heavy drop-shadows on mission/event icons and
+ * neon text glows (DOBLE XP, etc.) that look muddy on white.
+ * ------------------------------------------------------------------ */
+html.light [class*="drop-shadow-["]:not(:is(header, nav) *) {
+  filter: none !important;
+}
+
+/* ------------------------------------------------------------------
+ * Light mode — small uppercase labels inside cards
+ * (TU POSICIÓN, SEGURIDAD DE LA CUENTA, ARENA, TOP GANADORES,
+ * "10.000 o más", "BLAZE en ARENA"). They were rendered in
+ * purple-200/80, purple-300/90, fuchsia-300 or white — all of which
+ * vanish on white. Force a strong purple in light mode.
+ * ------------------------------------------------------------------ */
+html.light :is(
+  .text-purple-200\/80,
+  .text-purple-200\/70,
+  .text-purple-300\/90,
+  .text-purple-300\/80,
+  .text-purple-300\/70,
+  .text-purple-300,
+  .text-purple-200,
+  .text-fuchsia-300,
+  .text-fuchsia-200
+):not(:is(header, nav) *):not(.theme-dark-fixed *) {
+  color: #6b21a8 !important;
+}
+/* Headings that were plain white on dark — make them dark on light */
+html.light h1.text-white:not(:is(header, nav) *),
+html.light h2.text-white:not(:is(header, nav) *),
+html.light h3.text-white:not(:is(header, nav) *),
+html.light h4.text-white:not(:is(header, nav) *) {
+  color: #1f1530 !important;
+}
+/* Body white spans / divs inside cards (player name, amount labels) */
+html.light :is(.bg-\[\#0c0620\]\/80, .bg-\[\#0c0620\]\/85, .bg-\[\#0c0620\]\/60) .neon-green {
+  color: #047857 !important;
+  text-shadow: none !important;
+}
+
+/* ------------------------------------------------------------------
  * Light mode — quiet down neon borders & glowing box-shadows on
  * content cards (featured games, Jackpot/Blackjack banners, etc.).
  * Scoped so header/nav are not affected.
