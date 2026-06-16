@@ -755,7 +755,7 @@ function HomePage() {
         </section>
 
         {/* Invita y gana */}
-        <section className="mt-4 flex items-center gap-3 rounded-xl border border-purple-500/30 bg-gradient-to-r from-[#1a0b3a]/80 to-[#0c0620] p-3 sm:p-4">
+        <section className="home-invite-card mt-4 flex items-center gap-3 rounded-xl border border-purple-500/30 bg-gradient-to-r from-[#1a0b3a]/80 to-[#0c0620] p-3 sm:p-4">
           <div className="flex h-14 w-14 shrink-0 items-center justify-center sm:h-16 sm:w-16">
             <SkeletonImage
               src={gift3d}
@@ -768,14 +768,14 @@ function HomePage() {
             />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="font-display text-sm font-bold uppercase tracking-wider text-white">
+            <div className="home-invite-title font-display text-sm font-bold uppercase tracking-wider text-white">
               Invita y gana
             </div>
-            <div className="text-[11px] text-purple-200/70">
+            <div className="home-invite-sub text-[11px] text-purple-200/70">
               Obtén 5% de tus referidos
             </div>
           </div>
-          <button className="rounded-md bg-purple-600 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-purple-900/50 hover:bg-purple-500">
+          <button className="home-invite-btn rounded-md bg-purple-600 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-purple-900/50 hover:bg-purple-500">
             Invitar
           </button>
         </section>
