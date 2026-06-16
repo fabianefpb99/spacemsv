@@ -2513,7 +2513,7 @@ html.light .promo-banner:hover {
   box-shadow: 0 8px 22px rgba(16,24,40,.10), 0 2px 4px rgba(16,24,40,.06) !important;
 }
 html.light .promo-banner .promo-banner__scrim {
-  background: linear-gradient(to right, #ffffff 0%, rgba(255,255,255,0.92) 22%, rgba(255,255,255,0.72) 36%, rgba(255,255,255,0.42) 50%, rgba(255,255,255,0.12) 64%, rgba(255,255,255,0) 75%) !important;
+  background: linear-gradient(to right, #ffffff 0%, rgba(255,255,255,0.92) 28%, rgba(255,255,255,0.78) 44%, rgba(255,255,255,0.5) 58%, rgba(255,255,255,0.18) 73%, rgba(255,255,255,0) 85%) !important;
 }
 html.light .promo-banner .promo-banner__eyebrow {
   color: #5B21B6 !important;
@@ -2536,10 +2536,12 @@ html.light .promo-banner .promo-banner__tag--amber {
 }
 html.light .promo-banner .promo-banner__chev {
   background: #ffffff !important;
-  border: 1px solid #EAEAEA !important;
+  border: 1.5px solid #7C3AED !important;
   color: #5B21B6 !important;
-  box-shadow: 0 1px 3px rgba(16,24,40,.08) !important;
+  box-shadow: 0 2px 8px rgba(124,58,237,.25), 0 0 0 3px rgba(255,255,255,.85) !important;
   backdrop-filter: none !important;
+  position: relative;
+  z-index: 2;
 }
 html.light .promo-banner .promo-banner__chev svg {
   color: #5B21B6 !important;
