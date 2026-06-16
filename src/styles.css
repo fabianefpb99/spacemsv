@@ -2502,3 +2502,45 @@ html.light .profile-page .profile-vip-progress .bg-black\/70 {
 html.light .profile-page .profile-vip-progress .bg-black\/70.font-display {
   color: #ffffff !important;
 }
+
+/* ============ Promo banners — light mode ============ */
+html.light .promo-banner {
+  border: 1px solid #EAEAEA !important;
+  box-shadow: 0 4px 14px rgba(16,24,40,.06), 0 1px 2px rgba(16,24,40,.04) !important;
+  background: #ffffff;
+}
+html.light .promo-banner:hover {
+  box-shadow: 0 8px 22px rgba(16,24,40,.10), 0 2px 4px rgba(16,24,40,.06) !important;
+}
+html.light .promo-banner .promo-banner__scrim {
+  background: linear-gradient(to right, #ffffff 0%, rgba(255,255,255,0.92) 45%, rgba(255,255,255,0.55) 70%, rgba(255,255,255,0) 100%) !important;
+}
+html.light .promo-banner .promo-banner__eyebrow {
+  color: #5B21B6 !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+html.light .promo-banner .promo-banner__title {
+  color: #1A1A1A !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+html.light .promo-banner .promo-banner__tag {
+  background: #F3EEFF !important;
+  color: #5B21B6 !important;
+  box-shadow: none !important;
+}
+html.light .promo-banner .promo-banner__tag--amber {
+  background: #FFF4D6 !important;
+  color: #92400E !important;
+}
+html.light .promo-banner .promo-banner__chev {
+  background: #ffffff !important;
+  border: 1px solid #EAEAEA !important;
+  color: #5B21B6 !important;
+  box-shadow: 0 1px 3px rgba(16,24,40,.08) !important;
+  backdrop-filter: none !important;
+}
+html.light .promo-banner .promo-banner__chev svg {
+  color: #5B21B6 !important;
+}
