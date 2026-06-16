@@ -213,15 +213,14 @@ export function MissionCompleteFloater() {
           transform: item.visible
             ? `translate(${drag.dx}px, ${Math.min(0, drag.dy)}px)`
             : "translateY(-12px)",
-          opacity: item.visible
-            ? Math.max(0, 1 - Math.abs(drag.dx) / 200 - Math.max(0, -drag.dy) / 120)
-            : 0,
+          opacity: item.visible ? 1 : 0,
           transition: dragRef.current?.active ? "none" : "transform 300ms, opacity 300ms",
           touchAction: "pan-y",
         }}
-        className={`pointer-events-auto w-full max-w-sm overflow-hidden rounded-xl border border-amber-300/50 bg-gradient-to-r from-[#1a0930]/95 via-[#240a3a]/95 to-[#1a0930]/95 shadow-[0_8px_22px_-6px_rgba(217,70,239,0.55)] backdrop-blur transition-all duration-300 ${
+        className={`pointer-events-auto w-full max-w-sm overflow-hidden rounded-xl border bg-[#1a0930] shadow-none transition-transform duration-300 ${
           item.visible ? "translate-y-0 opacity-100" : "-translate-y-3 opacity-0"
         }`}
+        data-mission-floater
       >
         <div className="flex items-center gap-2.5 px-3 py-2">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-400/15 ring-1 ring-amber-300/50">
@@ -249,10 +248,15 @@ export function MissionCompleteFloater() {
           <button
             onClick={dismiss}
             aria-label="Cerrar"
-            className="ml-1 shrink-0 rounded-md p-1 hover:bg-white/10"
-            style={{ color: '#ffffff' }}
+            className="mission-floater-close ml-1 shrink-0 rounded-md p-1"
+            style={{ color: "#ffffff", opacity: 1, backgroundColor: "#1a0930" }}
           >
-            <X className="h-3.5 w-3.5" style={{ color: '#ffffff' }} />
+            <X
+              className="h-3.5 w-3.5"
+              color="#ffffff"
+              strokeWidth={3}
+              style={{ color: "#ffffff", stroke: "#ffffff", opacity: 1, filter: "none" }}
+            />
           </button>
         </div>
       </div>
