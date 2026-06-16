@@ -2425,3 +2425,25 @@ html.light .profile-page button.border-amber-400\/60 {
   border: 1px solid #F3D9A4 !important;
   box-shadow: 0 1px 2px rgba(16,24,40,.04) !important;
 }
+
+/* Camera (change avatar) button — dark purple icon on white bubble */
+html.light .profile-page button[aria-label="Cambiar foto"] {
+  background: #ffffff !important;
+  border: 1px solid #EAEAEA !important;
+  color: #5B21B6 !important;
+  box-shadow: 0 1px 3px rgba(16,24,40,.12) !important;
+}
+html.light .profile-page button[aria-label="Cambiar foto"] svg {
+  color: #5B21B6 !important;
+}
+
+/* VIP sub-rank pill ("III") inside the progress strip — keep dark with white text.
+ * Overrides the earlier rule that colored every .font-display in the strip purple. */
+html.light .profile-page .profile-vip-progress .bg-black\/70 {
+  background: #2a1d4d !important;
+  color: #ffffff !important;
+  border-color: rgba(255,255,255,0.2) !important;
+}
+html.light .profile-page .profile-vip-progress .bg-black\/70.font-display {
+  color: #ffffff !important;
+}
