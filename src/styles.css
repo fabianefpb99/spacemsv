@@ -2508,12 +2508,16 @@ html.light .promo-banner {
   border: 1px solid #EAEAEA !important;
   box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 8px 24px -8px rgba(16,24,40,.10) !important;
   background: #ffffff;
+  isolation: isolate;
 }
 html.light .promo-banner:hover {
   box-shadow: 0 2px 4px rgba(16,24,40,.05), 0 14px 32px -10px rgba(16,24,40,.14) !important;
 }
 html.light .promo-banner .promo-banner__scrim {
-  background: linear-gradient(90deg, #ffffff 0%, rgba(255,255,255,0.88) 14%, rgba(255,255,255,0.74) 24%, rgba(255,255,255,0.58) 34%, rgba(255,255,255,0.42) 44%, rgba(255,255,255,0.28) 54%, rgba(255,255,255,0.16) 64%, rgba(255,255,255,0.07) 72%, rgba(255,255,255,0.02) 80%, rgba(255,255,255,0) 88%) !important;
+  inset: 0 auto 0 0 !important;
+  width: 64% !important;
+  z-index: 1 !important;
+  background: linear-gradient(90deg, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.72) 18%, rgba(255,255,255,0.50) 36%, rgba(255,255,255,0.28) 54%, rgba(255,255,255,0.11) 72%, rgba(255,255,255,0.035) 88%, rgba(255,255,255,0) 100%) !important;
 }
 html.light .promo-banner .promo-banner__eyebrow {
   color: #5B21B6 !important;
@@ -2536,12 +2540,15 @@ html.light .promo-banner .promo-banner__tag--amber {
 }
 html.light .promo-banner .promo-banner__chev {
   background: #ffffff !important;
-  border: 1px solid rgba(16,24,40,0.08) !important;
+  background-color: #ffffff !important;
+  border: 1px solid rgba(16,24,40,0.10) !important;
   color: #5B21B6 !important;
-  box-shadow: 0 2px 6px rgba(16,24,40,.12), 0 1px 2px rgba(16,24,40,.06) !important;
+  box-shadow: 0 3px 10px rgba(16,24,40,.16), 0 1px 2px rgba(16,24,40,.08) !important;
   backdrop-filter: none !important;
-  position: relative;
-  z-index: 2;
+  -webkit-backdrop-filter: none !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 20 !important;
 }
 html.light .promo-banner .promo-banner__chev svg {
   color: #5B21B6 !important;
