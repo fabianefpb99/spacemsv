@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Sparkles, X } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -248,15 +248,16 @@ export function MissionCompleteFloater() {
           <button
             onClick={dismiss}
             aria-label="Cerrar"
-            className="mission-floater-close ml-1 shrink-0 rounded-md p-1"
+            className="mission-floater-close ml-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-md"
             style={{ color: "#ffffff", opacity: 1, backgroundColor: "#1a0930" }}
           >
-            <X
-              className="h-3.5 w-3.5"
-              color="#ffffff"
-              strokeWidth={3}
-              style={{ color: "#ffffff", stroke: "#ffffff", opacity: 1, filter: "none" }}
-            />
+            <span
+              aria-hidden="true"
+              className="block select-none text-[20px] font-black leading-none"
+              style={{ color: "#ffffff", opacity: 1, textShadow: "none", filter: "none" }}
+            >
+              ×
+            </span>
           </button>
         </div>
       </div>
