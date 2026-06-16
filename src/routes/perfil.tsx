@@ -258,10 +258,10 @@ function PerfilPage() {
 
             <div className="relative flex items-center gap-3">
               {/* Avatar */}
-              <div className="relative shrink-0">
+              <div className="profile-avatar-wrap relative z-20 shrink-0 overflow-visible">
                 <div
                   className={cn(
-                    "flex h-[69px] w-[69px] items-center justify-center overflow-hidden rounded-full border-2 bg-purple-900/40",
+                    "profile-avatar-ring flex h-[69px] w-[69px] items-center justify-center overflow-hidden rounded-full border-2 bg-purple-900/40",
                     vipTheme ? vipTheme.borderClass : "border-fuchsia-400/70",
                   )}
                   style={{
@@ -279,9 +279,9 @@ function PerfilPage() {
                 <button
                   aria-label="Cambiar foto"
                   onClick={() => setAvatarDialogOpen(true)}
-                  className="absolute -bottom-1 -right-1 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-fuchsia-400/60 bg-[#0c0620] text-fuchsia-200 shadow transition hover:bg-fuchsia-500/20"
+                  className="profile-avatar-camera absolute -bottom-1.5 -right-1.5 z-50 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 border-white bg-[#2a0f63] text-white shadow transition hover:bg-[#3b1680]"
                 >
-                  <Camera className="h-3 w-3" />
+                  <Camera className="h-4 w-4" strokeWidth={2.75} />
                 </button>
               </div>
 
@@ -719,10 +719,10 @@ function SecurityRow({
           {statusLabel}
         </span>
       ) : actionLabel ? (
-        <button className="flex items-center gap-1 text-[11px] font-bold text-fuchsia-300 hover:text-fuchsia-200">
+        <span className="flex items-center gap-1 text-[11px] font-bold text-fuchsia-300 group-hover:text-fuchsia-200">
           {actionLabel}
           <ChevronRight className="h-3 w-3" />
-        </button>
+        </span>
       ) : null}
     </div>
   );

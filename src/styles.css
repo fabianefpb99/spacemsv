@@ -2215,7 +2215,7 @@ html.light .profile-page .vip-frame-inner > [aria-hidden] {
   display: none !important;
 }
 /* Avatar border — slim brand purple */
-html.light .profile-page .vip-frame-inner [class*="border-"][class*="rounded-full"] {
+html.light .profile-page .vip-frame-inner .profile-avatar-ring {
   border: 2px solid #7C3AED !important;
   box-shadow: none !important;
 }
@@ -2427,14 +2427,32 @@ html.light .profile-page button.border-amber-400\/60 {
 }
 
 /* Camera (change avatar) button — dark purple icon on white bubble */
+html.light .profile-page .profile-avatar-wrap {
+  position: relative !important;
+  z-index: 30 !important;
+  overflow: visible !important;
+  isolation: isolate !important;
+}
 html.light .profile-page button[aria-label="Cambiar foto"] {
+  display: flex !important;
+  position: absolute !important;
+  z-index: 60 !important;
+  width: 32px !important;
+  height: 32px !important;
   background: #ffffff !important;
-  border: 1px solid #EAEAEA !important;
+  border: 2px solid #ffffff !important;
   color: #5B21B6 !important;
-  box-shadow: 0 1px 3px rgba(16,24,40,.12) !important;
+  box-shadow: 0 2px 8px rgba(16,24,40,.18), 0 0 0 1px #EAEAEA !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateZ(0) !important;
 }
 html.light .profile-page button[aria-label="Cambiar foto"] svg {
+  width: 16px !important;
+  height: 16px !important;
   color: #5B21B6 !important;
+  stroke: #5B21B6 !important;
+  opacity: 1 !important;
 }
 
 /* VIP sub-rank pill ("III") inside the progress strip — keep dark with white text.
