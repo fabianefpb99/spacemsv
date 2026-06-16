@@ -2508,12 +2508,16 @@ html.light .promo-banner {
   border: 1px solid #EAEAEA !important;
   box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 8px 24px -8px rgba(16,24,40,.10) !important;
   background: #ffffff;
+  isolation: isolate;
 }
 html.light .promo-banner:hover {
   box-shadow: 0 2px 4px rgba(16,24,40,.05), 0 14px 32px -10px rgba(16,24,40,.14) !important;
 }
 html.light .promo-banner .promo-banner__scrim {
-  background: linear-gradient(90deg, #ffffff 0%, rgba(255,255,255,0.88) 14%, rgba(255,255,255,0.74) 24%, rgba(255,255,255,0.58) 34%, rgba(255,255,255,0.42) 44%, rgba(255,255,255,0.28) 54%, rgba(255,255,255,0.16) 64%, rgba(255,255,255,0.07) 72%, rgba(255,255,255,0.02) 80%, rgba(255,255,255,0) 88%) !important;
+  inset: 0 auto 0 0 !important;
+  width: 58% !important;
+  z-index: 1 !important;
+  background: linear-gradient(90deg, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.60) 18%, rgba(255,255,255,0.42) 34%, rgba(255,255,255,0.22) 50%, rgba(255,255,255,0.08) 66%, rgba(255,255,255,0.02) 80%, rgba(255,255,255,0) 100%) !important;
 }
 html.light .promo-banner .promo-banner__eyebrow {
   color: #5B21B6 !important;
@@ -2536,15 +2540,60 @@ html.light .promo-banner .promo-banner__tag--amber {
 }
 html.light .promo-banner .promo-banner__chev {
   background: #ffffff !important;
-  border: 1px solid rgba(16,24,40,0.08) !important;
+  background-color: #ffffff !important;
+  border: 1px solid rgba(16,24,40,0.10) !important;
   color: #5B21B6 !important;
-  box-shadow: 0 2px 6px rgba(16,24,40,.12), 0 1px 2px rgba(16,24,40,.06) !important;
+  box-shadow: 0 3px 10px rgba(16,24,40,.16), 0 1px 2px rgba(16,24,40,.08) !important;
   backdrop-filter: none !important;
-  position: relative;
-  z-index: 2;
+  -webkit-backdrop-filter: none !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 20 !important;
 }
 html.light .promo-banner .promo-banner__chev svg {
   color: #5B21B6 !important;
+  stroke: #5B21B6 !important;
+  opacity: 1 !important;
+}
+
+.promo-banner .promo-banner__chev {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  border-radius: 9999px !important;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+  border: 1px solid rgba(16,24,40,0.12) !important;
+  color: #5B21B6 !important;
+  box-shadow: 0 3px 10px rgba(16,24,40,.18), 0 1px 2px rgba(16,24,40,.08) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  overflow: hidden !important;
+  position: relative !important;
+  z-index: 20 !important;
+}
+.promo-banner .promo-banner__chev::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: #ffffff;
+}
+.promo-banner .promo-banner__chev svg,
+.promo-banner .promo-banner__chev svg * {
+  color: #5B21B6 !important;
+  stroke: #5B21B6 !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 1 !important;
 }
 
 /* Sombra flotante sutil para módulos del home en modo claro */
