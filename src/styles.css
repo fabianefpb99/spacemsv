@@ -2088,3 +2088,39 @@ body[data-scroll-locked] {
 }
 .animate-cube-in  { animation: cube-flip-in  0.55s cubic-bezier(.2,.8,.2,1) both; }
 .animate-cube-out { animation: cube-flip-out 0.55s cubic-bezier(.6,.0,.8,.2) both; }
+
+/* Light-mode bottom navigation (home) */
+html.light .home-bottom-nav {
+  background: #ffffff !important;
+  border-top: 1px solid #e5e7eb !important;
+  box-shadow: 0 -1px 0 rgba(0,0,0,0.02) !important;
+  backdrop-filter: none !important;
+}
+html.light .home-bottom-nav .home-bottom-item {
+  color: #6b7280 !important;
+}
+html.light .home-bottom-nav .home-bottom-item span {
+  color: #6b7280 !important;
+}
+html.light .home-bottom-nav .home-bottom-item svg {
+  color: #6b7280 !important;
+  stroke: #6b7280 !important;
+}
+html.light .home-bottom-nav .home-bottom-item--active,
+html.light .home-bottom-nav .home-bottom-item--active span,
+html.light .home-bottom-nav .home-bottom-item--active svg {
+  color: #6d28d9 !important;
+  stroke: #6d28d9 !important;
+}
+html.light .home-bottom-nav .home-bottom-center-circle {
+  background: #ede9fe !important;
+  border: 2px solid #ede9fe !important;
+  box-shadow: none !important;
+}
+html.light .home-bottom-nav .home-bottom-center-circle svg {
+  color: #5b21b6 !important;
+  stroke: #5b21b6 !important;
+}
+html.light .home-bottom-nav .home-bottom-center-label {
+  color: #5b21b6 !important;
+}
