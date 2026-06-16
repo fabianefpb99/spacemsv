@@ -96,6 +96,27 @@ html.light .home-win-row {
   border-color: rgba(59, 20, 104, 0.14) !important;
   box-shadow: none !important;
 }
+
+/* Invita y gana — fondo oscuro sólido, textos blancos en modo claro */
+html.light .home-invite-card {
+  background: #1a0930 !important;
+  background-image: none !important;
+  border-color: #a855f7 !important;
+  box-shadow: none !important;
+}
+html.light .home-invite-card .home-invite-title {
+  color: #ffffff !important;
+  text-shadow: none !important;
+}
+html.light .home-invite-card .home-invite-sub {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+html.light .home-invite-card .home-invite-btn {
+  background: #7c3aed !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
 html.light .home-win-row :is(.home-win-user, .home-win-amount, .home-win-amount .text-white) {
   color: #3b1468 !important;
 }
