@@ -256,7 +256,7 @@ function RankingPage() {
 
       {/* Bottom nav */}
       <nav
-        className="fixed inset-x-0 bottom-0 z-30 border-t border-purple-500/20 bg-[#060210]/95 backdrop-blur"
+        className="home-bottom-nav fixed inset-x-0 bottom-0 z-30 border-t border-purple-500/20 bg-[#060210]/95 backdrop-blur"
         style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       >
         <div className="mx-auto flex max-w-md items-end justify-between px-4 pt-2 pb-2 sm:max-w-lg">
@@ -481,7 +481,7 @@ function BottomItem({
   label: string;
   to?: string;
 }) {
-  const className = "flex w-14 flex-col items-center gap-1 text-purple-300/70 hover:text-purple-200";
+  const className = "home-bottom-item flex w-14 flex-col items-center gap-1 text-purple-300/70 hover:text-purple-200";
   if (to) {
     return (
       <Link to={to} className={className}>
@@ -500,11 +500,11 @@ function BottomItem({
 
 function BottomCenterActive() {
   return (
-    <div className="-mt-7 flex w-16 flex-col items-center gap-1">
-      <span className="theme-dark-fixed flex h-14 w-14 items-center justify-center rounded-full border-2 border-purple-400/60 bg-[#060210] shadow-[0_0_18px_rgba(168,85,247,0.35)]">
+    <div className="home-bottom-center -mt-7 flex w-16 flex-col items-center gap-1">
+      <span className="home-bottom-center-circle home-bottom-center-circle--active theme-dark-fixed flex h-14 w-14 items-center justify-center rounded-full border-2 border-purple-400/60 bg-[#060210] shadow-[0_0_18px_rgba(168,85,247,0.35)]">
         <Trophy className="h-7 w-7 text-white" strokeWidth={2.2} />
       </span>
-      <span className="text-[9px] font-bold tracking-wider text-emerald-400">RANKING</span>
+      <span className="home-bottom-center-label home-bottom-center-label--active text-[9px] font-bold tracking-wider text-emerald-400">RANKING</span>
     </div>
   );
 }
