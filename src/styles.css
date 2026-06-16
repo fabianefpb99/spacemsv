@@ -120,6 +120,23 @@ html.light .home-wins-viewport {
   -webkit-mask-image: none !important;
   mask-image: none !important;
 }
+html.light [data-mission-floater],
+html.light [data-mission-floater] * {
+  opacity: 1 !important;
+  filter: none !important;
+  box-shadow: none !important;
+}
+html.light [data-mission-floater] {
+  background: #1a0930 !important;
+  border-color: #a855f7 !important;
+}
+html.light [data-mission-floater] .mission-floater-close,
+html.light [data-mission-floater] .mission-floater-close svg,
+html.light [data-mission-floater] .mission-floater-close svg * {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  opacity: 1 !important;
+}
 
 /* Light-mode text helpers for page content (NOT header/nav, which stay dark) */
 html.light .light-text-dark { color: #2a1d4d !important; }
