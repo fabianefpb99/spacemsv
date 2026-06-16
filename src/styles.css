@@ -15,13 +15,13 @@
  * untouched for now — we'll migrate the rest progressively.
  * ------------------------------------------------------------------ */
 html.light body {
-  background-color: #f4f1f9;
+  background-color: #faf9f6;
   color: #1f1530;
 }
 
 /* Page-level outer wrappers */
 html.light .bg-\[\#060210\]:not(header):not(nav):not(.theme-dark-fixed) {
-  background-color: #f4f1f9 !important;
+  background-color: #faf9f6 !important;
   color: #1f1530;
 }
 
@@ -92,7 +92,7 @@ html.light .home-win-amount .text-white {
   text-shadow: none !important;
 }
 html.light .home-win-row {
-  background-color: #f4f1f9 !important;
+  background-color: #faf9f6 !important;
   border-color: rgba(59, 20, 104, 0.14) !important;
   box-shadow: none !important;
 }
