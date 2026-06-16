@@ -771,7 +771,7 @@ function HomePage() {
             <div className="home-invite-title font-display text-sm font-bold uppercase tracking-wider text-white">
               Invita y gana
             </div>
-            <div className="home-invite-sub text-[11px] text-purple-200/70">
+            <div className="home-invite-sub text-[11px] font-semibold text-white">
               Obtén 5% de tus referidos
             </div>
           </div>
