@@ -197,7 +197,7 @@ function PerfilPage() {
     <div className="min-h-screen bg-[#060210] text-white">
       <BrandLoader active={showLoader} />
       <VipLevelUpToast />
-      <div className="mx-auto flex min-h-screen max-w-md flex-col px-3 pb-10 pt-4 sm:max-w-lg sm:px-4">
+      <div className="profile-page mx-auto flex min-h-screen max-w-md flex-col px-3 pb-10 pt-4 sm:max-w-lg sm:px-4">
         {/* Header */}
         <header
           className="-mx-3 -mt-4 flex items-center justify-between border-b border-purple-500/20 bg-[#060210] px-3 pb-3"

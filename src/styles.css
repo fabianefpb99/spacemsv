@@ -401,6 +401,27 @@ html.light .profile-vip-progress :is(.text-white, .text-purple-200\/70, .text-am
 html.light .profile-vip-progress .bg-purple-500\/20 {
   background: #ede4ff !important;
 }
+
+/* ------------------------------------------------------------------
+ * Profile page — UNIFIED purple border across every module below the
+ * identity card. Same color, same thickness, no glow.
+ * ------------------------------------------------------------------ */
+html.light :is(
+  .profile-balance-card,
+  .profile-vip-progress
+),
+html.light .profile-page :is(
+  .border-purple-500\/40,
+  .border-purple-500\/30,
+  .border-purple-500\/20,
+  .border-amber-400\/60,
+  .border-fuchsia-400,
+  .border-fuchsia-500\/50
+) {
+  border-color: #a855f7 !important;
+  border-width: 1.5px !important;
+  box-shadow: none !important;
+}
 html.light header.bg-\[\#060210\] svg {
   color: #2a1d4d !important;
 }
