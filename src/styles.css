@@ -108,9 +108,12 @@ html.light .home-invite-card .home-invite-title {
   color: #ffffff !important;
   text-shadow: none !important;
 }
-html.light .home-invite-card .home-invite-sub {
+html.light .home-invite-card .home-invite-sub,
+html.light .home-invite-card .text-purple-200\/70,
+html.light .home-invite-card :is(div, span, p) {
   color: #ffffff !important;
   opacity: 1 !important;
+  text-shadow: none !important;
 }
 html.light .home-invite-card .home-invite-btn {
   background: #7c3aed !important;
