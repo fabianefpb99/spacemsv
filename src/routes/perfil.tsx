@@ -813,7 +813,7 @@ function ReferralCard({ code }: { code: string | null }) {
     }
   }
   return (
-    <section className="mt-2 rounded-xl border border-purple-500/30 bg-[#0c0620]/80 px-3 py-2.5 ">
+    <section className="referral-card mt-2 rounded-xl border border-purple-500/30 bg-[#0c0620]/80 px-3 py-2.5 ">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -821,10 +821,10 @@ function ReferralCard({ code }: { code: string | null }) {
         aria-expanded={open}
       >
         <Users className="h-4 w-4 shrink-0 text-purple-300" />
-        <span className="text-[11px] font-semibold uppercase tracking-widest text-purple-200/80">
+        <span className="referral-label text-[11px] font-semibold uppercase tracking-widest text-purple-200/80">
           Código de referido
         </span>
-        <code className="font-display ml-auto rounded bg-black/40 px-1.5 py-0.5 text-[11px] font-black tracking-[0.12em] text-white">
+        <code className="referral-code font-display ml-auto rounded bg-black/40 px-1.5 py-0.5 text-[11px] font-black tracking-[0.12em] text-white">
           {code ?? "—"}
         </code>
         <span
@@ -843,12 +843,12 @@ function ReferralCard({ code }: { code: string | null }) {
         </span>
         <ChevronDown className={cn("h-4 w-4 shrink-0 text-purple-300 transition-transform", open && "rotate-180")} />
       </button>
-      <p className="mt-1.5 text-[11px] leading-snug text-purple-200/70">
+      <p className="referral-desc mt-1.5 text-[11px] leading-snug text-purple-200/70">
         Tu amigo gana <b className="text-white">$2.000</b> · Tú <b className="text-white">$3.000</b> + <b className="text-white">5%</b> de su 1ª recarga.
       </p>
       {open && (
-        <div className="mt-2.5 grid grid-cols-2 gap-2 border-t border-purple-500/20 pt-2.5">
-          <div className="rounded-lg bg-black/30 px-2.5 py-2">
+        <div className="referral-stats mt-2.5 grid grid-cols-2 gap-2 border-t border-purple-500/20 pt-2.5">
+          <div className="referral-stat rounded-lg bg-black/30 px-2.5 py-2">
             <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-purple-200/70">
               <UserPlus className="h-3 w-3" /> Invitados
             </div>
@@ -856,7 +856,7 @@ function ReferralCard({ code }: { code: string | null }) {
               {stats.isLoading ? "…" : stats.data?.invited ?? 0}
             </div>
           </div>
-          <div className="rounded-lg bg-black/30 px-2.5 py-2">
+          <div className="referral-stat rounded-lg bg-black/30 px-2.5 py-2">
             <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-purple-200/70">
               <Wallet className="h-3 w-3" /> Con recarga
             </div>

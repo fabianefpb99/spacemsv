@@ -472,6 +472,43 @@ html.light header.bg-\[\#060210\] [class*="shadow-["] {
 }
 
 /* ------------------------------------------------------------------
+ * Light mode — Referral card: kill purple borders, use clean white
+ * cards with subtle gray borders instead of neon purple.
+ * ------------------------------------------------------------------ */
+html.light .referral-card {
+  background: #ffffff !important;
+  border-color: #EAEAEA !important;
+  border-width: 1px !important;
+  box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 4px 12px rgba(16,24,40,.06) !important;
+}
+html.light .referral-card .referral-label,
+html.light .referral-card .referral-desc,
+html.light .referral-card .referral-desc b,
+html.light .referral-card .text-purple-200\/70,
+html.light .referral-card .text-purple-300 {
+  color: #6b21a8 !important;
+  text-shadow: none !important;
+}
+html.light .referral-card .referral-code {
+  background: #F4F4F6 !important;
+  color: #2a1d4d !important;
+}
+html.light .referral-stats {
+  border-color: #EAEAEA !important;
+}
+html.light .referral-stat {
+  background: #ffffff !important;
+  border: 1px solid #EAEAEA !important;
+  box-shadow: 0 1px 2px rgba(16,24,40,.04) !important;
+}
+html.light .referral-stat .text-white {
+  color: #2a1d4d !important;
+}
+html.light .referral-stat svg {
+  color: #7c3aed !important;
+}
+
+/* ------------------------------------------------------------------
  * Light mode — kill heavy drop-shadows on mission/event icons and
  * neon text glows (DOBLE XP, etc.) that look muddy on white.
  * ------------------------------------------------------------------ */
