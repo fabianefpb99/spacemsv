@@ -2552,6 +2552,36 @@ html.light .promo-banner .promo-banner__chev {
 }
 html.light .promo-banner .promo-banner__chev svg {
   color: #5B21B6 !important;
+  stroke: #5B21B6 !important;
+  opacity: 1 !important;
+}
+
+.promo-banner .promo-banner__chev {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  border-radius: 9999px !important;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  border: 1px solid rgba(16,24,40,0.12) !important;
+  color: #5B21B6 !important;
+  box-shadow: 0 3px 10px rgba(16,24,40,.18), 0 1px 2px rgba(16,24,40,.08) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  position: relative !important;
+  z-index: 20 !important;
+}
+.promo-banner .promo-banner__chev svg,
+.promo-banner .promo-banner__chev svg * {
+  color: #5B21B6 !important;
+  stroke: #5B21B6 !important;
+  opacity: 1 !important;
 }
 
 /* Sombra flotante sutil para módulos del home en modo claro */
