@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { BlackjackGame } from "@/components/BlackjackGame";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { RequireAuth } from "@/components/auth/RequireAuth";
+import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
 
 export const Route = createFileRoute("/blackjack")({
   head: () => ({
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/blackjack")({
 });
 
 function Page() {
+  useForceDarkTheme();
   return (
     <RequireAuth>
       <LoadingScreen variant="blackjack">

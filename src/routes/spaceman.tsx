@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SpacemanGame } from "@/components/SpacemanGame";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { RequireAuth } from "@/components/auth/RequireAuth";
+import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
 
 export const Route = createFileRoute("/spaceman")({
   head: () => ({
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/spaceman")({
 });
 
 function Page() {
+  useForceDarkTheme();
   return (
     <RequireAuth>
       <LoadingScreen>
