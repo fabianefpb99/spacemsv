@@ -2514,10 +2514,30 @@ html.light .promo-banner:hover {
   box-shadow: 0 2px 4px rgba(16,24,40,.05), 0 14px 32px -10px rgba(16,24,40,.14) !important;
 }
 html.light .promo-banner .promo-banner__scrim {
-  inset: 0 auto 0 0 !important;
-  width: 58% !important;
-  z-index: 1 !important;
-  background: linear-gradient(90deg, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.60) 18%, rgba(255,255,255,0.42) 34%, rgba(255,255,255,0.22) 50%, rgba(255,255,255,0.08) 66%, rgba(255,255,255,0.02) 80%, rgba(255,255,255,0) 100%) !important;
+  /* Disabled in light mode: the image is masked instead, so no overlay
+     washes out the artwork. */
+  display: none !important;
+}
+
+/* Image fades from transparent on the left to fully opaque on the right.
+   Because the banner background is pure white, the left becomes a clean
+   white text zone — no overlay, no opacity loss on the artwork. */
+html.light .promo-banner img {
+  -webkit-mask-image: linear-gradient(90deg,
+    transparent 0%,
+    transparent 30%,
+    rgba(0,0,0,0.35) 40%,
+    rgba(0,0,0,0.85) 50%,
+    #000 58%,
+    #000 100%) !important;
+  mask-image: linear-gradient(90deg,
+    transparent 0%,
+    transparent 30%,
+    rgba(0,0,0,0.35) 40%,
+    rgba(0,0,0,0.85) 50%,
+    #000 58%,
+    #000 100%) !important;
+  filter: none !important;
 }
 html.light .promo-banner .promo-banner__eyebrow {
   color: #5B21B6 !important;
