@@ -2148,3 +2148,280 @@ html.light .home-bottom-nav .home-bottom-center-circle svg {
 html.light .home-bottom-nav .home-bottom-center-label {
   color: #5b21b6 !important;
 }
+
+/* ==================================================================
+ * PROFILE PAGE — LIGHT MODE REDESIGN
+ * White card system, soft shadow, subtle #EAEAEA border.
+ * Purple kept only as brand accent (CTAs, VIP badge, headline text).
+ * Scoped strictly to `.profile-page` so dark mode is untouched.
+ * Placed last so it overrides earlier light-mode profile rules.
+ * ================================================================ */
+
+/* Page background */
+html.light .profile-page {
+  background: #ffffff !important;
+  color: #1a1033 !important;
+}
+
+/* Header */
+html.light .profile-page > header {
+  background: #ffffff !important;
+  border-bottom: 1px solid #EAEAEA !important;
+}
+html.light .profile-page > header h1 {
+  color: #2a1d4d !important;
+}
+html.light .profile-page > header svg {
+  color: #2a1d4d !important;
+}
+
+/* ---------- Unified card style ---------- */
+html.light .profile-page :is(
+  .vip-frame,
+  .vip-frame > .vip-frame-inner,
+  .profile-vip-progress,
+  .profile-balance-card,
+  section.rounded-2xl,
+  section.rounded-xl,
+  .profile-page > div > section,
+  div.rounded-xl.border,
+  div.rounded-2xl.border,
+  button.rounded-xl.border
+) {
+  background: #ffffff !important;
+  background-image: none !important;
+  border: 1px solid #EAEAEA !important;
+  box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 4px 12px rgba(16,24,40,.06) !important;
+  filter: none !important;
+  color: #1a1033 !important;
+}
+
+/* ---------- VIP identity frame: strip futuristic HUD ---------- */
+html.light .profile-page .vip-frame {
+  padding: 0 !important;
+  clip-path: none !important;
+  border-radius: 16px !important;
+}
+html.light .profile-page .vip-frame > .vip-frame-inner {
+  clip-path: none !important;
+  border-radius: 16px !important;
+}
+html.light .profile-page .vip-frame-inner::before,
+html.light .profile-page .vip-frame-inner::after {
+  display: none !important;
+}
+/* Hairline & halo decorations off */
+html.light .profile-page .vip-frame-inner > [aria-hidden] {
+  display: none !important;
+}
+/* Avatar border — slim brand purple */
+html.light .profile-page .vip-frame-inner [class*="border-"][class*="rounded-full"] {
+  border: 2px solid #7C3AED !important;
+  box-shadow: none !important;
+}
+/* Username — brand purple */
+html.light .profile-page .vip-frame-inner .font-display {
+  color: #5B21B6 !important;
+  text-shadow: none !important;
+}
+/* Real name & meta */
+html.light .profile-page .vip-frame-inner .text-white\/90 {
+  color: #1a1033 !important;
+}
+html.light .profile-page .vip-frame-inner .text-purple-200\/70 {
+  color: #6B6B75 !important;
+}
+
+/* ---------- VIP progress strip ---------- */
+html.light .profile-page .profile-vip-progress {
+  padding: 14px 16px !important;
+}
+html.light .profile-page .profile-vip-progress .bg-purple-500\/20 {
+  background: #F1ECFB !important;
+}
+html.light .profile-page .profile-vip-progress :is(.font-display, .text-fuchsia-300) {
+  color: #5B21B6 !important;
+}
+html.light .profile-page .profile-vip-progress .text-purple-200\/70 {
+  color: #6B6B75 !important;
+}
+
+/* ---------- Balances ---------- */
+html.light .profile-page .profile-balance-card {
+  padding: 14px !important;
+}
+/* Principal — stronger visual weight */
+html.light .profile-page .profile-balance-card.border-purple-500\/40 .font-display {
+  font-size: 1.35rem !important;
+  color: #1a1033 !important;
+}
+html.light .profile-page .profile-balance-card .text-purple-200\/80 {
+  color: #6B6B75 !important;
+}
+html.light .profile-page .profile-balance-card .text-amber-200\/90 {
+  color: #B45309 !important;
+}
+html.light .profile-page .profile-balance-card .neon-green {
+  color: #16A34A !important;
+  text-shadow: none !important;
+}
+html.light .profile-page .profile-balance-card .text-white {
+  color: #1a1033 !important;
+}
+/* Depositar — solid purple CTA */
+html.light .profile-page .profile-balance-card.border-purple-500\/40 a {
+  background: #7C3AED !important;
+  color: #ffffff !important;
+  border: none !important;
+  padding: 8px 10px !important;
+  font-weight: 700 !important;
+}
+/* Ver eventos — quieter outline */
+html.light .profile-page .profile-balance-card.border-amber-400\/60 a {
+  background: #FFFBF0 !important;
+  color: #B45309 !important;
+  border: 1px solid #F3D9A4 !important;
+  padding: 8px 10px !important;
+}
+/* Bonus card icon tone */
+html.light .profile-page .profile-balance-card.border-amber-400\/60 svg {
+  color: #D97706 !important;
+}
+html.light .profile-page .profile-balance-card.border-purple-500\/40 svg {
+  color: #7C3AED !important;
+}
+
+/* ---------- Section titles ---------- */
+html.light .profile-page h2 {
+  color: #8A8A95 !important;
+  margin-top: 1.75rem !important;
+  font-weight: 700 !important;
+}
+
+/* ---------- Colección ---------- */
+html.light .profile-page section > .mb-2 {
+  margin-bottom: 14px !important;
+}
+html.light .profile-page section .text-purple-200\/80 {
+  color: #1a1033 !important;
+  font-weight: 700 !important;
+}
+html.light .profile-page section .text-fuchsia-300 {
+  color: #8A8A95 !important;
+  font-weight: 600 !important;
+}
+/* Avatar tile frames — neutral */
+html.light .profile-page .group [class*="border-white/10"],
+html.light .profile-page .group [class*="border-amber-400"],
+html.light .profile-page .group [class*="border-fuchsia-400"] {
+  border: 1px solid #EAEAEA !important;
+  box-shadow: none !important;
+  ring-width: 0 !important;
+}
+
+/* ---------- Código de referido ---------- */
+html.light .profile-page section button[aria-expanded] code {
+  background: #F4F4F6 !important;
+  color: #1a1033 !important;
+  padding: 4px 10px !important;
+  border-radius: 6px !important;
+  border: 1px solid #EAEAEA !important;
+}
+html.light .profile-page section button[aria-expanded] [aria-label="Copiar código"] {
+  background: #7C3AED !important;
+  color: #ffffff !important;
+  border-radius: 6px !important;
+  padding: 6px !important;
+}
+html.light .profile-page section button[aria-expanded] svg.text-purple-300 {
+  color: #8A8A95 !important;
+}
+
+/* ---------- Security rows + LinkRows + Mis Datos (unified) ---------- */
+html.light .profile-page :is(div, button, a).bg-\[\#0c0620\]\/80 {
+  background: #ffffff !important;
+  border: 1px solid #EAEAEA !important;
+  box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 4px 12px rgba(16,24,40,.06) !important;
+  padding: 14px !important;
+}
+/* Icon tile inside rows */
+html.light .profile-page .bg-purple-600\/20 {
+  background: #F4EEFB !important;
+}
+html.light .profile-page .ring-purple-400\/30 {
+  --tw-ring-color: transparent !important;
+  box-shadow: none !important;
+}
+html.light .profile-page :is(.bg-\[\#0c0620\]\/80, button) .text-purple-200 {
+  color: #7C3AED !important;
+  opacity: 0.85 !important;
+}
+html.light .profile-page :is(.bg-\[\#0c0620\]\/80, button) .text-xs.font-semibold,
+html.light .profile-page :is(.bg-\[\#0c0620\]\/80, button) .text-white {
+  color: #1a1033 !important;
+}
+html.light .profile-page :is(.bg-\[\#0c0620\]\/80, button) .text-\[10px\].text-purple-200\/60 {
+  color: #6B6B75 !important;
+}
+/* "Verificado" / "Vinculado" — soft green pill, no border */
+html.light .profile-page span.border-emerald-500\/40 {
+  background: #E8F7EF !important;
+  color: #0F8A4A !important;
+  border: 1px solid transparent !important;
+}
+html.light .profile-page span.border-emerald-500\/40 svg {
+  color: #0F8A4A !important;
+}
+/* "Sin verificar" / "No vinculado" — soft grey pill */
+html.light .profile-page span.border-purple-500\/40 {
+  background: #F4F4F6 !important;
+  color: #6B6B75 !important;
+  border: 1px solid transparent !important;
+}
+/* "Cambiar" link */
+html.light .profile-page button .text-fuchsia-300 {
+  color: #7C3AED !important;
+}
+
+/* ---------- Stats cells (inner mini-cards) ---------- */
+html.light .profile-page .grid.grid-cols-4 > div {
+  background: #FAFAFB !important;
+  border: 1px solid #EAEAEA !important;
+  box-shadow: none !important;
+}
+
+/* ---------- Cerrar sesión ---------- */
+html.light .profile-page button.border-rose-500\/50 {
+  background: #ffffff !important;
+  border: 1px solid #F3D4D4 !important;
+  color: #B23B4B !important;
+  box-shadow: 0 1px 2px rgba(16,24,40,.04) !important;
+}
+html.light .profile-page button.border-rose-500\/50 svg {
+  color: #B23B4B !important;
+}
+
+/* ---------- Editar datos / Completar ahora ---------- */
+html.light .profile-page button.bg-purple-500\/10 {
+  background: #F4EEFB !important;
+  border: 1px solid transparent !important;
+  color: #5B21B6 !important;
+}
+html.light .profile-page button.bg-purple-600 {
+  background: #7C3AED !important;
+  color: #ffffff !important;
+}
+
+/* ---------- Kill leftover gradients & glow box-shadows ---------- */
+html.light .profile-page [class*="bg-gradient-"] {
+  background-image: none !important;
+}
+html.light .profile-page [class*="shadow-[0_0_"] {
+  box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 4px 12px rgba(16,24,40,.06) !important;
+}
+/* Banner amber "completar datos" — keep amber identity, drop heavy border */
+html.light .profile-page button.border-amber-400\/60 {
+  background: #FFFBF0 !important;
+  border: 1px solid #F3D9A4 !important;
+  box-shadow: 0 1px 2px rgba(16,24,40,.04) !important;
+}
