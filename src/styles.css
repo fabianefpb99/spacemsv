@@ -2651,3 +2651,17 @@ html.light .cta-mission-btn.bg-amber-500,
 html.light .cta-mission-btn.bg-amber-500:hover {
   color: #1a0033 !important;
 }
+
+/* Light mode: replace amber/yellow accents in special missions with dark purple */
+html.light :not(.theme-dark-fixed) > .text-amber-200,
+html.light :not(.theme-dark-fixed) .text-amber-200 {
+  color: #3b0764 !important;
+}
+html.light .cta-mission-btn.bg-amber-500 {
+  background-color: #3b0764 !important;
+  color: #ffffff !important;
+}
+html.light .cta-mission-btn.bg-amber-500:hover {
+  background-color: #4c1d95 !important;
+  color: #ffffff !important;
+}
