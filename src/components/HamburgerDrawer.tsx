@@ -138,7 +138,7 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
 
               <aside
                 id="hamburger-drawer-panel"
-                className="absolute inset-y-0 left-0 flex h-full w-[82vw] max-w-[320px] animate-in slide-in-from-left duration-300 flex-col border-r border-purple-500/20 bg-[#0a0418] text-white"
+                className="theme-dark-fixed absolute inset-y-0 left-0 flex h-full w-[82vw] max-w-[320px] animate-in slide-in-from-left duration-300 flex-col border-r border-purple-500/20 bg-[#0a0418] text-white"
                 style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 1.5rem)" }}
               >
                 <div className="flex items-center justify-between pl-6 pr-4 pb-3">
