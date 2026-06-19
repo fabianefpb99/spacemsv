@@ -2645,3 +2645,9 @@ html.light [data-home-module] {
 html.light .cta-mission-btn {
   box-shadow: 2px 2px 0 0 #9ca3af !important;
 }
+
+/* Light mode: yellow/amber CTA buttons need dark text for contrast */
+html.light .cta-mission-btn.bg-amber-500,
+html.light .cta-mission-btn.bg-amber-500:hover {
+  color: #1a0033 !important;
+}
