@@ -107,7 +107,7 @@ export function PromoPopup() {
         <button
           onClick={() => setOpen(false)}
           aria-label="Cerrar promoción"
-          className="absolute -right-2 -top-2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/80 text-white ring-2 ring-purple-400/60 shadow-lg shadow-purple-900/60 transition hover:bg-black hover:ring-purple-300"
+          className="promo-close-btn absolute -right-2 -top-2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/80 text-white ring-2 ring-purple-400/60 shadow-lg shadow-purple-900/60 transition hover:bg-black hover:ring-purple-300"
         >
           <X className="h-5 w-5" strokeWidth={3} />
         </button>
