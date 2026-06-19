@@ -753,7 +753,7 @@ function MissionCard({ mission }: { mission: Mission }) {
         </div>
         <Link
           to={mission.cta.to}
-          className={`shrink-0 rounded-md px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-white shadow-lg shadow-purple-900/40 ${a.btn}`}
+          className={`cta-mission-btn shrink-0 rounded-md px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-white shadow-lg shadow-purple-900/40 ${a.btn}`}
         >
           {mission.cta.label}
         </Link>
