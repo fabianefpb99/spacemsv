@@ -2628,3 +2628,15 @@ html.light [data-home-module] {
   box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 8px 24px -8px rgba(16,24,40,.10) !important;
   border-radius: 16px;
 }
+
+/* Promo popup — entrada tipo "blop" desde el centro */
+@keyframes promo-blop {
+  0%   { transform: scale(0);    opacity: 0; }
+  55%  { transform: scale(1.08); opacity: 1; }
+  78%  { transform: scale(0.96); }
+  100% { transform: scale(1);    opacity: 1; }
+}
+.animate-promo-blop {
+  transform-origin: center center;
+  animation: promo-blop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}

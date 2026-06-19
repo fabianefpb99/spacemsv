@@ -192,6 +192,7 @@ const MISSIONS: Mission[] = [
 ];
 
 function MissionIcon({ src, alt }: { src: string; alt: string }) {
+  const [loaded, setLoaded] = useState(false);
   return (
     <img
       src={src}
@@ -199,7 +200,15 @@ function MissionIcon({ src, alt }: { src: string; alt: string }) {
       loading="lazy"
       width={96}
       height={96}
-      className="h-full w-full object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.45)]"
+      onLoad={() => setLoaded(true)}
+      onError={() => setLoaded(true)}
+      style={{
+        transformOrigin: "center",
+        transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+      }}
+      className={`h-full w-full object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.45)] transition-all duration-500 ${
+        loaded ? "opacity-100 scale-100" : "opacity-0 scale-50"
+      }`}
     />
   );
 }

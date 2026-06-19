@@ -64,7 +64,7 @@ export function PromoPopup() {
       setImgLoaded(true);
       shows.push(Date.now());
       localStorage.setItem(SHOWS_KEY, JSON.stringify(shows));
-      setOpen(true);
+      window.setTimeout(() => setOpen(true), 500);
     };
     if (img.complete && img.naturalWidth > 0) {
       handleReady();
@@ -101,7 +101,7 @@ export function PromoPopup() {
       onClick={() => setOpen(false)}
     >
       <div
-        className="relative w-full max-w-sm sm:max-w-md animate-in zoom-in-95 duration-300"
+        className="relative w-full max-w-sm sm:max-w-md animate-promo-blop"
         onClick={(e) => e.stopPropagation()}
       >
         <button

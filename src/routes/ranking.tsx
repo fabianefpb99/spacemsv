@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Menu, Home, Star, Wallet, User, Trophy, Crown } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import betspaceLogo from "@/assets/betspace-logo.svg";
@@ -38,6 +38,18 @@ function RankingPage() {
   const { user, loading: authLoading } = useAuth();
   const me = useMe();
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [bgLoaded, setBgLoaded] = useState(false);
+
+  useEffect(() => {
+    const img = new Image();
+    img.src = spaceBg;
+    if (img.complete && img.naturalWidth > 0) {
+      setBgLoaded(true);
+    } else {
+      img.onload = () => setBgLoaded(true);
+      img.onerror = () => setBgLoaded(true);
+    }
+  }, []);
 
   const fetchPublic = useServerFn(getRankingPublic);
   const fetchMyPos = useServerFn(getMyRankingPosition);
@@ -126,12 +138,13 @@ function RankingPage() {
         {/* Hero del Ranking con fondo del planeta (Spaceman) */}
         <section className="relative mt-4 overflow-hidden rounded-2xl border border-purple-500/40 shadow-[0_0_18px_rgba(168,85,247,0.3)]">
           <div
-            className="absolute inset-0"
+            className="absolute inset-0 transition-opacity duration-700 ease-out"
             style={{
-              backgroundImage: `url(${spaceBg})`,
+              backgroundImage: bgLoaded ? `url(${spaceBg})` : undefined,
               backgroundSize: "cover",
               backgroundPosition: "center bottom",
               backgroundRepeat: "no-repeat",
+              opacity: bgLoaded ? 1 : 0,
             }}
             aria-hidden="true"
           />
