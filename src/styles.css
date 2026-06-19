@@ -2665,3 +2665,14 @@ html.light .cta-mission-btn.bg-amber-500:hover {
   background-color: #4c1d95 !important;
   color: #ffffff !important;
 }
+
+/* Light mode: PromoPopup close button — solid black circle with white X */
+html.light .promo-close-btn {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+}
+html.light .promo-close-btn svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
