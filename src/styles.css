@@ -2676,3 +2676,11 @@ html.light .promo-close-btn svg {
   color: #ffffff !important;
   stroke: #ffffff !important;
 }
+
+/* Eventos hero: keep title and subtitle white in light mode */
+html.light .eventos-hero-title {
+  color: #ffffff !important;
+}
+html.light .eventos-hero-sub {
+  color: #ffffff !important;
+}
