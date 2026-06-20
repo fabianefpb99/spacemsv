@@ -2677,13 +2677,18 @@ html.light .promo-close-btn svg {
   stroke: #ffffff !important;
 }
 
-/* Eventos hero: keep title and subtitle white in light mode */
+/* Eventos hero: force title and subtitle to white above all light-mode text rewrites */
+.eventos-hero-title,
 html.light .eventos-hero-title,
 html.light :not(.theme-dark-fixed) .eventos-hero-title,
+html.light .eventos-hero-title.text-white,
 html.light .eventos-hero-title.text-amber-200 {
   color: #ffffff !important;
 }
+.eventos-hero-sub,
 html.light .eventos-hero-sub,
-html.light :not(.theme-dark-fixed) .eventos-hero-sub {
+html.light :not(.theme-dark-fixed) .eventos-hero-sub,
+html.light .eventos-hero-sub.text-white,
+html.light .eventos-hero-sub.text-purple-100\/80 {
   color: #ffffff !important;
 }

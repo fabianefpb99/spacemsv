@@ -555,10 +555,10 @@ function EventosPage() {
             />
             <div className="absolute inset-0 flex items-center justify-end pr-4 sm:pr-5">
               <div className="text-right">
-                <h1 className="eventos-hero-title font-display text-2xl font-black tracking-[0.18em] text-amber-200 drop-shadow-[0_0_10px_rgba(251,191,36,0.55)] sm:text-3xl">
+                <h1 className="eventos-hero-title font-display text-2xl font-black tracking-[0.18em] text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.65)] sm:text-3xl">
                   EVENTOS
                 </h1>
-                <p className="eventos-hero-sub mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-purple-100/80 sm:text-[11px]">
+                <p className="eventos-hero-sub mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-white sm:text-[11px]">
                   Desafíos y recompensas
                 </p>
               </div>
