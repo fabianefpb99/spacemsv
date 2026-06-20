@@ -2692,3 +2692,10 @@ html.light .eventos-hero-sub.text-white,
 html.light .eventos-hero-sub.text-purple-100\/80 {
   color: #ffffff !important;
 }
+
+/* "Evento especial" eyebrow on /eventos: force yellow in light mode */
+html.light .evento-especial-eyebrow,
+html.light :not(.theme-dark-fixed) .evento-especial-eyebrow,
+html.light .evento-especial-eyebrow.text-amber-200 {
+  color: #fbbf24 !important;
+}

@@ -600,7 +600,7 @@ function EventosPage() {
                   <Sparkles className="h-7 w-7 text-amber-200 drop-shadow-[0_0_10px_rgba(251,191,36,0.9)]" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-amber-200">
+                  <div className="evento-especial-eyebrow text-[10px] font-bold uppercase tracking-widest text-amber-200">
                     {spEyebrow}
                   </div>
                   <div className="font-display text-lg font-black leading-tight text-white">
