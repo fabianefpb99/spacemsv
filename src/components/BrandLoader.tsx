@@ -11,7 +11,7 @@ export function BrandLoader({ active, minMs = 1060 }: { active: boolean; minMs?:
   const [show, setShow] = useState(active);
   const [fading, setFading] = useState(false);
   const [shownAt] = useState(() => Date.now());
-  const [isLight, setIsLight] = useState<boolean>(() => {
+  const [isLight] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
     try {
       return localStorage.getItem("betspace-theme") === "light";
