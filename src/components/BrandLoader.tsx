@@ -14,6 +14,7 @@ export function BrandLoader({ active, minMs = 1060 }: { active: boolean; minMs?:
   const [isLight] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
     try {
+      if (document.documentElement.classList.contains("light")) return true;
       return localStorage.getItem("betspace-theme") === "light";
     } catch {
       return false;
