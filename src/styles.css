@@ -236,6 +236,8 @@ html.light header.bg-\[\#060210\] .logo-shine img {
    brand purple so the initial loading overlay is still noticeable. */
 html.light .brand-loader-reveal {
   filter: brightness(0) saturate(100%) invert(15%) sepia(100%) saturate(6000%) hue-rotate(255deg) brightness(78%) contrast(120%);
+  -webkit-mask-image: none !important;
+          mask-image: none !important;
 }
 /* Header text/labels readable on white */
 html.light header.bg-\[\#060210\] .text-white,
