@@ -2699,3 +2699,21 @@ html.light :not(.theme-dark-fixed) .evento-especial-eyebrow,
 html.light .evento-especial-eyebrow.text-amber-200 {
   color: #fbbf24 !important;
 }
+
+/* Ranking hero: force title yellow and subtitles white in light mode */
+html.light .ranking-hero-title,
+html.light :not(.theme-dark-fixed) .ranking-hero-title,
+html.light .ranking-hero-title.text-white {
+  color: #fbbf24 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25) !important;
+}
+html.light .ranking-hero-sub,
+html.light :not(.theme-dark-fixed) .ranking-hero-sub,
+html.light .ranking-hero-sub.text-purple-100\/80 {
+  color: #ffffff !important;
+}
+html.light .ranking-empty-text,
+html.light :not(.theme-dark-fixed) .ranking-empty-text,
+html.light .ranking-empty-text.text-purple-200\/70 {
+  color: #ffffff !important;
+}
