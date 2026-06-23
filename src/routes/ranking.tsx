@@ -158,12 +158,12 @@ function RankingPage() {
             {/* Título */}
             <div className="flex items-center justify-center gap-2">
               <Trophy className="h-5 w-5 text-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.95)]" />
-              <h1 className="font-display text-2xl font-black tracking-widest text-white drop-shadow sm:text-3xl">
+              <h1 className="ranking-hero-title font-display text-2xl font-black tracking-widest text-white drop-shadow sm:text-3xl">
                 RANKING
               </h1>
               <Trophy className="h-5 w-5 text-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.95)]" />
             </div>
-            <p className="mt-1 text-center text-xs text-purple-100/80">
+            <p className="ranking-hero-sub mt-1 text-center text-xs text-purple-100/80">
               Los mejores ganadores del día
             </p>
 
@@ -175,7 +175,7 @@ function RankingPage() {
             </div>
 
             {!publicQ.isLoading && winners.length === 0 && (
-              <p className="mt-6 text-center text-xs text-purple-200/70">
+              <p className="ranking-empty-text mt-6 text-center text-xs text-purple-200/70">
                 Aún no hay ganadores hoy. ¡Sé el primero!
               </p>
             )}
