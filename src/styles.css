@@ -231,6 +231,14 @@ html.light header.bg-\[\#060210\] .logo-shine img {
   /* Brand dark-purple (#2a1d4d) tint instead of flat black */
   filter: brightness(0) saturate(100%) invert(11%) sepia(58%) saturate(2400%) hue-rotate(245deg) brightness(92%) contrast(108%);
 }
+
+/* Home brand loader: white logo on the light-mode canvas becomes a vivid
+   brand purple so the initial loading overlay is still noticeable. */
+html.light .brand-loader-reveal {
+  filter: brightness(0) saturate(100%) invert(15%) sepia(100%) saturate(6000%) hue-rotate(255deg) brightness(78%) contrast(120%);
+  -webkit-mask-image: none !important;
+          mask-image: none !important;
+}
 /* Header text/labels readable on white */
 html.light header.bg-\[\#060210\] .text-white,
 html.light header.bg-\[\#060210\] .text-purple-200\/70 {
