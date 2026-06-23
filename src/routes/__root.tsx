@@ -117,6 +117,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Orbitron:wght@500;700;900&family=Inter:wght@400;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap",
       },
     ],
+    scripts: [
+      {
+        children: `(function(){try{var t=localStorage.getItem('betspace-theme');if(t!=='light'&&t!=='dark')t='dark';document.documentElement.classList.add(t);}catch(e){document.documentElement.classList.add('dark');}})();`,
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,

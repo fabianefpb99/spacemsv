@@ -33,7 +33,7 @@ export function BrandLoader({ active, minMs = 1060 }: { active: boolean; minMs?:
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#060210]"
+      className="brand-loader-overlay fixed inset-0 z-[9999] flex items-center justify-center"
       aria-live="polite"
       aria-busy="true"
       style={{
