@@ -232,11 +232,14 @@ html.light header.bg-\[\#060210\] .logo-shine img {
   filter: brightness(0) saturate(100%) invert(11%) sepia(58%) saturate(2400%) hue-rotate(245deg) brightness(92%) contrast(108%);
 }
 
-/* Home brand loader in light mode: white background with a purple logo
-   that keeps the shimmer animation. The shimmer mask stays active; we
-   only re-tint the white SVG to brand purple via a filter. */
-html.light .brand-loader-overlay.bg-\[\#060210\] {
-  background-color: #ffffff !important;
+/* Home brand loader overlay — base (dark) + light theme override.
+   Background and logo tint are driven entirely by CSS so SSR HTML
+   renders correctly the moment the boot script sets `html.light`. */
+.brand-loader-overlay {
+  background-color: #060210;
+}
+html.light .brand-loader-overlay {
+  background-color: #ffffff;
 }
 html.light .brand-loader-overlay .brand-loader-reveal {
   filter: brightness(0) saturate(100%) invert(13%) sepia(85%) saturate(3500%) hue-rotate(258deg) brightness(85%) contrast(115%);
