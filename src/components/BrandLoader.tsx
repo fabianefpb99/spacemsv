@@ -11,6 +11,14 @@ export function BrandLoader({ active, minMs = 1060 }: { active: boolean; minMs?:
   const [show, setShow] = useState(active);
   const [fading, setFading] = useState(false);
   const [shownAt] = useState(() => Date.now());
+  const [isLight, setIsLight] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return localStorage.getItem("betspace-theme") === "light";
+    } catch {
+      return false;
+    }
+  });
   const FADE_MS = 320;
 
   useEffect(() => {
@@ -31,12 +39,18 @@ export function BrandLoader({ active, minMs = 1060 }: { active: boolean; minMs?:
 
   if (!show) return null;
 
+  const bg = isLight ? "#ffffff" : "#060210";
+  const logoFilter = isLight
+    ? "brightness(0) saturate(100%) invert(13%) sepia(85%) saturate(3500%) hue-rotate(258deg) brightness(85%) contrast(115%)"
+    : undefined;
+
   return (
     <div
-      className="brand-loader-overlay fixed inset-0 z-[9999] flex items-center justify-center bg-[#060210]"
+      className="brand-loader-overlay fixed inset-0 z-[9999] flex items-center justify-center"
       aria-live="polite"
       aria-busy="true"
       style={{
+        backgroundColor: bg,
         opacity: fading ? 0 : 1,
         transition: `opacity ${FADE_MS}ms ease-out`,
         pointerEvents: fading ? "none" : undefined,
@@ -47,6 +61,7 @@ export function BrandLoader({ active, minMs = 1060 }: { active: boolean; minMs?:
         alt="BetSpace"
         className="w-36 max-w-[40vw] select-none brand-loader-reveal"
         draggable={false}
+        style={logoFilter ? { filter: logoFilter } : undefined}
       />
       <style>{`
         .brand-loader-reveal {
