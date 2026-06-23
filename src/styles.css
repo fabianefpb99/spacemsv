@@ -232,12 +232,14 @@ html.light header.bg-\[\#060210\] .logo-shine img {
   filter: brightness(0) saturate(100%) invert(11%) sepia(58%) saturate(2400%) hue-rotate(245deg) brightness(92%) contrast(108%);
 }
 
-/* Home brand loader: white logo on the light-mode canvas becomes a vivid
-   brand purple so the initial loading overlay is still noticeable. */
-html.light .brand-loader-reveal {
-  filter: brightness(0) saturate(100%) invert(15%) sepia(100%) saturate(6000%) hue-rotate(255deg) brightness(78%) contrast(120%);
-  -webkit-mask-image: none !important;
-          mask-image: none !important;
+/* Home brand loader in light mode: white background with a purple logo
+   that keeps the shimmer animation. The shimmer mask stays active; we
+   only re-tint the white SVG to brand purple via a filter. */
+html.light .brand-loader-overlay.bg-\[\#060210\] {
+  background-color: #ffffff !important;
+}
+html.light .brand-loader-overlay .brand-loader-reveal {
+  filter: brightness(0) saturate(100%) invert(13%) sepia(85%) saturate(3500%) hue-rotate(258deg) brightness(85%) contrast(115%);
 }
 /* Header text/labels readable on white */
 html.light header.bg-\[\#060210\] .text-white,
