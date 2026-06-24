@@ -150,7 +150,7 @@ function OnlineRotator({ online, username }: { online: number; username?: string
       >
         <span
           key={`${phraseIdx}-${exiting ? "out" : "in"}`}
-          className={`text-[13px] font-semibold tracking-wide text-white light-text-dark whitespace-nowrap ${exiting ? "animate-cube-out" : "animate-cube-in"}`}
+          className={`text-[15px] font-semibold tracking-wide text-white light-text-dark whitespace-nowrap ${exiting ? "animate-cube-out" : "animate-cube-in"}`}
           style={{ transformOrigin: "center center", backfaceVisibility: "hidden" }}
         >
           {renderPhrase(currentRaw)}
