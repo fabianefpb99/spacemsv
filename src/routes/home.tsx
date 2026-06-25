@@ -27,11 +27,22 @@ import heroDiceImg from "@/assets/home-hero-dice.jpg";
 import heroBlackjackImg from "@/assets/home-hero-blackjack.jpg";
 import heroRuletaImg from "@/assets/home-hero-ruleta.jpg";
 import heroArenaImg from "@/assets/home-hero-arena.png.asset.json";
-import gameSpaceman from "@/assets/game-spaceman.jpg";
-import gameSlotMafia from "@/assets/game-slot-mafia.jpg";
-import gameMines from "@/assets/game-mines.jpg";
-import gameDice from "@/assets/game-dice.jpg";
-import gameBlackjackVip from "@/assets/game-blackjack-vip.jpg";
+import gameSpacemanAsset from "@/assets/game-spaceman.png.asset.json";
+import gameSlotMafiaAsset from "@/assets/game-slot-mafia.png.asset.json";
+import gameMinesAsset from "@/assets/game-mines.png.asset.json";
+import gameDiceAsset from "@/assets/game-dice.png.asset.json";
+import gameBlackjackAsset from "@/assets/game-blackjack.png.asset.json";
+import gameBlackjackVipAsset from "@/assets/game-blackjack-vip.png.asset.json";
+import gameArenaAsset from "@/assets/game-arena.png.asset.json";
+import gameRuletaAsset from "@/assets/game-ruleta.png.asset.json";
+const gameSpaceman = gameSpacemanAsset.url;
+const gameSlotMafia = gameSlotMafiaAsset.url;
+const gameMines = gameMinesAsset.url;
+const gameDice = gameDiceAsset.url;
+const gameBlackjack = gameBlackjackAsset.url;
+const gameBlackjackVip = gameBlackjackVipAsset.url;
+const gameArena = gameArenaAsset.url;
+const gameRuleta = gameRuletaAsset.url;
 import gift3d from "@/assets/gift-3d.png";
 import trophy3d from "@/assets/trophy-3d.png";
 import blackjackPromo from "@/assets/blackjack-promo.png.asset.json";
@@ -176,7 +187,10 @@ const GAMES = [
   { name: "SLOT", img: gameSlotMafia, tag: "NUEVO", tagCls: "bg-emerald-600 text-white border-emerald-400", to: "/slot" },
   { name: "MINAS", img: gameMines, tag: "POPULAR", tagCls: "bg-purple-600 text-white border-purple-400", to: "/mines" },
   { name: "DICE", img: gameDice, tag: "CLÁSICO", tagCls: "bg-rose-600 text-white border-rose-400", to: "/dados" },
-  { name: "BLACKJACK", img: gameBlackjackVip, tag: "VIP", tagCls: "bg-amber-500 text-black border-amber-300", to: "/blackjackvip" },
+  { name: "BLACKJACK", img: gameBlackjack, tag: "POPULAR", tagCls: "bg-purple-600 text-white border-purple-400", to: "/blackjack" },
+  { name: "ARENA", img: gameArena, tag: "NUEVO", tagCls: "bg-emerald-600 text-white border-emerald-400", to: "/arena" },
+  { name: "RULETA", img: gameRuleta, tag: "CLÁSICO", tagCls: "bg-rose-600 text-white border-rose-400", to: "/ruleta" },
+  { name: "BLACKJACK VIP", img: gameBlackjackVip, tag: "VIP", tagCls: "bg-amber-500 text-black border-amber-300", to: "/blackjackvip" },
 ];
 
 function formatGameTag(tag: string) {
