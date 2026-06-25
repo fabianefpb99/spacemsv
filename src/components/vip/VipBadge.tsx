@@ -37,7 +37,7 @@ export function VipBadge({ rank, sub, size = "md", className, showLabel = false,
           />
           <span
             className={cn(
-              "absolute -bottom-1 right-0 rounded-md border border-white/20 bg-black/70 px-1 font-display font-black tracking-widest text-white",
+              "vip-sub-badge absolute -bottom-1 right-0 rounded-md border border-white/20 bg-black/70 px-1 font-display font-black tracking-widest text-white",
               s.sub,
             )}
           >
@@ -66,7 +66,7 @@ export function VipBadge({ rank, sub, size = "md", className, showLabel = false,
         <Icon className={cn(s.icon, "text-black/70 drop-shadow")} strokeWidth={2.5} />
         <span
           className={cn(
-            "absolute -bottom-1 right-0 rounded-md border border-white/20 bg-black/70 px-1 font-display font-black tracking-widest text-white",
+            "vip-sub-badge absolute -bottom-1 right-0 rounded-md border border-white/20 bg-black/70 px-1 font-display font-black tracking-widest text-white",
             s.sub,
           )}
         >
