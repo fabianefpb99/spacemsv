@@ -5,14 +5,22 @@ import astronautFlying from "@/assets/astronaut-flying.png";
 import meteor from "@/assets/asteroid.svg";
 import bgMusic from "@/assets/bg-music.mp3";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
-import gameSpaceman from "@/assets/game-spaceman.jpg";
-import gameSlotMafia from "@/assets/game-slot-mafia.jpg";
-import gameMines from "@/assets/game-mines.jpg";
-import gameDice from "@/assets/game-dice.jpg";
-import blackjackPromo from "@/assets/blackjack-promo.png.asset.json";
-import blackjackVipBg from "@/assets/blackjack-vip-bg.png.asset.json";
-import gameRuleta from "@/assets/home-hero-ruleta.jpg";
-import gameArena from "@/assets/home-hero-arena.png.asset.json";
+import gameSpacemanAsset from "@/assets/game-spaceman.png.asset.json";
+import gameSlotMafiaAsset from "@/assets/game-slot-mafia.png.asset.json";
+import gameMinesAsset from "@/assets/game-mines.png.asset.json";
+import gameDiceAsset from "@/assets/game-dice.png.asset.json";
+import gameBlackjackAsset from "@/assets/game-blackjack.png.asset.json";
+import gameBlackjackVipAsset from "@/assets/game-blackjack-vip.png.asset.json";
+import gameRuletaAsset from "@/assets/game-ruleta.png.asset.json";
+import gameArenaAsset from "@/assets/game-arena.png.asset.json";
+const gameSpaceman = gameSpacemanAsset.url;
+const gameSlotMafia = gameSlotMafiaAsset.url;
+const gameMines = gameMinesAsset.url;
+const gameDice = gameDiceAsset.url;
+const gameBlackjack = gameBlackjackAsset.url;
+const gameBlackjackVip = gameBlackjackVipAsset.url;
+const gameRuleta = gameRuletaAsset.url;
+const gameArena = gameArenaAsset.url;
 
 const ASSETS: { src: string; type: "image" | "audio" }[] = [
   { src: bgImage, type: "image" },
@@ -65,10 +73,10 @@ export function LoadingScreen({ children, variant = "rocket" }: { children: Reac
       variant === "mine" ? gameMines
       : variant === "slot" ? gameSlotMafia
       : variant === "dice" ? gameDice
-      : variant === "blackjack" ? blackjackPromo.url
-      : variant === "blackjack_vip" ? blackjackVipBg.url
+      : variant === "blackjack" ? gameBlackjack
+      : variant === "blackjack_vip" ? gameBlackjackVip
       : variant === "roulette" ? gameRuleta
-      : variant === "arena" ? gameArena.url
+      : variant === "arena" ? gameArena
       : variant === "rocket" ? gameSpaceman
       : astronautRocket;
     const allAssets: { src: string; type: "image" | "audio" }[] = [
@@ -166,10 +174,10 @@ export function LoadingScreen({ children, variant = "rocket" }: { children: Reac
               variant === "mine" ? gameMines
               : variant === "slot" ? gameSlotMafia
               : variant === "dice" ? gameDice
-              : variant === "blackjack" ? blackjackPromo.url
-              : variant === "blackjack_vip" ? blackjackVipBg.url
+              : variant === "blackjack" ? gameBlackjack
+              : variant === "blackjack_vip" ? gameBlackjackVip
               : variant === "roulette" ? gameRuleta
-              : variant === "arena" ? gameArena.url
+              : variant === "arena" ? gameArena
               : variant === "rocket" ? gameSpaceman
               : astronautRocket
             }

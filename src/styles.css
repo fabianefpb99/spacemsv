@@ -70,13 +70,11 @@ html.light .home-online-dot {
   background-color: #00c853 !important;
 }
 html.light .home-game-card {
-  background-color: #ffffff !important;
   border-color: rgba(59, 20, 104, 0.18) !important;
   box-shadow: none !important;
 }
-html.light .home-game-title {
-  color: #3b1468 !important;
-  text-shadow: none !important;
+.home-game-title {
+  color: #ffffff !important;
 }
 html.light .home-wins-panel {
   background-color: #ffffff !important;
