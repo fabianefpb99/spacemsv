@@ -325,6 +325,17 @@ export const bjDeal = createServerFn({ method: "POST" })
       }
     }
 
+    // 4b. Offer insurance when the dealer's up-card is an Ace and the
+    // hand is still in play (player did not have a natural blackjack).
+    if (status === "open" && dealer[0].rank === "A") {
+      publicState = {
+        ...publicState,
+        insuranceOffered: true,
+        insuranceTaken: false,
+        insuranceCost: 0,
+      };
+    }
+
     // 5. Create the session row.
     const { data: inserted, error: insertErr } = await supabaseAdmin
       .from("game_sessions")
