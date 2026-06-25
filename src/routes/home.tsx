@@ -770,6 +770,8 @@ function HomePage() {
               0% { transform: translateY(0); }
               100% { transform: translateY(calc(-${LAST_WINS.length} * 52px)); }
             }
+            .home-win-avatar-img { opacity: 0; transition: opacity 280ms ease-out; }
+            .home-win-avatar-img.is-loaded { opacity: 1; }
           `}</style>
         </section>
 
