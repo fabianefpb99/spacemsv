@@ -665,6 +665,29 @@ html.dark .promo-banner:hover .promo-banner__chev {
   box-shadow: none !important;
 }
 
+/* Dark mode — glass/chevron style for Blackjack, Ruleta and Arena banners.
+   Keeps the light mode chevron untouched (it uses solid white). */
+html.dark .promo-banner .promo-banner__chev--glass {
+  background: rgba(255, 255, 255, 0.10) !important;
+  background-color: rgba(255, 255, 255, 0.10) !important;
+  background-image: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(10px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(120%) !important;
+}
+html.dark .promo-banner .promo-banner__chev--glass::before {
+  display: none !important;
+}
+html.dark .promo-banner .promo-banner__chev--glass svg,
+html.dark .promo-banner .promo-banner__chev--glass svg * {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  opacity: 0.9 !important;
+}
+
+
 
 /* Hero slider — rotating neon glow sweep around the border */
 .slider-neon-frame {
