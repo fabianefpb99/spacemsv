@@ -666,6 +666,13 @@ export function BlackjackGame() {
                     +${formatCOP(payout)} COP
                   </div>
                 )}
+                {insuranceTaken && (
+                  <div className={`mt-1 text-[11px] font-bold ${insurancePayout > 0 ? "text-amber-300" : "text-amber-200/70"}`}>
+                    {insurancePayout > 0
+                      ? `Seguro: +$${formatCOP(insurancePayout)}`
+                      : `Seguro perdido: -$${formatCOP(insuranceCost)}`}
+                  </div>
+                )}
               </div>
             </div>
           )}
