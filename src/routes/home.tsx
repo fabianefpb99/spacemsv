@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Menu, ChevronRight, ChevronLeft, Gift, Home, Star, Wallet, User, Trophy } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { type PointerEvent, useEffect, useRef, useState } from "react";
 import { PromoPopup } from "@/components/PromoPopup";
 import { BrandLoader } from "@/components/BrandLoader";
 import { SkeletonImage } from "@/components/SkeletonImage";
@@ -176,8 +176,13 @@ const GAMES = [
   { name: "SLOT", img: gameSlotMafia, tag: "NUEVO", tagCls: "bg-emerald-600 text-white border-emerald-400", to: "/slot" },
   { name: "MINAS", img: gameMines, tag: "POPULAR", tagCls: "bg-purple-600 text-white border-purple-400", to: "/mines" },
   { name: "DICE", img: gameDice, tag: "CLÁSICO", tagCls: "bg-rose-600 text-white border-rose-400", to: "/dados" },
-  { name: "BLACKJACK VIP", img: gameBlackjackVip, tag: "VIP", tagCls: "bg-amber-500 text-black border-amber-300", to: "/blackjackvip" },
+  { name: "BLACKJACK", img: gameBlackjackVip, tag: "VIP", tagCls: "bg-amber-500 text-black border-amber-300", to: "/blackjackvip" },
 ];
+
+function formatGameTag(tag: string) {
+  if (tag.toUpperCase() === "VIP") return "VIP";
+  return tag.toLocaleLowerCase("es-CO").replace(/^./, (char) => char.toLocaleUpperCase("es-CO"));
+}
 
 const TAG_CLS: Record<string, string> = {
   purple: "bg-purple-600 text-white border-purple-400",
@@ -256,6 +261,8 @@ function HomePage() {
   const [online] = useState(219);
   const [slide, setSlide] = useState(0);
   const [arrowsVisible, setArrowsVisible] = useState(true);
+  const featuredScrollRef = useRef<HTMLDivElement | null>(null);
+  const featuredDragRef = useRef({ active: false, startX: 0, scrollLeft: 0, dragged: false });
 
   const fetchSlides = useServerFn(getPublicHomeSlides);
   const fetchFeatured = useServerFn(getPublicFeaturedGames);
@@ -292,8 +299,8 @@ function HomePage() {
         to: (g.link ?? "/home") as "/home",
       }))
     : GAMES;
-  const vipGame = GAMES.find((g) => g.name === "BLACKJACK VIP")!;
-  const gamesList = gamesListBase.some((g) => g.name === "BLACKJACK VIP")
+  const vipGame = GAMES.find((g) => g.to === "/blackjackvip")!;
+  const gamesList = gamesListBase.some((g) => g.to === "/blackjackvip")
     ? gamesListBase
     : [...gamesListBase, vipGame];
 
@@ -382,6 +389,35 @@ function HomePage() {
     setArrowsVisible(true);
     if (arrowsTimer.current) clearTimeout(arrowsTimer.current);
     arrowsTimer.current = setTimeout(() => setArrowsVisible(false), 1500);
+  };
+
+  const scrollFeatured = (direction: -1 | 1) => {
+    const el = featuredScrollRef.current;
+    if (!el) return;
+    el.scrollBy({ left: direction * el.clientWidth * 0.82, behavior: "smooth" });
+  };
+
+  const handleFeaturedPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "touch") return;
+    const el = featuredScrollRef.current;
+    if (!el) return;
+    featuredDragRef.current = { active: true, startX: event.clientX, scrollLeft: el.scrollLeft, dragged: false };
+    el.setPointerCapture(event.pointerId);
+  };
+
+  const handleFeaturedPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    const drag = featuredDragRef.current;
+    const el = featuredScrollRef.current;
+    if (!drag.active || !el) return;
+    const delta = event.clientX - drag.startX;
+    if (Math.abs(delta) > 4) drag.dragged = true;
+    el.scrollLeft = drag.scrollLeft - delta;
+  };
+
+  const stopFeaturedDrag = (event: PointerEvent<HTMLDivElement>) => {
+    const el = featuredScrollRef.current;
+    featuredDragRef.current.active = false;
+    if (el?.hasPointerCapture(event.pointerId)) el.releasePointerCapture(event.pointerId);
   };
 
   useEffect(() => {
