@@ -958,9 +958,9 @@ function HomePage() {
           >
             <ul
               className="flex flex-col gap-2"
-              style={{ animation: `wins-scroll ${lastWins.length * 2.2}s linear infinite` }}
+              style={{ animation: `wins-scroll ${mergedWins.length * 2.2}s linear infinite` }}
             >
-              {[...lastWins, ...lastWins].map((w, i) => (
+              {[...mergedWins, ...mergedWins].map((w, i) => (
                 <li
                   key={`${w.id}-${i}`}
                   className="home-win-row flex h-[44px] items-center gap-3 rounded-lg border border-purple-500/20 bg-[#150830]/60 px-2.5"
@@ -977,7 +977,11 @@ function HomePage() {
                       <span className="home-money-sign neon-green mr-0.5">$</span>
                       <span className="text-white">{formatCOP(w.amount)} COP</span>
                     </div>
-                    <div className="home-win-mult text-[10px] font-bold text-purple-300">{w.mult.toFixed(2)}x</div>
+                    {w.mult > 0 ? (
+                      <div className="home-win-mult text-[10px] font-bold text-purple-300">{w.mult.toFixed(2)}x</div>
+                    ) : (
+                      <div className="home-win-mult text-[10px] font-bold text-emerald-300">REAL</div>
+                    )}
                   </div>
                 </li>
               ))}
@@ -986,7 +990,7 @@ function HomePage() {
           <style>{`
             @keyframes wins-scroll {
               0% { transform: translateY(0); }
-              100% { transform: translateY(calc(-${lastWins.length} * 52px)); }
+              100% { transform: translateY(calc(-${mergedWins.length} * 52px)); }
             }
             .home-win-avatar-img { opacity: 0; transition: opacity 280ms ease-out; }
             .home-win-avatar-img.is-loaded,
