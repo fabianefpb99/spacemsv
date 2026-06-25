@@ -563,12 +563,12 @@ function HomePage() {
               Ver todos
             </button>
           </div>
-          <div className="mt-3 grid grid-cols-4 gap-2 sm:gap-3">
+          <div className="home-featured-scroll mt-3 flex gap-2 overflow-x-auto pb-1 sm:gap-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {gamesList.map((g) => (
               <Link
                 key={g.name}
                 to={g.to}
-                className="home-game-card group flex flex-col overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400"
+                className="home-game-card group flex w-[22%] min-w-[22%] flex-shrink-0 flex-col overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400 sm:w-[22%] sm:min-w-[22%]"
               >
                 <div className="aspect-square w-full overflow-hidden">
                   <SkeletonImage
