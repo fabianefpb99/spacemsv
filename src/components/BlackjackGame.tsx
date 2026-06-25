@@ -491,6 +491,10 @@ export function BlackjackGame() {
     setOutcome(null);
     setPayout(0);
     setDoubled(false);
+    setInsuranceOffered(false);
+    setInsuranceTaken(false);
+    setInsuranceCost(0);
+    setInsurancePayout(0);
     setError(null);
     setPhase("betting");
   };
