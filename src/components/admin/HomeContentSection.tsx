@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Loader2, Plus, Trash2, Save, Upload, Image as ImageIcon, Download } from "lucide-react";
+import { Loader2, Plus, Trash2, Save, Upload, Image as ImageIcon, Download, Zap } from "lucide-react";
 import { toast } from "sonner";
 import {
   adminListHomeSlides,
@@ -11,6 +11,8 @@ import {
   adminUpsertFeaturedGame,
   adminDeleteFeaturedGame,
   adminUploadHomeImage,
+  adminListHomeStorageObjects,
+  adminReplaceHomeImage,
 } from "@/lib/admin/home-content.functions";
 import { DEFAULT_SLIDES, DEFAULT_FEATURED } from "@/lib/admin/home-defaults";
 import { Panel } from "./shared";
@@ -72,6 +74,7 @@ export function HomeContentSection() {
   const [tab, setTab] = useState<"slides" | "featured">("slides");
   return (
     <div className="space-y-3">
+      <BulkCompressPanel />
       <div className="flex gap-2">
         <button
           onClick={() => setTab("slides")}
@@ -107,6 +110,87 @@ export function HomeContentSection() {
         )}
       </div>
       {tab === "slides" ? <SlidesEditor /> : <FeaturedEditor />}
+    </div>
+  );
+}
+
+function BulkCompressPanel() {
+  const listFn = useServerFn(adminListHomeStorageObjects);
+  const replaceFn = useServerFn(adminReplaceHomeImage);
+  const [running, setRunning] = useState(false);
+  const [progress, setProgress] = useState<{ done: number; total: number; saved: number; skipped: number }>({
+    done: 0,
+    total: 0,
+    saved: 0,
+    skipped: 0,
+  });
+
+  async function run() {
+    if (!confirm("Esto recomprimirá TODAS las imágenes ya subidas al servidor (slides y juegos destacados) reemplazándolas por versiones WebP más livianas. ¿Continuar?")) return;
+    setRunning(true);
+    setProgress({ done: 0, total: 0, saved: 0, skipped: 0 });
+    try {
+      const objects = await listFn();
+      const raster = objects.filter((o) => /^image\/(png|jpeg|jpg|webp)$/i.test(o.mime));
+      setProgress((p) => ({ ...p, total: raster.length }));
+      let savedBytes = 0;
+      let skipped = 0;
+      for (let i = 0; i < raster.length; i++) {
+        const o = raster[i];
+        try {
+          const res = await fetch(o.signedUrl);
+          if (!res.ok) throw new Error(`fetch ${res.status}`);
+          const blob = await res.blob();
+          const original = new File([blob], o.path, { type: o.mime || blob.type });
+          const compressed = await compressImageFile(original, { maxDimension: 1600, quality: 0.82 });
+          if (compressed.size >= original.size) {
+            skipped++;
+          } else {
+            const { base64, type } = await fileToBase64(compressed);
+            await replaceFn({ data: { path: o.path, content_type: type, data_base64: base64 } });
+            savedBytes += original.size - compressed.size;
+          }
+        } catch (e) {
+          console.warn("compress fail", o.path, e);
+          skipped++;
+        }
+        setProgress({ done: i + 1, total: raster.length, saved: savedBytes, skipped });
+      }
+      toast.success(`Listo. Ahorro: ${(savedBytes / 1024 / 1024).toFixed(2)} MB`);
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setRunning(false);
+    }
+  }
+
+  const pct = progress.total ? Math.round((progress.done / progress.total) * 100) : 0;
+  return (
+    <div className="rounded-md border border-emerald-500/30 bg-emerald-500/5 p-3">
+      <div className="flex items-center justify-between gap-2">
+        <div className="text-[11px] text-emerald-100/90">
+          <div className="font-bold uppercase tracking-wider text-emerald-200">Optimizar imágenes existentes</div>
+          <div className="text-[10px] text-emerald-100/70">Recomprime a WebP todas las imágenes ya subidas (slides + juegos). Mantiene la misma URL.</div>
+        </div>
+        <button
+          onClick={run}
+          disabled={running}
+          className="inline-flex shrink-0 items-center gap-1 rounded-md border border-emerald-500/50 bg-emerald-600/25 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-100 hover:bg-emerald-600/35 disabled:opacity-50"
+        >
+          {running ? <Loader2 className="h-3 w-3 animate-spin" /> : <Zap className="h-3 w-3" />}
+          {running ? "Procesando..." : "Comprimir todo"}
+        </button>
+      </div>
+      {running || progress.done > 0 ? (
+        <div className="mt-2 space-y-1">
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-emerald-900/40">
+            <div className="h-full bg-emerald-400 transition-all" style={{ width: `${pct}%` }} />
+          </div>
+          <div className="text-[10px] text-emerald-100/80">
+            {progress.done}/{progress.total} · ahorro {(progress.saved / 1024 / 1024).toFixed(2)} MB · sin cambio {progress.skipped}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
