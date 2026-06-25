@@ -276,14 +276,20 @@ function HomePage() {
   const slidesQ = useQuery({
     queryKey: ["public-home-slides"],
     queryFn: () => fetchSlides(),
-    staleTime: 0,
-    refetchOnMount: "always",
+    // Cache home content in memoria por 10 min y reusar entre navegaciones
+    // (volver desde un juego no debe refetchear ni mostrar loader).
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
   const featuredQ = useQuery({
     queryKey: ["public-featured-games"],
     queryFn: () => fetchFeatured(),
-    staleTime: 0,
-    refetchOnMount: "always",
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   const slidesList = (slidesQ.data && slidesQ.data.length > 0)
@@ -313,10 +319,17 @@ function HomePage() {
 
   const slides = slidesList.length;
   const arrowsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // Start visible on every mount so the brand loader paints BEFORE the home
-  // ever flashes through. The effect below decides if we keep it on screen
-  // (within the per-hour quota) or hide it immediately.
-  const [showBrandLoader, setShowBrandLoader] = useState(true);
+  // Solo arrancamos visible la PRIMERA visita (sin cache previo). Si ya hay
+  // contenido cacheado en este navegador, no parpadeamos el loader al volver
+  // desde un juego. El efecto de abajo confirma/cierra según cuota.
+  const [showBrandLoader, setShowBrandLoader] = useState(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return !sessionStorage.getItem("betspaceman:home:ready");
+    } catch {
+      return true;
+    }
+  });
 
   // Ambient casino intro — máximo 5 veces por hora.
   // Audio file ya incluye fade-in (1.5s) y fade-out (5s) — 12s totales.
@@ -365,12 +378,26 @@ function HomePage() {
     };
   }, []);
 
-  // Mostrar el BrandLoader la primera vez que se entra al sitio y
-  // al menos una vez por hora, para reforzar la marca.
+  // Regla del BrandLoader:
+  //  - Máximo 2 ejecuciones por hora.
+  //  - Se omite si ya cargamos el home con éxito antes en esta sesión.
+  //  - Se fuerza si alguna query del home falló (datos no disponibles).
   useEffect(() => {
     const KEY = "betspaceman:brand-loader:last-shown";
+    const READY_KEY = "betspaceman:home:ready";
     const ONE_HOUR = 60 * 60 * 1000;
-    const MAX_PER_HOUR = 5;
+    const MAX_PER_HOUR = 2;
+
+    let alreadyReady = false;
+    try { alreadyReady = !!sessionStorage.getItem(READY_KEY); } catch { /* ignore */ }
+    const hasError = !!(slidesQ.error || featuredQ.error);
+
+    // Si tenemos data en cache y no hay error, no mostramos loader al volver.
+    if (alreadyReady && !hasError) {
+      setShowBrandLoader(false);
+      return;
+    }
+
     let shows: number[] = [];
     try {
       const parsed = JSON.parse(localStorage.getItem(KEY) || "[]");
@@ -378,16 +405,31 @@ function HomePage() {
     } catch { shows = []; }
     const now = Date.now();
     shows = shows.filter((t) => now - t < ONE_HOUR);
-    if (shows.length >= MAX_PER_HOUR) {
+
+    // Cuota agotada y no hay error → no mostramos.
+    if (shows.length >= MAX_PER_HOUR && !hasError) {
       setShowBrandLoader(false);
       return;
     }
-    shows.push(now);
-    try { localStorage.setItem(KEY, JSON.stringify(shows)); } catch { /* ignore */ }
+
+    // Solo gastamos cuota si realmente vamos a mostrarlo.
+    if (!hasError) {
+      shows.push(now);
+      try { localStorage.setItem(KEY, JSON.stringify(shows)); } catch { /* ignore */ }
+    }
     setShowBrandLoader(true);
     const t = setTimeout(() => setShowBrandLoader(false), 1900);
     return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Marca el home como "listo" en sessionStorage en cuanto las queries
+  // principales devuelven datos. Esto permite saltarse el loader al volver.
+  useEffect(() => {
+    if (slidesQ.data && featuredQ.data) {
+      try { sessionStorage.setItem("betspaceman:home:ready", "1"); } catch { /* ignore */ }
+    }
+  }, [slidesQ.data, featuredQ.data]);
 
   // Al entrar al home, cualquier juego previo queda completamente cerrado.
   useEffect(() => { stopAllGameAudio(); }, []);
