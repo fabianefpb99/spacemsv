@@ -484,13 +484,13 @@ html.light header.bg-\[\#060210\] svg {
   color: #2a1d4d !important;
 }
 /* VIP sub-rank badge — keep gray background and white roman numerals in light mode */
-html.light .vip-sub-badge {
+html.light .vip-sub-badge.vip-sub-badge {
   background-color: rgba(0, 0, 0, 0.7) !important;
   color: #ffffff !important;
   border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
-html.light .vip-sub-badge * {
+html.light .vip-sub-badge.vip-sub-badge * {
   color: #ffffff !important;
 }
 
