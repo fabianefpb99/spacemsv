@@ -248,7 +248,13 @@ function AdminPanelPage() {
       {navOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/70" onClick={() => setNavOpen(false)} />
-          <div className="absolute inset-y-0 left-0 w-72 max-w-[85vw] border-r border-purple-500/40 bg-gradient-to-b from-[#0c0620] to-[#060210] p-4 shadow-[0_0_30px_rgba(168,85,247,0.35)]">
+          <div
+            className="absolute inset-y-0 left-0 w-72 max-w-[85vw] overflow-y-auto border-r border-purple-500/40 bg-gradient-to-b from-[#0c0620] to-[#060210] p-4 shadow-[0_0_30px_rgba(168,85,247,0.35)]"
+            style={{
+              paddingTop: "calc(env(safe-area-inset-top, 0px) + 1rem)",
+              paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 1rem)",
+            }}
+          >
             <SidebarHeader />
             <nav className="mt-5 flex flex-col gap-1">
               {SECTIONS.map((s) => {
