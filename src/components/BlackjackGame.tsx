@@ -8,6 +8,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Menu, Minus, Plus, Volume2, VolumeX } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import bgAsset from "@/assets/blackjack-bg.png.asset.json";
+import bgVipAsset from "@/assets/blackjack-vip-bg.png.asset.json";
 import {
   playCardDealSound,
   startBlackjackAmbient,
@@ -29,9 +30,8 @@ import {
   type BJSessionView,
 } from "@/lib/games/blackjack.functions";
 import {
-  BJ_BET_STEP,
-  BJ_MAX_BET,
-  BJ_MIN_BET,
+  BJ_VARIANTS,
+  type BJVariantKey,
   type BJOutcome,
   type BJPublicState,
   type Card,
@@ -39,10 +39,137 @@ import {
 } from "@/lib/games/blackjack.shared";
 
 type Phase = "betting" | "dealing" | "playing" | "dealerTurn" | "result";
+type BJTheme = "space" | "vip";
 type Winner = { id: number; name: string; amount: number; game: string };
 type WinnerSlot = Winner & { slotId: number };
 
-const QUICK = [500, 1000, 2000, 5000];
+const QUICK_BY_THEME: Record<BJTheme, number[]> = {
+  space: [500, 1000, 2000, 5000],
+  vip: [5000, 10000, 25000, 50000],
+};
+
+type ThemeTokens = {
+  bgUrl: string;
+  pageBg: string;
+  pageOverlay: string;
+  headerBorder: string;
+  panel: string;
+  panelGlow: string;
+  labelMuted: string;
+  balanceLabel: string;
+  stepBtn: string;
+  x2Btn: string;
+  quickBtn: string;
+  primaryBtn: string;
+  hitBtn: string;
+  standBtn: string;
+  doubleBtn: string;
+  insuranceBtn: string;
+  scoreBadgeDealer: string;
+  scoreBadgeWin: string;
+  scoreBadgeLose: string;
+  resultPush: string;
+  cardHidden: string;
+  cardHiddenInner: string;
+  cardHiddenIcon: string;
+  cardFace: string;
+  cardFaceText: string;
+  cardFaceRed: string;
+  tickerWrap: string;
+  tickerItem: string;
+  tickerGame: string;
+  dealKey: string; // animation name for deal
+  glowKey: string; // animation name for glow
+};
+
+const SPACE_TOKENS: ThemeTokens = {
+  bgUrl: bgAsset.url,
+  pageBg: "bg-[#060210]",
+  pageOverlay:
+    "bg-gradient-to-b from-[#060210]/60 via-transparent to-[#060210]/30",
+  headerBorder: "border-purple-500/20 bg-[#060210]/80",
+  panel: "border-purple-500/40 bg-[#0c0620]/85",
+  panelGlow: "shadow-[0_0_20px_rgba(168,85,247,0.25)]",
+  labelMuted: "text-purple-200/80",
+  balanceLabel: "text-purple-200/70",
+  stepBtn: "border-purple-400/50 bg-purple-900/40 text-purple-100",
+  x2Btn: "border-fuchsia-400/60 bg-fuchsia-900/40 text-fuchsia-100",
+  quickBtn: "border-purple-500/40 bg-purple-900/30 text-purple-100",
+  primaryBtn:
+    "bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white shadow-[0_0_18px_rgba(217,70,239,0.55)]",
+  hitBtn:
+    "bg-gradient-to-b from-emerald-500 to-emerald-700 text-white shadow-md",
+  standBtn:
+    "bg-gradient-to-b from-fuchsia-600 to-purple-700 text-white shadow-md",
+  doubleBtn:
+    "border-2 border-purple-400 bg-transparent text-purple-100 shadow-[0_0_12px_rgba(168,85,247,0.45)]",
+  insuranceBtn:
+    "border-2 border-amber-400 bg-amber-500/20 text-amber-100 shadow-[0_0_12px_rgba(251,191,36,0.45)]",
+  scoreBadgeDealer:
+    "border-purple-400/50 bg-[#1a0b3a]/80 text-purple-100",
+  scoreBadgeWin: "border-emerald-400/50 bg-emerald-900/30 text-emerald-100",
+  scoreBadgeLose: "border-rose-400/60 bg-rose-900/40 text-rose-100",
+  resultPush: "border-purple-400/70 bg-purple-950/60",
+  cardHidden:
+    "border-purple-300/60 bg-gradient-to-br from-[#3a1a78] to-[#1a0848]",
+  cardHiddenInner: "border-purple-300/40",
+  cardHiddenIcon: "text-purple-200/80",
+  cardFace: "border-white/70 bg-white",
+  cardFaceText: "text-slate-900",
+  cardFaceRed: "text-rose-600",
+  tickerWrap: "border-purple-500/30 bg-[#0c0620]/80",
+  tickerItem: "border-purple-500/30 bg-[#1a0b3a]/70",
+  tickerGame: "text-purple-300/70",
+  dealKey: "bj-deal",
+  glowKey: "bj-glow",
+};
+
+const VIP_TOKENS: ThemeTokens = {
+  bgUrl: bgVipAsset.url,
+  pageBg: "bg-[#0a0700]",
+  pageOverlay:
+    "bg-gradient-to-b from-[#0a0700]/55 via-transparent to-[#0a0700]/40",
+  headerBorder: "border-amber-500/30 bg-[#0a0700]/85",
+  panel: "border-amber-500/45 bg-[#0d0a04]/90",
+  panelGlow: "shadow-[0_0_22px_rgba(212,168,76,0.28)]",
+  labelMuted: "text-amber-200/85",
+  balanceLabel: "text-amber-300/80",
+  stepBtn: "border-amber-400/55 bg-black/60 text-amber-100",
+  x2Btn: "border-amber-300/70 bg-amber-500/15 text-amber-100",
+  quickBtn: "border-amber-500/40 bg-black/55 text-amber-100",
+  primaryBtn:
+    "bg-gradient-to-b from-amber-400 to-amber-600 text-black border border-amber-300 shadow-[0_0_20px_rgba(212,168,76,0.55)]",
+  hitBtn:
+    "border border-amber-400/70 bg-gradient-to-b from-amber-500 to-amber-700 text-black shadow-[0_0_10px_rgba(212,168,76,0.45)]",
+  standBtn:
+    "border border-amber-400/60 bg-gradient-to-b from-zinc-800 to-black text-amber-100 shadow-[0_0_10px_rgba(212,168,76,0.35)]",
+  doubleBtn:
+    "border-2 border-amber-400 bg-black/60 text-amber-100 shadow-[0_0_12px_rgba(212,168,76,0.5)]",
+  insuranceBtn:
+    "border-2 border-amber-300 bg-amber-500/15 text-amber-100 shadow-[0_0_12px_rgba(212,168,76,0.55)]",
+  scoreBadgeDealer:
+    "border-amber-400/60 bg-black/75 text-amber-100",
+  scoreBadgeWin: "border-amber-400/60 bg-amber-900/30 text-amber-100",
+  scoreBadgeLose: "border-rose-400/60 bg-rose-900/40 text-rose-100",
+  resultPush: "border-amber-400/60 bg-black/70",
+  cardHidden:
+    "border-amber-400/70 bg-gradient-to-br from-[#1a1208] to-[#000]",
+  cardHiddenInner: "border-amber-300/60",
+  cardHiddenIcon: "text-amber-300/90",
+  cardFace: "border-amber-300/80 bg-[#fef7e2]",
+  cardFaceText: "text-zinc-900",
+  cardFaceRed: "text-rose-700",
+  tickerWrap: "border-amber-500/30 bg-[#0d0a04]/85",
+  tickerItem: "border-amber-500/30 bg-black/60",
+  tickerGame: "text-amber-300/70",
+  dealKey: "bj-deal",
+  glowKey: "bjv-glow",
+};
+
+function getTokens(theme: BJTheme): ThemeTokens {
+  return theme === "vip" ? VIP_TOKENS : SPACE_TOKENS;
+}
+
 const TICKER_SPEED_PX_PER_MS = 0.06;
 const TICKER_ITEM_WIDTH = 198;
 const TICKER_GAP = 12;
