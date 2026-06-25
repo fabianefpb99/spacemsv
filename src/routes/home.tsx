@@ -916,30 +916,18 @@ function HomePage() {
           >
             <ul
               className="flex flex-col gap-2"
-              style={{ animation: `wins-scroll ${LAST_WINS.length * 2.2}s linear infinite` }}
+              style={{ animation: `wins-scroll ${lastWins.length * 2.2}s linear infinite` }}
             >
-              {[...LAST_WINS, ...LAST_WINS].map((w, i) => {
-                const avatar = WIN_AVATARS[i % WIN_AVATARS.length];
-                return (
+              {[...lastWins, ...lastWins].map((w, i) => (
                 <li
-                  key={`${w.user}-${i}`}
+                  key={`${w.id}-${i}`}
                   className="home-win-row flex h-[44px] items-center gap-3 rounded-lg border border-purple-500/20 bg-[#150830]/60 px-2.5"
                 >
                   <div className="home-win-avatar h-8 w-8 shrink-0 overflow-hidden rounded-full bg-purple-600/30 ring-1 ring-purple-400/30">
-                    <img
-                      src={avatar.url}
-                      alt={w.user}
-                      width={32}
-                      height={32}
-                      loading={i < 6 ? "eager" : "lazy"}
-                      decoding="async"
-                      fetchPriority={i < 4 ? "high" : "auto"}
-                      className="h-full w-full object-cover home-win-avatar-img"
-                      onLoad={(e) => e.currentTarget.classList.add("is-loaded")}
-                    />
+                    <UserAvatar avatarKey={w.avatar_key} alt={w.username} spinnerSize="sm" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="home-win-user truncate text-xs font-semibold text-white">{w.user}</div>
+                    <div className="home-win-user truncate text-xs font-semibold text-white">{w.username}</div>
                     <div className="home-win-game text-[10px] uppercase tracking-wider text-purple-300/70">{w.game}</div>
                   </div>
                   <div className="text-right">
@@ -950,14 +938,13 @@ function HomePage() {
                     <div className="home-win-mult text-[10px] font-bold text-purple-300">{w.mult.toFixed(2)}x</div>
                   </div>
                 </li>
-                );
-              })}
+              ))}
             </ul>
           </div>
           <style>{`
             @keyframes wins-scroll {
               0% { transform: translateY(0); }
-              100% { transform: translateY(calc(-${LAST_WINS.length} * 52px)); }
+              100% { transform: translateY(calc(-${lastWins.length} * 52px)); }
             }
             .home-win-avatar-img { opacity: 0; transition: opacity 280ms ease-out; }
             .home-win-avatar-img.is-loaded,
