@@ -175,6 +175,7 @@ const GAMES = [
   { name: "SLOT", img: gameSlotMafia, tag: "NUEVO", tagCls: "bg-emerald-600 text-white border-emerald-400", to: "/slot" },
   { name: "MINAS", img: gameMines, tag: "POPULAR", tagCls: "bg-purple-600 text-white border-purple-400", to: "/mines" },
   { name: "DICE", img: gameDice, tag: "CLÁSICO", tagCls: "bg-rose-600 text-white border-rose-400", to: "/dados" },
+  { name: "BLACKJACK VIP", img: gameBlackjackVip, tag: "VIP", tagCls: "bg-amber-500 text-black border-amber-300", to: "/blackjackvip" },
 ];
 
 const TAG_CLS: Record<string, string> = {
