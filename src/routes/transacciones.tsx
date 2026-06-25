@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowDownLeft, ArrowUpRight, Dice5, Trophy, Gift, Settings2,
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
 
 export const Route = createFileRoute("/transacciones")({
   head: () => ({
@@ -38,6 +39,7 @@ const TYPE_META: Record<Tx["type"], { label: string; icon: React.ReactNode; tone
 };
 
 function TransaccionesPage() {
+  useForceDarkTheme();
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
