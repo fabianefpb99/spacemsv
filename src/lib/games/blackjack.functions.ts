@@ -69,6 +69,13 @@ const ActionInput = z.object({
   client_action_id: z.string().uuid(),
 });
 
+const InsuranceInput = z.object({
+  session_id: z.string().uuid(),
+  nonce: z.number().int().min(0),
+  client_action_id: z.string().uuid(),
+  take: z.boolean(),
+});
+
 /* ------------------------------------------------------------------ */
 /* Types returned to the client                                        */
 /* ------------------------------------------------------------------ */
@@ -272,7 +279,13 @@ export const bjDeal = createServerFn({ method: "POST" })
       shoe = r.shoe;
       draws.push(r.card);
     }
-    const hole = drawHoleBiased(shoe, bias);
+    // When the dealer's up-card is an Ace we offer insurance. Applying
+    // the hole-card high-card bias on those hands would make the 2:1
+    // insurance bet +EV for the player (biased P(BJ) ≈ 40% vs the
+    // fair 30.8%). Skip the bias on Ace-up hands so insurance keeps
+    // its standard ~7% house edge and the overall RTP target holds.
+    const upCardIsAce = draws[1].rank === "A";
+    const hole = upCardIsAce ? drawCard(shoe) : drawHoleBiased(shoe, bias);
     shoe = hole.shoe;
 
     const player: Card[] = [draws[0], draws[2]];
@@ -316,6 +329,17 @@ export const bjDeal = createServerFn({ method: "POST" })
         });
         newBalance = credit.new_balance;
       }
+    }
+
+    // 4b. Offer insurance when the dealer's up-card is an Ace and the
+    // hand is still in play (player did not have a natural blackjack).
+    if (status === "open" && dealer[0].rank === "A") {
+      publicState = {
+        ...publicState,
+        insuranceOffered: true,
+        insuranceTaken: false,
+        insuranceCost: 0,
+      };
     }
 
     // 5. Create the session row.
@@ -408,6 +432,11 @@ export const bjHit = createServerFn({ method: "POST" })
       // Bust or natural 21 → resolve.
       const resolved = resolveHand(shoe, player, session.public_state.dealer, effectiveBet, bias);
       shoe = resolved.shoe;
+      const insCost = session.public_state.insuranceCost ?? 0;
+      const insTaken = session.public_state.insuranceTaken ?? false;
+      const insPayout = insTaken && insCost > 0 && isBlackjack(resolved.dealer)
+        ? insCost * 3
+        : 0;
       publicState = {
         player,
         dealer: resolved.dealer,
@@ -417,6 +446,10 @@ export const bjHit = createServerFn({ method: "POST" })
         outcome: resolved.outcome,
         payout: resolved.payout,
         dealerSequence: resolved.dealerSequence,
+        insuranceOffered: false,
+        insuranceTaken: insTaken,
+        insuranceCost: insCost,
+        insurancePayout: insPayout,
       };
       status = "closed";
       payout = resolved.payout;
@@ -431,10 +464,22 @@ export const bjHit = createServerFn({ method: "POST" })
         });
         newBalance = credit.new_balance;
       }
+      if (insPayout > 0) {
+        const credit = await adjustBalance({
+          user_id: userId,
+          delta: insPayout,
+          type: "win",
+          game: "blackjack",
+          client_action_id: deriveActionId(data.client_action_id, "ins_win"),
+          meta: { kind: "blackjack_insurance_win", bet, insurance_cost: insCost },
+        });
+        newBalance = credit.new_balance;
+      }
     } else {
       publicState = {
         ...session.public_state,
         player,
+        insuranceOffered: false,
       };
     }
 
@@ -486,6 +531,12 @@ export const bjStand = createServerFn({ method: "POST" })
       bias,
     );
 
+    const insCost = session.public_state.insuranceCost ?? 0;
+    const insTaken = session.public_state.insuranceTaken ?? false;
+    const insPayout = insTaken && insCost > 0 && isBlackjack(resolved.dealer)
+      ? insCost * 3
+      : 0;
+
     const publicState: BJPublicState = {
       player: session.public_state.player,
       dealer: resolved.dealer,
@@ -495,6 +546,10 @@ export const bjStand = createServerFn({ method: "POST" })
       outcome: resolved.outcome,
       payout: resolved.payout,
       dealerSequence: resolved.dealerSequence,
+      insuranceOffered: false,
+      insuranceTaken: insTaken,
+      insuranceCost: insCost,
+      insurancePayout: insPayout,
     };
 
     let newBalance = await getBalance(userId);
@@ -506,6 +561,17 @@ export const bjStand = createServerFn({ method: "POST" })
         game: "blackjack",
         client_action_id: deriveActionId(data.client_action_id, "win"),
         meta: { kind: "blackjack_win", bet: effectiveBet, outcome: resolved.outcome },
+      });
+      newBalance = credit.new_balance;
+    }
+    if (insPayout > 0) {
+      const credit = await adjustBalance({
+        user_id: userId,
+        delta: insPayout,
+        type: "win",
+        game: "blackjack",
+        client_action_id: deriveActionId(data.client_action_id, "ins_win"),
+        meta: { kind: "blackjack_insurance_win", bet, insurance_cost: insCost },
       });
       newBalance = credit.new_balance;
     }
@@ -524,6 +590,76 @@ export const bjStand = createServerFn({ method: "POST" })
       session_id: updated.id,
       nonce: updated.nonce,
       status: "closed",
+      public_state: maskHole(publicState),
+      new_balance: newBalance,
+    };
+  });
+
+/* ------------------------------------------------------------------ */
+/* Insurance (take / decline)                                          */
+/* ------------------------------------------------------------------ */
+
+export const bjInsurance = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => InsuranceInput.parse(input))
+  .handler(async ({ data, context }): Promise<BJSessionView> => {
+    const userId = context.userId;
+    const session = await loadSessionForUser(data.session_id, userId);
+    if (session.status !== "open") throw new Error("bj_session_closed");
+    if (session.nonce !== data.nonce) throw new Error("bj_stale_nonce");
+    if (session.public_state.phase !== "playing") {
+      throw new Error("bj_not_playing");
+    }
+    if (!session.public_state.insuranceOffered) {
+      throw new Error("bj_insurance_not_offered");
+    }
+
+    const bet = session.public_state.bet;
+    let newBalance = await getBalance(userId);
+    let cost = 0;
+
+    if (data.take) {
+      cost = Math.floor(bet / 2);
+      if (cost > 0) {
+        const debit = await adjustBalance({
+          user_id: userId,
+          delta: -cost,
+          type: "bet",
+          game: "blackjack",
+          client_action_id: deriveActionId(data.client_action_id, "insurance"),
+          meta: { kind: "blackjack_insurance", bet, insurance_cost: cost },
+        }).catch((err) => {
+          if (err instanceof Error && err.message === "insufficient_funds") {
+            throw new Error("Saldo insuficiente para el seguro");
+          }
+          throw err;
+        });
+        newBalance = debit.new_balance;
+      }
+    }
+
+    const publicState: BJPublicState = {
+      ...session.public_state,
+      insuranceOffered: false,
+      insuranceTaken: data.take,
+      insuranceCost: cost,
+      insurancePayout: 0,
+    };
+
+    const updated = await applyAction({
+      session_id: session.id,
+      user_id: userId,
+      expected_nonce: session.nonce,
+      new_state: session.state,
+      new_public_state: publicState,
+      new_status: "open",
+      new_payout: null,
+    });
+
+    return {
+      session_id: updated.id,
+      nonce: updated.nonce,
+      status: "open",
       public_state: maskHole(publicState),
       new_balance: newBalance,
     };
@@ -579,6 +715,12 @@ export const bjDouble = createServerFn({ method: "POST" })
 
     const resolved = resolveHand(shoe, player, session.public_state.dealer, effectiveBet, bias);
 
+    const insCost = session.public_state.insuranceCost ?? 0;
+    const insTaken = session.public_state.insuranceTaken ?? false;
+    const insPayout = insTaken && insCost > 0 && isBlackjack(resolved.dealer)
+      ? insCost * 3
+      : 0;
+
     const publicState: BJPublicState = {
       player,
       dealer: resolved.dealer,
@@ -588,6 +730,10 @@ export const bjDouble = createServerFn({ method: "POST" })
       outcome: resolved.outcome,
       payout: resolved.payout,
       dealerSequence: resolved.dealerSequence,
+      insuranceOffered: false,
+      insuranceTaken: insTaken,
+      insuranceCost: insCost,
+      insurancePayout: insPayout,
     };
 
     if (resolved.payout > 0) {
@@ -598,6 +744,17 @@ export const bjDouble = createServerFn({ method: "POST" })
         game: "blackjack",
         client_action_id: deriveActionId(data.client_action_id, "double_win"),
         meta: { kind: "blackjack_win", bet: effectiveBet, outcome: resolved.outcome },
+      });
+      newBalance = credit.new_balance;
+    }
+    if (insPayout > 0) {
+      const credit = await adjustBalance({
+        user_id: userId,
+        delta: insPayout,
+        type: "win",
+        game: "blackjack",
+        client_action_id: deriveActionId(data.client_action_id, "ins_win"),
+        meta: { kind: "blackjack_insurance_win", bet, insurance_cost: insCost },
       });
       newBalance = credit.new_balance;
     }

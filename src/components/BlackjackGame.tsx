@@ -23,6 +23,7 @@ import {
   bjDeal,
   bjDouble,
   bjHit,
+  bjInsurance,
   bjResume,
   bjStand,
   type BJSessionView,
@@ -141,6 +142,7 @@ export function BlackjackGame() {
   const standFn = useServerFn(bjStand);
   const doubleFn = useServerFn(bjDouble);
   const resumeFn = useServerFn(bjResume);
+  const insuranceFn = useServerFn(bjInsurance);
 
   const [bet, setBet] = useState(2000);
   const [phase, setPhase] = useState<Phase>("betting");
@@ -151,6 +153,10 @@ export function BlackjackGame() {
   const [doubled, setDoubled] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [insuranceOffered, setInsuranceOffered] = useState(false);
+  const [insuranceTaken, setInsuranceTaken] = useState(false);
+  const [insuranceCost, setInsuranceCost] = useState(0);
+  const [insurancePayout, setInsurancePayout] = useState(0);
 
   // Server session tracking
   const sessionRef = useRef<{ id: string; nonce: number } | null>(null);
@@ -195,6 +201,10 @@ export function BlackjackGame() {
     setDealer(pub.dealer);
     setBet(pub.bet);
     setDoubled(pub.doubled);
+    setInsuranceOffered(!!pub.insuranceOffered);
+    setInsuranceTaken(!!pub.insuranceTaken);
+    setInsuranceCost(pub.insuranceCost ?? 0);
+    setInsurancePayout(pub.insurancePayout ?? 0);
     if (pub.phase === "result") {
       setOutcome(pub.outcome ?? null);
       setPayout(pub.payout ?? 0);
@@ -246,6 +256,10 @@ export function BlackjackGame() {
       setBet(pub.bet);
       setDoubled(pub.doubled);
       setPlayer(pub.player);
+      setInsuranceOffered(false);
+      setInsuranceTaken(!!pub.insuranceTaken);
+      setInsuranceCost(pub.insuranceCost ?? 0);
+      setInsurancePayout(pub.insurancePayout ?? 0);
       await animateDealerReveal(pub.dealer, pub.dealerSequence);
       setDealer(pub.dealer);
       setOutcome(pub.outcome ?? null);
@@ -359,6 +373,10 @@ export function BlackjackGame() {
       const initialDealer = view.public_state.dealer;
       sessionRef.current = { id: view.session_id, nonce: view.nonce };
       applyBalance(view.new_balance);
+      setInsuranceOffered(!!view.public_state.insuranceOffered);
+      setInsuranceTaken(false);
+      setInsuranceCost(0);
+      setInsurancePayout(0);
 
       // Render cards progressively with the same cadence as before.
       playCardDealSound();
@@ -384,9 +402,43 @@ export function BlackjackGame() {
     }
   };
 
+  const handleInsurance = async (take: boolean): Promise<boolean> => {
+    if (!sessionRef.current) return false;
+    if (inFlightRef.current) return false;
+    inFlightRef.current = true;
+    setBusy(true);
+    setError(null);
+    try {
+      const view = await insuranceFn({
+        data: {
+          session_id: sessionRef.current.id,
+          nonce: sessionRef.current.nonce,
+          client_action_id: uuid(),
+          take,
+        },
+      });
+      sessionRef.current = { id: view.session_id, nonce: view.nonce };
+      setInsuranceOffered(false);
+      setInsuranceTaken(!!view.public_state.insuranceTaken);
+      setInsuranceCost(view.public_state.insuranceCost ?? 0);
+      applyBalance(view.new_balance);
+      return true;
+    } catch (err) {
+      setError(toFriendlyError(err));
+      return false;
+    } finally {
+      setBusy(false);
+      inFlightRef.current = false;
+    }
+  };
+
   const onHit = async () => {
     if (phase !== "playing" || busy || !sessionRef.current) return;
     if (inFlightRef.current) return;
+    if (insuranceOffered) {
+      const ok = await handleInsurance(false);
+      if (!ok) return;
+    }
     inFlightRef.current = true;
     setBusy(true);
     setError(null);
@@ -418,6 +470,10 @@ export function BlackjackGame() {
   const onStand = async () => {
     if (phase !== "playing" || busy || !sessionRef.current) return;
     if (inFlightRef.current) return;
+    if (insuranceOffered) {
+      const ok = await handleInsurance(false);
+      if (!ok) return;
+    }
     inFlightRef.current = true;
     setBusy(true);
     setError(null);
@@ -442,6 +498,7 @@ export function BlackjackGame() {
     if (phase !== "playing" || busy || !sessionRef.current) return;
     if (inFlightRef.current) return;
     if (player.length !== 2 || bet > balance) return;
+    if (insuranceOffered) return; // UI hides "Doblar" while insurance is offered
     inFlightRef.current = true;
     setBusy(true);
     setError(null);
@@ -473,6 +530,10 @@ export function BlackjackGame() {
     setOutcome(null);
     setPayout(0);
     setDoubled(false);
+    setInsuranceOffered(false);
+    setInsuranceTaken(false);
+    setInsuranceCost(0);
+    setInsurancePayout(0);
     setError(null);
     setPhase("betting");
   };
@@ -605,6 +666,13 @@ export function BlackjackGame() {
                     +${formatCOP(payout)} COP
                   </div>
                 )}
+                {insuranceTaken && (
+                  <div className={`mt-1 text-[11px] font-bold ${insurancePayout > 0 ? "text-amber-300" : "text-amber-200/70"}`}>
+                    {insurancePayout > 0
+                      ? `Seguro: +$${formatCOP(insurancePayout)}`
+                      : `Seguro perdido: -$${formatCOP(insuranceCost)}`}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -680,6 +748,11 @@ export function BlackjackGame() {
                 <span>Apuesta: <span className="text-white">${formatCOP(doubled ? bet * 2 : bet)}</span></span>
                 <span>Puntos: <span className="text-white">{playerScore}</span></span>
               </div>
+              {insuranceOffered && (
+                <div className="mt-2 rounded-md border border-amber-400/60 bg-amber-950/40 px-2 py-1 text-center text-[10px] font-bold uppercase tracking-wider text-amber-200">
+                  Dealer muestra As — toma Seguro o continúa para rechazar
+                </div>
+              )}
               <div className="mt-2.5 grid grid-cols-3 gap-2">
                 <button
                   onClick={onHit}
@@ -695,14 +768,30 @@ export function BlackjackGame() {
                 >
                   Plantarse
                 </button>
-                <button
-                  onClick={onDouble}
-                  disabled={phase !== "playing" || busy || player.length !== 2 || bet > balance}
-                  className="rounded-xl border-2 border-purple-400 bg-transparent px-2 py-2.5 text-sm font-black uppercase tracking-wider text-purple-100 shadow-[0_0_12px_rgba(168,85,247,0.45)] active:scale-95 disabled:opacity-40"
-                >
-                  Doblar
-                </button>
+                {insuranceOffered ? (
+                  <button
+                    onClick={() => { void handleInsurance(true); }}
+                    disabled={phase !== "playing" || busy || Math.floor(bet / 2) > balance}
+                    className="rounded-xl border-2 border-amber-400 bg-amber-500/20 px-2 py-2.5 text-xs font-black uppercase tracking-wider text-amber-100 shadow-[0_0_12px_rgba(251,191,36,0.45)] active:scale-95 disabled:opacity-40"
+                  >
+                    Seguro<br />
+                    <span className="text-[9px] font-bold opacity-80">½ apuesta</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={onDouble}
+                    disabled={phase !== "playing" || busy || player.length !== 2 || bet > balance}
+                    className="rounded-xl border-2 border-purple-400 bg-transparent px-2 py-2.5 text-sm font-black uppercase tracking-wider text-purple-100 shadow-[0_0_12px_rgba(168,85,247,0.45)] active:scale-95 disabled:opacity-40"
+                  >
+                    Doblar
+                  </button>
+                )}
               </div>
+              {insuranceTaken && insuranceCost > 0 && (
+                <div className="mt-2 text-center text-[10px] font-bold uppercase tracking-wider text-amber-200/90">
+                  Seguro activo: ${formatCOP(insuranceCost)}
+                </div>
+              )}
             </div>
           )}
 
