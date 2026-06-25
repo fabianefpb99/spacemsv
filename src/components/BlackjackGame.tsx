@@ -220,7 +220,19 @@ function uuid(): string {
   });
 }
 
-function CardView({ card, idx, total, hidden }: { card: Card; idx: number; total: number; hidden?: boolean }) {
+function CardView({
+  card,
+  idx,
+  total,
+  hidden,
+  T,
+}: {
+  card: Card;
+  idx: number;
+  total: number;
+  hidden?: boolean;
+  T: ThemeTokens;
+}) {
   const maxSpread = 38;
   const minSpread = 18;
   const spread = Math.max(minSpread, maxSpread - (total - 2) * 4);
@@ -232,21 +244,21 @@ function CardView({ card, idx, total, hidden }: { card: Card; idx: number; total
       style={{
         transform: `translate(calc(-50% + ${offset}px), 0) rotate(${(idx - (total - 1) / 2) * 2}deg)`,
         zIndex: idx + 1,
-        animation: "bj-deal 0.45s ease-out both",
+        animation: `${T.dealKey} 0.45s ease-out both`,
         animationDelay: `${idx * 0.12}s`,
       }}
     >
       {hidden ? (
-        <div className="h-full w-full rounded-md border border-purple-300/60 bg-gradient-to-br from-[#3a1a78] to-[#1a0848] flex items-center justify-center">
-          <div className="h-[80%] w-[80%] rounded-sm border border-purple-300/40 flex items-center justify-center text-purple-200/80 text-2xl">♠</div>
+        <div className={`h-full w-full rounded-md border flex items-center justify-center ${T.cardHidden}`}>
+          <div className={`h-[80%] w-[80%] rounded-sm border flex items-center justify-center text-2xl ${T.cardHiddenInner} ${T.cardHiddenIcon}`}>♠</div>
         </div>
       ) : (
-        <div className="h-full w-full rounded-md border border-white/70 bg-white flex flex-col justify-between p-1.5">
-          <div className={`text-left leading-none ${red ? "text-rose-600" : "text-slate-900"}`}>
+        <div className={`h-full w-full rounded-md border flex flex-col justify-between p-1.5 ${T.cardFace}`}>
+          <div className={`text-left leading-none ${red ? T.cardFaceRed : T.cardFaceText}`}>
             <div className="text-sm font-black sm:text-base">{card.rank}</div>
             <div className="text-xs sm:text-sm">{card.suit}</div>
           </div>
-          <div className={`text-right text-xl sm:text-2xl leading-none ${red ? "text-rose-600" : "text-slate-900"}`}>
+          <div className={`text-right text-xl sm:text-2xl leading-none ${red ? T.cardFaceRed : T.cardFaceText}`}>
             {card.suit}
           </div>
         </div>
@@ -255,7 +267,18 @@ function CardView({ card, idx, total, hidden }: { card: Card; idx: number; total
   );
 }
 
-export function BlackjackGame() {
+export type BlackjackGameProps = {
+  variant?: BJVariantKey;
+  theme?: BJTheme;
+};
+
+export function BlackjackGame({ variant = "blackjack", theme = "space" }: BlackjackGameProps = {}) {
+  const T = getTokens(theme);
+  const cfg = BJ_VARIANTS[variant];
+  const MIN_BET = cfg.minBet;
+  const MAX_BET = cfg.maxBet;
+  const BET_STEP = cfg.betStep;
+  const QUICK = QUICK_BY_THEME[theme];
   const { user } = useAuth();
   const me = useMe();
   const queryClient = useQueryClient();
