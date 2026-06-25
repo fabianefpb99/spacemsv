@@ -730,13 +730,24 @@ function HomePage() {
               className="flex flex-col gap-2"
               style={{ animation: `wins-scroll ${LAST_WINS.length * 2.2}s linear infinite` }}
             >
-              {[...LAST_WINS, ...LAST_WINS].map((w, i) => (
+              {[...LAST_WINS, ...LAST_WINS].map((w, i) => {
+                const avatar = WIN_AVATARS[i % WIN_AVATARS.length];
+                return (
                 <li
                   key={`${w.user}-${i}`}
                   className="home-win-row flex h-[44px] items-center gap-3 rounded-lg border border-purple-500/20 bg-[#150830]/60 px-2.5"
                 >
-                  <div className="home-win-avatar flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-purple-600/30 ring-1 ring-purple-400/30">
-                    <User className="h-4 w-4 text-purple-200" />
+                  <div className="home-win-avatar h-8 w-8 shrink-0 overflow-hidden rounded-full bg-purple-600/30 ring-1 ring-purple-400/30">
+                    <img
+                      src={avatar.url}
+                      alt={w.user}
+                      width={32}
+                      height={32}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover home-win-avatar-img"
+                      onLoad={(e) => e.currentTarget.classList.add("is-loaded")}
+                    />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="home-win-user truncate text-xs font-semibold text-white">{w.user}</div>
@@ -750,7 +761,8 @@ function HomePage() {
                     <div className="home-win-mult text-[10px] font-bold text-purple-300">{w.mult.toFixed(2)}x</div>
                   </div>
                 </li>
-              ))}
+                );
+              })}
             </ul>
           </div>
           <style>{`
