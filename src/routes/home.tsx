@@ -262,7 +262,14 @@ function HomePage() {
   const [slide, setSlide] = useState(0);
   const [arrowsVisible, setArrowsVisible] = useState(true);
   const featuredScrollRef = useRef<HTMLDivElement | null>(null);
-  const featuredDragRef = useRef({ active: false, startX: 0, scrollLeft: 0, dragged: false });
+  const featuredDragRef = useRef<{
+    active: boolean;
+    startX: number;
+    startY: number;
+    scrollLeft: number;
+    dragged: boolean;
+    axis: "x" | "y" | null;
+  }>({ active: false, startX: 0, startY: 0, scrollLeft: 0, dragged: false, axis: null });
 
   const fetchSlides = useServerFn(getPublicHomeSlides);
   const fetchFeatured = useServerFn(getPublicFeaturedGames);
@@ -398,10 +405,16 @@ function HomePage() {
   };
 
   const handleFeaturedPointerDown = (event: PointerEvent<HTMLDivElement>) => {
-    if (event.pointerType === "touch") return;
     const el = featuredScrollRef.current;
     if (!el) return;
-    featuredDragRef.current = { active: true, startX: event.clientX, scrollLeft: el.scrollLeft, dragged: false };
+    featuredDragRef.current = {
+      active: true,
+      startX: event.clientX,
+      startY: event.clientY,
+      scrollLeft: el.scrollLeft,
+      dragged: false,
+      axis: null,
+    };
     el.setPointerCapture(event.pointerId);
   };
 
@@ -410,6 +423,11 @@ function HomePage() {
     const el = featuredScrollRef.current;
     if (!drag.active || !el) return;
     const delta = event.clientX - drag.startX;
+    const verticalDelta = event.clientY - drag.startY;
+    if (!drag.axis && Math.max(Math.abs(delta), Math.abs(verticalDelta)) > 6) {
+      drag.axis = Math.abs(delta) > Math.abs(verticalDelta) ? "x" : "y";
+    }
+    if (drag.axis === "y") return;
     if (Math.abs(delta) > 4) drag.dragged = true;
     el.scrollLeft = drag.scrollLeft - delta;
   };
@@ -417,6 +435,7 @@ function HomePage() {
   const stopFeaturedDrag = (event: PointerEvent<HTMLDivElement>) => {
     const el = featuredScrollRef.current;
     featuredDragRef.current.active = false;
+    featuredDragRef.current.axis = null;
     if (el?.hasPointerCapture(event.pointerId)) el.releasePointerCapture(event.pointerId);
   };
 
