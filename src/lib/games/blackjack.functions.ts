@@ -3,9 +3,6 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import {
-  BJ_BET_STEP,
-  BJ_MAX_BET,
-  BJ_MIN_BET,
   BJ_VARIANTS,
   type BJVariantKey,
   type BJVariantConfig,
