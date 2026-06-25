@@ -435,6 +435,10 @@ export const bjHit = createServerFn({ method: "POST" })
         outcome: resolved.outcome,
         payout: resolved.payout,
         dealerSequence: resolved.dealerSequence,
+        insuranceOffered: false,
+        insuranceTaken: session.public_state.insuranceTaken ?? false,
+        insuranceCost: session.public_state.insuranceCost ?? 0,
+        insurancePayout: session.public_state.insurancePayout ?? 0,
       };
       status = "closed";
       payout = resolved.payout;
@@ -453,6 +457,7 @@ export const bjHit = createServerFn({ method: "POST" })
       publicState = {
         ...session.public_state,
         player,
+        insuranceOffered: false,
       };
     }
 
