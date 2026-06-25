@@ -262,7 +262,14 @@ function HomePage() {
   const [slide, setSlide] = useState(0);
   const [arrowsVisible, setArrowsVisible] = useState(true);
   const featuredScrollRef = useRef<HTMLDivElement | null>(null);
-  const featuredDragRef = useRef({ active: false, startX: 0, scrollLeft: 0, dragged: false });
+  const featuredDragRef = useRef<{
+    active: boolean;
+    startX: number;
+    startY: number;
+    scrollLeft: number;
+    dragged: boolean;
+    axis: "x" | "y" | null;
+  }>({ active: false, startX: 0, startY: 0, scrollLeft: 0, dragged: false, axis: null });
 
   const fetchSlides = useServerFn(getPublicHomeSlides);
   const fetchFeatured = useServerFn(getPublicFeaturedGames);
@@ -401,24 +408,88 @@ function HomePage() {
     if (event.pointerType === "touch") return;
     const el = featuredScrollRef.current;
     if (!el) return;
-    featuredDragRef.current = { active: true, startX: event.clientX, scrollLeft: el.scrollLeft, dragged: false };
+    featuredDragRef.current = {
+      active: true,
+      startX: event.clientX,
+      startY: event.clientY,
+      scrollLeft: el.scrollLeft,
+      dragged: false,
+      axis: null,
+    };
     el.setPointerCapture(event.pointerId);
   };
 
   const handleFeaturedPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "touch") return;
     const drag = featuredDragRef.current;
     const el = featuredScrollRef.current;
     if (!drag.active || !el) return;
     const delta = event.clientX - drag.startX;
+    const verticalDelta = event.clientY - drag.startY;
+    if (!drag.axis && Math.max(Math.abs(delta), Math.abs(verticalDelta)) > 6) {
+      drag.axis = Math.abs(delta) > Math.abs(verticalDelta) ? "x" : "y";
+    }
+    if (drag.axis === "y") return;
     if (Math.abs(delta) > 4) drag.dragged = true;
     el.scrollLeft = drag.scrollLeft - delta;
   };
 
   const stopFeaturedDrag = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "touch") return;
     const el = featuredScrollRef.current;
     featuredDragRef.current.active = false;
+    featuredDragRef.current.axis = null;
     if (el?.hasPointerCapture(event.pointerId)) el.releasePointerCapture(event.pointerId);
   };
+
+  useEffect(() => {
+    const el = featuredScrollRef.current;
+    if (!el) return;
+
+    const handleTouchStart = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      if (!touch) return;
+      featuredDragRef.current = {
+        active: true,
+        startX: touch.clientX,
+        startY: touch.clientY,
+        scrollLeft: el.scrollLeft,
+        dragged: false,
+        axis: null,
+      };
+    };
+
+    const handleTouchMove = (event: TouchEvent) => {
+      const drag = featuredDragRef.current;
+      const touch = event.touches[0];
+      if (!drag.active || !touch) return;
+      const delta = touch.clientX - drag.startX;
+      const verticalDelta = touch.clientY - drag.startY;
+      if (!drag.axis && Math.max(Math.abs(delta), Math.abs(verticalDelta)) > 6) {
+        drag.axis = Math.abs(delta) > Math.abs(verticalDelta) ? "x" : "y";
+      }
+      if (drag.axis === "y") return;
+      if (Math.abs(delta) > 4) drag.dragged = true;
+      el.scrollLeft = drag.scrollLeft - delta;
+      event.preventDefault();
+    };
+
+    const stopTouchDrag = () => {
+      featuredDragRef.current.active = false;
+      featuredDragRef.current.axis = null;
+    };
+
+    el.addEventListener("touchstart", handleTouchStart, { passive: true });
+    el.addEventListener("touchmove", handleTouchMove, { passive: false });
+    el.addEventListener("touchend", stopTouchDrag);
+    el.addEventListener("touchcancel", stopTouchDrag);
+    return () => {
+      el.removeEventListener("touchstart", handleTouchStart);
+      el.removeEventListener("touchmove", handleTouchMove);
+      el.removeEventListener("touchend", stopTouchDrag);
+      el.removeEventListener("touchcancel", stopTouchDrag);
+    };
+  }, [gamesList.length]);
 
   useEffect(() => {
     if (slidesList.length <= 1) return;
@@ -624,7 +695,7 @@ function HomePage() {
                 event.stopPropagation();
                 featuredDragRef.current.dragged = false;
               }}
-              className="home-featured-scroll mt-3 flex cursor-grab touch-pan-y select-none gap-2 overflow-x-auto pb-1 active:cursor-grabbing sm:gap-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="home-featured-scroll mt-3 flex cursor-grab touch-pan-x select-none gap-2 overflow-x-auto pb-1 active:cursor-grabbing sm:gap-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
               {gamesList.map((g) => {
                 const gameName = g.to === "/blackjackvip" ? "BLACKJACK" : g.name;
