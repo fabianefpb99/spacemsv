@@ -167,9 +167,19 @@ export const getMyRankingPosition = createServerFn({ method: "GET" })
     const { data, error } = await context.supabase.rpc("get_my_today_position");
     if (error) throw new Error(error.message);
     const row = Array.isArray(data) ? data[0] : null;
-    if (!row) return { rank: null as number | null, net_amount: 0 };
-    return {
-      rank: Number((row as any).rank),
-      net_amount: Number((row as any).net_amount ?? 0),
-    };
+    const realRank = row ? Number((row as any).rank) : null;
+    const myNet = row ? Number((row as any).net_amount ?? 0) : 0;
+
+    // Merge with deterministic fillers so the displayed position reflects
+    // what the user actually sees on the public ranking board.
+    const { dateKey, hour } = getColombiaParts();
+    const fillers = generateFillers("general", 5, dateKey, hour);
+    const fillersAhead = fillers.filter((f) => f.net_amount > myNet).length;
+
+    if (realRank == null) {
+      // User has no winnings today: they sit after all fillers that have
+      // any amount (which, in practice, is all of them).
+      return { rank: fillersAhead + 1, net_amount: myNet };
+    }
+    return { rank: realRank + fillersAhead, net_amount: myNet };
   });
