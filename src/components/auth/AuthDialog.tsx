@@ -11,6 +11,7 @@ import { lovable } from "@/integrations/lovable";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { PersonalDataForm } from "@/components/profile/PersonalDataForm";
+import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
 
 const signUpSchema = z.object({
   email: z.string().trim().email("Email inválido"),
@@ -77,6 +78,14 @@ export function AuthDialog({
   if (!open || typeof document === "undefined") return null;
 
   return createPortal(
+    <AuthDialogContent onOpenChange={onOpenChange} />,
+    document.body,
+  );
+}
+
+function AuthDialogContent({ onOpenChange }: { onOpenChange: (v: boolean) => void }) {
+  useForceDarkTheme();
+  return (
     <div className="fixed inset-0 z-[120] overflow-hidden" role="dialog" aria-modal="true" aria-label="Inicio de sesión">
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
@@ -116,8 +125,7 @@ export function AuthDialog({
           </Tabs>
         </div>
       </div>
-    </div>,
-    document.body,
+    </div>
   );
 }
 
