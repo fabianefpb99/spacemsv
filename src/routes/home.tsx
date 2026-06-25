@@ -21,6 +21,7 @@ import { AuthDialog } from "@/components/auth/AuthDialog";
 import { HamburgerDrawer } from "@/components/HamburgerDrawer";
 import { UserAvatar } from "@/components/UserAvatar";
 import { generateRecentFillerWins, type FillerWin } from "@/lib/fillers";
+import { getRecentPublicWins, type RecentWin } from "@/lib/recent-wins.functions";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
 import heroImg from "@/assets/home-hero.jpg";
 import heroMinesImg from "@/assets/home-hero-mines.jpg";
@@ -46,6 +47,19 @@ const gameBlackjackVip = gameBlackjackVipAsset.url;
 const gameArena = gameArenaAsset.url;
 const gameRuleta = gameRuletaAsset.url;
 import gift3d from "@/assets/gift-3d.png";
+
+function prettyGameName(g: string): string {
+  const k = (g || "").toLowerCase();
+  if (k.includes("spaceman")) return "SPACEMAN";
+  if (k.includes("mines") || k.includes("minas")) return "MINAS";
+  if (k.includes("slot")) return "SLOT MAFIA";
+  if (k.includes("dice") || k.includes("dado")) return "DADOS";
+  if (k.includes("blackjack") && k.includes("vip")) return "BLACKJACK VIP";
+  if (k.includes("blackjack")) return "BLACKJACK";
+  if (k.includes("arena")) return "ARENA";
+  if (k.includes("ruleta") || k.includes("roulette")) return "RULETA";
+  return g.toUpperCase();
+}
 import trophy3d from "@/assets/trophy-3d.png";
 import blackjackPromo from "@/assets/blackjack-promo.png.asset.json";
 import blackjackBanner from "@/assets/blackjack-banner.jpg";
@@ -268,6 +282,34 @@ function HomePage() {
     const id = window.setInterval(tick, 25_000);
     return () => window.clearInterval(id);
   }, []);
+
+  // Ganancias reales (prioridad sobre fillers). Refresca cada 30 s.
+  const fetchRecentWins = useServerFn(getRecentPublicWins);
+  const recentWinsQ = useQuery({
+    queryKey: ["public-recent-wins"],
+    queryFn: () => fetchRecentWins(),
+    staleTime: 20_000,
+    gcTime: 5 * 60_000,
+    refetchInterval: 30_000,
+    refetchOnWindowFocus: false,
+  });
+
+  // Mezcla: reales primero, fillers después, hasta llegar a 12 items.
+  const mergedWins: FillerWin[] = (() => {
+    const real: FillerWin[] = (recentWinsQ.data ?? []).map((w: RecentWin) => ({
+      id: `real:${w.user_id}:${w.created_at}`,
+      username: w.username,
+      avatar_key: w.avatar_key ?? "avatar-1",
+      game: prettyGameName(w.game),
+      amount: Math.round(w.amount),
+      mult: 0, // se oculta cuando es real
+      ageSec: Math.max(0, Math.floor((Date.now() - new Date(w.created_at).getTime()) / 1000)),
+    }));
+    const TARGET = 12;
+    if (real.length >= TARGET) return real.slice(0, TARGET);
+    const fillersNeeded = TARGET - real.length;
+    return [...real, ...lastWins.slice(0, fillersNeeded)];
+  })();
 
   const fetchSlides = useServerFn(getPublicHomeSlides);
   const fetchFeatured = useServerFn(getPublicFeaturedGames);
@@ -916,9 +958,9 @@ function HomePage() {
           >
             <ul
               className="flex flex-col gap-2"
-              style={{ animation: `wins-scroll ${lastWins.length * 2.2}s linear infinite` }}
+              style={{ animation: `wins-scroll ${mergedWins.length * 2.2}s linear infinite` }}
             >
-              {[...lastWins, ...lastWins].map((w, i) => (
+              {[...mergedWins, ...mergedWins].map((w, i) => (
                 <li
                   key={`${w.id}-${i}`}
                   className="home-win-row flex h-[44px] items-center gap-3 rounded-lg border border-purple-500/20 bg-[#150830]/60 px-2.5"
@@ -935,7 +977,11 @@ function HomePage() {
                       <span className="home-money-sign neon-green mr-0.5">$</span>
                       <span className="text-white">{formatCOP(w.amount)} COP</span>
                     </div>
-                    <div className="home-win-mult text-[10px] font-bold text-purple-300">{w.mult.toFixed(2)}x</div>
+                    {w.mult > 0 ? (
+                      <div className="home-win-mult text-[10px] font-bold text-purple-300">{w.mult.toFixed(2)}x</div>
+                    ) : (
+                      <div className="home-win-mult text-[10px] font-bold text-emerald-300">REAL</div>
+                    )}
                   </div>
                 </li>
               ))}
@@ -944,7 +990,7 @@ function HomePage() {
           <style>{`
             @keyframes wins-scroll {
               0% { transform: translateY(0); }
-              100% { transform: translateY(calc(-${lastWins.length} * 52px)); }
+              100% { transform: translateY(calc(-${mergedWins.length} * 52px)); }
             }
             .home-win-avatar-img { opacity: 0; transition: opacity 280ms ease-out; }
             .home-win-avatar-img.is-loaded,

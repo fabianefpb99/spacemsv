@@ -1708,6 +1708,17 @@ export type Database = {
           rank: number
         }[]
       }
+      get_recent_public_wins: {
+        Args: { p_limit?: number }
+        Returns: {
+          amount: number
+          avatar_key: string
+          created_at: string
+          game: string
+          user_id: string
+          username: string
+        }[]
+      }
       get_referral_stats: {
         Args: never
         Returns: {
