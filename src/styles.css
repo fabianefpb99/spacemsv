@@ -2728,6 +2728,50 @@ html.light .promo-banner .promo-banner__chev svg {
   z-index: 1 !important;
 }
 
+/* Rebuilt home arrows — final rule wins over old solid-white light rules. */
+.hero-slider-arrow,
+html.light .hero-slider-arrow,
+html.dark .hero-slider-arrow,
+.promo-banner .home-promo-arrow,
+html.light .promo-banner .home-promo-arrow,
+html.dark .promo-banner .home-promo-arrow {
+  background: rgba(12, 6, 32, 0.58) !important;
+  background-color: rgba(12, 6, 32, 0.58) !important;
+  background-image: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(10px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(120%) !important;
+}
+.hero-slider-arrow:hover,
+html.light .hero-slider-arrow:hover,
+html.dark .hero-slider-arrow:hover,
+.promo-banner:hover .home-promo-arrow,
+html.light .promo-banner:hover .home-promo-arrow,
+html.dark .promo-banner:hover .home-promo-arrow {
+  background: rgba(12, 6, 32, 0.72) !important;
+  background-color: rgba(12, 6, 32, 0.72) !important;
+  color: #ffffff !important;
+}
+.promo-banner .home-promo-arrow::before,
+html.light .promo-banner .home-promo-arrow::before,
+html.dark .promo-banner .home-promo-arrow::before {
+  display: none !important;
+}
+.hero-slider-arrow svg,
+.hero-slider-arrow svg *,
+.promo-banner .home-promo-arrow svg,
+.promo-banner .home-promo-arrow svg *,
+html.light .promo-banner .home-promo-arrow svg,
+html.light .promo-banner .home-promo-arrow svg *,
+html.dark .promo-banner .home-promo-arrow svg,
+html.dark .promo-banner .home-promo-arrow svg * {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  opacity: 1 !important;
+}
+
 /* Sombra flotante sutil para módulos del home en modo claro */
 html.light .home-module,
 html.light [data-home-module] {
