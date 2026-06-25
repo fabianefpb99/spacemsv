@@ -27,6 +27,17 @@ export type BJPublicState = {
   /** Optional sequence of cards dealt to the dealer during their turn,
    *  in order, so the client can animate them one by one. */
   dealerSequence?: Card[];
+  /** True when the dealer's up-card is an Ace and the player has not
+   *  yet accepted/declined insurance. While true, the "Doblar" button
+   *  in the UI is replaced by "Seguro". Hit/Stand/Double implicitly
+   *  decline insurance. */
+  insuranceOffered?: boolean;
+  /** Whether the player accepted the insurance side bet. */
+  insuranceTaken?: boolean;
+  /** Amount debited as insurance (floor(bet/2) when taken, else 0). */
+  insuranceCost?: number;
+  /** Insurance payout returned to the player (3x cost on dealer BJ, else 0). */
+  insurancePayout?: number;
 };
 
 export const BJ_MIN_BET = 500;
