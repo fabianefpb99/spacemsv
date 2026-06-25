@@ -518,6 +518,10 @@ export const bjStand = createServerFn({ method: "POST" })
       outcome: resolved.outcome,
       payout: resolved.payout,
       dealerSequence: resolved.dealerSequence,
+      insuranceOffered: false,
+      insuranceTaken: session.public_state.insuranceTaken ?? false,
+      insuranceCost: session.public_state.insuranceCost ?? 0,
+      insurancePayout: session.public_state.insurancePayout ?? 0,
     };
 
     let newBalance = await getBalance(userId);
