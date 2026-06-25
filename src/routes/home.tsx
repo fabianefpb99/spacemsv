@@ -568,7 +568,7 @@ function HomePage() {
               <Link
                 key={g.name}
                 to={g.to}
-                className="home-game-card group flex w-[22%] min-w-[22%] flex-shrink-0 flex-col overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400 sm:w-[22%] sm:min-w-[22%]"
+                className="home-game-card group flex w-[22%] min-w-[22%] flex-shrink-0 flex-col overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400 sm:w-[calc((100%-3*0.75rem)/4)] sm:min-w-[calc((100%-3*0.75rem)/4)]"
               >
                 <div className="aspect-square w-full overflow-hidden">
                   <SkeletonImage
