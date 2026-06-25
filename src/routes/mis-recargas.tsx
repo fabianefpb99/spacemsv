@@ -6,6 +6,7 @@ import { useState } from "react";
 import { listMyDeposits, cancelMyDeposit } from "@/lib/deposits/deposit.functions";
 import { useAuth } from "@/hooks/useAuth";
 import { RequireAuth } from "@/components/auth/RequireAuth";
+import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
 
 export const Route = createFileRoute("/mis-recargas")({
   head: () => ({
@@ -18,6 +19,7 @@ export const Route = createFileRoute("/mis-recargas")({
 });
 
 function MisRecargasPageGated() {
+  useForceDarkTheme();
   return (
     <RequireAuth>
       <MisRecargasPage />
