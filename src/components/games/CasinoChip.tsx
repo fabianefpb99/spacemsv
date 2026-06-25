@@ -127,14 +127,14 @@ export const CasinoChip = memo(function CasinoChip({
       {/* label */}
       <text
         x="32"
-        y="38"
+        y="39"
         textAnchor="middle"
         fontFamily="'Inter', 'Arial Black', sans-serif"
         fontWeight="900"
-        fontSize={label.length >= 3 ? 13 : 16}
+        fontSize={label.length >= 4 ? 17 : label.length >= 3 ? 19 : 22}
         fill={p.text}
         stroke={p.textShadow}
-        strokeWidth="0.6"
+        strokeWidth="0.8"
         paintOrder="stroke"
       >
         {label}
