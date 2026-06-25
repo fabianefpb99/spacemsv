@@ -21,6 +21,7 @@ import { AuthDialog } from "@/components/auth/AuthDialog";
 import { HamburgerDrawer } from "@/components/HamburgerDrawer";
 import { UserAvatar } from "@/components/UserAvatar";
 import { generateRecentFillerWins, type FillerWin } from "@/lib/fillers";
+import { getRecentPublicWins, type RecentWin } from "@/lib/recent-wins.functions";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
 import heroImg from "@/assets/home-hero.jpg";
 import heroMinesImg from "@/assets/home-hero-mines.jpg";
