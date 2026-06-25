@@ -326,10 +326,11 @@ function HomePage() {
         to: (g.link ?? "/home") as "/home",
       }))
     : GAMES;
-  const vipGame = GAMES.find((g) => g.to === "/blackjackvip")!;
-  const gamesList = gamesListBase.some((g) => g.to === "/blackjackvip")
-    ? gamesListBase
-    : [...gamesListBase, vipGame];
+  // Aseguramos que TODOS los juegos del catálogo aparezcan en el deslizable,
+  // incluso si el admin solo configuró un subconjunto en la BD.
+  const existingRoutes = new Set(gamesListBase.map((g) => g.to));
+  const missing = GAMES.filter((g) => !existingRoutes.has(g.to as string));
+  const gamesList = [...gamesListBase, ...missing];
 
   const slides = slidesList.length;
   const arrowsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
