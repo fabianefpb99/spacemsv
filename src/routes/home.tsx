@@ -19,6 +19,8 @@ import {
 } from "@/lib/admin/home-content.functions";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { HamburgerDrawer } from "@/components/HamburgerDrawer";
+import { UserAvatar } from "@/components/UserAvatar";
+import { generateRecentFillerWins, type FillerWin } from "@/lib/fillers";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
 import heroImg from "@/assets/home-hero.jpg";
 import heroMinesImg from "@/assets/home-hero-mines.jpg";
@@ -50,35 +52,6 @@ import blackjackBanner from "@/assets/blackjack-banner.jpg";
 import jackpotBanner from "@/assets/jackpot-banner.jpg";
 import ruletaBanner from "@/assets/ruleta-banner.jpg";
 import casinoIntro from "@/assets/audio/casino-intro.mp3.asset.json";
-import avatar1 from "@/assets/avatars/avatar-1.png.asset.json";
-import avatar2 from "@/assets/avatars/avatar-2.png.asset.json";
-import avatar3 from "@/assets/avatars/avatar-3.png.asset.json";
-import avatar4 from "@/assets/avatars/avatar-4.png.asset.json";
-import avatar5 from "@/assets/avatars/avatar-5.png.asset.json";
-import avatar6 from "@/assets/avatars/avatar-6.png.asset.json";
-import avatar7 from "@/assets/avatars/avatar-7.png.asset.json";
-import avatar8 from "@/assets/avatars/avatar-8.png.asset.json";
-
-const WIN_AVATARS = [avatar1, avatar2, avatar3, avatar4, avatar5, avatar6, avatar7, avatar8];
-
-const LAST_WINS = [
-  { user: "Usuario123", game: "Spaceman", amount: 252413, mult: 1.85 },
-  { user: "Astronauta7", game: "Crash", amount: 121876, mult: 2.34 },
-  { user: "GalaxyWin", game: "Mines", amount: 82776, mult: 3.12 },
-  { user: "MoonPlayer", game: "Dice", amount: 61329, mult: 1.45 },
-  { user: "NovaKing", game: "Spaceman", amount: 47892, mult: 1.27 },
-  { user: "StarHunter", game: "Crash", amount: 198344, mult: 2.91 },
-  { user: "CometRider", game: "Mines", amount: 35421, mult: 4.08 },
-  { user: "LunarFox", game: "Dice", amount: 78215, mult: 1.62 },
-  { user: "OrbitX", game: "Spaceman", amount: 134567, mult: 2.18 },
-  { user: "PlasmaGirl", game: "Crash", amount: 56892, mult: 1.74 },
-  { user: "VoidWalker", game: "Mines", amount: 312485, mult: 5.43 },
-  { user: "GalaxyKid", game: "Dice", amount: 22719, mult: 1.18 },
-  { user: "RocketJoe", game: "Spaceman", amount: 89124, mult: 1.96 },
-  { user: "NebulaQ", game: "Crash", amount: 145678, mult: 2.67 },
-  { user: "MeteorMax", game: "Mines", amount: 67432, mult: 3.21 },
-  { user: "AlphaStar", game: "Dice", amount: 41587, mult: 1.53 },
-];
 
 export const Route = createFileRoute("/home")({
   head: () => ({
@@ -284,6 +257,17 @@ function HomePage() {
     dragged: boolean;
     axis: "x" | "y" | null;
   }>({ active: false, startX: 0, startY: 0, scrollLeft: 0, dragged: false, axis: null });
+
+  // Wins dinámicos coherentes con el ranking (mismos fillers).
+  // Se rotan cada ~25 s para que el panel se sienta vivo.
+  const [lastWins, setLastWins] = useState<FillerWin[]>(() =>
+    generateRecentFillerWins(12, Date.now()),
+  );
+  useEffect(() => {
+    const tick = () => setLastWins(generateRecentFillerWins(12, Date.now()));
+    const id = window.setInterval(tick, 25_000);
+    return () => window.clearInterval(id);
+  }, []);
 
   const fetchSlides = useServerFn(getPublicHomeSlides);
   const fetchFeatured = useServerFn(getPublicFeaturedGames);
@@ -932,30 +916,18 @@ function HomePage() {
           >
             <ul
               className="flex flex-col gap-2"
-              style={{ animation: `wins-scroll ${LAST_WINS.length * 2.2}s linear infinite` }}
+              style={{ animation: `wins-scroll ${lastWins.length * 2.2}s linear infinite` }}
             >
-              {[...LAST_WINS, ...LAST_WINS].map((w, i) => {
-                const avatar = WIN_AVATARS[i % WIN_AVATARS.length];
-                return (
+              {[...lastWins, ...lastWins].map((w, i) => (
                 <li
-                  key={`${w.user}-${i}`}
+                  key={`${w.id}-${i}`}
                   className="home-win-row flex h-[44px] items-center gap-3 rounded-lg border border-purple-500/20 bg-[#150830]/60 px-2.5"
                 >
                   <div className="home-win-avatar h-8 w-8 shrink-0 overflow-hidden rounded-full bg-purple-600/30 ring-1 ring-purple-400/30">
-                    <img
-                      src={avatar.url}
-                      alt={w.user}
-                      width={32}
-                      height={32}
-                      loading={i < 6 ? "eager" : "lazy"}
-                      decoding="async"
-                      fetchPriority={i < 4 ? "high" : "auto"}
-                      className="h-full w-full object-cover home-win-avatar-img"
-                      onLoad={(e) => e.currentTarget.classList.add("is-loaded")}
-                    />
+                    <UserAvatar avatarKey={w.avatar_key} alt={w.username} spinnerSize="sm" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="home-win-user truncate text-xs font-semibold text-white">{w.user}</div>
+                    <div className="home-win-user truncate text-xs font-semibold text-white">{w.username}</div>
                     <div className="home-win-game text-[10px] uppercase tracking-wider text-purple-300/70">{w.game}</div>
                   </div>
                   <div className="text-right">
@@ -966,14 +938,13 @@ function HomePage() {
                     <div className="home-win-mult text-[10px] font-bold text-purple-300">{w.mult.toFixed(2)}x</div>
                   </div>
                 </li>
-                );
-              })}
+              ))}
             </ul>
           </div>
           <style>{`
             @keyframes wins-scroll {
               0% { transform: translateY(0); }
-              100% { transform: translateY(calc(-${LAST_WINS.length} * 52px)); }
+              100% { transform: translateY(calc(-${lastWins.length} * 52px)); }
             }
             .home-win-avatar-img { opacity: 0; transition: opacity 280ms ease-out; }
             .home-win-avatar-img.is-loaded,
