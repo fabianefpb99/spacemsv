@@ -1,48 +1,73 @@
-## Sistema de jugadores "filler" para Ranking y Arena
+## Blackjack VIP — clon con stats, RTP y tema independientes
 
-Generamos jugadores ficticios deterministas por día que rellenan el podio y la lista de Arena cuando no hay jugadores reales suficientes. **No se marcan visualmente** — se ven idénticos a usuarios reales. Los jugadores reales siempre tienen prioridad: si un usuario real supera a un filler, el filler baja o sale del top automáticamente.
+Confirmado:
+- Imagen de mesa VIP recibida (negro + dorado, marco curvo de cuero acolchado).
+- Tema HUD: dorado (`amber-400/500`, `#d4a84c`) sobre negro profundo, reemplazando todos los moradores del original.
+- Cartas también temables vía prop (no rompe el original).
 
-### Comportamiento
+---
 
-- **Determinismo diario**: semilla = fecha en zona Colombia (UTC-5, `YYYY-MM-DD`). Mismos nombres, avatares y montos máximos durante todo el día → refrescar no cambia nada.
-- **Crecimiento progresivo**: el monto mostrado escala con la hora del día (06:00 ≈ 25% del máximo, 23:00 ≈ 100%). A las 2-3 horas notarás que las cifras subieron, simulando actividad real.
-- **Reset a medianoche Colombia**: nuevos nombres, avatares y montos al día siguiente.
-- **Fusión con reales**: lista final = reales ∪ fillers, ordenada por monto desc, cortada a 10. Reales nunca son desplazados por un filler de igual monto.
-- **Tu posición ("#1 fabianefpb")**: se calcula contra reales únicamente — los fillers no afectan tu rank propio.
+## Implementación
 
-### Cantidades y rangos
+### 1. Asset
+- Subir `BlackJack VIP - Betspace.png` como asset CDN → `src/assets/blackjack-vip-bg.png.asset.json`.
 
-- **Ranking general**: 5 fillers, máximos entre **80.000 y 650.000** COP, escalonados (no todos iguales).
-- **Top ganadores de Arena hoy**: **10 fillers**, máximos entre **30.000 y 220.000** COP, escalonados.
+### 2. Motor parametrizado (un solo código, dos juegos)
+- `src/lib/games/blackjack.shared.ts`:
+  ```ts
+  export type BJVariantKey = "blackjack" | "blackjack_vip";
+  export const BJ_VARIANTS = {
+    blackjack:     { gameKey: "blackjack",     minBet: 500,    maxBet: 50_000,  betStep: 500   },
+    blackjack_vip: { gameKey: "blackjack_vip", minBet: 5_000,  maxBet: 200_000, betStep: 1_000 },
+  } as const;
+  ```
+- `src/lib/games/blackjack.functions.ts`: cada server fn (`bjResume`, `bjDeal`, `bjHit`, `bjStand`, `bjDouble`, `bjInsurance`) recibe `variant` en su input. Reemplazo de todos los `.eq("game","blackjack")` y `game:"blackjack"` por `cfg.gameKey`. El schema de bet se construye desde la config de la variante. `loadBjBias(variant)` lee la fila correspondiente en `game_rtp_config`.
+- El RPC `bj_apply_action` no filtra por `game` → sirve para ambas variantes sin migración.
 
-### Pool de datos
+### 3. Ruta y componente
+- `src/routes/blackjack-vip.tsx`: mismo patrón que `/blackjack`, pasa `variant="blackjack_vip"` y `theme="vip"`.
+- `src/components/BlackjackGame.tsx`: nuevas props `variant: BJVariantKey` y `theme: "space" | "vip"`. Manda `variant` en cada llamada server. El `theme` se centraliza en un objeto de clases:
+  ```ts
+  const T = theme === "vip"
+    ? { bg: bgVip.url, accent: "amber-400", panel: "border-amber-500/40 bg-black/60",
+        primaryBtn: "bg-gradient-to-b from-amber-400 to-amber-600 text-black border-amber-300",
+        card: "border-amber-400/60 bg-zinc-900 shadow-[0_0_18px_rgba(212,168,76,0.35)]",
+        cardText: "text-amber-200", ... }
+    : { /* tokens actuales morados — sin cambios */ };
+  ```
+  Todas las clases hardcoded del componente actual se reemplazan por `T.*`. Por defecto `theme="space"` produce el mismo render byte-a-byte que hoy → original intacto.
+- `src/components/LoadingScreen.tsx`: agregar `variant: "blackjack_vip"` (reutiliza el promo VIP o el mismo por ahora).
 
-- **Usernames**: pool de ~30 nombres tipo casino (`luna_84`, `kr1tyk`, `andrxs07`, `mariana.r`, `betkingco`, `daniela.m`, etc.). La semilla escoge sin repetir.
-- **Avatares**: las 8 keys predeterminadas del sitio (`avatar-1` … `avatar-8`, ya importadas en `src/lib/avatars.ts`). Cada filler recibe una key real → `UserAvatar` la resuelve igual que para un usuario real, mismo cache, misma carga rápida.
+### 4. Admin — juego separado automáticamente
+- `src/components/admin/shared.tsx`: agregar `blackjack_vip: "BLACKJACK VIP"` en `GAME_LABELS`. El panel de Ganancias, KPIs, GGR y alertas ya agrupan por columna `game` → aparece como fila aparte sin más cambios.
+- `src/components/admin/MissionsSection.tsx`: agregar `{ value: "blackjack_vip", label: "Blackjack VIP" }`.
 
-### Cambios técnicos (un solo archivo)
+### 5. Migración SQL
+```sql
+INSERT INTO public.game_rtp_config (game, rtp_target, is_active)
+VALUES ('blackjack_vip', 98.50, true)
+ON CONFLICT (game) DO NOTHING;
+```
 
-`src/lib/ranking.functions.ts`:
+### 6. Acceso desde el home
+- Añadir tarjeta "Blackjack VIP" al rotador de juegos destacados (mismo patrón que las otras), apuntando a `/blackjack-vip`.
 
-1. Añadir helper `getColombiaDateKey()` → `YYYY-MM-DD` en UTC-5 y `getColombiaHour()` → 0-23.
-2. Añadir `hashString(s)` + `mulberry32(seed)` (RNG determinista, sin dependencias).
-3. Añadir constantes `FILLER_USERNAMES: string[]` (≈30 entradas) y `FILLER_AVATAR_KEYS = ["avatar-1", … "avatar-8"]`.
-4. Añadir `generateFillers({ dateKey, kind: 'general' | 'arena', count, hour })`:
-   - RNG sembrado con `hash(dateKey + ":" + kind)`.
-   - Escoge `count` usernames y avatares del pool (sin repetir dentro de la lista).
-   - Asigna `maxAmount` decreciente dentro del rango de ese `kind`.
-   - `currentAmount = round(maxAmount * progressFactor(hour))` con `progressFactor` lineal/suave entre 0.25 y 1.0.
-   - Devuelve `RankingEntry[]` con `user_id = "filler:<kind>:<idx>:<dateKey>"` (estable, sirve de key React).
-5. En `getRankingPublic.handler`, tras leer reales:
-   - `winners = mergeAndTop([...realesWinners, ...fillersGeneral(5)], 10)`
-   - `arena   = mergeAndTop([...realesArena,   ...fillersArena(10)], 10)`
-   - `mergeAndTop` ordena por `net_amount` desc, conserva orden estable para empates (reales primero).
-6. `getMyRankingPosition` **no se modifica** (sigue solo contra reales).
+---
 
-Frontend (`src/routes/ranking.tsx`, `PodiumSlot`, `ArenaRow`): **sin cambios**. Las keys ya usan `e.user_id` que acepta strings arbitrarios; los avatares ya pasan por `UserAvatar` con `avatar_key`.
+## Garantías de no-regresión
 
-### Riesgos / consideraciones
+- **`/blackjack` original** = mismo `variant="blackjack"` + `theme="space"` → mismas queries, mismo HUD, mismas cartas, mismo RTP.
+- **Estadísticas** separadas por la columna `game` en `game_sessions` y `transactions` (ya existente).
+- **Sesiones cruzadas** imposibles: `loadOpenSession` filtra por `game = variant`.
+- **RTP independiente**: cada variante lee su fila en `game_rtp_config`; el admin las edita por separado en `RtpSection`.
+- **Cartas temables sin romper original**: `theme="space"` mantiene clases actuales; `theme="vip"` aplica las doradas.
 
-- Cero migraciones, cero estado en DB: todo se computa en el handler. Si el reloj del servidor difiere ±1h, el monto puede variar levemente; tolerable.
-- El `refetchInterval: 20_000` del front hará que los montos suban suavemente cuando cruza una hora.
-- Si en el futuro quieres marcar bots visualmente o ajustar rangos, basta tocar las constantes.
+---
+
+## Configuración inicial VIP
+
+- Apuesta mín. **$5.000**, máx. **$200.000**, paso **$1.000**.
+- RTP target **98.50%** (un poco más bajo que el normal por ser mesa premium; se ajusta luego en admin).
+- Insurance / 3:2 / soft-17 idénticos al original.
+
+Procedo.
