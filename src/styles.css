@@ -2177,16 +2177,36 @@ html, body {
 }
 .skeleton-img-wrap > img {
   opacity: 0;
-  transition: opacity 0.35s ease;
+  transform: scale(1.012);
+  transition: opacity 0.45s ease, transform 0.65s ease;
 }
 .skeleton-img-wrap.loaded > img {
   opacity: 1;
+  transform: scale(1);
 }
 .skeleton-img-wrap.loaded {
   background: transparent;
 }
 .skeleton-img-wrap.loaded::after {
   display: none;
+}
+
+img[data-smooth-image="true"] {
+  opacity: 0 !important;
+  transform: scale(1.01);
+  transition: opacity 0.45s ease, transform 0.65s ease;
+}
+img[data-smooth-image="true"][data-image-ready="true"] {
+  opacity: 1 !important;
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-img-wrap > img,
+  img[data-smooth-image="true"] {
+    transform: none !important;
+    transition: none !important;
+  }
 }
 
 @keyframes arena-shake {

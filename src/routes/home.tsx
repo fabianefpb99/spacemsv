@@ -824,7 +824,7 @@ function HomePage() {
                 Paga 3 a 2
               </div>
             </div>
-            <span className="promo-banner__chev promo-banner__chev--glass flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-fuchsia-400/70 bg-black/50 text-fuchsia-100 backdrop-blur-sm shadow-[0_0_10px_rgba(217,70,239,0.5)]">
+            <span className="home-promo-arrow promo-banner__chev promo-banner__chev--glass flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
               <ChevronRight className="h-4 w-4" />
             </span>
           </div>
@@ -855,7 +855,7 @@ function HomePage() {
                 Paga hasta 14x
               </div>
             </div>
-            <span className="promo-banner__chev promo-banner__chev--glass flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-purple-400/70 bg-black/50 text-purple-100 backdrop-blur-sm shadow-[0_0_10px_rgba(168,85,247,0.5)]">
+            <span className="home-promo-arrow promo-banner__chev promo-banner__chev--glass flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
               <ChevronRight className="h-4 w-4" />
             </span>
           </div>
@@ -887,7 +887,7 @@ function HomePage() {
                 Paga hasta 8.0x
               </div>
             </div>
-            <span className="promo-banner__chev promo-banner__chev--glass flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-fuchsia-400/70 bg-black/50 text-fuchsia-100 backdrop-blur-sm shadow-[0_0_10px_rgba(217,70,239,0.5)]">
+            <span className="home-promo-arrow promo-banner__chev promo-banner__chev--glass flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
               <ChevronRight className="h-4 w-4" />
             </span>
           </div>
@@ -976,7 +976,8 @@ function HomePage() {
               100% { transform: translateY(calc(-${LAST_WINS.length} * 52px)); }
             }
             .home-win-avatar-img { opacity: 0; transition: opacity 280ms ease-out; }
-            .home-win-avatar-img.is-loaded { opacity: 1; }
+            .home-win-avatar-img.is-loaded,
+            .home-win-avatar-img[data-image-ready="true"] { opacity: 1; }
           `}</style>
         </section>
 

@@ -22,10 +22,19 @@ export function SkeletonImage({
   const [loaded, setLoaded] = useState(false);
   const imgRef = useRef<HTMLImageElement | null>(null);
 
+  const reveal = () => {
+    const el = imgRef.current;
+    if (!el || typeof el.decode !== "function") {
+      setLoaded(true);
+      return;
+    }
+    el.decode().catch(() => undefined).finally(() => setLoaded(true));
+  };
+
   useEffect(() => {
     const el = imgRef.current;
     if (el && el.complete && el.naturalWidth > 0) {
-      setLoaded(true);
+      reveal();
     }
   }, []);
 
@@ -39,7 +48,7 @@ export function SkeletonImage({
         {...imgProps}
         className={className}
         onLoad={(e) => {
-          setLoaded(true);
+          reveal();
           onLoad?.(e);
         }}
         onError={(e) => {
