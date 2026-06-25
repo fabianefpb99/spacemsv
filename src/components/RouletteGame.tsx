@@ -7,6 +7,7 @@ import betspaceLogo from "@/assets/betspace-logo.svg";
 import rouletteScene from "@/assets/roulette-scene-v2.png.asset.json";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { BetAmount } from "@/components/games/BetAmount";
+import { CasinoChip, CHIP_VARIANTS, chipLabelFor } from "@/components/games/CasinoChip";
 import { FitText } from "@/components/ui/fit-text";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe } from "@/hooks/useMe";
@@ -767,9 +768,11 @@ export function RouletteGame() {
                 key={amt}
                 onClick={() => adjustBet(amt)}
                 disabled={phase !== "idle"}
-                className="rounded-lg border border-purple-400/40 bg-purple-950/60 py-1.5 text-[11px] font-bold text-white backdrop-blur-sm hover:bg-purple-900/60 disabled:opacity-50"
+                className="flex items-center justify-center rounded-lg border border-purple-400/40 bg-purple-950/60 py-1 text-[11px] font-bold text-white backdrop-blur-sm hover:bg-purple-900/60 disabled:opacity-50"
+                aria-label={`Sumar ${amt}`}
+                title={`+${chipLabelFor(amt)}`}
               >
-                +{amt >= 1000 ? `${amt / 1000}K` : amt}
+                <CasinoChip label={chipLabelFor(amt)} variant={CHIP_VARIANTS[amt]} size={28} />
               </button>
             ))}
           </div>
