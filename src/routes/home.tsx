@@ -276,14 +276,20 @@ function HomePage() {
   const slidesQ = useQuery({
     queryKey: ["public-home-slides"],
     queryFn: () => fetchSlides(),
-    staleTime: 0,
-    refetchOnMount: "always",
+    // Cache home content in memoria por 10 min y reusar entre navegaciones
+    // (volver desde un juego no debe refetchear ni mostrar loader).
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
   const featuredQ = useQuery({
     queryKey: ["public-featured-games"],
     queryFn: () => fetchFeatured(),
-    staleTime: 0,
-    refetchOnMount: "always",
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   const slidesList = (slidesQ.data && slidesQ.data.length > 0)
