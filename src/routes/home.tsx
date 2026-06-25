@@ -761,7 +761,7 @@ function HomePage() {
                   <Link
                     key={`${g.to}-${g.name}`}
                     to={g.to}
-                    className="home-game-card group relative flex aspect-[3/4] w-[30%] min-w-[30%] flex-shrink-0 overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400 sm:w-[22%] sm:min-w-[22%]"
+                    className="home-game-card group relative flex aspect-[3/4] w-[27%] min-w-[27%] flex-shrink-0 overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400 sm:w-[19%] sm:min-w-[19%]"
                   >
                     <SkeletonImage
                       src={g.img}
@@ -774,7 +774,7 @@ function HomePage() {
                     />
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/95 via-black/70 to-transparent" />
                     <div className="absolute inset-x-0 bottom-2 flex flex-col items-center gap-1 px-1.5 text-center">
-                      <span className="home-game-title block w-full truncate font-display font-black uppercase tracking-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] text-[13px] leading-none sm:text-sm">
+                      <span className="home-game-title block w-full whitespace-pre-line font-display font-black uppercase tracking-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] text-[13px] leading-[0.95] sm:text-sm">
                         {gameName}
                       </span>
                       <span className={`inline-block rounded-full border px-2 py-[2px] text-[8px] font-bold uppercase leading-none tracking-wide ${g.tagCls}`}>
