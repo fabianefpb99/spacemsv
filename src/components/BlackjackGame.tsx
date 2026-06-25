@@ -405,10 +405,9 @@ export function BlackjackGame() {
   const onHit = async () => {
     if (phase !== "playing" || busy || !sessionRef.current) return;
     if (inFlightRef.current) return;
-    // Auto-decline insurance if still offered when user picks Hit.
     if (insuranceOffered) {
-      const declined = await declineInsurance();
-      if (!declined) return;
+      const ok = await resolveInsurance(false);
+      if (!ok) return;
     }
     inFlightRef.current = true;
     setBusy(true);
@@ -442,8 +441,8 @@ export function BlackjackGame() {
     if (phase !== "playing" || busy || !sessionRef.current) return;
     if (inFlightRef.current) return;
     if (insuranceOffered) {
-      const declined = await declineInsurance();
-      if (!declined) return;
+      const ok = await resolveInsurance(false);
+      if (!ok) return;
     }
     inFlightRef.current = true;
     setBusy(true);
@@ -469,6 +468,7 @@ export function BlackjackGame() {
     if (phase !== "playing" || busy || !sessionRef.current) return;
     if (inFlightRef.current) return;
     if (player.length !== 2 || bet > balance) return;
+    if (insuranceOffered) return; // UI hides "Doblar" while insurance is offered
     inFlightRef.current = true;
     setBusy(true);
     setError(null);
