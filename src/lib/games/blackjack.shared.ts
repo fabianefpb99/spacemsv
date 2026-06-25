@@ -44,6 +44,38 @@ export const BJ_MIN_BET = 500;
 export const BJ_MAX_BET = 50000;
 export const BJ_BET_STEP = 500;
 
+/* ------------------------------------------------------------------ */
+/* Variants                                                            */
+/* ------------------------------------------------------------------ */
+
+/** Game keys for the different Blackjack tables we expose. They share
+ *  the exact same engine and rules — only bet limits, RTP config row,
+ *  and visual theme differ. Stats are naturally separated by the `game`
+ *  column in `game_sessions` and `transactions`. */
+export type BJVariantKey = "blackjack" | "blackjack_vip";
+
+export type BJVariantConfig = {
+  gameKey: BJVariantKey;
+  minBet: number;
+  maxBet: number;
+  betStep: number;
+};
+
+export const BJ_VARIANTS: Record<BJVariantKey, BJVariantConfig> = {
+  blackjack: {
+    gameKey: "blackjack",
+    minBet: BJ_MIN_BET,
+    maxBet: BJ_MAX_BET,
+    betStep: BJ_BET_STEP,
+  },
+  blackjack_vip: {
+    gameKey: "blackjack_vip",
+    minBet: 5_000,
+    maxBet: 200_000,
+    betStep: 1_000,
+  },
+};
+
 export const BJ_SUITS: readonly Suit[] = ["♠", "♥", "♦", "♣"];
 export const BJ_RANKS = [
   { r: "A",  v: 11 },
