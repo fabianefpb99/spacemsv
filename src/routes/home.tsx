@@ -603,34 +603,69 @@ function HomePage() {
               Ver todos
             </button>
           </div>
-          <div className="home-featured-scroll mt-3 flex gap-2 overflow-x-auto pb-1 sm:gap-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {gamesList.map((g) => (
-              <Link
-                key={g.name}
-                to={g.to}
-                className="home-game-card group flex w-[22%] min-w-[22%] flex-shrink-0 flex-col overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400 sm:w-[22%] sm:min-w-[22%]"
-              >
-                <div className="aspect-square w-full overflow-hidden">
-                  <SkeletonImage
-                    src={g.img}
-                    alt={g.name}
-                    loading="lazy"
-                    width={512}
-                    height={512}
-                    wrapperClassName="h-full w-full"
-                    className="h-full w-full object-cover transition group-hover:scale-105"
-                  />
-                </div>
-                <div className="flex flex-col items-center gap-1 px-1 py-2">
-                  <span className="home-game-title font-display text-[10px] font-black tracking-wider text-white sm:text-xs">
-                    {g.name}
-                  </span>
-                  <span className={`rounded-full border px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider sm:text-[9px] ${g.tagCls}`}>
-                    {g.tag}
-                  </span>
-                </div>
-              </Link>
-            ))}
+          <div className="relative">
+            <button
+              type="button"
+              aria-label="Ver juegos anteriores"
+              onClick={() => scrollFeatured(-1)}
+              className="absolute -left-3 top-1/2 z-10 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/70 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.06)] transition hover:bg-black/85 sm:flex"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <div
+              ref={featuredScrollRef}
+              onPointerDown={handleFeaturedPointerDown}
+              onPointerMove={handleFeaturedPointerMove}
+              onPointerUp={stopFeaturedDrag}
+              onPointerCancel={stopFeaturedDrag}
+              onClickCapture={(event) => {
+                if (!featuredDragRef.current.dragged) return;
+                event.preventDefault();
+                event.stopPropagation();
+                featuredDragRef.current.dragged = false;
+              }}
+              className="home-featured-scroll mt-3 flex cursor-grab touch-pan-y select-none gap-2 overflow-x-auto pb-1 active:cursor-grabbing sm:gap-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            >
+              {gamesList.map((g) => {
+                const gameName = g.to === "/blackjackvip" ? "BLACKJACK" : g.name;
+                const gameTag = formatGameTag(g.to === "/blackjackvip" ? "VIP" : g.tag);
+                return (
+                  <Link
+                    key={`${g.to}-${g.name}`}
+                    to={g.to}
+                    className="home-game-card group flex w-[22%] min-w-[22%] flex-shrink-0 flex-col overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400 sm:w-[22%] sm:min-w-[22%]"
+                  >
+                    <div className="aspect-square w-full overflow-hidden">
+                      <SkeletonImage
+                        src={g.img}
+                        alt={gameName}
+                        loading="lazy"
+                        width={512}
+                        height={512}
+                        wrapperClassName="h-full w-full"
+                        className="h-full w-full object-cover transition group-hover:scale-105"
+                      />
+                    </div>
+                    <div className="flex min-h-[42px] flex-col items-center justify-center gap-0.5 px-1 py-1.5 text-center sm:min-h-[46px] sm:px-1.5">
+                      <span className="home-game-title block max-w-full whitespace-normal break-words font-display text-[8.5px] font-black uppercase leading-tight tracking-normal text-white sm:text-[10px]">
+                        {gameName}
+                      </span>
+                      <span className={`block max-w-full rounded-full border px-1 py-0.5 text-[7px] font-bold uppercase leading-none tracking-normal sm:px-1.5 sm:text-[8px] ${g.tagCls}`}>
+                        ({gameTag})
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+            <button
+              type="button"
+              aria-label="Ver más juegos"
+              onClick={() => scrollFeatured(1)}
+              className="absolute -right-3 top-1/2 z-10 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/70 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.06)] transition hover:bg-black/85 sm:flex"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
           </div>
         </section>
 
