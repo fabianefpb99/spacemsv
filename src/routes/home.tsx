@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Menu, ChevronRight, ChevronLeft, Gift, Home, Star, Wallet, User, Trophy } from "lucide-react";
-import { type PointerEvent, type TouchEvent, useEffect, useRef, useState } from "react";
+import { type PointerEvent, useEffect, useRef, useState } from "react";
 import { PromoPopup } from "@/components/PromoPopup";
 import { BrandLoader } from "@/components/BrandLoader";
 import { SkeletonImage } from "@/components/SkeletonImage";
@@ -439,40 +439,54 @@ function HomePage() {
     if (el?.hasPointerCapture(event.pointerId)) el.releasePointerCapture(event.pointerId);
   };
 
-  const handleFeaturedTouchStart = (event: TouchEvent<HTMLDivElement>) => {
+  useEffect(() => {
     const el = featuredScrollRef.current;
-    const touch = event.touches[0];
-    if (!el || !touch) return;
-    featuredDragRef.current = {
-      active: true,
-      startX: touch.clientX,
-      startY: touch.clientY,
-      scrollLeft: el.scrollLeft,
-      dragged: false,
-      axis: null,
+    if (!el) return;
+
+    const handleTouchStart = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      if (!touch) return;
+      featuredDragRef.current = {
+        active: true,
+        startX: touch.clientX,
+        startY: touch.clientY,
+        scrollLeft: el.scrollLeft,
+        dragged: false,
+        axis: null,
+      };
     };
-  };
 
-  const handleFeaturedTouchMove = (event: TouchEvent<HTMLDivElement>) => {
-    const drag = featuredDragRef.current;
-    const el = featuredScrollRef.current;
-    const touch = event.touches[0];
-    if (!drag.active || !el || !touch) return;
-    const delta = touch.clientX - drag.startX;
-    const verticalDelta = touch.clientY - drag.startY;
-    if (!drag.axis && Math.max(Math.abs(delta), Math.abs(verticalDelta)) > 6) {
-      drag.axis = Math.abs(delta) > Math.abs(verticalDelta) ? "x" : "y";
-    }
-    if (drag.axis === "y") return;
-    if (Math.abs(delta) > 4) drag.dragged = true;
-    el.scrollLeft = drag.scrollLeft - delta;
-    event.preventDefault();
-  };
+    const handleTouchMove = (event: TouchEvent) => {
+      const drag = featuredDragRef.current;
+      const touch = event.touches[0];
+      if (!drag.active || !touch) return;
+      const delta = touch.clientX - drag.startX;
+      const verticalDelta = touch.clientY - drag.startY;
+      if (!drag.axis && Math.max(Math.abs(delta), Math.abs(verticalDelta)) > 6) {
+        drag.axis = Math.abs(delta) > Math.abs(verticalDelta) ? "x" : "y";
+      }
+      if (drag.axis === "y") return;
+      if (Math.abs(delta) > 4) drag.dragged = true;
+      el.scrollLeft = drag.scrollLeft - delta;
+      event.preventDefault();
+    };
 
-  const stopFeaturedTouchDrag = () => {
-    featuredDragRef.current.active = false;
-    featuredDragRef.current.axis = null;
-  };
+    const stopTouchDrag = () => {
+      featuredDragRef.current.active = false;
+      featuredDragRef.current.axis = null;
+    };
+
+    el.addEventListener("touchstart", handleTouchStart, { passive: true });
+    el.addEventListener("touchmove", handleTouchMove, { passive: false });
+    el.addEventListener("touchend", stopTouchDrag);
+    el.addEventListener("touchcancel", stopTouchDrag);
+    return () => {
+      el.removeEventListener("touchstart", handleTouchStart);
+      el.removeEventListener("touchmove", handleTouchMove);
+      el.removeEventListener("touchend", stopTouchDrag);
+      el.removeEventListener("touchcancel", stopTouchDrag);
+    };
+  }, [gamesList.length]);
 
   useEffect(() => {
     if (slidesList.length <= 1) return;
@@ -672,10 +686,6 @@ function HomePage() {
               onPointerMove={handleFeaturedPointerMove}
               onPointerUp={stopFeaturedDrag}
               onPointerCancel={stopFeaturedDrag}
-              onTouchStart={handleFeaturedTouchStart}
-              onTouchMove={handleFeaturedTouchMove}
-              onTouchEnd={stopFeaturedTouchDrag}
-              onTouchCancel={stopFeaturedTouchDrag}
               onClickCapture={(event) => {
                 if (!featuredDragRef.current.dragged) return;
                 event.preventDefault();
