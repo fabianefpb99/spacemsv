@@ -31,6 +31,7 @@ import gameSpaceman from "@/assets/game-spaceman.jpg";
 import gameSlotMafia from "@/assets/game-slot-mafia.jpg";
 import gameMines from "@/assets/game-mines.jpg";
 import gameDice from "@/assets/game-dice.jpg";
+import gameBlackjackVip from "@/assets/game-blackjack-vip.jpg";
 import gift3d from "@/assets/gift-3d.png";
 import trophy3d from "@/assets/trophy-3d.png";
 import blackjackPromo from "@/assets/blackjack-promo.png.asset.json";
