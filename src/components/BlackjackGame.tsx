@@ -406,7 +406,7 @@ export function BlackjackGame() {
     if (phase !== "playing" || busy || !sessionRef.current) return;
     if (inFlightRef.current) return;
     if (insuranceOffered) {
-      const ok = await resolveInsurance(false);
+      const ok = await handleInsurance(false);
       if (!ok) return;
     }
     inFlightRef.current = true;
@@ -441,7 +441,7 @@ export function BlackjackGame() {
     if (phase !== "playing" || busy || !sessionRef.current) return;
     if (inFlightRef.current) return;
     if (insuranceOffered) {
-      const ok = await resolveInsurance(false);
+      const ok = await handleInsurance(false);
       if (!ok) return;
     }
     inFlightRef.current = true;
