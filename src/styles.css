@@ -749,10 +749,16 @@ html.dark .promo-banner .promo-banner__chev--glass svg * {
 /* Light mode only — keep the sweep anchored to the real outer edge, but draw
    its thickness inward so there is no dead gap between the frame and glow.
    Dark mode keeps the original rule above unchanged. */
+html.light .slider-neon-frame {
+  border-color: transparent !important;
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.78) inset,
+              0 0 10px rgba(168, 85, 247, 0.35) !important;
+}
+
 html.light .slider-neon-frame::before {
-  inset: -2px !important;
-  padding: 6px !important;
-  border-radius: calc(1rem + 2px) !important;
+  inset: -1px !important;
+  padding: 5px !important;
+  border-radius: calc(1rem + 1px) !important;
   z-index: 8 !important;
   background: conic-gradient(
     from var(--neon-angle, 0deg),
