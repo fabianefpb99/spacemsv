@@ -432,14 +432,15 @@ export const bjHit = createServerFn({ method: "POST" })
   .inputValidator((input) => ActionInput.parse(input))
   .handler(async ({ data, context }): Promise<BJSessionView> => {
     const userId = context.userId;
-    const session = await loadSessionForUser(data.session_id, userId);
+    const cfg = BJ_VARIANTS[data.variant];
+    const session = await loadSessionForUser(data.session_id, userId, cfg.gameKey);
     if (session.status !== "open") throw new Error("bj_session_closed");
     if (session.nonce !== data.nonce) throw new Error("bj_stale_nonce");
     if (session.public_state.phase !== "playing") {
       throw new Error("bj_not_playing");
     }
 
-    const bias = await loadBjBias();
+    const bias = await loadBjBias(cfg.gameKey);
     let shoe = session.state.shoe;
     const currentScore = handScore(session.public_state.player);
     const drawn = drawForPlayerHit(shoe, currentScore, bias);
@@ -486,7 +487,7 @@ export const bjHit = createServerFn({ method: "POST" })
           user_id: userId,
           delta: payout,
           type: "win",
-          game: "blackjack",
+          game: cfg.gameKey,
           client_action_id: deriveActionId(data.client_action_id, "win"),
           meta: { kind: "blackjack_win", bet: effectiveBet, outcome: resolved.outcome },
         });
@@ -497,7 +498,7 @@ export const bjHit = createServerFn({ method: "POST" })
           user_id: userId,
           delta: insPayout,
           type: "win",
-          game: "blackjack",
+          game: cfg.gameKey,
           client_action_id: deriveActionId(data.client_action_id, "ins_win"),
           meta: { kind: "blackjack_insurance_win", bet, insurance_cost: insCost },
         });
@@ -539,7 +540,8 @@ export const bjStand = createServerFn({ method: "POST" })
   .inputValidator((input) => ActionInput.parse(input))
   .handler(async ({ data, context }): Promise<BJSessionView> => {
     const userId = context.userId;
-    const session = await loadSessionForUser(data.session_id, userId);
+    const cfg = BJ_VARIANTS[data.variant];
+    const session = await loadSessionForUser(data.session_id, userId, cfg.gameKey);
     if (session.status !== "open") throw new Error("bj_session_closed");
     if (session.nonce !== data.nonce) throw new Error("bj_stale_nonce");
     if (session.public_state.phase !== "playing") {
@@ -550,7 +552,7 @@ export const bjStand = createServerFn({ method: "POST" })
     const doubled = session.public_state.doubled;
     const effectiveBet = doubled ? bet * 2 : bet;
 
-    const bias = await loadBjBias();
+    const bias = await loadBjBias(cfg.gameKey);
     const resolved = resolveHand(
       session.state.shoe,
       session.public_state.player,
@@ -586,7 +588,7 @@ export const bjStand = createServerFn({ method: "POST" })
         user_id: userId,
         delta: resolved.payout,
         type: "win",
-        game: "blackjack",
+        game: cfg.gameKey,
         client_action_id: deriveActionId(data.client_action_id, "win"),
         meta: { kind: "blackjack_win", bet: effectiveBet, outcome: resolved.outcome },
       });
@@ -597,7 +599,7 @@ export const bjStand = createServerFn({ method: "POST" })
         user_id: userId,
         delta: insPayout,
         type: "win",
-        game: "blackjack",
+        game: cfg.gameKey,
         client_action_id: deriveActionId(data.client_action_id, "ins_win"),
         meta: { kind: "blackjack_insurance_win", bet, insurance_cost: insCost },
       });
@@ -632,7 +634,8 @@ export const bjInsurance = createServerFn({ method: "POST" })
   .inputValidator((input) => InsuranceInput.parse(input))
   .handler(async ({ data, context }): Promise<BJSessionView> => {
     const userId = context.userId;
-    const session = await loadSessionForUser(data.session_id, userId);
+    const cfg = BJ_VARIANTS[data.variant];
+    const session = await loadSessionForUser(data.session_id, userId, cfg.gameKey);
     if (session.status !== "open") throw new Error("bj_session_closed");
     if (session.nonce !== data.nonce) throw new Error("bj_stale_nonce");
     if (session.public_state.phase !== "playing") {
@@ -653,7 +656,7 @@ export const bjInsurance = createServerFn({ method: "POST" })
           user_id: userId,
           delta: -cost,
           type: "bet",
-          game: "blackjack",
+          game: cfg.gameKey,
           client_action_id: deriveActionId(data.client_action_id, "insurance"),
           meta: { kind: "blackjack_insurance", bet, insurance_cost: cost },
         }).catch((err) => {
@@ -702,7 +705,8 @@ export const bjDouble = createServerFn({ method: "POST" })
   .inputValidator((input) => ActionInput.parse(input))
   .handler(async ({ data, context }): Promise<BJSessionView> => {
     const userId = context.userId;
-    const session = await loadSessionForUser(data.session_id, userId);
+    const cfg = BJ_VARIANTS[data.variant];
+    const session = await loadSessionForUser(data.session_id, userId, cfg.gameKey);
     if (session.status !== "open") throw new Error("bj_session_closed");
     if (session.nonce !== data.nonce) throw new Error("bj_stale_nonce");
     if (session.public_state.phase !== "playing") {
@@ -722,7 +726,7 @@ export const bjDouble = createServerFn({ method: "POST" })
       user_id: userId,
       delta: -bet,
       type: "bet",
-      game: "blackjack",
+      game: cfg.gameKey,
       client_action_id: deriveActionId(data.client_action_id, "double"),
       meta: { kind: "blackjack_double", bet },
     }).catch((err) => {
@@ -733,7 +737,7 @@ export const bjDouble = createServerFn({ method: "POST" })
     });
     let newBalance = debit.new_balance;
 
-    const bias = await loadBjBias();
+    const bias = await loadBjBias(cfg.gameKey);
     let shoe = session.state.shoe;
     const currentScore = handScore(session.public_state.player);
     const drawn = drawForPlayerHit(shoe, currentScore, bias);
@@ -769,7 +773,7 @@ export const bjDouble = createServerFn({ method: "POST" })
         user_id: userId,
         delta: resolved.payout,
         type: "win",
-        game: "blackjack",
+        game: cfg.gameKey,
         client_action_id: deriveActionId(data.client_action_id, "double_win"),
         meta: { kind: "blackjack_win", bet: effectiveBet, outcome: resolved.outcome },
       });
@@ -780,7 +784,7 @@ export const bjDouble = createServerFn({ method: "POST" })
         user_id: userId,
         delta: insPayout,
         type: "win",
-        game: "blackjack",
+        game: cfg.gameKey,
         client_action_id: deriveActionId(data.client_action_id, "ins_win"),
         meta: { kind: "blackjack_insurance_win", bet, insurance_cost: insCost },
       });
