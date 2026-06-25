@@ -697,7 +697,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
   };
 
   return (
-    <div className="relative min-h-[100dvh] w-full overflow-hidden bg-[#060210] text-white">
+    <div className={`relative min-h-[100dvh] w-full overflow-hidden ${T.pageBg} text-white`}>
       <style>{`
         @keyframes bj-deal {
           0% { transform: translate(calc(-50% + 0px), -120px) rotate(0deg); opacity: 0; }
@@ -707,6 +707,10 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
           0%,100% { box-shadow: 0 0 0 rgba(168,85,247,0); }
           50% { box-shadow: 0 0 28px rgba(168,85,247,0.85), 0 0 60px rgba(217,70,239,0.55); }
         }
+        @keyframes bjv-glow {
+          0%,100% { box-shadow: 0 0 0 rgba(212,168,76,0); }
+          50% { box-shadow: 0 0 28px rgba(212,168,76,0.85), 0 0 60px rgba(184,134,11,0.55); }
+        }
         @keyframes bj-pop {
           0% { transform: scale(0.85); opacity: 0; }
           100% { transform: scale(1); opacity: 1; }
@@ -714,17 +718,17 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
       `}</style>
 
       <img
-        src={bgAsset.url}
+        src={T.bgUrl}
         alt=""
         className="pointer-events-none absolute inset-0 h-full w-full object-cover"
         style={{ objectPosition: "center top" }}
         draggable={false}
       />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#060210]/60 via-transparent to-[#060210]/30" />
+      <div className={`pointer-events-none absolute inset-0 ${T.pageOverlay}`} />
 
       <div className="relative mx-auto flex min-h-[100dvh] max-w-md flex-col px-3 sm:max-w-lg sm:px-4">
         <header
-          className="flex items-center justify-between border-b border-purple-500/20 bg-[#060210]/80 px-3 pb-3 -mx-3 backdrop-blur-sm"
+          className={`flex items-center justify-between border-b px-3 pb-3 -mx-3 backdrop-blur-sm ${T.headerBorder}`}
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <div className="flex items-center gap-1">
@@ -737,7 +741,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
           </div>
           <div className="flex items-center gap-2">
             <div className="text-right">
-              <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
+              <div className={`text-[9px] uppercase tracking-wider ${T.balanceLabel}`}>Balance</div>
               <div className="font-display text-[11px] font-bold text-white sm:text-xs">
                 <span className="neon-green mr-0.5">$</span>{formatCOP(balance)} COP
               </div>
@@ -763,7 +767,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
             </div>
             {dealer.length > 0 && (
               <div className="mt-2 text-center">
-                <span className="rounded-full border border-purple-400/50 bg-[#1a0b3a]/80 px-2.5 py-0.5 text-[10px] font-bold tracking-wider text-purple-100">
+                <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold tracking-wider ${T.scoreBadgeDealer}`}>
                   DEALER: {handScore(dealer)}
                   {!showDealerScore && dealer.some((c) => c.hidden) ? "+" : ""}
                 </span>
@@ -782,8 +786,8 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
                 <span
                   className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold tracking-wider ${
                     playerScore > 21
-                      ? "border-rose-400/60 bg-rose-900/40 text-rose-100"
-                      : "border-emerald-400/50 bg-emerald-900/30 text-emerald-100"
+                      ? T.scoreBadgeLose
+                      : T.scoreBadgeWin
                   }`}
                 >
                   TÚ: {playerScore}
@@ -797,14 +801,14 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
               <div
                 className={`rounded-2xl border px-6 py-3 backdrop-blur-md ${
                   outcome === "win" || outcome === "blackjack"
-                    ? "border-emerald-400/70 bg-emerald-950/60"
+                    ? (theme === "vip" ? "border-amber-400/70 bg-amber-950/60" : "border-emerald-400/70 bg-emerald-950/60")
                     : outcome === "push"
-                    ? "border-purple-400/70 bg-purple-950/60"
+                    ? T.resultPush
                     : "border-rose-400/70 bg-rose-950/60"
                 }`}
                 style={
                   outcome === "win" || outcome === "blackjack"
-                    ? { animation: "bj-glow 1.6s ease-in-out infinite" }
+                    ? { animation: `${T.glowKey} 1.6s ease-in-out infinite` }
                     : undefined
                 }
               >
@@ -816,7 +820,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
                   {outcome === "bust" && "TE PASASTE"}
                 </div>
                 {payout > 0 && (
-                  <div className="mt-1 text-sm font-bold text-emerald-300">
+                  <div className={`mt-1 text-sm font-bold ${theme === "vip" ? "text-amber-300" : "text-emerald-300"}`}>
                     +${formatCOP(payout)} COP
                   </div>
                 )}
@@ -840,14 +844,14 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
 
         <div className="relative z-10 mx-auto -mt-3 w-full max-w-md px-1 pt-1">
           {phase === "betting" && (
-            <div className="rounded-2xl border border-purple-500/40 bg-[#0c0620]/85 p-3 shadow-[0_0_20px_rgba(168,85,247,0.25)] backdrop-blur-md">
-              <div className="text-center text-[10px] font-bold uppercase tracking-widest text-purple-200/80">
+            <div className={`rounded-2xl border p-3 backdrop-blur-md ${T.panel} ${T.panelGlow}`}>
+              <div className={`text-center text-[10px] font-bold uppercase tracking-widest ${T.labelMuted}`}>
                 Apuesta
               </div>
               <div className="mt-2 flex items-center justify-center gap-3">
                 <button
                   onClick={() => adjustBet(-BET_STEP)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-purple-400/50 bg-purple-900/40 text-purple-100 active:scale-95"
+                  className={`flex h-10 w-10 items-center justify-center rounded-full border active:scale-95 ${T.stepBtn}`}
                 >
                   <Minus className="h-5 w-5" />
                 </button>
@@ -858,7 +862,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
                 </div>
                 <button
                   onClick={() => adjustBet(BET_STEP)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-purple-400/50 bg-purple-900/40 text-purple-100 active:scale-95"
+                  className={`flex h-10 w-10 items-center justify-center rounded-full border active:scale-95 ${T.stepBtn}`}
                 >
                   <Plus className="h-5 w-5" />
                 </button>
@@ -872,7 +876,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
                       return Math.max(MIN_BET, snapped);
                     })
                   }
-                  className="rounded-md border border-fuchsia-400/60 bg-fuchsia-900/40 px-2.5 py-1 text-[11px] font-black text-fuchsia-100 active:scale-95"
+                  className={`rounded-md border px-2.5 py-1 text-[11px] font-black active:scale-95 ${T.x2Btn}`}
                 >
                   X2
                 </button>
@@ -880,7 +884,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
                   <button
                     key={q}
                     onClick={() => setBet((b) => Math.min(MAX_BET, b + q))}
-                    className="rounded-md border border-purple-500/40 bg-purple-900/30 px-2.5 py-1 text-[11px] font-bold text-purple-100 active:scale-95"
+                    className={`rounded-md border px-2.5 py-1 text-[11px] font-bold active:scale-95 ${T.quickBtn}`}
                   >
                     +{q >= 1000 ? `${q / 1000}K` : q}
                   </button>
@@ -889,7 +893,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
               <button
                 onClick={onDeal}
                 disabled={!user || bet > balance || busy}
-                className="mt-3 w-full rounded-xl bg-gradient-to-r from-fuchsia-600 to-purple-600 px-4 py-3 font-display text-base font-black uppercase tracking-widest text-white shadow-[0_0_18px_rgba(217,70,239,0.55)] transition active:scale-[0.98] disabled:opacity-50"
+                className={`mt-3 w-full rounded-xl px-4 py-3 font-display text-base font-black uppercase tracking-widest transition active:scale-[0.98] disabled:opacity-50 ${T.primaryBtn}`}
               >
                 {busy ? "..." : "Repartir"}
               </button>
@@ -897,8 +901,8 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
           )}
 
           {(phase === "playing" || phase === "dealing" || phase === "dealerTurn") && (
-            <div className="-mt-4 rounded-2xl border border-purple-500/40 bg-[#0c0620]/85 p-3.5 shadow-[0_0_20px_rgba(168,85,247,0.25)] backdrop-blur-md">
-              <div className="flex items-center justify-between text-[12px] font-bold uppercase tracking-widest text-purple-200/80">
+            <div className={`-mt-4 rounded-2xl border p-3.5 backdrop-blur-md ${T.panel} ${T.panelGlow}`}>
+              <div className={`flex items-center justify-between text-[12px] font-bold uppercase tracking-widest ${T.labelMuted}`}>
                 <span>Apuesta: <span className="text-white">${formatCOP(doubled ? bet * 2 : bet)}</span></span>
                 <span>Puntos: <span className="text-white">{playerScore}</span></span>
               </div>
@@ -911,14 +915,14 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
                 <button
                   onClick={onHit}
                   disabled={phase !== "playing" || busy}
-                  className="rounded-xl bg-gradient-to-b from-emerald-500 to-emerald-700 px-2 py-2.5 text-sm font-black uppercase tracking-wider text-white shadow-md active:scale-95 disabled:opacity-40"
+                  className={`rounded-xl px-2 py-2.5 text-sm font-black uppercase tracking-wider active:scale-95 disabled:opacity-40 ${T.hitBtn}`}
                 >
                   Pedir
                 </button>
                 <button
                   onClick={onStand}
                   disabled={phase !== "playing" || busy}
-                  className="rounded-xl bg-gradient-to-b from-fuchsia-600 to-purple-700 px-2 py-2.5 text-sm font-black uppercase tracking-wider text-white shadow-md active:scale-95 disabled:opacity-40"
+                  className={`rounded-xl px-2 py-2.5 text-sm font-black uppercase tracking-wider active:scale-95 disabled:opacity-40 ${T.standBtn}`}
                 >
                   Plantarse
                 </button>
@@ -926,7 +930,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
                   <button
                     onClick={() => { void handleInsurance(true); }}
                     disabled={phase !== "playing" || busy || Math.floor(bet / 2) > balance}
-                    className="rounded-xl border-2 border-amber-400 bg-amber-500/20 px-2 py-2.5 text-xs font-black uppercase tracking-wider text-amber-100 shadow-[0_0_12px_rgba(251,191,36,0.45)] active:scale-95 disabled:opacity-40"
+                    className={`rounded-xl px-2 py-2.5 text-xs font-black uppercase tracking-wider active:scale-95 disabled:opacity-40 ${T.insuranceBtn}`}
                   >
                     Seguro<br />
                     <span className="text-[9px] font-bold opacity-80">½ apuesta</span>
@@ -935,7 +939,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
                   <button
                     onClick={onDouble}
                     disabled={phase !== "playing" || busy || player.length !== 2 || bet > balance}
-                    className="rounded-xl border-2 border-purple-400 bg-transparent px-2 py-2.5 text-sm font-black uppercase tracking-wider text-purple-100 shadow-[0_0_12px_rgba(168,85,247,0.45)] active:scale-95 disabled:opacity-40"
+                    className={`rounded-xl px-2 py-2.5 text-sm font-black uppercase tracking-wider active:scale-95 disabled:opacity-40 ${T.doubleBtn}`}
                   >
                     Doblar
                   </button>
@@ -950,10 +954,10 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
           )}
 
           {phase === "result" && (
-            <div className="rounded-2xl border border-purple-500/40 bg-[#0c0620]/85 p-3 shadow-[0_0_20px_rgba(168,85,247,0.25)] backdrop-blur-md">
+            <div className={`rounded-2xl border p-3 backdrop-blur-md ${T.panel} ${T.panelGlow}`}>
               <button
                 onClick={onNewHand}
-                className="w-full rounded-xl bg-gradient-to-r from-fuchsia-600 to-purple-600 px-4 py-3 font-display text-base font-black uppercase tracking-widest text-white shadow-[0_0_18px_rgba(217,70,239,0.55)] transition active:scale-[0.98]"
+                className={`w-full rounded-xl px-4 py-3 font-display text-base font-black uppercase tracking-widest transition active:scale-[0.98] ${T.primaryBtn}`}
               >
                 Nueva Mano
               </button>
@@ -965,10 +969,10 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
           className="relative z-10 mx-auto mt-1 w-full max-w-md px-1"
           style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 1.25rem)" }}
         >
-          <div className="rounded-xl border border-purple-500/30 bg-[#0c0620]/80 py-1.5 backdrop-blur-md">
+          <div className={`rounded-xl border py-1.5 backdrop-blur-md ${T.tickerWrap}`}>
             <div className="mb-1 flex items-center gap-1.5 px-2">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
-              <span className="text-[9px] font-bold uppercase tracking-widest text-purple-200/80">
+              <span className={`text-[9px] font-bold uppercase tracking-widest ${T.labelMuted}`}>
                 Últimos ganadores
               </span>
             </div>
@@ -987,14 +991,14 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
                   ref={(node) => {
                     slotRefs.current[w.slotId] = node;
                   }}
-                  className="absolute left-0 top-1/2 flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full border border-purple-500/30 bg-[#1a0b3a]/70 px-2.5 py-1 text-[11px] will-change-transform"
+                  className={`absolute left-0 top-1/2 flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-1 text-[11px] will-change-transform ${T.tickerItem}`}
                   style={{
                     width: `${TICKER_ITEM_WIDTH}px`,
                     transform: `translate3d(${slotPositionsRef.current[w.slotId] ?? 0}px, -50%, 0)`,
                   }}
                 >
                   <span className="truncate font-bold text-white">{w.name}</span>
-                  <span className="shrink-0 text-[9px] uppercase tracking-wider text-purple-300/70">
+                  <span className={`shrink-0 text-[9px] uppercase tracking-wider ${T.tickerGame}`}>
                     · {w.game}
                   </span>
                   <span className="ml-auto shrink-0 font-display font-black text-emerald-300">
