@@ -38,6 +38,16 @@ import blackjackBanner from "@/assets/blackjack-banner.jpg";
 import jackpotBanner from "@/assets/jackpot-banner.jpg";
 import ruletaBanner from "@/assets/ruleta-banner.jpg";
 import casinoIntro from "@/assets/audio/casino-intro.mp3.asset.json";
+import avatar1 from "@/assets/avatars/avatar-1.png.asset.json";
+import avatar2 from "@/assets/avatars/avatar-2.png.asset.json";
+import avatar3 from "@/assets/avatars/avatar-3.png.asset.json";
+import avatar4 from "@/assets/avatars/avatar-4.png.asset.json";
+import avatar5 from "@/assets/avatars/avatar-5.png.asset.json";
+import avatar6 from "@/assets/avatars/avatar-6.png.asset.json";
+import avatar7 from "@/assets/avatars/avatar-7.png.asset.json";
+import avatar8 from "@/assets/avatars/avatar-8.png.asset.json";
+
+const WIN_AVATARS = [avatar1, avatar2, avatar3, avatar4, avatar5, avatar6, avatar7, avatar8];
 
 const LAST_WINS = [
   { user: "Usuario123", game: "Spaceman", amount: 252413, mult: 1.85 },
@@ -720,13 +730,25 @@ function HomePage() {
               className="flex flex-col gap-2"
               style={{ animation: `wins-scroll ${LAST_WINS.length * 2.2}s linear infinite` }}
             >
-              {[...LAST_WINS, ...LAST_WINS].map((w, i) => (
+              {[...LAST_WINS, ...LAST_WINS].map((w, i) => {
+                const avatar = WIN_AVATARS[i % WIN_AVATARS.length];
+                return (
                 <li
                   key={`${w.user}-${i}`}
                   className="home-win-row flex h-[44px] items-center gap-3 rounded-lg border border-purple-500/20 bg-[#150830]/60 px-2.5"
                 >
-                  <div className="home-win-avatar flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-purple-600/30 ring-1 ring-purple-400/30">
-                    <User className="h-4 w-4 text-purple-200" />
+                  <div className="home-win-avatar h-8 w-8 shrink-0 overflow-hidden rounded-full bg-purple-600/30 ring-1 ring-purple-400/30">
+                    <img
+                      src={avatar.url}
+                      alt={w.user}
+                      width={32}
+                      height={32}
+                      loading={i < 6 ? "eager" : "lazy"}
+                      decoding="async"
+                      fetchPriority={i < 4 ? "high" : "auto"}
+                      className="h-full w-full object-cover home-win-avatar-img"
+                      onLoad={(e) => e.currentTarget.classList.add("is-loaded")}
+                    />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="home-win-user truncate text-xs font-semibold text-white">{w.user}</div>
@@ -740,7 +762,8 @@ function HomePage() {
                     <div className="home-win-mult text-[10px] font-bold text-purple-300">{w.mult.toFixed(2)}x</div>
                   </div>
                 </li>
-              ))}
+                );
+              })}
             </ul>
           </div>
           <style>{`
@@ -748,6 +771,8 @@ function HomePage() {
               0% { transform: translateY(0); }
               100% { transform: translateY(calc(-${LAST_WINS.length} * 52px)); }
             }
+            .home-win-avatar-img { opacity: 0; transition: opacity 280ms ease-out; }
+            .home-win-avatar-img.is-loaded { opacity: 1; }
           `}</style>
         </section>
 
