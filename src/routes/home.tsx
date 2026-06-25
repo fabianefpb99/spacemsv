@@ -47,6 +47,19 @@ const gameBlackjackVip = gameBlackjackVipAsset.url;
 const gameArena = gameArenaAsset.url;
 const gameRuleta = gameRuletaAsset.url;
 import gift3d from "@/assets/gift-3d.png";
+
+function prettyGameName(g: string): string {
+  const k = (g || "").toLowerCase();
+  if (k.includes("spaceman")) return "SPACEMAN";
+  if (k.includes("mines") || k.includes("minas")) return "MINAS";
+  if (k.includes("slot")) return "SLOT MAFIA";
+  if (k.includes("dice") || k.includes("dado")) return "DADOS";
+  if (k.includes("blackjack") && k.includes("vip")) return "BLACKJACK VIP";
+  if (k.includes("blackjack")) return "BLACKJACK";
+  if (k.includes("arena")) return "ARENA";
+  if (k.includes("ruleta") || k.includes("roulette")) return "RULETA";
+  return g.toUpperCase();
+}
 import trophy3d from "@/assets/trophy-3d.png";
 import blackjackPromo from "@/assets/blackjack-promo.png.asset.json";
 import blackjackBanner from "@/assets/blackjack-banner.jpg";
