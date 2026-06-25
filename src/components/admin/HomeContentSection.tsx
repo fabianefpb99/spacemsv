@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Loader2, Plus, Trash2, Save, Upload, Image as ImageIcon, Download } from "lucide-react";
+import { Loader2, Plus, Trash2, Save, Upload, Image as ImageIcon, Download, Zap } from "lucide-react";
 import { toast } from "sonner";
 import {
   adminListHomeSlides,
@@ -11,6 +11,8 @@ import {
   adminUpsertFeaturedGame,
   adminDeleteFeaturedGame,
   adminUploadHomeImage,
+  adminListHomeStorageObjects,
+  adminReplaceHomeImage,
 } from "@/lib/admin/home-content.functions";
 import { DEFAULT_SLIDES, DEFAULT_FEATURED } from "@/lib/admin/home-defaults";
 import { Panel } from "./shared";
@@ -72,6 +74,7 @@ export function HomeContentSection() {
   const [tab, setTab] = useState<"slides" | "featured">("slides");
   return (
     <div className="space-y-3">
+      <BulkCompressPanel />
       <div className="flex gap-2">
         <button
           onClick={() => setTab("slides")}
