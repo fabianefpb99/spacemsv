@@ -373,6 +373,10 @@ export function BlackjackGame() {
       const initialDealer = view.public_state.dealer;
       sessionRef.current = { id: view.session_id, nonce: view.nonce };
       applyBalance(view.new_balance);
+      setInsuranceOffered(!!view.public_state.insuranceOffered);
+      setInsuranceTaken(false);
+      setInsuranceCost(0);
+      setInsurancePayout(0);
 
       // Render cards progressively with the same cadence as before.
       playCardDealSound();
