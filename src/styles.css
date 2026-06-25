@@ -2782,11 +2782,6 @@ html.light .special-event-badge-label {
   text-shadow: none !important;
 }
 
-html.light .evento-especial-eyebrow,
-html.light :not(.theme-dark-fixed) .evento-especial-eyebrow,
-html.light .evento-especial-eyebrow.text-amber-200 {
-  color: #fbbf24 !important;
-}
 
 /* Ranking hero: force title yellow and subtitles white in light mode */
 html.light h1.ranking-hero-title.text-white,
