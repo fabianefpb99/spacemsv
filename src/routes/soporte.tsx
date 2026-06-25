@@ -70,17 +70,17 @@ function SoportePage() {
           <div className="h-7 w-11" />
         </header>
 
-        {/* Hero — solid dark purple in both themes, white text. High contrast against white page. */}
+        {/* Hero — solid dark purple in both themes, with explicit fixed contrast. */}
         <section className="mt-5 rounded-2xl border border-[#3b0764] bg-[#1a0b3a] p-4 shadow-[0_8px_24px_-12px_rgba(59,7,100,0.45)] dark:border-fuchsia-500/30 dark:shadow-[0_0_18px_rgba(168,85,247,0.25)]">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full border border-fuchsia-400/60 bg-fuchsia-500/20 text-fuchsia-200">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[#a855f7] bg-[#3b0764] text-[#f5d0fe]">
               <Headphones className="h-6 w-6" />
             </div>
             <div className="min-w-0">
               <div className="font-display text-sm font-black uppercase tracking-wider text-white">
                 ¿Necesitas ayuda?
               </div>
-              <div className="text-[11px] text-purple-200">
+              <div className="text-[11px] font-semibold text-white">
                 Te respondemos lo antes posible.
               </div>
             </div>
@@ -88,10 +88,12 @@ function SoportePage() {
 
           <a
             href={`mailto:${SUPPORT_EMAIL}`}
-            className="mt-4 flex items-center gap-2 rounded-xl border border-fuchsia-400/40 bg-white px-3 py-2.5 text-[#1a0b3a] transition-colors hover:border-fuchsia-300 hover:bg-fuchsia-50"
+            className="mt-4 flex min-h-11 w-full items-center gap-2 rounded-xl border border-[#f5d0fe] bg-white px-3 py-2.5 text-[#1a0b3a] transition-colors hover:border-[#d946ef] hover:bg-[#fff7ff]"
           >
-            <Mail className="h-4 w-4 text-fuchsia-600" />
-            <span className="text-xs font-bold">{SUPPORT_EMAIL}</span>
+            <Mail className="h-4 w-4 shrink-0 text-[#86198f]" />
+            <span className="min-w-0 break-all text-xs font-black text-[#1a0b3a]">
+              {SUPPORT_EMAIL}
+            </span>
           </a>
         </section>
 
