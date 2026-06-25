@@ -69,6 +69,13 @@ const ActionInput = z.object({
   client_action_id: z.string().uuid(),
 });
 
+const InsuranceInput = z.object({
+  session_id: z.string().uuid(),
+  nonce: z.number().int().min(0),
+  client_action_id: z.string().uuid(),
+  take: z.boolean(),
+});
+
 /* ------------------------------------------------------------------ */
 /* Types returned to the client                                        */
 /* ------------------------------------------------------------------ */
