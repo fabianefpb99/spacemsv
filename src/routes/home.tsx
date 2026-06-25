@@ -19,6 +19,8 @@ import {
 } from "@/lib/admin/home-content.functions";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { HamburgerDrawer } from "@/components/HamburgerDrawer";
+import { UserAvatar } from "@/components/UserAvatar";
+import { generateRecentFillerWins, type FillerWin } from "@/lib/fillers";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
 import heroImg from "@/assets/home-hero.jpg";
 import heroMinesImg from "@/assets/home-hero-mines.jpg";
@@ -50,35 +52,6 @@ import blackjackBanner from "@/assets/blackjack-banner.jpg";
 import jackpotBanner from "@/assets/jackpot-banner.jpg";
 import ruletaBanner from "@/assets/ruleta-banner.jpg";
 import casinoIntro from "@/assets/audio/casino-intro.mp3.asset.json";
-import avatar1 from "@/assets/avatars/avatar-1.png.asset.json";
-import avatar2 from "@/assets/avatars/avatar-2.png.asset.json";
-import avatar3 from "@/assets/avatars/avatar-3.png.asset.json";
-import avatar4 from "@/assets/avatars/avatar-4.png.asset.json";
-import avatar5 from "@/assets/avatars/avatar-5.png.asset.json";
-import avatar6 from "@/assets/avatars/avatar-6.png.asset.json";
-import avatar7 from "@/assets/avatars/avatar-7.png.asset.json";
-import avatar8 from "@/assets/avatars/avatar-8.png.asset.json";
-
-const WIN_AVATARS = [avatar1, avatar2, avatar3, avatar4, avatar5, avatar6, avatar7, avatar8];
-
-const LAST_WINS = [
-  { user: "Usuario123", game: "Spaceman", amount: 252413, mult: 1.85 },
-  { user: "Astronauta7", game: "Crash", amount: 121876, mult: 2.34 },
-  { user: "GalaxyWin", game: "Mines", amount: 82776, mult: 3.12 },
-  { user: "MoonPlayer", game: "Dice", amount: 61329, mult: 1.45 },
-  { user: "NovaKing", game: "Spaceman", amount: 47892, mult: 1.27 },
-  { user: "StarHunter", game: "Crash", amount: 198344, mult: 2.91 },
-  { user: "CometRider", game: "Mines", amount: 35421, mult: 4.08 },
-  { user: "LunarFox", game: "Dice", amount: 78215, mult: 1.62 },
-  { user: "OrbitX", game: "Spaceman", amount: 134567, mult: 2.18 },
-  { user: "PlasmaGirl", game: "Crash", amount: 56892, mult: 1.74 },
-  { user: "VoidWalker", game: "Mines", amount: 312485, mult: 5.43 },
-  { user: "GalaxyKid", game: "Dice", amount: 22719, mult: 1.18 },
-  { user: "RocketJoe", game: "Spaceman", amount: 89124, mult: 1.96 },
-  { user: "NebulaQ", game: "Crash", amount: 145678, mult: 2.67 },
-  { user: "MeteorMax", game: "Mines", amount: 67432, mult: 3.21 },
-  { user: "AlphaStar", game: "Dice", amount: 41587, mult: 1.53 },
-];
 
 export const Route = createFileRoute("/home")({
   head: () => ({
