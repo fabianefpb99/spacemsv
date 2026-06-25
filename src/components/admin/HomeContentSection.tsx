@@ -738,9 +738,11 @@ function FeaturedCard({
         </div>
         <div className="grid flex-1 grid-cols-2 gap-2">
           <Field
-            label="Nombre"
+            label="Nombre (Enter = 2 líneas)"
             value={draft.name}
             onChange={(v) => onChange({ ...draft, name: v })}
+            textarea
+            placeholder={"SPACE\nMAN"}
           />
           <Field
             label="Etiqueta"
