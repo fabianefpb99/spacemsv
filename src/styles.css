@@ -750,8 +750,9 @@ html.dark .promo-banner .promo-banner__chev--glass svg * {
    its thickness inward so there is no dead gap between the frame and glow.
    Dark mode keeps the original rule above unchanged. */
 html.light .slider-neon-frame::before {
-  inset: 0 !important;
-  padding: 4px !important;
+  inset: -2px !important;
+  padding: 6px !important;
+  border-radius: calc(1rem + 2px) !important;
   z-index: 8 !important;
   background: conic-gradient(
     from var(--neon-angle, 0deg),
