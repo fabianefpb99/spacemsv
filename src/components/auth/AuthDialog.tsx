@@ -125,8 +125,7 @@ function AuthDialogContent({ onOpenChange }: { onOpenChange: (v: boolean) => voi
           </Tabs>
         </div>
       </div>
-    </div>,
-    document.body,
+    </div>
   );
 }
 
