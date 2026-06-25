@@ -1,73 +1,38 @@
-## Blackjack VIP — clon con stats, RTP y tema independientes
+# Rediseño de cards en "Juegos Destacados"
 
-Confirmado:
-- Imagen de mesa VIP recibida (negro + dorado, marco curvo de cuero acolchado).
-- Tema HUD: dorado (`amber-400/500`, `#d4a84c`) sobre negro profundo, reemplazando todos los moradores del original.
-- Cartas también temables vía prop (no rompe el original).
+Solo cambio visual. No se toca: scroll horizontal, drag, queries, datos, tags ni routing.
 
----
+## Cambios en `src/routes/home.tsx` (cards dentro del scroll, líneas ~742-772)
 
-## Implementación
+1. **Card como contenedor de imagen full-bleed**
+   - Cambiar `aspect-square` (cuadrado) → relación más alta tipo póster (`aspect-[3/4]`) para mantener proporción del ejemplo (imagen vertical).
+   - Eliminar el wrapper de texto inferior (`<div className="flex min-h-[42px]...">`) y el sub-bloque de imagen separado.
+   - La `<Link>` pasa a ser `relative` con `overflow-hidden`, y dentro:
+     - `SkeletonImage` ocupa `absolute inset-0 h-full w-full object-cover`.
+     - Capa de degradado inferior `absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/90 via-black/55 to-transparent` para que el texto sea legible sin tapar la ilustración.
+     - Contenedor de texto `absolute inset-x-0 bottom-0 px-2 pb-2 pt-6 text-center` con sangrado (padding) para que el título y tag nunca toquen los bordes.
 
-### 1. Asset
-- Subir `BlackJack VIP - Betspace.png` como asset CDN → `src/assets/blackjack-vip-bg.png.asset.json`.
+2. **Título sobre la imagen, ligeramente debajo de la mitad**
+   - Mismo texto (`gameName`), tipografía display, blanco, `font-black uppercase`, tamaño responsivo (`text-[10px] sm:text-xs`), `drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]` para contraste.
+   - Posicionado dentro del bloque inferior (queda ~55-60% bajando desde arriba gracias al `pt-6` + gradiente).
 
-### 2. Motor parametrizado (un solo código, dos juegos)
-- `src/lib/games/blackjack.shared.ts`:
-  ```ts
-  export type BJVariantKey = "blackjack" | "blackjack_vip";
-  export const BJ_VARIANTS = {
-    blackjack:     { gameKey: "blackjack",     minBet: 500,    maxBet: 50_000,  betStep: 500   },
-    blackjack_vip: { gameKey: "blackjack_vip", minBet: 5_000,  maxBet: 200_000, betStep: 1_000 },
-  } as const;
-  ```
-- `src/lib/games/blackjack.functions.ts`: cada server fn (`bjResume`, `bjDeal`, `bjHit`, `bjStand`, `bjDouble`, `bjInsurance`) recibe `variant` en su input. Reemplazo de todos los `.eq("game","blackjack")` y `game:"blackjack"` por `cfg.gameKey`. El schema de bet se construye desde la config de la variante. `loadBjBias(variant)` lee la fila correspondiente en `game_rtp_config`.
-- El RPC `bj_apply_action` no filtra por `game` → sirve para ambas variantes sin migración.
+3. **Tag (NUEVO/POPULAR/VIP/etc.)**
+   - Se mantiene debajo del título, con las mismas clases de color por variante (`g.tagCls`), pero `px-2 py-0.5 text-[8px]`, sangrado garantizado por el padding del contenedor.
 
-### 3. Ruta y componente
-- `src/routes/blackjack-vip.tsx`: mismo patrón que `/blackjack`, pasa `variant="blackjack_vip"` y `theme="vip"`.
-- `src/components/BlackjackGame.tsx`: nuevas props `variant: BJVariantKey` y `theme: "space" | "vip"`. Manda `variant` en cada llamada server. El `theme` se centraliza en un objeto de clases:
-  ```ts
-  const T = theme === "vip"
-    ? { bg: bgVip.url, accent: "amber-400", panel: "border-amber-500/40 bg-black/60",
-        primaryBtn: "bg-gradient-to-b from-amber-400 to-amber-600 text-black border-amber-300",
-        card: "border-amber-400/60 bg-zinc-900 shadow-[0_0_18px_rgba(212,168,76,0.35)]",
-        cardText: "text-amber-200", ... }
-    : { /* tokens actuales morados — sin cambios */ };
-  ```
-  Todas las clases hardcoded del componente actual se reemplazan por `T.*`. Por defecto `theme="space"` produce el mismo render byte-a-byte que hoy → original intacto.
-- `src/components/LoadingScreen.tsx`: agregar `variant: "blackjack_vip"` (reutiliza el promo VIP o el mismo por ahora).
+4. **Bordes y sombra de la card**
+   - Conservar `rounded-xl` y el borde fucsia ya existente (regla actual en modo oscuro). Sin cambios funcionales en clases globales.
 
-### 4. Admin — juego separado automáticamente
-- `src/components/admin/shared.tsx`: agregar `blackjack_vip: "BLACKJACK VIP"` en `GAME_LABELS`. El panel de Ganancias, KPIs, GGR y alertas ya agrupan por columna `game` → aparece como fila aparte sin más cambios.
-- `src/components/admin/MissionsSection.tsx`: agregar `{ value: "blackjack_vip", label: "Blackjack VIP" }`.
+5. **Modo claro**
+   - El degradado oscuro y texto blanco son fijos dentro de la card (independiente del tema), lo que asegura legibilidad en ambos modos sin tocar reglas de `theme-dark-fixed` ni styles.css.
 
-### 5. Migración SQL
-```sql
-INSERT INTO public.game_rtp_config (game, rtp_target, is_active)
-VALUES ('blackjack_vip', 98.50, true)
-ON CONFLICT (game) DO NOTHING;
-```
+## Lo que NO se toca
 
-### 6. Acceso desde el home
-- Añadir tarjeta "Blackjack VIP" al rotador de juegos destacados (mismo patrón que las otras), apuntando a `/blackjack-vip`.
+- `featuredScrollRef`, drag handlers, `home-featured-scroll`, ancho de cada card (`w-[22%] min-w-[22%]`).
+- Queries, caching, `gamesList`, `formatGameTag`, mapeo de tag colors.
+- Banners de BlackJack/Ruleta y resto del home.
+- Imágenes/SVGs/lógica de juegos.
 
----
+## Verificación
 
-## Garantías de no-regresión
-
-- **`/blackjack` original** = mismo `variant="blackjack"` + `theme="space"` → mismas queries, mismo HUD, mismas cartas, mismo RTP.
-- **Estadísticas** separadas por la columna `game` en `game_sessions` y `transactions` (ya existente).
-- **Sesiones cruzadas** imposibles: `loadOpenSession` filtra por `game = variant`.
-- **RTP independiente**: cada variante lee su fila en `game_rtp_config`; el admin las edita por separado en `RtpSection`.
-- **Cartas temables sin romper original**: `theme="space"` mantiene clases actuales; `theme="vip"` aplica las doradas.
-
----
-
-## Configuración inicial VIP
-
-- Apuesta mín. **$5.000**, máx. **$200.000**, paso **$1.000**.
-- RTP target **98.50%** (un poco más bajo que el normal por ser mesa premium; se ajusta luego en admin).
-- Insurance / 3:2 / soft-17 idénticos al original.
-
-Procedo.
+- Build/typecheck automático.
+- Vista en preview móvil (390px) confirmando: imagen full-bleed, título sobre imagen ligeramente debajo del centro, tag debajo, padding visible en los 4 lados del texto, scroll horizontal funciona igual.
