@@ -59,6 +59,7 @@ export type BJVariantConfig = {
   minBet: number;
   maxBet: number;
   betStep: number;
+  defaultBet: number;
 };
 
 export const BJ_VARIANTS: Record<BJVariantKey, BJVariantConfig> = {
@@ -67,12 +68,14 @@ export const BJ_VARIANTS: Record<BJVariantKey, BJVariantConfig> = {
     minBet: BJ_MIN_BET,
     maxBet: BJ_MAX_BET,
     betStep: BJ_BET_STEP,
+    defaultBet: 2_000,
   },
   blackjack_vip: {
     gameKey: "blackjack_vip",
     minBet: 5_000,
     maxBet: 200_000,
     betStep: 1_000,
+    defaultBet: 10_000,
   },
 };
 
