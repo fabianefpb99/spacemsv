@@ -258,6 +258,17 @@ function HomePage() {
     axis: "x" | "y" | null;
   }>({ active: false, startX: 0, startY: 0, scrollLeft: 0, dragged: false, axis: null });
 
+  // Wins dinámicos coherentes con el ranking (mismos fillers).
+  // Se rotan cada ~25 s para que el panel se sienta vivo.
+  const [lastWins, setLastWins] = useState<FillerWin[]>(() =>
+    generateRecentFillerWins(12, Date.now()),
+  );
+  useEffect(() => {
+    const tick = () => setLastWins(generateRecentFillerWins(12, Date.now()));
+    const id = window.setInterval(tick, 25_000);
+    return () => window.clearInterval(id);
+  }, []);
+
   const fetchSlides = useServerFn(getPublicHomeSlides);
   const fetchFeatured = useServerFn(getPublicFeaturedGames);
   const slidesQ = useQuery({
