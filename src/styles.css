@@ -746,26 +746,25 @@ html.dark .promo-banner .promo-banner__chev--glass svg * {
           drop-shadow(0 0 14px rgba(76, 29, 149, 0.55));
 }
 
-/* Light mode only — the slider sweep runs inside the frame so it does not
-   disappear into the white page background. Dark mode keeps the original
-   outside-edge sweep above. */
+/* Light mode only — keep the sweep anchored to the real outer edge, but draw
+   its thickness inward so there is no dead gap between the frame and glow.
+   Dark mode keeps the original rule above unchanged. */
 html.light .slider-neon-frame::before {
-  inset: 5px !important;
-  padding: 3px !important;
+  inset: 0 !important;
+  padding: 4px !important;
   z-index: 8 !important;
   background: conic-gradient(
     from var(--neon-angle, 0deg),
-    rgba(250, 204, 21, 0) 0deg,
-    rgba(250, 204, 21, 0) 175deg,
-    rgba(250, 204, 21, 0.40) 225deg,
-    rgba(250, 204, 21, 0.95) 285deg,
-    #facc15 315deg,
-    rgba(59, 7, 100, 0.95) 338deg,
-    rgba(59, 7, 100, 0.55) 354deg,
+    rgba(168, 85, 247, 0) 0deg,
+    rgba(168, 85, 247, 0) 178deg,
+    rgba(168, 85, 247, 0.34) 230deg,
+    rgba(217, 70, 239, 0.90) 292deg,
+    #a855f7 326deg,
+    rgba(59, 7, 100, 0.92) 348deg,
     rgba(59, 7, 100, 0) 360deg
   ) !important;
-  filter: drop-shadow(0 0 5px rgba(250, 204, 21, 0.85))
-          drop-shadow(0 0 10px rgba(59, 7, 100, 0.45)) !important;
+  filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.75))
+          drop-shadow(0 0 9px rgba(217, 70, 239, 0.45)) !important;
   opacity: 0;
 }
 
