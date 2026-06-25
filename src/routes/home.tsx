@@ -405,6 +405,7 @@ function HomePage() {
   };
 
   const handleFeaturedPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "touch") return;
     const el = featuredScrollRef.current;
     if (!el) return;
     featuredDragRef.current = {
@@ -419,6 +420,7 @@ function HomePage() {
   };
 
   const handleFeaturedPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "touch") return;
     const drag = featuredDragRef.current;
     const el = featuredScrollRef.current;
     if (!drag.active || !el) return;
@@ -433,6 +435,7 @@ function HomePage() {
   };
 
   const stopFeaturedDrag = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "touch") return;
     const el = featuredScrollRef.current;
     featuredDragRef.current.active = false;
     featuredDragRef.current.axis = null;
