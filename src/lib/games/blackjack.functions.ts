@@ -206,9 +206,11 @@ async function applyAction(args: {
 
 export const bjResume = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<BJSessionView | null> => {
+  .inputValidator((input) => ResumeInput.parse(input))
+  .handler(async ({ data, context }): Promise<BJSessionView | null> => {
     const userId = context.userId;
-    const session = await loadOpenSession(userId);
+    const cfg = BJ_VARIANTS[data.variant];
+    const session = await loadOpenSession(userId, cfg.gameKey);
     if (!session) return null;
     const balance = await getBalance(userId);
     return {
@@ -230,6 +232,7 @@ export const bjDeal = createServerFn({ method: "POST" })
   .handler(async ({ data, context }): Promise<BJSessionView> => {
     const userId = context.userId;
     const { bet, client_action_id } = data;
+    const cfg = BJ_VARIANTS[data.variant];
 
     // 1a. Idempotency: if this exact client_action_id already produced
     // a session, just return it. Prevents `bj_insert_failed: duplicate
@@ -239,7 +242,7 @@ export const bjDeal = createServerFn({ method: "POST" })
         .from("game_sessions")
         .select("id, user_id, status, bet_amount, state, public_state, nonce")
         .eq("user_id", userId)
-        .eq("game", "blackjack")
+        .eq("game", cfg.gameKey)
         .eq("client_action_id", client_action_id)
         .maybeSingle();
       if (dup) {
@@ -258,7 +261,7 @@ export const bjDeal = createServerFn({ method: "POST" })
     // 1b. If a hand is already in progress, RESUME it instead of
     // force-closing — closing a playing hand would leave the bet
     // debited with no payout (real money loss).
-    const existing = await loadOpenSession(userId);
+    const existing = await loadOpenSession(userId, cfg.gameKey);
     if (existing) {
       if (existing.public_state.phase === "playing") {
         const balance = await getBalance(userId);
@@ -282,7 +285,7 @@ export const bjDeal = createServerFn({ method: "POST" })
       user_id: userId,
       delta: -bet,
       type: "bet",
-      game: "blackjack",
+      game: cfg.gameKey,
       client_action_id,
       meta: { kind: "blackjack_bet", bet },
     }).catch((err) => {
@@ -295,7 +298,7 @@ export const bjDeal = createServerFn({ method: "POST" })
     // 3. Build shoe + initial deal.
     const serverSeed = newServerSeed();
     const serverSeedHash = sha256Hex(serverSeed);
-    const bias = await loadBjBias();
+    const bias = await loadBjBias(cfg.gameKey);
     let shoe = makeShoe();
 
     const draws: Card[] = [];
@@ -348,7 +351,7 @@ export const bjDeal = createServerFn({ method: "POST" })
           user_id: userId,
           delta: payout,
           type: "win",
-          game: "blackjack",
+          game: cfg.gameKey,
           client_action_id: deriveActionId(client_action_id, "win"),
           meta: { kind: "blackjack_win", bet, outcome: resolved.outcome },
         });
@@ -372,7 +375,7 @@ export const bjDeal = createServerFn({ method: "POST" })
       .from("game_sessions")
       .insert({
         user_id: userId,
-        game: "blackjack",
+        game: cfg.gameKey,
         bet_amount: bet,
         status,
         payout: status === "closed" ? payout : null,
@@ -394,7 +397,7 @@ export const bjDeal = createServerFn({ method: "POST" })
           .from("game_sessions")
           .select("id, user_id, status, bet_amount, state, public_state, nonce")
           .eq("user_id", userId)
-          .eq("game", "blackjack")
+          .eq("game", cfg.gameKey)
           .eq("client_action_id", client_action_id)
           .maybeSingle();
         if (dup) {
