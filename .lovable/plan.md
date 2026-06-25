@@ -1,46 +1,48 @@
-## Cambios en `src/styles.css` (modo claro)
+## Sistema de jugadores "filler" para Ranking y Arena
 
-### 1. Banner promocional — Opción B: gradiente con muchas paradas
-Reemplazar el `.promo-banner__scrim` actual por un degradado de 9–10 stops con caída muy gradual, empezando con menos opacidad para no apagar la imagen y terminando suavemente sin "corte blanco":
+Generamos jugadores ficticios deterministas por día que rellenan el podio y la lista de Arena cuando no hay jugadores reales suficientes. **No se marcan visualmente** — se ven idénticos a usuarios reales. Los jugadores reales siempre tienen prioridad: si un usuario real supera a un filler, el filler baja o sale del top automáticamente.
 
-```text
-linear-gradient(90deg,
-  #ffffff 0%,
-  rgba(255,255,255,0.88) 14%,
-  rgba(255,255,255,0.74) 24%,
-  rgba(255,255,255,0.58) 34%,
-  rgba(255,255,255,0.42) 44%,
-  rgba(255,255,255,0.28) 54%,
-  rgba(255,255,255,0.16) 64%,
-  rgba(255,255,255,0.07) 72%,
-  rgba(255,255,255,0.02) 80%,
-  rgba(255,255,255,0) 88%
-)
-```
-Resultado: texto legible a la izquierda, imagen conserva color/brillo, transición imperceptible (sin línea blanca visible).
+### Comportamiento
 
-### 2. Sombra flotante en todos los módulos del Home
-Añadir/ajustar token y aplicarlo a las tarjetas principales del home (banners promo, secciones de juegos, tarjetas de torneos, etc.) solo en modo claro:
+- **Determinismo diario**: semilla = fecha en zona Colombia (UTC-5, `YYYY-MM-DD`). Mismos nombres, avatares y montos máximos durante todo el día → refrescar no cambia nada.
+- **Crecimiento progresivo**: el monto mostrado escala con la hora del día (06:00 ≈ 25% del máximo, 23:00 ≈ 100%). A las 2-3 horas notarás que las cifras subieron, simulando actividad real.
+- **Reset a medianoche Colombia**: nuevos nombres, avatares y montos al día siguiente.
+- **Fusión con reales**: lista final = reales ∪ fillers, ordenada por monto desc, cortada a 10. Reales nunca son desplazados por un filler de igual monto.
+- **Tu posición ("#1 fabianefpb")**: se calcula contra reales únicamente — los fillers no afectan tu rank propio.
 
-```text
---shadow-float: 0 1px 2px rgba(16,24,40,0.04),
-                0 8px 24px -8px rgba(16,24,40,0.10);
-```
-Aplicado a: `.promo-banner`, contenedores de módulos del home (cards de secciones). Sin borde duro, sensación premium y minimalista. En modo oscuro se mantiene la sombra actual.
+### Cantidades y rangos
 
-### 3. Botón flecha (chevron) sólido blanco
-`.promo-banner__chev` en modo claro:
-- `background: #FFFFFF` (sólido, sin transparencia)
-- `border: 1px solid rgba(16,24,40,0.08)` (en vez de borde morado fuerte)
-- `box-shadow: 0 2px 6px rgba(16,24,40,0.12), 0 1px 2px rgba(16,24,40,0.06)`
-- Icono flecha mantiene color morado `#7C3AED`
-- `z-index: 2` para asegurar que queda sobre la imagen
+- **Ranking general**: 5 fillers, máximos entre **80.000 y 650.000** COP, escalonados (no todos iguales).
+- **Top ganadores de Arena hoy**: **10 fillers**, máximos entre **30.000 y 220.000** COP, escalonados.
 
-Resultado: la flecha se ve siempre, incluso sobre las zonas más brillantes de la imagen del juego.
+### Pool de datos
 
-## Archivos a modificar
-- `src/styles.css` (único archivo)
+- **Usernames**: pool de ~30 nombres tipo casino (`luna_84`, `kr1tyk`, `andrxs07`, `mariana.r`, `betkingco`, `daniela.m`, etc.). La semilla escoge sin repetir.
+- **Avatares**: las 8 keys predeterminadas del sitio (`avatar-1` … `avatar-8`, ya importadas en `src/lib/avatars.ts`). Cada filler recibe una key real → `UserAvatar` la resuelve igual que para un usuario real, mismo cache, misma carga rápida.
 
-## Fuera de alcance
-- No se tocan imágenes, layout, ni `home.tsx`.
-- Modo oscuro intacto.
+### Cambios técnicos (un solo archivo)
+
+`src/lib/ranking.functions.ts`:
+
+1. Añadir helper `getColombiaDateKey()` → `YYYY-MM-DD` en UTC-5 y `getColombiaHour()` → 0-23.
+2. Añadir `hashString(s)` + `mulberry32(seed)` (RNG determinista, sin dependencias).
+3. Añadir constantes `FILLER_USERNAMES: string[]` (≈30 entradas) y `FILLER_AVATAR_KEYS = ["avatar-1", … "avatar-8"]`.
+4. Añadir `generateFillers({ dateKey, kind: 'general' | 'arena', count, hour })`:
+   - RNG sembrado con `hash(dateKey + ":" + kind)`.
+   - Escoge `count` usernames y avatares del pool (sin repetir dentro de la lista).
+   - Asigna `maxAmount` decreciente dentro del rango de ese `kind`.
+   - `currentAmount = round(maxAmount * progressFactor(hour))` con `progressFactor` lineal/suave entre 0.25 y 1.0.
+   - Devuelve `RankingEntry[]` con `user_id = "filler:<kind>:<idx>:<dateKey>"` (estable, sirve de key React).
+5. En `getRankingPublic.handler`, tras leer reales:
+   - `winners = mergeAndTop([...realesWinners, ...fillersGeneral(5)], 10)`
+   - `arena   = mergeAndTop([...realesArena,   ...fillersArena(10)], 10)`
+   - `mergeAndTop` ordena por `net_amount` desc, conserva orden estable para empates (reales primero).
+6. `getMyRankingPosition` **no se modifica** (sigue solo contra reales).
+
+Frontend (`src/routes/ranking.tsx`, `PodiumSlot`, `ArenaRow`): **sin cambios**. Las keys ya usan `e.user_id` que acepta strings arbitrarios; los avatares ya pasan por `UserAvatar` con `avatar_key`.
+
+### Riesgos / consideraciones
+
+- Cero migraciones, cero estado en DB: todo se computa en el handler. Si el reloj del servidor difiere ±1h, el monto puede variar levemente; tolerable.
+- El `refetchInterval: 20_000` del front hará que los montos suban suavemente cuando cruza una hora.
+- Si en el futuro quieres marcar bots visualmente o ajustar rangos, basta tocar las constantes.
