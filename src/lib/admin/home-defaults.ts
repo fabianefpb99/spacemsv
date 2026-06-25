@@ -13,6 +13,7 @@ import gameSpaceman from "@/assets/game-spaceman.jpg";
 import gameSlotMafia from "@/assets/game-slot-mafia.jpg";
 import gameMines from "@/assets/game-mines.jpg";
 import gameDice from "@/assets/game-dice.jpg";
+import gameBlackjackVip from "@/assets/game-blackjack-vip.jpg";
 
 export type DefaultSlide = {
   img: string;
@@ -46,4 +47,5 @@ export const DEFAULT_FEATURED: DefaultFeatured[] = [
   { name: "SLOT", img: gameSlotMafia, tag: "NUEVO", tag_color: "emerald", to: "/slot" },
   { name: "MINAS", img: gameMines, tag: "POPULAR", tag_color: "purple", to: "/mines" },
   { name: "DICE", img: gameDice, tag: "CLÁSICO", tag_color: "rose", to: "/dados" },
+  { name: "BLACKJACK VIP", img: gameBlackjackVip, tag: "VIP", tag_color: "amber", to: "/blackjackvip" },
 ];
