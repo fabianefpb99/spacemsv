@@ -283,7 +283,7 @@ function HomePage() {
       }))
     : SLIDES;
 
-  const gamesList = (featuredQ.data && featuredQ.data.length > 0)
+  const gamesListBase = (featuredQ.data && featuredQ.data.length > 0)
     ? featuredQ.data.map((g) => ({
         name: g.name,
         img: g.image_url,
@@ -292,6 +292,10 @@ function HomePage() {
         to: (g.link ?? "/home") as "/home",
       }))
     : GAMES;
+  const vipGame = GAMES.find((g) => g.name === "BLACKJACK VIP")!;
+  const gamesList = gamesListBase.some((g) => g.name === "BLACKJACK VIP")
+    ? gamesListBase
+    : [...gamesListBase, vipGame];
 
   const slides = slidesList.length;
   const arrowsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -568,7 +572,7 @@ function HomePage() {
               <Link
                 key={g.name}
                 to={g.to}
-                className="home-game-card group flex w-[22%] min-w-[22%] flex-shrink-0 flex-col overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400 sm:w-[calc((100%-3*0.75rem)/4)] sm:min-w-[calc((100%-3*0.75rem)/4)]"
+                className="home-game-card group flex w-[22%] min-w-[22%] flex-shrink-0 flex-col overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400 sm:w-[22%] sm:min-w-[22%]"
               >
                 <div className="aspect-square w-full overflow-hidden">
                   <SkeletonImage
