@@ -70,8 +70,29 @@ function RankingPage() {
     refetchInterval: 20_000,
   });
 
-  const winners = publicQ.data?.winners ?? [];
+  const rawWinners = publicQ.data?.winners ?? [];
   const arena = publicQ.data?.arena ?? [];
+
+  // Asegura que el usuario actual aparezca en el ranking general
+  // según su posición real (myPosQ). Esto cubre casos donde la RPC
+  // pública no lo incluyó por diferencias de agregación.
+  const winners = (() => {
+    const myNet = myPosQ.data?.net_amount ?? 0;
+    const myRank = myPosQ.data?.rank ?? null;
+    if (!user || !myRank || myNet <= 0) return rawWinners;
+    const myId = user.id;
+    if (rawWinners.some((w) => w.user_id === myId)) return rawWinners;
+    const myEntry: RankingEntry = {
+      user_id: myId,
+      username: me.data?.profile?.username ?? "Tú",
+      avatar_key: me.data?.profile?.avatar_key ?? null,
+      net_amount: myNet,
+    };
+    const merged = [...rawWinners, myEntry].sort(
+      (a, b) => b.net_amount - a.net_amount,
+    );
+    return merged.slice(0, Math.max(10, rawWinners.length));
+  })();
 
   // Podio: 1°, 2°, 3°
   const first = winners[0];
