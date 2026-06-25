@@ -201,6 +201,10 @@ export function BlackjackGame() {
     setDealer(pub.dealer);
     setBet(pub.bet);
     setDoubled(pub.doubled);
+    setInsuranceOffered(!!pub.insuranceOffered);
+    setInsuranceTaken(!!pub.insuranceTaken);
+    setInsuranceCost(pub.insuranceCost ?? 0);
+    setInsurancePayout(pub.insurancePayout ?? 0);
     if (pub.phase === "result") {
       setOutcome(pub.outcome ?? null);
       setPayout(pub.payout ?? 0);
@@ -252,6 +256,10 @@ export function BlackjackGame() {
       setBet(pub.bet);
       setDoubled(pub.doubled);
       setPlayer(pub.player);
+      setInsuranceOffered(false);
+      setInsuranceTaken(!!pub.insuranceTaken);
+      setInsuranceCost(pub.insuranceCost ?? 0);
+      setInsurancePayout(pub.insurancePayout ?? 0);
       await animateDealerReveal(pub.dealer, pub.dealerSequence);
       setDealer(pub.dealer);
       setOutcome(pub.outcome ?? null);
