@@ -624,7 +624,7 @@ function HomePage() {
                 event.stopPropagation();
                 featuredDragRef.current.dragged = false;
               }}
-              className="home-featured-scroll mt-3 flex cursor-grab touch-pan-y select-none gap-2 overflow-x-auto pb-1 active:cursor-grabbing sm:gap-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="home-featured-scroll mt-3 flex cursor-grab touch-auto select-none gap-2 overflow-x-auto pb-1 active:cursor-grabbing sm:gap-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
               {gamesList.map((g) => {
                 const gameName = g.to === "/blackjackvip" ? "BLACKJACK" : g.name;
