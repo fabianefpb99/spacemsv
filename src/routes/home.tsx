@@ -86,8 +86,8 @@ function formatCOP(n: number) {
 
 function OnlineRotator({ online, username }: { online: number; username?: string | null }) {
   const welcome = username
-    ? `BIENVENIDO *@${username}*`
-    : "BIENVENIDO A *BETSPACE*";
+    ? `👋 BIENVENIDO *@${username}*`
+    : "👋 BIENVENIDO A *BETSPACE*";
   const phrases = [
     welcome,
     "¿QUE *JUGAREMOS* HOY?",
