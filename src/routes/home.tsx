@@ -274,12 +274,13 @@ function HomePage() {
 
   // Wins dinámicos coherentes con el ranking (mismos fillers).
   // Se rotan cada ~25 s para que el panel se sienta vivo.
+  // Más fillers + rotación más rápida para que la lista se sienta viva.
   const [lastWins, setLastWins] = useState<FillerWin[]>(() =>
-    generateRecentFillerWins(12, Date.now()),
+    generateRecentFillerWins(20, Date.now()),
   );
   useEffect(() => {
-    const tick = () => setLastWins(generateRecentFillerWins(12, Date.now()));
-    const id = window.setInterval(tick, 25_000);
+    const tick = () => setLastWins(generateRecentFillerWins(20, Date.now()));
+    const id = window.setInterval(tick, 8_000);
     return () => window.clearInterval(id);
   }, []);
 
@@ -294,7 +295,8 @@ function HomePage() {
     refetchOnWindowFocus: false,
   });
 
-  // Mezcla: reales primero, fillers después, hasta llegar a 12 items.
+  // Mezcla: combina reales con fillers para que el feed siempre se vea
+  // activo. Limitamos los reales (máx 5) para que no opaquen los fillers.
   const mergedWins: FillerWin[] = (() => {
     const real: FillerWin[] = (recentWinsQ.data ?? []).map((w: RecentWin) => ({
       id: `real:${w.user_id}:${w.created_at}`,
@@ -302,13 +304,22 @@ function HomePage() {
       avatar_key: w.avatar_key ?? "avatar-1",
       game: prettyGameName(w.game),
       amount: Math.round(w.amount),
-      mult: 0, // se oculta cuando es real
+      mult: 0, // 0 = win real, se muestra como "¡GANÓ!"
       ageSec: Math.max(0, Math.floor((Date.now() - new Date(w.created_at).getTime()) / 1000)),
     }));
-    const TARGET = 12;
-    if (real.length >= TARGET) return real.slice(0, TARGET);
-    const fillersNeeded = TARGET - real.length;
-    return [...real, ...lastWins.slice(0, fillersNeeded)];
+    const TARGET = 16;
+    const REAL_MAX = 5;
+    const realCapped = real.slice(0, REAL_MAX);
+    const fillersNeeded = Math.max(0, TARGET - realCapped.length);
+    // Intercalamos: 1 real, luego 2 fillers, 1 real, 2 fillers...
+    const fillers = lastWins.slice(0, fillersNeeded);
+    const out: FillerWin[] = [];
+    let ri = 0, fi = 0;
+    while (ri < realCapped.length || fi < fillers.length) {
+      if (ri < realCapped.length) out.push(realCapped[ri++]);
+      for (let k = 0; k < 2 && fi < fillers.length; k++) out.push(fillers[fi++]);
+    }
+    return out.slice(0, TARGET);
   })();
 
   const fetchSlides = useServerFn(getPublicHomeSlides);
@@ -980,7 +991,7 @@ function HomePage() {
                     {w.mult > 0 ? (
                       <div className="home-win-mult text-[10px] font-bold text-purple-300">{w.mult.toFixed(2)}x</div>
                     ) : (
-                      <div className="home-win-mult text-[10px] font-bold text-emerald-300">REAL</div>
+                      <div className="home-win-mult text-[10px] font-bold text-emerald-300">¡GANÓ!</div>
                     )}
                   </div>
                 </li>
