@@ -279,7 +279,13 @@ export const bjDeal = createServerFn({ method: "POST" })
       shoe = r.shoe;
       draws.push(r.card);
     }
-    const hole = drawHoleBiased(shoe, bias);
+    // When the dealer's up-card is an Ace we offer insurance. Applying
+    // the hole-card high-card bias on those hands would make the 2:1
+    // insurance bet +EV for the player (biased P(BJ) ≈ 40% vs the
+    // fair 30.8%). Skip the bias on Ace-up hands so insurance keeps
+    // its standard ~7% house edge and the overall RTP target holds.
+    const upCardIsAce = draws[1].rank === "A";
+    const hole = upCardIsAce ? drawCard(shoe) : drawHoleBiased(shoe, bias);
     shoe = hole.shoe;
 
     const player: Card[] = [draws[0], draws[2]];
