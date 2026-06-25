@@ -8,6 +8,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Menu, Minus, Plus, Volume2, VolumeX } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import bgAsset from "@/assets/blackjack-bg.png.asset.json";
+import bgVipAsset from "@/assets/blackjack-vip-bg.png.asset.json";
 import {
   playCardDealSound,
   startBlackjackAmbient,
@@ -29,9 +30,8 @@ import {
   type BJSessionView,
 } from "@/lib/games/blackjack.functions";
 import {
-  BJ_BET_STEP,
-  BJ_MAX_BET,
-  BJ_MIN_BET,
+  BJ_VARIANTS,
+  type BJVariantKey,
   type BJOutcome,
   type BJPublicState,
   type Card,
@@ -39,10 +39,137 @@ import {
 } from "@/lib/games/blackjack.shared";
 
 type Phase = "betting" | "dealing" | "playing" | "dealerTurn" | "result";
+type BJTheme = "space" | "vip";
 type Winner = { id: number; name: string; amount: number; game: string };
 type WinnerSlot = Winner & { slotId: number };
 
-const QUICK = [500, 1000, 2000, 5000];
+const QUICK_BY_THEME: Record<BJTheme, number[]> = {
+  space: [500, 1000, 2000, 5000],
+  vip: [5000, 10000, 25000, 50000],
+};
+
+type ThemeTokens = {
+  bgUrl: string;
+  pageBg: string;
+  pageOverlay: string;
+  headerBorder: string;
+  panel: string;
+  panelGlow: string;
+  labelMuted: string;
+  balanceLabel: string;
+  stepBtn: string;
+  x2Btn: string;
+  quickBtn: string;
+  primaryBtn: string;
+  hitBtn: string;
+  standBtn: string;
+  doubleBtn: string;
+  insuranceBtn: string;
+  scoreBadgeDealer: string;
+  scoreBadgeWin: string;
+  scoreBadgeLose: string;
+  resultPush: string;
+  cardHidden: string;
+  cardHiddenInner: string;
+  cardHiddenIcon: string;
+  cardFace: string;
+  cardFaceText: string;
+  cardFaceRed: string;
+  tickerWrap: string;
+  tickerItem: string;
+  tickerGame: string;
+  dealKey: string; // animation name for deal
+  glowKey: string; // animation name for glow
+};
+
+const SPACE_TOKENS: ThemeTokens = {
+  bgUrl: bgAsset.url,
+  pageBg: "bg-[#060210]",
+  pageOverlay:
+    "bg-gradient-to-b from-[#060210]/60 via-transparent to-[#060210]/30",
+  headerBorder: "border-purple-500/20 bg-[#060210]/80",
+  panel: "border-purple-500/40 bg-[#0c0620]/85",
+  panelGlow: "shadow-[0_0_20px_rgba(168,85,247,0.25)]",
+  labelMuted: "text-purple-200/80",
+  balanceLabel: "text-purple-200/70",
+  stepBtn: "border-purple-400/50 bg-purple-900/40 text-purple-100",
+  x2Btn: "border-fuchsia-400/60 bg-fuchsia-900/40 text-fuchsia-100",
+  quickBtn: "border-purple-500/40 bg-purple-900/30 text-purple-100",
+  primaryBtn:
+    "bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white shadow-[0_0_18px_rgba(217,70,239,0.55)]",
+  hitBtn:
+    "bg-gradient-to-b from-emerald-500 to-emerald-700 text-white shadow-md",
+  standBtn:
+    "bg-gradient-to-b from-fuchsia-600 to-purple-700 text-white shadow-md",
+  doubleBtn:
+    "border-2 border-purple-400 bg-transparent text-purple-100 shadow-[0_0_12px_rgba(168,85,247,0.45)]",
+  insuranceBtn:
+    "border-2 border-amber-400 bg-amber-500/20 text-amber-100 shadow-[0_0_12px_rgba(251,191,36,0.45)]",
+  scoreBadgeDealer:
+    "border-purple-400/50 bg-[#1a0b3a]/80 text-purple-100",
+  scoreBadgeWin: "border-emerald-400/50 bg-emerald-900/30 text-emerald-100",
+  scoreBadgeLose: "border-rose-400/60 bg-rose-900/40 text-rose-100",
+  resultPush: "border-purple-400/70 bg-purple-950/60",
+  cardHidden:
+    "border-purple-300/60 bg-gradient-to-br from-[#3a1a78] to-[#1a0848]",
+  cardHiddenInner: "border-purple-300/40",
+  cardHiddenIcon: "text-purple-200/80",
+  cardFace: "border-white/70 bg-white",
+  cardFaceText: "text-slate-900",
+  cardFaceRed: "text-rose-600",
+  tickerWrap: "border-purple-500/30 bg-[#0c0620]/80",
+  tickerItem: "border-purple-500/30 bg-[#1a0b3a]/70",
+  tickerGame: "text-purple-300/70",
+  dealKey: "bj-deal",
+  glowKey: "bj-glow",
+};
+
+const VIP_TOKENS: ThemeTokens = {
+  bgUrl: bgVipAsset.url,
+  pageBg: "bg-[#0a0700]",
+  pageOverlay:
+    "bg-gradient-to-b from-[#0a0700]/55 via-transparent to-[#0a0700]/40",
+  headerBorder: "border-amber-500/30 bg-[#0a0700]/85",
+  panel: "border-amber-500/45 bg-[#0d0a04]/90",
+  panelGlow: "shadow-[0_0_22px_rgba(212,168,76,0.28)]",
+  labelMuted: "text-amber-200/85",
+  balanceLabel: "text-amber-300/80",
+  stepBtn: "border-amber-400/55 bg-black/60 text-amber-100",
+  x2Btn: "border-amber-300/70 bg-amber-500/15 text-amber-100",
+  quickBtn: "border-amber-500/40 bg-black/55 text-amber-100",
+  primaryBtn:
+    "bg-gradient-to-b from-amber-400 to-amber-600 text-black border border-amber-300 shadow-[0_0_20px_rgba(212,168,76,0.55)]",
+  hitBtn:
+    "border border-amber-400/70 bg-gradient-to-b from-amber-500 to-amber-700 text-black shadow-[0_0_10px_rgba(212,168,76,0.45)]",
+  standBtn:
+    "border border-amber-400/60 bg-gradient-to-b from-zinc-800 to-black text-amber-100 shadow-[0_0_10px_rgba(212,168,76,0.35)]",
+  doubleBtn:
+    "border-2 border-amber-400 bg-black/60 text-amber-100 shadow-[0_0_12px_rgba(212,168,76,0.5)]",
+  insuranceBtn:
+    "border-2 border-amber-300 bg-amber-500/15 text-amber-100 shadow-[0_0_12px_rgba(212,168,76,0.55)]",
+  scoreBadgeDealer:
+    "border-amber-400/60 bg-black/75 text-amber-100",
+  scoreBadgeWin: "border-amber-400/60 bg-amber-900/30 text-amber-100",
+  scoreBadgeLose: "border-rose-400/60 bg-rose-900/40 text-rose-100",
+  resultPush: "border-amber-400/60 bg-black/70",
+  cardHidden:
+    "border-amber-400/70 bg-gradient-to-br from-[#1a1208] to-[#000]",
+  cardHiddenInner: "border-amber-300/60",
+  cardHiddenIcon: "text-amber-300/90",
+  cardFace: "border-amber-300/80 bg-[#fef7e2]",
+  cardFaceText: "text-zinc-900",
+  cardFaceRed: "text-rose-700",
+  tickerWrap: "border-amber-500/30 bg-[#0d0a04]/85",
+  tickerItem: "border-amber-500/30 bg-black/60",
+  tickerGame: "text-amber-300/70",
+  dealKey: "bj-deal",
+  glowKey: "bjv-glow",
+};
+
+function getTokens(theme: BJTheme): ThemeTokens {
+  return theme === "vip" ? VIP_TOKENS : SPACE_TOKENS;
+}
+
 const TICKER_SPEED_PX_PER_MS = 0.06;
 const TICKER_ITEM_WIDTH = 198;
 const TICKER_GAP = 12;
@@ -93,7 +220,19 @@ function uuid(): string {
   });
 }
 
-function CardView({ card, idx, total, hidden }: { card: Card; idx: number; total: number; hidden?: boolean }) {
+function CardView({
+  card,
+  idx,
+  total,
+  hidden,
+  T,
+}: {
+  card: Card;
+  idx: number;
+  total: number;
+  hidden?: boolean;
+  T: ThemeTokens;
+}) {
   const maxSpread = 38;
   const minSpread = 18;
   const spread = Math.max(minSpread, maxSpread - (total - 2) * 4);
@@ -105,21 +244,21 @@ function CardView({ card, idx, total, hidden }: { card: Card; idx: number; total
       style={{
         transform: `translate(calc(-50% + ${offset}px), 0) rotate(${(idx - (total - 1) / 2) * 2}deg)`,
         zIndex: idx + 1,
-        animation: "bj-deal 0.45s ease-out both",
+        animation: `${T.dealKey} 0.45s ease-out both`,
         animationDelay: `${idx * 0.12}s`,
       }}
     >
       {hidden ? (
-        <div className="h-full w-full rounded-md border border-purple-300/60 bg-gradient-to-br from-[#3a1a78] to-[#1a0848] flex items-center justify-center">
-          <div className="h-[80%] w-[80%] rounded-sm border border-purple-300/40 flex items-center justify-center text-purple-200/80 text-2xl">♠</div>
+        <div className={`h-full w-full rounded-md border flex items-center justify-center ${T.cardHidden}`}>
+          <div className={`h-[80%] w-[80%] rounded-sm border flex items-center justify-center text-2xl ${T.cardHiddenInner} ${T.cardHiddenIcon}`}>♠</div>
         </div>
       ) : (
-        <div className="h-full w-full rounded-md border border-white/70 bg-white flex flex-col justify-between p-1.5">
-          <div className={`text-left leading-none ${red ? "text-rose-600" : "text-slate-900"}`}>
+        <div className={`h-full w-full rounded-md border flex flex-col justify-between p-1.5 ${T.cardFace}`}>
+          <div className={`text-left leading-none ${red ? T.cardFaceRed : T.cardFaceText}`}>
             <div className="text-sm font-black sm:text-base">{card.rank}</div>
             <div className="text-xs sm:text-sm">{card.suit}</div>
           </div>
-          <div className={`text-right text-xl sm:text-2xl leading-none ${red ? "text-rose-600" : "text-slate-900"}`}>
+          <div className={`text-right text-xl sm:text-2xl leading-none ${red ? T.cardFaceRed : T.cardFaceText}`}>
             {card.suit}
           </div>
         </div>
@@ -128,7 +267,18 @@ function CardView({ card, idx, total, hidden }: { card: Card; idx: number; total
   );
 }
 
-export function BlackjackGame() {
+export type BlackjackGameProps = {
+  variant?: BJVariantKey;
+  theme?: BJTheme;
+};
+
+export function BlackjackGame({ variant = "blackjack", theme = "space" }: BlackjackGameProps = {}) {
+  const T = getTokens(theme);
+  const cfg = BJ_VARIANTS[variant];
+  const MIN_BET = cfg.minBet;
+  const MAX_BET = cfg.maxBet;
+  const BET_STEP = cfg.betStep;
+  const QUICK = QUICK_BY_THEME[theme];
   const { user } = useAuth();
   const me = useMe();
   const queryClient = useQueryClient();
@@ -144,7 +294,7 @@ export function BlackjackGame() {
   const resumeFn = useServerFn(bjResume);
   const insuranceFn = useServerFn(bjInsurance);
 
-  const [bet, setBet] = useState(2000);
+  const [bet, setBet] = useState(cfg.defaultBet);
   const [phase, setPhase] = useState<Phase>("betting");
   const [player, setPlayer] = useState<Card[]>([]);
   const [dealer, setDealer] = useState<Card[]>([]);
@@ -276,7 +426,7 @@ export function BlackjackGame() {
     if (!user) return;
     (async () => {
       try {
-        const view = await resumeFn();
+        const view = await resumeFn({ data: { variant } });
         if (cancelled || !view) return;
         // If the latest open session has phase=result, just close it
         // visually — the user already collected. Better UX: clear it.
@@ -355,7 +505,7 @@ export function BlackjackGame() {
   // ── Actions ─────────────────────────────────────────────────────
   const onDeal = async () => {
     if (!user) return;
-    if (bet > balance || bet < BJ_MIN_BET || busy) return;
+    if (bet > balance || bet < MIN_BET || busy) return;
     if (inFlightRef.current) return;
     inFlightRef.current = true;
     setBusy(true);
@@ -367,7 +517,7 @@ export function BlackjackGame() {
     setDealer([]);
     setPhase("dealing");
     try {
-      const view = await dealFn({ data: { bet, client_action_id: uuid() } });
+      const view = await dealFn({ data: { variant, bet, client_action_id: uuid() } });
       // Animate the initial 4-card deal using the cards the server returned.
       const initialPlayer = view.public_state.player;
       const initialDealer = view.public_state.dealer;
@@ -411,6 +561,7 @@ export function BlackjackGame() {
     try {
       const view = await insuranceFn({
         data: {
+          variant,
           session_id: sessionRef.current.id,
           nonce: sessionRef.current.nonce,
           client_action_id: uuid(),
@@ -445,6 +596,7 @@ export function BlackjackGame() {
     try {
       const view = await hitFn({
         data: {
+          variant,
           session_id: sessionRef.current.id,
           nonce: sessionRef.current.nonce,
           client_action_id: uuid(),
@@ -480,6 +632,7 @@ export function BlackjackGame() {
     try {
       const view = await standFn({
         data: {
+          variant,
           session_id: sessionRef.current.id,
           nonce: sessionRef.current.nonce,
           client_action_id: uuid(),
@@ -505,6 +658,7 @@ export function BlackjackGame() {
     try {
       const view = await doubleFn({
         data: {
+          variant,
           session_id: sessionRef.current.id,
           nonce: sessionRef.current.nonce,
           client_action_id: uuid(),
@@ -539,11 +693,11 @@ export function BlackjackGame() {
   };
 
   const adjustBet = (delta: number) => {
-    setBet((b) => Math.min(BJ_MAX_BET, Math.max(BJ_MIN_BET, b + delta)));
+    setBet((b) => Math.min(MAX_BET, Math.max(MIN_BET, b + delta)));
   };
 
   return (
-    <div className="relative min-h-[100dvh] w-full overflow-hidden bg-[#060210] text-white">
+    <div className={`relative min-h-[100dvh] w-full overflow-hidden ${T.pageBg} text-white`}>
       <style>{`
         @keyframes bj-deal {
           0% { transform: translate(calc(-50% + 0px), -120px) rotate(0deg); opacity: 0; }
@@ -553,6 +707,10 @@ export function BlackjackGame() {
           0%,100% { box-shadow: 0 0 0 rgba(168,85,247,0); }
           50% { box-shadow: 0 0 28px rgba(168,85,247,0.85), 0 0 60px rgba(217,70,239,0.55); }
         }
+        @keyframes bjv-glow {
+          0%,100% { box-shadow: 0 0 0 rgba(212,168,76,0); }
+          50% { box-shadow: 0 0 28px rgba(212,168,76,0.85), 0 0 60px rgba(184,134,11,0.55); }
+        }
         @keyframes bj-pop {
           0% { transform: scale(0.85); opacity: 0; }
           100% { transform: scale(1); opacity: 1; }
@@ -560,17 +718,17 @@ export function BlackjackGame() {
       `}</style>
 
       <img
-        src={bgAsset.url}
+        src={T.bgUrl}
         alt=""
         className="pointer-events-none absolute inset-0 h-full w-full object-cover"
         style={{ objectPosition: "center top" }}
         draggable={false}
       />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#060210]/60 via-transparent to-[#060210]/30" />
+      <div className={`pointer-events-none absolute inset-0 ${T.pageOverlay}`} />
 
       <div className="relative mx-auto flex min-h-[100dvh] max-w-md flex-col px-3 sm:max-w-lg sm:px-4">
         <header
-          className="flex items-center justify-between border-b border-purple-500/20 bg-[#060210]/80 px-3 pb-3 -mx-3 backdrop-blur-sm"
+          className={`flex items-center justify-between border-b px-3 pb-3 -mx-3 backdrop-blur-sm ${T.headerBorder}`}
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <div className="flex items-center gap-1">
@@ -583,7 +741,7 @@ export function BlackjackGame() {
           </div>
           <div className="flex items-center gap-2">
             <div className="text-right">
-              <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
+              <div className={`text-[9px] uppercase tracking-wider ${T.balanceLabel}`}>Balance</div>
               <div className="font-display text-[11px] font-bold text-white sm:text-xs">
                 <span className="neon-green mr-0.5">$</span>{formatCOP(balance)} COP
               </div>
@@ -604,12 +762,12 @@ export function BlackjackGame() {
           <div className="absolute left-1/2 top-[14%] -translate-x-1/2">
             <div className="relative h-[100px] w-[200px]">
               {dealer.map((c, i) => (
-                <CardView key={`d-${i}`} card={c} idx={i} total={dealer.length} hidden={c.hidden} />
+                <CardView key={`d-${i}`} card={c} idx={i} total={dealer.length} hidden={c.hidden} T={T} />
               ))}
             </div>
             {dealer.length > 0 && (
               <div className="mt-2 text-center">
-                <span className="rounded-full border border-purple-400/50 bg-[#1a0b3a]/80 px-2.5 py-0.5 text-[10px] font-bold tracking-wider text-purple-100">
+                <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold tracking-wider ${T.scoreBadgeDealer}`}>
                   DEALER: {handScore(dealer)}
                   {!showDealerScore && dealer.some((c) => c.hidden) ? "+" : ""}
                 </span>
@@ -620,7 +778,7 @@ export function BlackjackGame() {
           <div className="absolute left-1/2 top-[52%] -translate-x-1/2">
             <div className="relative h-[100px] w-[220px]">
               {player.map((c, i) => (
-                <CardView key={`p-${i}`} card={c} idx={i} total={player.length} />
+                <CardView key={`p-${i}`} card={c} idx={i} total={player.length} T={T} />
               ))}
             </div>
             {player.length > 0 && (
@@ -628,8 +786,8 @@ export function BlackjackGame() {
                 <span
                   className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold tracking-wider ${
                     playerScore > 21
-                      ? "border-rose-400/60 bg-rose-900/40 text-rose-100"
-                      : "border-emerald-400/50 bg-emerald-900/30 text-emerald-100"
+                      ? T.scoreBadgeLose
+                      : T.scoreBadgeWin
                   }`}
                 >
                   TÚ: {playerScore}
@@ -643,14 +801,14 @@ export function BlackjackGame() {
               <div
                 className={`rounded-2xl border px-6 py-3 backdrop-blur-md ${
                   outcome === "win" || outcome === "blackjack"
-                    ? "border-emerald-400/70 bg-emerald-950/60"
+                    ? (theme === "vip" ? "border-amber-400/70 bg-amber-950/60" : "border-emerald-400/70 bg-emerald-950/60")
                     : outcome === "push"
-                    ? "border-purple-400/70 bg-purple-950/60"
+                    ? T.resultPush
                     : "border-rose-400/70 bg-rose-950/60"
                 }`}
                 style={
                   outcome === "win" || outcome === "blackjack"
-                    ? { animation: "bj-glow 1.6s ease-in-out infinite" }
+                    ? { animation: `${T.glowKey} 1.6s ease-in-out infinite` }
                     : undefined
                 }
               >
@@ -662,7 +820,7 @@ export function BlackjackGame() {
                   {outcome === "bust" && "TE PASASTE"}
                 </div>
                 {payout > 0 && (
-                  <div className="mt-1 text-sm font-bold text-emerald-300">
+                  <div className={`mt-1 text-sm font-bold ${theme === "vip" ? "text-amber-300" : "text-emerald-300"}`}>
                     +${formatCOP(payout)} COP
                   </div>
                 )}
@@ -686,14 +844,14 @@ export function BlackjackGame() {
 
         <div className="relative z-10 mx-auto -mt-3 w-full max-w-md px-1 pt-1">
           {phase === "betting" && (
-            <div className="rounded-2xl border border-purple-500/40 bg-[#0c0620]/85 p-3 shadow-[0_0_20px_rgba(168,85,247,0.25)] backdrop-blur-md">
-              <div className="text-center text-[10px] font-bold uppercase tracking-widest text-purple-200/80">
+            <div className={`rounded-2xl border p-3 backdrop-blur-md ${T.panel} ${T.panelGlow}`}>
+              <div className={`text-center text-[10px] font-bold uppercase tracking-widest ${T.labelMuted}`}>
                 Apuesta
               </div>
               <div className="mt-2 flex items-center justify-center gap-3">
                 <button
-                  onClick={() => adjustBet(-BJ_BET_STEP)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-purple-400/50 bg-purple-900/40 text-purple-100 active:scale-95"
+                  onClick={() => adjustBet(-BET_STEP)}
+                  className={`flex h-10 w-10 items-center justify-center rounded-full border active:scale-95 ${T.stepBtn}`}
                 >
                   <Minus className="h-5 w-5" />
                 </button>
@@ -703,8 +861,8 @@ export function BlackjackGame() {
                   </BetAmount>
                 </div>
                 <button
-                  onClick={() => adjustBet(BJ_BET_STEP)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-purple-400/50 bg-purple-900/40 text-purple-100 active:scale-95"
+                  onClick={() => adjustBet(BET_STEP)}
+                  className={`flex h-10 w-10 items-center justify-center rounded-full border active:scale-95 ${T.stepBtn}`}
                 >
                   <Plus className="h-5 w-5" />
                 </button>
@@ -713,20 +871,20 @@ export function BlackjackGame() {
                 <button
                   onClick={() =>
                     setBet((b) => {
-                      const doubled = Math.min(BJ_MAX_BET, b * 2);
-                      const snapped = Math.floor(doubled / BJ_BET_STEP) * BJ_BET_STEP;
-                      return Math.max(BJ_MIN_BET, snapped);
+                      const doubled = Math.min(MAX_BET, b * 2);
+                      const snapped = Math.floor(doubled / BET_STEP) * BET_STEP;
+                      return Math.max(MIN_BET, snapped);
                     })
                   }
-                  className="rounded-md border border-fuchsia-400/60 bg-fuchsia-900/40 px-2.5 py-1 text-[11px] font-black text-fuchsia-100 active:scale-95"
+                  className={`rounded-md border px-2.5 py-1 text-[11px] font-black active:scale-95 ${T.x2Btn}`}
                 >
                   X2
                 </button>
                 {QUICK.map((q) => (
                   <button
                     key={q}
-                    onClick={() => setBet((b) => Math.min(BJ_MAX_BET, b + q))}
-                    className="rounded-md border border-purple-500/40 bg-purple-900/30 px-2.5 py-1 text-[11px] font-bold text-purple-100 active:scale-95"
+                    onClick={() => setBet((b) => Math.min(MAX_BET, b + q))}
+                    className={`rounded-md border px-2.5 py-1 text-[11px] font-bold active:scale-95 ${T.quickBtn}`}
                   >
                     +{q >= 1000 ? `${q / 1000}K` : q}
                   </button>
@@ -735,7 +893,7 @@ export function BlackjackGame() {
               <button
                 onClick={onDeal}
                 disabled={!user || bet > balance || busy}
-                className="mt-3 w-full rounded-xl bg-gradient-to-r from-fuchsia-600 to-purple-600 px-4 py-3 font-display text-base font-black uppercase tracking-widest text-white shadow-[0_0_18px_rgba(217,70,239,0.55)] transition active:scale-[0.98] disabled:opacity-50"
+                className={`mt-3 w-full rounded-xl px-4 py-3 font-display text-base font-black uppercase tracking-widest transition active:scale-[0.98] disabled:opacity-50 ${T.primaryBtn}`}
               >
                 {busy ? "..." : "Repartir"}
               </button>
@@ -743,8 +901,8 @@ export function BlackjackGame() {
           )}
 
           {(phase === "playing" || phase === "dealing" || phase === "dealerTurn") && (
-            <div className="-mt-4 rounded-2xl border border-purple-500/40 bg-[#0c0620]/85 p-3.5 shadow-[0_0_20px_rgba(168,85,247,0.25)] backdrop-blur-md">
-              <div className="flex items-center justify-between text-[12px] font-bold uppercase tracking-widest text-purple-200/80">
+            <div className={`-mt-4 rounded-2xl border p-3.5 backdrop-blur-md ${T.panel} ${T.panelGlow}`}>
+              <div className={`flex items-center justify-between text-[12px] font-bold uppercase tracking-widest ${T.labelMuted}`}>
                 <span>Apuesta: <span className="text-white">${formatCOP(doubled ? bet * 2 : bet)}</span></span>
                 <span>Puntos: <span className="text-white">{playerScore}</span></span>
               </div>
@@ -757,14 +915,14 @@ export function BlackjackGame() {
                 <button
                   onClick={onHit}
                   disabled={phase !== "playing" || busy}
-                  className="rounded-xl bg-gradient-to-b from-emerald-500 to-emerald-700 px-2 py-2.5 text-sm font-black uppercase tracking-wider text-white shadow-md active:scale-95 disabled:opacity-40"
+                  className={`rounded-xl px-2 py-2.5 text-sm font-black uppercase tracking-wider active:scale-95 disabled:opacity-40 ${T.hitBtn}`}
                 >
                   Pedir
                 </button>
                 <button
                   onClick={onStand}
                   disabled={phase !== "playing" || busy}
-                  className="rounded-xl bg-gradient-to-b from-fuchsia-600 to-purple-700 px-2 py-2.5 text-sm font-black uppercase tracking-wider text-white shadow-md active:scale-95 disabled:opacity-40"
+                  className={`rounded-xl px-2 py-2.5 text-sm font-black uppercase tracking-wider active:scale-95 disabled:opacity-40 ${T.standBtn}`}
                 >
                   Plantarse
                 </button>
@@ -772,7 +930,7 @@ export function BlackjackGame() {
                   <button
                     onClick={() => { void handleInsurance(true); }}
                     disabled={phase !== "playing" || busy || Math.floor(bet / 2) > balance}
-                    className="rounded-xl border-2 border-amber-400 bg-amber-500/20 px-2 py-2.5 text-xs font-black uppercase tracking-wider text-amber-100 shadow-[0_0_12px_rgba(251,191,36,0.45)] active:scale-95 disabled:opacity-40"
+                    className={`rounded-xl px-2 py-2.5 text-xs font-black uppercase tracking-wider active:scale-95 disabled:opacity-40 ${T.insuranceBtn}`}
                   >
                     Seguro<br />
                     <span className="text-[9px] font-bold opacity-80">½ apuesta</span>
@@ -781,7 +939,7 @@ export function BlackjackGame() {
                   <button
                     onClick={onDouble}
                     disabled={phase !== "playing" || busy || player.length !== 2 || bet > balance}
-                    className="rounded-xl border-2 border-purple-400 bg-transparent px-2 py-2.5 text-sm font-black uppercase tracking-wider text-purple-100 shadow-[0_0_12px_rgba(168,85,247,0.45)] active:scale-95 disabled:opacity-40"
+                    className={`rounded-xl px-2 py-2.5 text-sm font-black uppercase tracking-wider active:scale-95 disabled:opacity-40 ${T.doubleBtn}`}
                   >
                     Doblar
                   </button>
@@ -796,10 +954,10 @@ export function BlackjackGame() {
           )}
 
           {phase === "result" && (
-            <div className="rounded-2xl border border-purple-500/40 bg-[#0c0620]/85 p-3 shadow-[0_0_20px_rgba(168,85,247,0.25)] backdrop-blur-md">
+            <div className={`rounded-2xl border p-3 backdrop-blur-md ${T.panel} ${T.panelGlow}`}>
               <button
                 onClick={onNewHand}
-                className="w-full rounded-xl bg-gradient-to-r from-fuchsia-600 to-purple-600 px-4 py-3 font-display text-base font-black uppercase tracking-widest text-white shadow-[0_0_18px_rgba(217,70,239,0.55)] transition active:scale-[0.98]"
+                className={`w-full rounded-xl px-4 py-3 font-display text-base font-black uppercase tracking-widest transition active:scale-[0.98] ${T.primaryBtn}`}
               >
                 Nueva Mano
               </button>
@@ -811,10 +969,10 @@ export function BlackjackGame() {
           className="relative z-10 mx-auto mt-1 w-full max-w-md px-1"
           style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 1.25rem)" }}
         >
-          <div className="rounded-xl border border-purple-500/30 bg-[#0c0620]/80 py-1.5 backdrop-blur-md">
+          <div className={`rounded-xl border py-1.5 backdrop-blur-md ${T.tickerWrap}`}>
             <div className="mb-1 flex items-center gap-1.5 px-2">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
-              <span className="text-[9px] font-bold uppercase tracking-widest text-purple-200/80">
+              <span className={`text-[9px] font-bold uppercase tracking-widest ${T.labelMuted}`}>
                 Últimos ganadores
               </span>
             </div>
@@ -833,14 +991,14 @@ export function BlackjackGame() {
                   ref={(node) => {
                     slotRefs.current[w.slotId] = node;
                   }}
-                  className="absolute left-0 top-1/2 flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full border border-purple-500/30 bg-[#1a0b3a]/70 px-2.5 py-1 text-[11px] will-change-transform"
+                  className={`absolute left-0 top-1/2 flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-1 text-[11px] will-change-transform ${T.tickerItem}`}
                   style={{
                     width: `${TICKER_ITEM_WIDTH}px`,
                     transform: `translate3d(${slotPositionsRef.current[w.slotId] ?? 0}px, -50%, 0)`,
                   }}
                 >
                   <span className="truncate font-bold text-white">{w.name}</span>
-                  <span className="shrink-0 text-[9px] uppercase tracking-wider text-purple-300/70">
+                  <span className={`shrink-0 text-[9px] uppercase tracking-wider ${T.tickerGame}`}>
                     · {w.game}
                   </span>
                   <span className="ml-auto shrink-0 font-display font-black text-emerald-300">

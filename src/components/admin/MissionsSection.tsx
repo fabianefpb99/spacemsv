@@ -34,6 +34,7 @@ const GAME_OPTIONS: { value: string; label: string }[] = [
   { value: "mines", label: "Mines" },
   { value: "ruleta", label: "Ruleta" },
   { value: "blackjack", label: "Blackjack" },
+  { value: "blackjack_vip", label: "Blackjack VIP" },
 ];
 
 type Mission = {

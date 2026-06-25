@@ -10,6 +10,7 @@ import gameSlotMafia from "@/assets/game-slot-mafia.jpg";
 import gameMines from "@/assets/game-mines.jpg";
 import gameDice from "@/assets/game-dice.jpg";
 import blackjackPromo from "@/assets/blackjack-promo.png.asset.json";
+import blackjackVipBg from "@/assets/blackjack-vip-bg.png.asset.json";
 import gameRuleta from "@/assets/home-hero-ruleta.jpg";
 import gameArena from "@/assets/home-hero-arena.png.asset.json";
 
@@ -48,7 +49,7 @@ function preloadAsset(asset: { src: string; type: "image" | "audio" }): Promise<
   });
 }
 
-export function LoadingScreen({ children, variant = "rocket" }: { children: React.ReactNode; variant?: "rocket" | "mine" | "slot" | "dice" | "blackjack" | "roulette" | "arena" }) {
+export function LoadingScreen({ children, variant = "rocket" }: { children: React.ReactNode; variant?: "rocket" | "mine" | "slot" | "dice" | "blackjack" | "blackjack_vip" | "roulette" | "arena" }) {
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
   const [targetProgress, setTargetProgress] = useState(0);
@@ -65,6 +66,7 @@ export function LoadingScreen({ children, variant = "rocket" }: { children: Reac
       : variant === "slot" ? gameSlotMafia
       : variant === "dice" ? gameDice
       : variant === "blackjack" ? blackjackPromo.url
+      : variant === "blackjack_vip" ? blackjackVipBg.url
       : variant === "roulette" ? gameRuleta
       : variant === "arena" ? gameArena.url
       : variant === "rocket" ? gameSpaceman
@@ -165,6 +167,7 @@ export function LoadingScreen({ children, variant = "rocket" }: { children: Reac
               : variant === "slot" ? gameSlotMafia
               : variant === "dice" ? gameDice
               : variant === "blackjack" ? blackjackPromo.url
+              : variant === "blackjack_vip" ? blackjackVipBg.url
               : variant === "roulette" ? gameRuleta
               : variant === "arena" ? gameArena.url
               : variant === "rocket" ? gameSpaceman

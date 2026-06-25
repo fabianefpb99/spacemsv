@@ -3,9 +3,9 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import {
-  BJ_BET_STEP,
-  BJ_MAX_BET,
-  BJ_MIN_BET,
+  BJ_VARIANTS,
+  type BJVariantKey,
+  type BJVariantConfig,
   type BJPublicState,
   type Card,
   handScore,
@@ -30,13 +30,13 @@ import {
   sha256Hex,
 } from "./engine.server";
 
-/** Load the configured RTP target for blackjack and derive bias. */
-async function loadBjBias(): Promise<BJBias> {
+/** Load the configured RTP target for a blackjack variant and derive bias. */
+async function loadBjBias(gameKey: BJVariantKey): Promise<BJBias> {
   try {
     const { data } = await supabaseAdmin
       .from("game_rtp_config")
       .select("rtp_target, is_active")
-      .eq("game", "blackjack")
+      .eq("game", gameKey)
       .maybeSingle();
     if (!data || data.is_active === false) return BJ_DEFAULT_BIAS;
     return biasFromRtpTarget(Number(data.rtp_target));
@@ -49,32 +49,50 @@ async function loadBjBias(): Promise<BJBias> {
 /* Schemas                                                             */
 /* ------------------------------------------------------------------ */
 
-const BetSchema = z
-  .number()
-  .int()
-  .min(BJ_MIN_BET)
-  .max(BJ_MAX_BET)
-  .refine((n) => n % BJ_BET_STEP === 0, {
-    message: `bet must be a multiple of ${BJ_BET_STEP}`,
+const VariantField = z
+  .enum(["blackjack", "blackjack_vip"])
+  .default("blackjack");
+
+const DealInput = z
+  .object({
+    variant: VariantField,
+    bet: z.number().int(),
+    client_action_id: z.string().uuid(),
+  })
+  .superRefine((val, ctx) => {
+    const cfg = BJ_VARIANTS[val.variant];
+    if (val.bet < cfg.minBet || val.bet > cfg.maxBet) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["bet"],
+        message: `bet must be between ${cfg.minBet} and ${cfg.maxBet} for ${cfg.gameKey}`,
+      });
+    }
+    if (val.bet % cfg.betStep !== 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["bet"],
+        message: `bet must be a multiple of ${cfg.betStep}`,
+      });
+    }
   });
 
-const DealInput = z.object({
-  bet: BetSchema,
-  client_action_id: z.string().uuid(),
-});
-
 const ActionInput = z.object({
+  variant: VariantField,
   session_id: z.string().uuid(),
   nonce: z.number().int().min(0),
   client_action_id: z.string().uuid(),
 });
 
 const InsuranceInput = z.object({
+  variant: VariantField,
   session_id: z.string().uuid(),
   nonce: z.number().int().min(0),
   client_action_id: z.string().uuid(),
   take: z.boolean(),
 });
+
+const ResumeInput = z.object({ variant: VariantField });
 
 /* ------------------------------------------------------------------ */
 /* Types returned to the client                                        */
@@ -102,12 +120,15 @@ type SessionRow = {
   nonce: number;
 };
 
-async function loadOpenSession(userId: string): Promise<SessionRow | null> {
+async function loadOpenSession(
+  userId: string,
+  gameKey: BJVariantKey,
+): Promise<SessionRow | null> {
   const { data, error } = await supabaseAdmin
     .from("game_sessions")
     .select("id, user_id, status, bet_amount, state, public_state, nonce")
     .eq("user_id", userId)
-    .eq("game", "blackjack")
+    .eq("game", gameKey)
     .eq("status", "open")
     .order("created_at", { ascending: false })
     .limit(1)
@@ -120,13 +141,14 @@ async function loadOpenSession(userId: string): Promise<SessionRow | null> {
 async function loadSessionForUser(
   sessionId: string,
   userId: string,
+  gameKey: BJVariantKey,
 ): Promise<SessionRow> {
   const { data, error } = await supabaseAdmin
     .from("game_sessions")
     .select("id, user_id, status, bet_amount, state, public_state, nonce")
     .eq("id", sessionId)
     .eq("user_id", userId)
-    .eq("game", "blackjack")
+    .eq("game", gameKey)
     .maybeSingle();
   if (error) throw new Error(`bj_load_failed: ${error.message}`);
   if (!data) throw new Error("bj_session_not_found");
@@ -181,9 +203,11 @@ async function applyAction(args: {
 
 export const bjResume = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<BJSessionView | null> => {
+  .inputValidator((input) => ResumeInput.parse(input))
+  .handler(async ({ data, context }): Promise<BJSessionView | null> => {
     const userId = context.userId;
-    const session = await loadOpenSession(userId);
+    const cfg = BJ_VARIANTS[data.variant];
+    const session = await loadOpenSession(userId, cfg.gameKey);
     if (!session) return null;
     const balance = await getBalance(userId);
     return {
@@ -205,6 +229,7 @@ export const bjDeal = createServerFn({ method: "POST" })
   .handler(async ({ data, context }): Promise<BJSessionView> => {
     const userId = context.userId;
     const { bet, client_action_id } = data;
+    const cfg = BJ_VARIANTS[data.variant];
 
     // 1a. Idempotency: if this exact client_action_id already produced
     // a session, just return it. Prevents `bj_insert_failed: duplicate
@@ -214,7 +239,7 @@ export const bjDeal = createServerFn({ method: "POST" })
         .from("game_sessions")
         .select("id, user_id, status, bet_amount, state, public_state, nonce")
         .eq("user_id", userId)
-        .eq("game", "blackjack")
+        .eq("game", cfg.gameKey)
         .eq("client_action_id", client_action_id)
         .maybeSingle();
       if (dup) {
@@ -233,7 +258,7 @@ export const bjDeal = createServerFn({ method: "POST" })
     // 1b. If a hand is already in progress, RESUME it instead of
     // force-closing — closing a playing hand would leave the bet
     // debited with no payout (real money loss).
-    const existing = await loadOpenSession(userId);
+    const existing = await loadOpenSession(userId, cfg.gameKey);
     if (existing) {
       if (existing.public_state.phase === "playing") {
         const balance = await getBalance(userId);
@@ -257,7 +282,7 @@ export const bjDeal = createServerFn({ method: "POST" })
       user_id: userId,
       delta: -bet,
       type: "bet",
-      game: "blackjack",
+      game: cfg.gameKey,
       client_action_id,
       meta: { kind: "blackjack_bet", bet },
     }).catch((err) => {
@@ -270,7 +295,7 @@ export const bjDeal = createServerFn({ method: "POST" })
     // 3. Build shoe + initial deal.
     const serverSeed = newServerSeed();
     const serverSeedHash = sha256Hex(serverSeed);
-    const bias = await loadBjBias();
+    const bias = await loadBjBias(cfg.gameKey);
     let shoe = makeShoe();
 
     const draws: Card[] = [];
@@ -323,7 +348,7 @@ export const bjDeal = createServerFn({ method: "POST" })
           user_id: userId,
           delta: payout,
           type: "win",
-          game: "blackjack",
+          game: cfg.gameKey,
           client_action_id: deriveActionId(client_action_id, "win"),
           meta: { kind: "blackjack_win", bet, outcome: resolved.outcome },
         });
@@ -347,7 +372,7 @@ export const bjDeal = createServerFn({ method: "POST" })
       .from("game_sessions")
       .insert({
         user_id: userId,
-        game: "blackjack",
+        game: cfg.gameKey,
         bet_amount: bet,
         status,
         payout: status === "closed" ? payout : null,
@@ -369,7 +394,7 @@ export const bjDeal = createServerFn({ method: "POST" })
           .from("game_sessions")
           .select("id, user_id, status, bet_amount, state, public_state, nonce")
           .eq("user_id", userId)
-          .eq("game", "blackjack")
+          .eq("game", cfg.gameKey)
           .eq("client_action_id", client_action_id)
           .maybeSingle();
         if (dup) {
@@ -404,14 +429,15 @@ export const bjHit = createServerFn({ method: "POST" })
   .inputValidator((input) => ActionInput.parse(input))
   .handler(async ({ data, context }): Promise<BJSessionView> => {
     const userId = context.userId;
-    const session = await loadSessionForUser(data.session_id, userId);
+    const cfg = BJ_VARIANTS[data.variant];
+    const session = await loadSessionForUser(data.session_id, userId, cfg.gameKey);
     if (session.status !== "open") throw new Error("bj_session_closed");
     if (session.nonce !== data.nonce) throw new Error("bj_stale_nonce");
     if (session.public_state.phase !== "playing") {
       throw new Error("bj_not_playing");
     }
 
-    const bias = await loadBjBias();
+    const bias = await loadBjBias(cfg.gameKey);
     let shoe = session.state.shoe;
     const currentScore = handScore(session.public_state.player);
     const drawn = drawForPlayerHit(shoe, currentScore, bias);
@@ -458,7 +484,7 @@ export const bjHit = createServerFn({ method: "POST" })
           user_id: userId,
           delta: payout,
           type: "win",
-          game: "blackjack",
+          game: cfg.gameKey,
           client_action_id: deriveActionId(data.client_action_id, "win"),
           meta: { kind: "blackjack_win", bet: effectiveBet, outcome: resolved.outcome },
         });
@@ -469,7 +495,7 @@ export const bjHit = createServerFn({ method: "POST" })
           user_id: userId,
           delta: insPayout,
           type: "win",
-          game: "blackjack",
+          game: cfg.gameKey,
           client_action_id: deriveActionId(data.client_action_id, "ins_win"),
           meta: { kind: "blackjack_insurance_win", bet, insurance_cost: insCost },
         });
@@ -511,7 +537,8 @@ export const bjStand = createServerFn({ method: "POST" })
   .inputValidator((input) => ActionInput.parse(input))
   .handler(async ({ data, context }): Promise<BJSessionView> => {
     const userId = context.userId;
-    const session = await loadSessionForUser(data.session_id, userId);
+    const cfg = BJ_VARIANTS[data.variant];
+    const session = await loadSessionForUser(data.session_id, userId, cfg.gameKey);
     if (session.status !== "open") throw new Error("bj_session_closed");
     if (session.nonce !== data.nonce) throw new Error("bj_stale_nonce");
     if (session.public_state.phase !== "playing") {
@@ -522,7 +549,7 @@ export const bjStand = createServerFn({ method: "POST" })
     const doubled = session.public_state.doubled;
     const effectiveBet = doubled ? bet * 2 : bet;
 
-    const bias = await loadBjBias();
+    const bias = await loadBjBias(cfg.gameKey);
     const resolved = resolveHand(
       session.state.shoe,
       session.public_state.player,
@@ -558,7 +585,7 @@ export const bjStand = createServerFn({ method: "POST" })
         user_id: userId,
         delta: resolved.payout,
         type: "win",
-        game: "blackjack",
+        game: cfg.gameKey,
         client_action_id: deriveActionId(data.client_action_id, "win"),
         meta: { kind: "blackjack_win", bet: effectiveBet, outcome: resolved.outcome },
       });
@@ -569,7 +596,7 @@ export const bjStand = createServerFn({ method: "POST" })
         user_id: userId,
         delta: insPayout,
         type: "win",
-        game: "blackjack",
+        game: cfg.gameKey,
         client_action_id: deriveActionId(data.client_action_id, "ins_win"),
         meta: { kind: "blackjack_insurance_win", bet, insurance_cost: insCost },
       });
@@ -604,7 +631,8 @@ export const bjInsurance = createServerFn({ method: "POST" })
   .inputValidator((input) => InsuranceInput.parse(input))
   .handler(async ({ data, context }): Promise<BJSessionView> => {
     const userId = context.userId;
-    const session = await loadSessionForUser(data.session_id, userId);
+    const cfg = BJ_VARIANTS[data.variant];
+    const session = await loadSessionForUser(data.session_id, userId, cfg.gameKey);
     if (session.status !== "open") throw new Error("bj_session_closed");
     if (session.nonce !== data.nonce) throw new Error("bj_stale_nonce");
     if (session.public_state.phase !== "playing") {
@@ -625,7 +653,7 @@ export const bjInsurance = createServerFn({ method: "POST" })
           user_id: userId,
           delta: -cost,
           type: "bet",
-          game: "blackjack",
+          game: cfg.gameKey,
           client_action_id: deriveActionId(data.client_action_id, "insurance"),
           meta: { kind: "blackjack_insurance", bet, insurance_cost: cost },
         }).catch((err) => {
@@ -674,7 +702,8 @@ export const bjDouble = createServerFn({ method: "POST" })
   .inputValidator((input) => ActionInput.parse(input))
   .handler(async ({ data, context }): Promise<BJSessionView> => {
     const userId = context.userId;
-    const session = await loadSessionForUser(data.session_id, userId);
+    const cfg = BJ_VARIANTS[data.variant];
+    const session = await loadSessionForUser(data.session_id, userId, cfg.gameKey);
     if (session.status !== "open") throw new Error("bj_session_closed");
     if (session.nonce !== data.nonce) throw new Error("bj_stale_nonce");
     if (session.public_state.phase !== "playing") {
@@ -694,7 +723,7 @@ export const bjDouble = createServerFn({ method: "POST" })
       user_id: userId,
       delta: -bet,
       type: "bet",
-      game: "blackjack",
+      game: cfg.gameKey,
       client_action_id: deriveActionId(data.client_action_id, "double"),
       meta: { kind: "blackjack_double", bet },
     }).catch((err) => {
@@ -705,7 +734,7 @@ export const bjDouble = createServerFn({ method: "POST" })
     });
     let newBalance = debit.new_balance;
 
-    const bias = await loadBjBias();
+    const bias = await loadBjBias(cfg.gameKey);
     let shoe = session.state.shoe;
     const currentScore = handScore(session.public_state.player);
     const drawn = drawForPlayerHit(shoe, currentScore, bias);
@@ -741,7 +770,7 @@ export const bjDouble = createServerFn({ method: "POST" })
         user_id: userId,
         delta: resolved.payout,
         type: "win",
-        game: "blackjack",
+        game: cfg.gameKey,
         client_action_id: deriveActionId(data.client_action_id, "double_win"),
         meta: { kind: "blackjack_win", bet: effectiveBet, outcome: resolved.outcome },
       });
@@ -752,7 +781,7 @@ export const bjDouble = createServerFn({ method: "POST" })
         user_id: userId,
         delta: insPayout,
         type: "win",
-        game: "blackjack",
+        game: cfg.gameKey,
         client_action_id: deriveActionId(data.client_action_id, "ins_win"),
         meta: { kind: "blackjack_insurance_win", bet, insurance_cost: insCost },
       });
