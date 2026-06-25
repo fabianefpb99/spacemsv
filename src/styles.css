@@ -649,6 +649,11 @@ html.light [class*="shadow-[0_0_"]:not(:is(header, nav) *):not(.theme-dark-fixed
   box-shadow: none !important;
 }
 
+/* Disable the rotating neon sweep around the hero slider in light mode */
+html.light .slider-neon-frame::before {
+  display: none !important;
+}
+
 /* ------------------------------------------------------------------
  * Dark mode — disable neon fuchsia borders & glows on the Featured
  * Games grid and the horizontal promo banners (BlackJack, Ruleta,
@@ -744,35 +749,6 @@ html.dark .promo-banner .promo-banner__chev--glass svg * {
   animation: slider-neon-sweep 9s ease-in-out 2s infinite;
   filter: drop-shadow(0 0 6px rgba(76, 29, 149, 0.85))
           drop-shadow(0 0 14px rgba(76, 29, 149, 0.55));
-}
-
-/* Light mode only — keep the sweep anchored to the real outer edge, but draw
-   its thickness inward so there is no dead gap between the frame and glow.
-   Dark mode keeps the original rule above unchanged. */
-html.light .slider-neon-frame {
-  border-color: transparent !important;
-  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.78) inset,
-              0 0 10px rgba(168, 85, 247, 0.35) !important;
-}
-
-html.light .slider-neon-frame::before {
-  inset: -1px !important;
-  padding: 5px !important;
-  border-radius: calc(1rem + 1px) !important;
-  z-index: 8 !important;
-  background: conic-gradient(
-    from var(--neon-angle, 0deg),
-    rgba(168, 85, 247, 0) 0deg,
-    rgba(168, 85, 247, 0) 178deg,
-    rgba(168, 85, 247, 0.34) 230deg,
-    rgba(217, 70, 239, 0.90) 292deg,
-    #a855f7 326deg,
-    rgba(59, 7, 100, 0.92) 348deg,
-    rgba(59, 7, 100, 0) 360deg
-  ) !important;
-  filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.75))
-          drop-shadow(0 0 9px rgba(217, 70, 239, 0.45)) !important;
-  opacity: 0;
 }
 
 @property --neon-angle {
