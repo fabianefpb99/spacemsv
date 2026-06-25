@@ -746,24 +746,23 @@ function HomePage() {
                   <Link
                     key={`${g.to}-${g.name}`}
                     to={g.to}
-                    className="home-game-card group flex w-[22%] min-w-[22%] flex-shrink-0 flex-col overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400 sm:w-[22%] sm:min-w-[22%]"
+                    className="home-game-card group relative flex aspect-[3/4] w-[22%] min-w-[22%] flex-shrink-0 overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400 sm:w-[22%] sm:min-w-[22%]"
                   >
-                    <div className="aspect-square w-full overflow-hidden">
-                      <SkeletonImage
-                        src={g.img}
-                        alt={gameName}
-                        loading="lazy"
-                        width={512}
-                        height={512}
-                        wrapperClassName="h-full w-full"
-                        className="h-full w-full object-cover transition group-hover:scale-105"
-                      />
-                    </div>
-                    <div className="flex min-h-[42px] flex-col items-center justify-center gap-0.5 px-1 py-1.5 text-center sm:min-h-[46px] sm:px-1.5">
-                      <span className="home-game-title block max-w-full whitespace-normal break-words font-display text-[8.5px] font-black uppercase leading-tight tracking-normal text-white sm:text-[10px]">
+                    <SkeletonImage
+                      src={g.img}
+                      alt={gameName}
+                      loading="lazy"
+                      width={512}
+                      height={680}
+                      wrapperClassName="absolute inset-0 h-full w-full"
+                      className="h-full w-full object-cover transition group-hover:scale-105"
+                    />
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/90 via-black/55 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-1 px-2 pb-2 pt-6 text-center">
+                      <span className="home-game-title block max-w-full whitespace-normal break-words font-display text-[10px] font-black uppercase leading-tight tracking-normal text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] sm:text-xs">
                         {gameName}
                       </span>
-                      <span className={`block max-w-full rounded-full border px-1 py-0.5 text-[7px] font-bold uppercase leading-none tracking-normal sm:px-1.5 sm:text-[8px] ${g.tagCls}`}>
+                      <span className={`block max-w-full rounded-full border px-2 py-0.5 text-[7px] font-bold uppercase leading-none tracking-normal sm:text-[8px] ${g.tagCls}`}>
                         {gameTag}
                       </span>
                     </div>
