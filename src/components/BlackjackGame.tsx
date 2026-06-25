@@ -23,6 +23,7 @@ import {
   bjDeal,
   bjDouble,
   bjHit,
+  bjInsurance,
   bjResume,
   bjStand,
   type BJSessionView,
@@ -141,6 +142,7 @@ export function BlackjackGame() {
   const standFn = useServerFn(bjStand);
   const doubleFn = useServerFn(bjDouble);
   const resumeFn = useServerFn(bjResume);
+  const insuranceFn = useServerFn(bjInsurance);
 
   const [bet, setBet] = useState(2000);
   const [phase, setPhase] = useState<Phase>("betting");
@@ -151,6 +153,10 @@ export function BlackjackGame() {
   const [doubled, setDoubled] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [insuranceOffered, setInsuranceOffered] = useState(false);
+  const [insuranceTaken, setInsuranceTaken] = useState(false);
+  const [insuranceCost, setInsuranceCost] = useState(0);
+  const [insurancePayout, setInsurancePayout] = useState(0);
 
   // Server session tracking
   const sessionRef = useRef<{ id: string; nonce: number } | null>(null);
