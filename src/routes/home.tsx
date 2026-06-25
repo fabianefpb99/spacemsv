@@ -679,14 +679,14 @@ function HomePage() {
             <button
               onClick={() => { showArrows(); setSlide((s) => (s - 1 + slidesList.length) % slidesList.length); }}
               aria-label="Anterior"
-              className={`absolute left-2 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white/80 backdrop-blur-sm transition-opacity duration-500 hover:bg-black/50 hover:text-white ${arrowsVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+              className={`hero-slider-arrow absolute left-2 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full transition-opacity duration-500 ${arrowsVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
             <button
               onClick={() => { showArrows(); setSlide((s) => (s + 1) % slidesList.length); }}
               aria-label="Siguiente"
-              className={`absolute right-2 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white/80 backdrop-blur-sm transition-opacity duration-500 hover:bg-black/50 hover:text-white ${arrowsVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+              className={`hero-slider-arrow absolute right-2 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full transition-opacity duration-500 ${arrowsVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}
             >
               <ChevronRight className="h-4 w-4" />
             </button>

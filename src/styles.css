@@ -696,6 +696,25 @@ html.dark .promo-banner .promo-banner__chev--glass svg * {
   opacity: 0.9 !important;
 }
 
+/* Home hero slider arrows — glassy dark translucent button in both modes.
+   Slightly less transparent than the old bg-black/30 so the controls
+   remain readable on any slide background. */
+.hero-slider-arrow {
+  background: rgba(12, 6, 32, 0.42);
+  color: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(8px) saturate(120%);
+}
+.hero-slider-arrow:hover {
+  background: rgba(12, 6, 32, 0.58);
+  color: #ffffff;
+}
+.hero-slider-arrow svg,
+.hero-slider-arrow svg * {
+  color: #ffffff;
+  stroke: #ffffff;
+}
+
 
 
 /* Hero slider — rotating dark-violet glow sweep around the border */
