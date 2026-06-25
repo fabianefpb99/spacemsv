@@ -774,7 +774,7 @@ function HomePage() {
                     />
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/95 via-black/70 to-transparent" />
                     <div className="absolute inset-x-0 bottom-2 flex flex-col items-center gap-1 px-1.5 text-center">
-                      <span className="home-game-title block w-full whitespace-pre-line font-display font-black uppercase tracking-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] text-[13px] leading-[0.95] sm:text-sm">
+                      <span className="home-game-title block w-full whitespace-pre-line font-display font-black uppercase tracking-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] text-[11px] leading-[0.9] sm:text-[12px] sm:leading-[0.95]">
                         {gameName}
                       </span>
                       <span className={`inline-block rounded-full border px-2 py-[2px] text-[8px] font-bold uppercase leading-none tracking-wide ${g.tagCls}`}>
