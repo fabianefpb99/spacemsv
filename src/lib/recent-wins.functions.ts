@@ -12,9 +12,10 @@ export type RecentWin = {
 export const getRecentPublicWins = createServerFn({ method: "GET" }).handler(
   async (): Promise<RecentWin[]> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data, error } = await supabaseAdmin.rpc("get_recent_public_wins", {
-      p_limit: 20,
-    });
+    const { data, error } = await (supabaseAdmin as any).rpc(
+      "get_recent_public_wins",
+      { p_limit: 20 },
+    );
     if (error) return [];
     if (!Array.isArray(data)) return [];
     return data.map((r: any) => ({
