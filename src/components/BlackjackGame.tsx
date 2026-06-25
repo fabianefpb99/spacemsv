@@ -741,6 +741,11 @@ export function BlackjackGame() {
                 <span>Apuesta: <span className="text-white">${formatCOP(doubled ? bet * 2 : bet)}</span></span>
                 <span>Puntos: <span className="text-white">{playerScore}</span></span>
               </div>
+              {insuranceOffered && (
+                <div className="mt-2 rounded-md border border-amber-400/60 bg-amber-950/40 px-2 py-1 text-center text-[10px] font-bold uppercase tracking-wider text-amber-200">
+                  Dealer muestra As — toma Seguro o continúa para rechazar
+                </div>
+              )}
               <div className="mt-2.5 grid grid-cols-3 gap-2">
                 <button
                   onClick={onHit}
@@ -756,14 +761,30 @@ export function BlackjackGame() {
                 >
                   Plantarse
                 </button>
-                <button
-                  onClick={onDouble}
-                  disabled={phase !== "playing" || busy || player.length !== 2 || bet > balance}
-                  className="rounded-xl border-2 border-purple-400 bg-transparent px-2 py-2.5 text-sm font-black uppercase tracking-wider text-purple-100 shadow-[0_0_12px_rgba(168,85,247,0.45)] active:scale-95 disabled:opacity-40"
-                >
-                  Doblar
-                </button>
+                {insuranceOffered ? (
+                  <button
+                    onClick={() => { void handleInsurance(true); }}
+                    disabled={phase !== "playing" || busy || Math.floor(bet / 2) > balance}
+                    className="rounded-xl border-2 border-amber-400 bg-amber-500/20 px-2 py-2.5 text-xs font-black uppercase tracking-wider text-amber-100 shadow-[0_0_12px_rgba(251,191,36,0.45)] active:scale-95 disabled:opacity-40"
+                  >
+                    Seguro<br />
+                    <span className="text-[9px] font-bold opacity-80">½ apuesta</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={onDouble}
+                    disabled={phase !== "playing" || busy || player.length !== 2 || bet > balance}
+                    className="rounded-xl border-2 border-purple-400 bg-transparent px-2 py-2.5 text-sm font-black uppercase tracking-wider text-purple-100 shadow-[0_0_12px_rgba(168,85,247,0.45)] active:scale-95 disabled:opacity-40"
+                  >
+                    Doblar
+                  </button>
+                )}
               </div>
+              {insuranceTaken && insuranceCost > 0 && (
+                <div className="mt-2 text-center text-[10px] font-bold uppercase tracking-wider text-amber-200/90">
+                  Seguro activo: ${formatCOP(insuranceCost)}
+                </div>
+              )}
             </div>
           )}
 
