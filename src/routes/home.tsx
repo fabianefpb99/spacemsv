@@ -38,6 +38,16 @@ import blackjackBanner from "@/assets/blackjack-banner.jpg";
 import jackpotBanner from "@/assets/jackpot-banner.jpg";
 import ruletaBanner from "@/assets/ruleta-banner.jpg";
 import casinoIntro from "@/assets/audio/casino-intro.mp3.asset.json";
+import avatar1 from "@/assets/avatars/avatar-1.png.asset.json";
+import avatar2 from "@/assets/avatars/avatar-2.png.asset.json";
+import avatar3 from "@/assets/avatars/avatar-3.png.asset.json";
+import avatar4 from "@/assets/avatars/avatar-4.png.asset.json";
+import avatar5 from "@/assets/avatars/avatar-5.png.asset.json";
+import avatar6 from "@/assets/avatars/avatar-6.png.asset.json";
+import avatar7 from "@/assets/avatars/avatar-7.png.asset.json";
+import avatar8 from "@/assets/avatars/avatar-8.png.asset.json";
+
+const WIN_AVATARS = [avatar1, avatar2, avatar3, avatar4, avatar5, avatar6, avatar7, avatar8];
 
 const LAST_WINS = [
   { user: "Usuario123", game: "Spaceman", amount: 252413, mult: 1.85 },
