@@ -92,27 +92,27 @@ function AuthDialogContent({ onOpenChange }: { onOpenChange: (v: boolean) => voi
       />
 
       <div className="relative flex min-h-dvh items-center justify-center overflow-y-auto overflow-x-hidden px-4 py-6 sm:px-6 pb-[12vh] sm:pb-[10vh]">
-        <div className="dark theme-dark-fixed relative box-border w-full max-w-md overflow-x-hidden overflow-y-auto rounded-lg border border-purple-500/40 bg-[#0c0620] p-4 text-white shadow-2xl sm:p-6 max-h-[calc(100dvh-2rem)]">
+        <div className="auth-dialog-panel relative box-border w-full max-w-md overflow-x-hidden overflow-y-auto rounded-lg border p-4 sm:p-6 max-h-[calc(100dvh-2rem)]">
           <button
             type="button"
             onClick={() => onOpenChange(false)}
             aria-label="Cerrar inicio de sesión"
-            className="absolute right-4 top-4 text-purple-200/80 transition-colors hover:text-white"
+            className="auth-dialog-close absolute right-4 top-4 transition-colors"
           >
             ×
           </button>
 
           <div className="flex flex-col space-y-1.5 pr-8 text-center sm:text-left">
-            <h2 className="font-display text-2xl font-black tracking-wide text-white">BIENVENIDO</h2>
-            <p className="text-sm text-purple-200/70">
+            <h2 className="auth-dialog-title font-display text-2xl font-black tracking-wide">BIENVENIDO</h2>
+            <p className="auth-dialog-subtitle text-sm">
               Inicia sesión o crea tu cuenta para guardar tu progreso y balance.
             </p>
           </div>
 
           <Tabs defaultValue="signin" className="mt-4 w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-purple-950/40">
-              <TabsTrigger value="signin">Iniciar sesión</TabsTrigger>
-              <TabsTrigger value="signup">Registrarse</TabsTrigger>
+            <TabsList className="auth-dialog-tabs grid w-full grid-cols-2">
+              <TabsTrigger className="auth-dialog-tab" value="signin">Iniciar sesión</TabsTrigger>
+              <TabsTrigger className="auth-dialog-tab" value="signup">Registrarse</TabsTrigger>
             </TabsList>
             <TabsContent value="signin">
               <SignInForm onSuccess={() => onOpenChange(false)} />
@@ -170,16 +170,16 @@ function GoogleButton() {
   return (
     <div className="space-y-2 pt-3">
       <div className="relative my-1 flex items-center">
-        <div className="h-px flex-1 bg-purple-500/20" />
-        <span className="px-2 text-[10px] uppercase tracking-widest text-purple-200/60">o</span>
-        <div className="h-px flex-1 bg-purple-500/20" />
+        <div className="auth-dialog-separator h-px flex-1" />
+        <span className="auth-dialog-muted px-2 text-[10px] uppercase tracking-widest">o</span>
+        <div className="auth-dialog-separator h-px flex-1" />
       </div>
       <Button
         type="button"
         onClick={onClick}
         disabled={loading}
         variant="outline"
-        className="w-full border-purple-500/40 bg-transparent text-white hover:bg-purple-500/10"
+        className="auth-dialog-google w-full"
       >
         {loading ? (
           <Loader2 className="h-4 w-4 animate-spin" />
@@ -192,7 +192,7 @@ function GoogleButton() {
           </>
         )}
       </Button>
-      {error && <p className="text-xs text-rose-400">{error}</p>}
+      {error && <p className="auth-dialog-error text-xs">{error}</p>}
     </div>
   );
 }
@@ -235,15 +235,15 @@ function SignInForm({ onSuccess }: { onSuccess: () => void }) {
   return (
     <form onSubmit={onSubmit} className="space-y-3 pt-3">
       <div className="space-y-1.5">
-        <Label htmlFor="signin-email">Email</Label>
-        <Input id="signin-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" required />
+        <Label className="auth-dialog-label" htmlFor="signin-email">Email</Label>
+        <Input className="auth-dialog-input" id="signin-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" required />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="signin-password">Contraseña</Label>
-        <Input id="signin-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" required />
+        <Label className="auth-dialog-label" htmlFor="signin-password">Contraseña</Label>
+        <Input className="auth-dialog-input" id="signin-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" required />
       </div>
-      {error && <p className="text-xs text-rose-400">{error}</p>}
-      <Button type="submit" disabled={loading} className="w-full bg-purple-600 hover:bg-purple-500">
+      {error && <p className="auth-dialog-error text-xs">{error}</p>}
+      <Button type="submit" disabled={loading} className="auth-dialog-submit w-full">
         {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Iniciar sesión"}
       </Button>
     </form>
@@ -322,7 +322,7 @@ function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
   if (step === 2 && userId) {
     return (
       <div className="space-y-3 pt-3">
-        <div className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-200">
+        <div className="auth-dialog-success rounded-md border px-3 py-2 text-xs">
           Cuenta creada. Completa tus datos personales para finalizar el registro.
         </div>
         <PersonalDataForm
@@ -333,7 +333,7 @@ function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
         <button
           type="button"
           onClick={onSuccess}
-          className="w-full text-center text-[11px] text-purple-200/70 hover:text-purple-100"
+          className="auth-dialog-skip w-full text-center text-[11px]"
         >
           Completar después
         </button>
@@ -344,20 +344,21 @@ function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
   return (
     <form onSubmit={onSubmit} className="space-y-3 pt-3">
       <div className="space-y-1.5">
-        <Label htmlFor="signup-email">Email</Label>
-        <Input id="signup-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" required />
+        <Label className="auth-dialog-label" htmlFor="signup-email">Email</Label>
+        <Input className="auth-dialog-input" id="signup-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" required />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="signup-username">Usuario</Label>
-        <Input id="signup-username" value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" required />
+        <Label className="auth-dialog-label" htmlFor="signup-username">Usuario</Label>
+        <Input className="auth-dialog-input" id="signup-username" value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" required />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="signup-password">Contraseña</Label>
-        <Input id="signup-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" required />
+        <Label className="auth-dialog-label" htmlFor="signup-password">Contraseña</Label>
+        <Input className="auth-dialog-input" id="signup-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" required />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="signup-referral">Código de referido <span className="text-purple-300/60">(opcional)</span></Label>
+        <Label className="auth-dialog-label" htmlFor="signup-referral">Código de referido <span className="auth-dialog-muted">(opcional)</span></Label>
         <Input
+          className="auth-dialog-input"
           id="signup-referral"
           value={referralCode}
           onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
@@ -366,9 +367,9 @@ function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
           autoComplete="off"
         />
       </div>
-      {error && <p className="text-xs text-rose-400">{error}</p>}
-      {info && <p className="text-xs text-emerald-300">{info}</p>}
-      <Button type="submit" disabled={loading} className="w-full bg-purple-600 hover:bg-purple-500">
+      {error && <p className="auth-dialog-error text-xs">{error}</p>}
+      {info && <p className="auth-dialog-info text-xs">{info}</p>}
+      <Button type="submit" disabled={loading} className="auth-dialog-submit w-full">
         {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Crear cuenta"}
       </Button>
     </form>
