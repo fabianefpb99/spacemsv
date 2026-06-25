@@ -649,9 +649,22 @@ html.light [class*="shadow-[0_0_"]:not(:is(header, nav) *):not(.theme-dark-fixed
   box-shadow: none !important;
 }
 
-/* Disable the rotating neon sweep around the hero slider in light mode */
+/* Light mode — keep the rotating sweep around the hero slider, but use
+ * a darker violet so it's visible against the white page background.
+ * Dark mode is untouched. */
 html.light .slider-neon-frame::before {
-  display: none !important;
+  background: conic-gradient(
+    from var(--neon-angle, 0deg),
+    rgba(59, 7, 100, 0) 0deg,
+    rgba(59, 7, 100, 0) 180deg,
+    rgba(59, 7, 100, 0.45) 240deg,
+    rgba(59, 7, 100, 0.95) 305deg,
+    #3b0764 330deg,
+    rgba(59, 7, 100, 0.65) 350deg,
+    rgba(59, 7, 100, 0) 360deg
+  ) !important;
+  filter: drop-shadow(0 0 6px rgba(59, 7, 100, 0.75))
+          drop-shadow(0 0 14px rgba(139, 92, 246, 0.45)) !important;
 }
 
 /* ------------------------------------------------------------------
