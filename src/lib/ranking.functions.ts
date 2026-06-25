@@ -176,10 +176,8 @@ export const getMyRankingPosition = createServerFn({ method: "GET" })
     const fillers = generateFillers("general", 5, dateKey, hour);
     const fillersAhead = fillers.filter((f) => f.net_amount > myNet).length;
 
-    if (realRank == null) {
-      // User has no winnings today: they sit after all fillers that have
-      // any amount (which, in practice, is all of them).
-      return { rank: fillersAhead + 1, net_amount: myNet };
+    if (realRank == null || myNet <= 0) {
+      return { rank: null as number | null, net_amount: myNet };
     }
     return { rank: realRank + fillersAhead, net_amount: myNet };
   });
