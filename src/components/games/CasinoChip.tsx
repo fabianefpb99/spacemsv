@@ -86,6 +86,9 @@ export const CasinoChip = memo(function CasinoChip({
           <stop offset="0%" stopColor="#ffffff" stopOpacity="0.55" />
           <stop offset="60%" stopColor="#ffffff" stopOpacity="0" />
         </linearGradient>
+        <filter id={`${id}-textShadow`} x="-25%" y="-25%" width="150%" height="150%">
+          <feDropShadow dx="0" dy="1.2" stdDeviation="1.4" floodColor="#000000" floodOpacity="0.65" />
+        </filter>
       </defs>
 
       {/* drop shadow */}
@@ -94,35 +97,30 @@ export const CasinoChip = memo(function CasinoChip({
       {/* outer rim */}
       <circle cx="32" cy="32" r="28" fill={`url(#${id}-rim)`} stroke={p.baseDark} strokeWidth="1" />
 
-      {/* edge notches (8) for poker chip look */}
-      {Array.from({ length: 8 }).map((_, i) => {
-        const a = (i * 360) / 8;
-        return (
-          <rect
-            key={i}
-            x="30"
-            y="2"
-            width="4"
-            height="9"
-            rx="1"
-            fill="#ffffff"
-            opacity="0.92"
-            transform={`rotate(${a} 32 32)`}
-          />
-        );
-      })}
+      {/* subtle edge dashes instead of heavy white rectangles */}
+      <circle
+        cx="32"
+        cy="32"
+        r="27"
+        fill="none"
+        stroke={p.baseLight}
+        strokeOpacity="0.35"
+        strokeWidth="2"
+        strokeDasharray="3 6"
+        strokeLinecap="round"
+      />
 
       {/* inner ring */}
-      <circle cx="32" cy="32" r="21" fill="none" stroke={p.innerEdge} strokeWidth="1.5" />
+      <circle cx="32" cy="32" r="21" fill="none" stroke={p.baseDark} strokeOpacity="0.55" strokeWidth="1" />
 
       {/* inner face */}
       <circle cx="32" cy="32" r="20" fill={`url(#${id}-face)`} />
 
       {/* concentric line */}
-      <circle cx="32" cy="32" r="17" fill="none" stroke={p.baseLight} strokeOpacity="0.35" strokeWidth="0.6" />
+      <circle cx="32" cy="32" r="17" fill="none" stroke={p.baseLight} strokeOpacity="0.25" strokeWidth="0.6" />
 
       {/* top gloss */}
-      <ellipse cx="32" cy="22" rx="16" ry="7" fill={`url(#${id}-gloss)`} />
+      <ellipse cx="32" cy="22" rx="16" ry="7" fill={`url(#${id}-gloss)`} opacity="0.8" />
 
       {/* label */}
       <text
@@ -131,11 +129,12 @@ export const CasinoChip = memo(function CasinoChip({
         textAnchor="middle"
         fontFamily="'Inter', 'Arial Black', sans-serif"
         fontWeight="900"
-        fontSize={label.length >= 4 ? 17 : label.length >= 3 ? 19 : 22}
+        fontSize={label.length >= 4 ? 18 : label.length >= 3 ? 21 : 24}
         fill={p.text}
         stroke={p.textShadow}
-        strokeWidth="0.8"
+        strokeWidth="0.9"
         paintOrder="stroke"
+        filter={`url(#${id}-textShadow)`}
       >
         {label}
       </text>
