@@ -743,8 +743,9 @@ function HomePage() {
                       alt={w.user}
                       width={32}
                       height={32}
-                      loading="lazy"
+                      loading={i < 6 ? "eager" : "lazy"}
                       decoding="async"
+                      fetchPriority={i < 4 ? "high" : "auto"}
                       className="h-full w-full object-cover home-win-avatar-img"
                       onLoad={(e) => e.currentTarget.classList.add("is-loaded")}
                     />
