@@ -6,6 +6,9 @@ import {
   BJ_BET_STEP,
   BJ_MAX_BET,
   BJ_MIN_BET,
+  BJ_VARIANTS,
+  type BJVariantKey,
+  type BJVariantConfig,
   type BJPublicState,
   type Card,
   handScore,
@@ -30,13 +33,13 @@ import {
   sha256Hex,
 } from "./engine.server";
 
-/** Load the configured RTP target for blackjack and derive bias. */
-async function loadBjBias(): Promise<BJBias> {
+/** Load the configured RTP target for a blackjack variant and derive bias. */
+async function loadBjBias(gameKey: BJVariantKey): Promise<BJBias> {
   try {
     const { data } = await supabaseAdmin
       .from("game_rtp_config")
       .select("rtp_target, is_active")
-      .eq("game", "blackjack")
+      .eq("game", gameKey)
       .maybeSingle();
     if (!data || data.is_active === false) return BJ_DEFAULT_BIAS;
     return biasFromRtpTarget(Number(data.rtp_target));
@@ -49,32 +52,50 @@ async function loadBjBias(): Promise<BJBias> {
 /* Schemas                                                             */
 /* ------------------------------------------------------------------ */
 
-const BetSchema = z
-  .number()
-  .int()
-  .min(BJ_MIN_BET)
-  .max(BJ_MAX_BET)
-  .refine((n) => n % BJ_BET_STEP === 0, {
-    message: `bet must be a multiple of ${BJ_BET_STEP}`,
+const VariantField = z
+  .enum(["blackjack", "blackjack_vip"])
+  .default("blackjack");
+
+const DealInput = z
+  .object({
+    variant: VariantField,
+    bet: z.number().int(),
+    client_action_id: z.string().uuid(),
+  })
+  .superRefine((val, ctx) => {
+    const cfg = BJ_VARIANTS[val.variant];
+    if (val.bet < cfg.minBet || val.bet > cfg.maxBet) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["bet"],
+        message: `bet must be between ${cfg.minBet} and ${cfg.maxBet} for ${cfg.gameKey}`,
+      });
+    }
+    if (val.bet % cfg.betStep !== 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["bet"],
+        message: `bet must be a multiple of ${cfg.betStep}`,
+      });
+    }
   });
 
-const DealInput = z.object({
-  bet: BetSchema,
-  client_action_id: z.string().uuid(),
-});
-
 const ActionInput = z.object({
+  variant: VariantField,
   session_id: z.string().uuid(),
   nonce: z.number().int().min(0),
   client_action_id: z.string().uuid(),
 });
 
 const InsuranceInput = z.object({
+  variant: VariantField,
   session_id: z.string().uuid(),
   nonce: z.number().int().min(0),
   client_action_id: z.string().uuid(),
   take: z.boolean(),
 });
+
+const ResumeInput = z.object({ variant: VariantField });
 
 /* ------------------------------------------------------------------ */
 /* Types returned to the client                                        */
