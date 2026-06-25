@@ -31,6 +31,7 @@ import gameSpaceman from "@/assets/game-spaceman.jpg";
 import gameSlotMafia from "@/assets/game-slot-mafia.jpg";
 import gameMines from "@/assets/game-mines.jpg";
 import gameDice from "@/assets/game-dice.jpg";
+import gameBlackjackVip from "@/assets/game-blackjack-vip.jpg";
 import gift3d from "@/assets/gift-3d.png";
 import trophy3d from "@/assets/trophy-3d.png";
 import blackjackPromo from "@/assets/blackjack-promo.png.asset.json";
@@ -175,6 +176,7 @@ const GAMES = [
   { name: "SLOT", img: gameSlotMafia, tag: "NUEVO", tagCls: "bg-emerald-600 text-white border-emerald-400", to: "/slot" },
   { name: "MINAS", img: gameMines, tag: "POPULAR", tagCls: "bg-purple-600 text-white border-purple-400", to: "/mines" },
   { name: "DICE", img: gameDice, tag: "CLÁSICO", tagCls: "bg-rose-600 text-white border-rose-400", to: "/dados" },
+  { name: "BLACKJACK VIP", img: gameBlackjackVip, tag: "VIP", tagCls: "bg-amber-500 text-black border-amber-300", to: "/blackjackvip" },
 ];
 
 const TAG_CLS: Record<string, string> = {
@@ -561,12 +563,12 @@ function HomePage() {
               Ver todos
             </button>
           </div>
-          <div className="mt-3 grid grid-cols-4 gap-2 sm:gap-3">
+          <div className="home-featured-scroll mt-3 flex gap-2 overflow-x-auto pb-1 sm:gap-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {gamesList.map((g) => (
               <Link
                 key={g.name}
                 to={g.to}
-                className="home-game-card group flex flex-col overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400"
+                className="home-game-card group flex w-[22%] min-w-[22%] flex-shrink-0 flex-col overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400 sm:w-[22%] sm:min-w-[22%]"
               >
                 <div className="aspect-square w-full overflow-hidden">
                   <SkeletonImage
