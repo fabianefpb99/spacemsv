@@ -645,6 +645,27 @@ html.light .slider-neon-frame::before {
   display: none !important;
 }
 
+/* ------------------------------------------------------------------
+ * Dark mode — disable neon fuchsia borders & glows on the Featured
+ * Games grid and the horizontal promo banners (BlackJack, Ruleta,
+ * Arena, Jackpot) to test a cleaner look. The hero slider keeps its
+ * neon frame untouched.
+ * ------------------------------------------------------------------ */
+html.dark .home-game-card,
+html.dark .home-game-card:hover,
+html.dark .promo-banner,
+html.dark .promo-banner:hover {
+  border-color: rgba(148, 130, 180, 0.18) !important;
+  box-shadow: none !important;
+}
+
+html.dark .promo-banner .promo-banner__chev,
+html.dark .promo-banner .promo-banner__tag,
+html.dark .promo-banner:hover .promo-banner__chev {
+  box-shadow: none !important;
+}
+
+
 /* Hero slider — rotating neon glow sweep around the border */
 .slider-neon-frame {
   position: relative;
