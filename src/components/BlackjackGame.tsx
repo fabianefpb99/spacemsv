@@ -405,6 +405,11 @@ export function BlackjackGame() {
   const onHit = async () => {
     if (phase !== "playing" || busy || !sessionRef.current) return;
     if (inFlightRef.current) return;
+    // Auto-decline insurance if still offered when user picks Hit.
+    if (insuranceOffered) {
+      const declined = await declineInsurance();
+      if (!declined) return;
+    }
     inFlightRef.current = true;
     setBusy(true);
     setError(null);
@@ -436,6 +441,10 @@ export function BlackjackGame() {
   const onStand = async () => {
     if (phase !== "playing" || busy || !sessionRef.current) return;
     if (inFlightRef.current) return;
+    if (insuranceOffered) {
+      const declined = await declineInsurance();
+      if (!declined) return;
+    }
     inFlightRef.current = true;
     setBusy(true);
     setError(null);
