@@ -270,6 +270,34 @@ function HomePage() {
     return () => window.clearInterval(id);
   }, []);
 
+  // Ganancias reales (prioridad sobre fillers). Refresca cada 30 s.
+  const fetchRecentWins = useServerFn(getRecentPublicWins);
+  const recentWinsQ = useQuery({
+    queryKey: ["public-recent-wins"],
+    queryFn: () => fetchRecentWins(),
+    staleTime: 20_000,
+    gcTime: 5 * 60_000,
+    refetchInterval: 30_000,
+    refetchOnWindowFocus: false,
+  });
+
+  // Mezcla: reales primero, fillers después, hasta llegar a 12 items.
+  const mergedWins: FillerWin[] = (() => {
+    const real: FillerWin[] = (recentWinsQ.data ?? []).map((w: RecentWin) => ({
+      id: `real:${w.user_id}:${w.created_at}`,
+      username: w.username,
+      avatar_key: w.avatar_key ?? "avatar-1",
+      game: prettyGameName(w.game),
+      amount: Math.round(w.amount),
+      mult: 0, // se oculta cuando es real
+      ageSec: Math.max(0, Math.floor((Date.now() - new Date(w.created_at).getTime()) / 1000)),
+    }));
+    const TARGET = 12;
+    if (real.length >= TARGET) return real.slice(0, TARGET);
+    const fillersNeeded = TARGET - real.length;
+    return [...real, ...lastWins.slice(0, fillersNeeded)];
+  })();
+
   const fetchSlides = useServerFn(getPublicHomeSlides);
   const fetchFeatured = useServerFn(getPublicFeaturedGames);
   const slidesQ = useQuery({
