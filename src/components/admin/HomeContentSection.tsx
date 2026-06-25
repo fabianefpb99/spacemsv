@@ -14,6 +14,7 @@ import {
 } from "@/lib/admin/home-content.functions";
 import { DEFAULT_SLIDES, DEFAULT_FEATURED } from "@/lib/admin/home-defaults";
 import { Panel } from "./shared";
+import { compressImageFile } from "@/lib/admin/image-compress";
 
 type SlideDraft = {
   id?: string;
@@ -52,8 +53,9 @@ async function urlToUploadInput(url: string, fallbackName: string): Promise<{ ba
   const res = await fetch(url);
   if (!res.ok) throw new Error(`No se pudo leer la imagen (${res.status})`);
   const blob = await res.blob();
-  const file = new File([blob], fallbackName, { type: blob.type || "image/jpeg" });
-  return fileToBase64(file);
+  const original = new File([blob], fallbackName, { type: blob.type || "image/jpeg" });
+  const compressed = await compressImageFile(original);
+  return fileToBase64(compressed);
 }
 
 function filenameFromUrl(url: string, fallback: string) {
@@ -172,7 +174,8 @@ function SlidesEditor() {
 
   async function handleUpload(key: string, file: File, current: SlideDraft) {
     try {
-      const { base64, type, name } = await fileToBase64(file);
+      const compressed = await compressImageFile(file);
+      const { base64, type, name } = await fileToBase64(compressed);
       const res = await uploadFn({
         data: { filename: name, content_type: type, data_base64: base64 },
       });
@@ -538,16 +541,10 @@ function FeaturedEditor() {
 
   async function handleUpload(key: string, file: File, current: FeaturedDraft) {
     try {
-      const buf = await file.arrayBuffer();
-      let bin = "";
-      const arr = new Uint8Array(buf);
-      for (let i = 0; i < arr.byteLength; i++) bin += String.fromCharCode(arr[i]);
+      const compressed = await compressImageFile(file);
+      const { base64, type, name } = await fileToBase64(compressed);
       const res = await uploadFn({
-        data: {
-          filename: file.name,
-          content_type: file.type || "image/jpeg",
-          data_base64: btoa(bin),
-        },
+        data: { filename: name, content_type: type, data_base64: base64 },
       });
       setDrafts((d) => ({
         ...d,
