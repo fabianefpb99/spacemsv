@@ -175,6 +175,59 @@ export const adminUploadHomeImage = createServerFn({ method: "POST" })
     return { path, signedUrl: signed?.signedUrl ?? "" };
   });
 
+/* ---------------- BULK COMPRESS (admin) ---------------- */
+
+export const adminListHomeStorageObjects = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context.userId);
+    const admin = await getSupabaseAdmin();
+    const { data, error } = await admin.storage.from(BUCKET).list("", {
+      limit: 1000,
+      sortBy: { column: "name", order: "asc" },
+    });
+    if (error) throw new Error(error.message);
+    const items = await Promise.all(
+      (data ?? [])
+        .filter((o) => o.name && !o.name.endsWith("/"))
+        .map(async (o) => {
+          const { data: signed } = await admin.storage
+            .from(BUCKET)
+            .createSignedUrl(o.name, 60 * 10);
+          return {
+            path: o.name,
+            size: (o.metadata?.size as number | undefined) ?? 0,
+            mime: (o.metadata?.mimetype as string | undefined) ?? "",
+            signedUrl: signed?.signedUrl ?? "",
+          };
+        }),
+    );
+    return items;
+  });
+
+const replaceInput = z.object({
+  path: z.string().min(1).max(1024),
+  content_type: z.string().min(1).max(100),
+  data_base64: z.string().min(10),
+});
+
+export const adminReplaceHomeImage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => replaceInput.parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+    const admin = await getSupabaseAdmin();
+    const buffer = Buffer.from(data.data_base64, "base64");
+    const { error } = await admin.storage
+      .from(BUCKET)
+      .upload(data.path, buffer, {
+        contentType: data.content_type,
+        upsert: true,
+      });
+    if (error) throw new Error(error.message);
+    return { ok: true, size: buffer.byteLength };
+  });
+
 /* ---------------- PUBLIC READS (home page) ---------------- */
 
 export const getPublicHomeSlides = createServerFn({ method: "GET" }).handler(async () => {
