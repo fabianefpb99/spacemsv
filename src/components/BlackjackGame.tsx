@@ -294,7 +294,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
   const resumeFn = useServerFn(bjResume);
   const insuranceFn = useServerFn(bjInsurance);
 
-  const [bet, setBet] = useState(2000);
+  const [bet, setBet] = useState(cfg.defaultBet);
   const [phase, setPhase] = useState<Phase>("betting");
   const [player, setPlayer] = useState<Card[]>([]);
   const [dealer, setDealer] = useState<Card[]>([]);
@@ -426,7 +426,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
     if (!user) return;
     (async () => {
       try {
-        const view = await resumeFn();
+        const view = await resumeFn({ data: { variant } });
         if (cancelled || !view) return;
         // If the latest open session has phase=result, just close it
         // visually — the user already collected. Better UX: clear it.
@@ -517,7 +517,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
     setDealer([]);
     setPhase("dealing");
     try {
-      const view = await dealFn({ data: { bet, client_action_id: uuid() } });
+      const view = await dealFn({ data: { variant, bet, client_action_id: uuid() } });
       // Animate the initial 4-card deal using the cards the server returned.
       const initialPlayer = view.public_state.player;
       const initialDealer = view.public_state.dealer;
@@ -561,6 +561,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
     try {
       const view = await insuranceFn({
         data: {
+          variant,
           session_id: sessionRef.current.id,
           nonce: sessionRef.current.nonce,
           client_action_id: uuid(),
@@ -595,6 +596,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
     try {
       const view = await hitFn({
         data: {
+          variant,
           session_id: sessionRef.current.id,
           nonce: sessionRef.current.nonce,
           client_action_id: uuid(),
@@ -630,6 +632,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
     try {
       const view = await standFn({
         data: {
+          variant,
           session_id: sessionRef.current.id,
           nonce: sessionRef.current.nonce,
           client_action_id: uuid(),
@@ -655,6 +658,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
     try {
       const view = await doubleFn({
         data: {
+          variant,
           session_id: sessionRef.current.id,
           nonce: sessionRef.current.nonce,
           client_action_id: uuid(),
