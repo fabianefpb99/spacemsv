@@ -123,12 +123,15 @@ type SessionRow = {
   nonce: number;
 };
 
-async function loadOpenSession(userId: string): Promise<SessionRow | null> {
+async function loadOpenSession(
+  userId: string,
+  gameKey: BJVariantKey,
+): Promise<SessionRow | null> {
   const { data, error } = await supabaseAdmin
     .from("game_sessions")
     .select("id, user_id, status, bet_amount, state, public_state, nonce")
     .eq("user_id", userId)
-    .eq("game", "blackjack")
+    .eq("game", gameKey)
     .eq("status", "open")
     .order("created_at", { ascending: false })
     .limit(1)
@@ -141,13 +144,14 @@ async function loadOpenSession(userId: string): Promise<SessionRow | null> {
 async function loadSessionForUser(
   sessionId: string,
   userId: string,
+  gameKey: BJVariantKey,
 ): Promise<SessionRow> {
   const { data, error } = await supabaseAdmin
     .from("game_sessions")
     .select("id, user_id, status, bet_amount, state, public_state, nonce")
     .eq("id", sessionId)
     .eq("user_id", userId)
-    .eq("game", "blackjack")
+    .eq("game", gameKey)
     .maybeSingle();
   if (error) throw new Error(`bj_load_failed: ${error.message}`);
   if (!data) throw new Error("bj_session_not_found");
