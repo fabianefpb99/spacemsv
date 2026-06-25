@@ -651,7 +651,7 @@ function HomePage() {
                         {gameName}
                       </span>
                       <span className={`block max-w-full rounded-full border px-1 py-0.5 text-[7px] font-bold uppercase leading-none tracking-normal sm:px-1.5 sm:text-[8px] ${g.tagCls}`}>
-                        ({gameTag})
+                        {gameTag}
                       </span>
                     </div>
                   </Link>
