@@ -758,7 +758,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
           <div className="absolute left-1/2 top-[14%] -translate-x-1/2">
             <div className="relative h-[100px] w-[200px]">
               {dealer.map((c, i) => (
-                <CardView key={`d-${i}`} card={c} idx={i} total={dealer.length} hidden={c.hidden} />
+                <CardView key={`d-${i}`} card={c} idx={i} total={dealer.length} hidden={c.hidden} T={T} />
               ))}
             </div>
             {dealer.length > 0 && (
@@ -774,7 +774,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
           <div className="absolute left-1/2 top-[52%] -translate-x-1/2">
             <div className="relative h-[100px] w-[220px]">
               {player.map((c, i) => (
-                <CardView key={`p-${i}`} card={c} idx={i} total={player.length} />
+                <CardView key={`p-${i}`} card={c} idx={i} total={player.length} T={T} />
               ))}
             </div>
             {player.length > 0 && (
