@@ -590,6 +590,76 @@ export const bjStand = createServerFn({ method: "POST" })
   });
 
 /* ------------------------------------------------------------------ */
+/* Insurance (take / decline)                                          */
+/* ------------------------------------------------------------------ */
+
+export const bjInsurance = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => InsuranceInput.parse(input))
+  .handler(async ({ data, context }): Promise<BJSessionView> => {
+    const userId = context.userId;
+    const session = await loadSessionForUser(data.session_id, userId);
+    if (session.status !== "open") throw new Error("bj_session_closed");
+    if (session.nonce !== data.nonce) throw new Error("bj_stale_nonce");
+    if (session.public_state.phase !== "playing") {
+      throw new Error("bj_not_playing");
+    }
+    if (!session.public_state.insuranceOffered) {
+      throw new Error("bj_insurance_not_offered");
+    }
+
+    const bet = session.public_state.bet;
+    let newBalance = await getBalance(userId);
+    let cost = 0;
+
+    if (data.take) {
+      cost = Math.floor(bet / 2);
+      if (cost > 0) {
+        const debit = await adjustBalance({
+          user_id: userId,
+          delta: -cost,
+          type: "bet",
+          game: "blackjack",
+          client_action_id: deriveActionId(data.client_action_id, "insurance"),
+          meta: { kind: "blackjack_insurance", bet, insurance_cost: cost },
+        }).catch((err) => {
+          if (err instanceof Error && err.message === "insufficient_funds") {
+            throw new Error("Saldo insuficiente para el seguro");
+          }
+          throw err;
+        });
+        newBalance = debit.new_balance;
+      }
+    }
+
+    const publicState: BJPublicState = {
+      ...session.public_state,
+      insuranceOffered: false,
+      insuranceTaken: data.take,
+      insuranceCost: cost,
+      insurancePayout: 0,
+    };
+
+    const updated = await applyAction({
+      session_id: session.id,
+      user_id: userId,
+      expected_nonce: session.nonce,
+      new_state: session.state,
+      new_public_state: publicState,
+      new_status: "open",
+      new_payout: null,
+    });
+
+    return {
+      session_id: updated.id,
+      nonce: updated.nonce,
+      status: "open",
+      public_state: maskHole(publicState),
+      new_balance: newBalance,
+    };
+  });
+
+/* ------------------------------------------------------------------ */
 /* Double                                                               */
 /* ------------------------------------------------------------------ */
 
