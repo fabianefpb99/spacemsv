@@ -2769,6 +2769,20 @@ html.light .evento-especial-eyebrow.text-amber-200 {
   color: #fbbf24 !important;
 }
 
+/* Light mode special event card: yellow star, white x2 XP badge */
+html.light .theme-dark-fixed .special-event-star,
+html.light .special-event-star {
+  color: #fbbf24 !important;
+}
+html.light .theme-dark-fixed .special-event-badge-value,
+html.light .special-event-badge-value,
+html.light .theme-dark-fixed .special-event-badge-label,
+html.light .special-event-badge-label {
+  color: #ffffff !important;
+  text-shadow: none !important;
+}
+
+
 /* Ranking hero: force title yellow and subtitles white in light mode */
 html.light h1.ranking-hero-title.text-white,
 html.light :not(.theme-dark-fixed) h1.ranking-hero-title.text-white {

@@ -597,7 +597,7 @@ function EventosPage() {
               />
               <div className="relative flex items-center gap-3">
                 <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-400/20 ring-2 ring-amber-300/40">
-                  <Sparkles className="h-7 w-7 text-amber-200 drop-shadow-[0_0_10px_rgba(251,191,36,0.9)]" />
+                  <Sparkles className="special-event-star h-7 w-7 text-amber-200 drop-shadow-[0_0_10px_rgba(251,191,36,0.9)]" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="evento-especial-eyebrow text-[10px] font-bold uppercase tracking-widest text-amber-200">
@@ -611,10 +611,10 @@ function EventosPage() {
                   </div>
                 </div>
                 <div className="flex shrink-0 flex-col items-center rounded-xl border border-amber-300/50 bg-amber-400/15 px-3 py-2 text-center">
-                  <div className="font-display text-xl font-black text-amber-200 drop-shadow-[0_0_8px_rgba(251,191,36,0.7)] leading-none">
+                  <div className="special-event-badge-value font-display text-xl font-black text-amber-200 drop-shadow-[0_0_8px_rgba(251,191,36,0.7)] leading-none">
                     {spBadgeValue}
                   </div>
-                  <div className="mt-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-200">
+                  <div className="special-event-badge-label mt-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-200">
                     {spBadgeLabel}
                   </div>
                 </div>
