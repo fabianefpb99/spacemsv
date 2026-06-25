@@ -4,7 +4,7 @@ import { LoadingScreen } from "@/components/LoadingScreen";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
 
-export const Route = createFileRoute("/blackjack-vip")({
+export const Route = createFileRoute("/blackjackvip")({
   head: () => ({
     meta: [
       { title: "Blackjack VIP — BETSPACE Casino" },
