@@ -402,6 +402,36 @@ export function BlackjackGame() {
     }
   };
 
+  const handleInsurance = async (take: boolean): Promise<boolean> => {
+    if (!sessionRef.current) return false;
+    if (inFlightRef.current) return false;
+    inFlightRef.current = true;
+    setBusy(true);
+    setError(null);
+    try {
+      const view = await insuranceFn({
+        data: {
+          session_id: sessionRef.current.id,
+          nonce: sessionRef.current.nonce,
+          client_action_id: uuid(),
+          take,
+        },
+      });
+      sessionRef.current = { id: view.session_id, nonce: view.nonce };
+      setInsuranceOffered(false);
+      setInsuranceTaken(!!view.public_state.insuranceTaken);
+      setInsuranceCost(view.public_state.insuranceCost ?? 0);
+      applyBalance(view.new_balance);
+      return true;
+    } catch (err) {
+      setError(toFriendlyError(err));
+      return false;
+    } finally {
+      setBusy(false);
+      inFlightRef.current = false;
+    }
+  };
+
   const onHit = async () => {
     if (phase !== "playing" || busy || !sessionRef.current) return;
     if (inFlightRef.current) return;
