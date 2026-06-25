@@ -505,7 +505,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
   // ── Actions ─────────────────────────────────────────────────────
   const onDeal = async () => {
     if (!user) return;
-    if (bet > balance || bet < BJ_MIN_BET || busy) return;
+    if (bet > balance || bet < MIN_BET || busy) return;
     if (inFlightRef.current) return;
     inFlightRef.current = true;
     setBusy(true);
@@ -689,7 +689,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
   };
 
   const adjustBet = (delta: number) => {
-    setBet((b) => Math.min(BJ_MAX_BET, Math.max(BJ_MIN_BET, b + delta)));
+    setBet((b) => Math.min(MAX_BET, Math.max(MIN_BET, b + delta)));
   };
 
   return (
@@ -842,7 +842,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
               </div>
               <div className="mt-2 flex items-center justify-center gap-3">
                 <button
-                  onClick={() => adjustBet(-BJ_BET_STEP)}
+                  onClick={() => adjustBet(-BET_STEP)}
                   className="flex h-10 w-10 items-center justify-center rounded-full border border-purple-400/50 bg-purple-900/40 text-purple-100 active:scale-95"
                 >
                   <Minus className="h-5 w-5" />
@@ -853,7 +853,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
                   </BetAmount>
                 </div>
                 <button
-                  onClick={() => adjustBet(BJ_BET_STEP)}
+                  onClick={() => adjustBet(BET_STEP)}
                   className="flex h-10 w-10 items-center justify-center rounded-full border border-purple-400/50 bg-purple-900/40 text-purple-100 active:scale-95"
                 >
                   <Plus className="h-5 w-5" />
@@ -863,9 +863,9 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
                 <button
                   onClick={() =>
                     setBet((b) => {
-                      const doubled = Math.min(BJ_MAX_BET, b * 2);
-                      const snapped = Math.floor(doubled / BJ_BET_STEP) * BJ_BET_STEP;
-                      return Math.max(BJ_MIN_BET, snapped);
+                      const doubled = Math.min(MAX_BET, b * 2);
+                      const snapped = Math.floor(doubled / BET_STEP) * BET_STEP;
+                      return Math.max(MIN_BET, snapped);
                     })
                   }
                   className="rounded-md border border-fuchsia-400/60 bg-fuchsia-900/40 px-2.5 py-1 text-[11px] font-black text-fuchsia-100 active:scale-95"
@@ -875,7 +875,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
                 {QUICK.map((q) => (
                   <button
                     key={q}
-                    onClick={() => setBet((b) => Math.min(BJ_MAX_BET, b + q))}
+                    onClick={() => setBet((b) => Math.min(MAX_BET, b + q))}
                     className="rounded-md border border-purple-500/40 bg-purple-900/30 px-2.5 py-1 text-[11px] font-bold text-purple-100 active:scale-95"
                   >
                     +{q >= 1000 ? `${q / 1000}K` : q}
