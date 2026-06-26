@@ -684,7 +684,7 @@ export function RouletteGame() {
               }`}
             >
               <span className="font-display text-base font-black leading-tight">ROJO</span>
-              <span className="text-[11px] font-bold text-rose-100/90 leading-none">1.95x</span>
+              <span className="text-[11px] font-bold text-rose-100/90 leading-none">2.0x</span>
             </button>
             <button
               onClick={() => setChoice("black")}
@@ -696,7 +696,7 @@ export function RouletteGame() {
               }`}
             >
               <span className="font-display text-base font-black leading-tight">NEGRO</span>
-              <span className="text-[11px] font-bold text-white/80 leading-none">1.95x</span>
+              <span className="text-[11px] font-bold text-white/80 leading-none">2.0x</span>
             </button>
             <button
               onClick={() => setChoice("green")}
