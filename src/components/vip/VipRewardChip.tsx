@@ -36,11 +36,8 @@ export function VipRewardChip({ catalog, userReward, reached, onClaim, claiming 
     ? null
     : catalog.reward_image_url || getAvatarUrl(catalog.reward_avatar_key);
 
-  const rewardIcon = isBonus ? (
-    <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-500/15 text-amber-400">
-      <Coins className="h-3 w-3" strokeWidth={2.5} />
-    </div>
-  ) : (
+  // Icono solo para avatares; para saldo el "$" ya es suficiente y ahorra espacio.
+  const rewardIcon = isBonus ? null : (
     <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full bg-purple-500/20 ring-1 ring-white/10">
       {avatarUrl ? (
         <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
@@ -81,7 +78,7 @@ export function VipRewardChip({ catalog, userReward, reached, onClaim, claiming 
         <div className="h-5 w-px shrink-0 bg-purple-500/30 group-hover:bg-amber-400/40" />
         <span
           className={cn(
-            "flex h-7 shrink-0 items-center justify-center rounded-full px-2.5 text-[10px] font-black uppercase tracking-wider text-black",
+            "flex h-7 shrink-0 items-center justify-center rounded-full px-2.5 text-[10px] font-black uppercase tracking-[0.05em] text-black",
             "bg-gradient-to-r from-amber-500 to-yellow-400 shadow-[0_0_12px_rgba(251,191,36,0.35)]",
             "hover:from-amber-400 hover:to-yellow-300 active:scale-95"
           )}
