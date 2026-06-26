@@ -47,9 +47,6 @@ async function resolveUrl(url: string) {
   return url;
 }
 
-// Suppress unused-variable warning while keeping the constant exported in
-// spirit (used elsewhere by older callers if any).
-void SIGN_TTL;
 
 /* ---------------- SLIDES ---------------- */
 
