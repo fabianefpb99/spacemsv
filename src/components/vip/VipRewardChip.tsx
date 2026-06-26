@@ -37,11 +37,11 @@ export function VipRewardChip({ catalog, userReward, reached, onClaim, claiming 
     : catalog.reward_image_url || getAvatarUrl(catalog.reward_avatar_key);
 
   const rewardIcon = isBonus ? (
-    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-500/15 text-amber-400">
+    <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-500/15 text-amber-400">
       <Coins className="h-3 w-3" strokeWidth={2.5} />
     </div>
   ) : (
-    <div className="h-5 w-5 overflow-hidden rounded-full bg-purple-500/20 ring-1 ring-white/10">
+    <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full bg-purple-500/20 ring-1 ring-white/10">
       {avatarUrl ? (
         <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
       ) : (
@@ -69,7 +69,7 @@ export function VipRewardChip({ catalog, userReward, reached, onClaim, claiming 
         }}
         disabled={claiming}
         className={cn(
-          "group flex h-9 max-w-[148px] shrink-0 items-center gap-2 rounded-full border px-1.5 py-1 transition",
+          "group flex h-9 max-w-[165px] shrink-0 items-center gap-1.5 rounded-full border px-1.5 py-1 transition",
           "border-purple-500/30 bg-[#0c0620]/90 shadow-lg backdrop-blur-sm",
           "hover:border-amber-400/50 hover:shadow-amber-500/10",
           "disabled:opacity-60"
@@ -78,10 +78,10 @@ export function VipRewardChip({ catalog, userReward, reached, onClaim, claiming 
         <div className="min-w-0 flex-1 text-purple-100/90 group-hover:text-white">
           {rewardInfo}
         </div>
-        <div className="h-5 w-px bg-purple-500/30 group-hover:bg-amber-400/40" />
+        <div className="h-5 w-px shrink-0 bg-purple-500/30 group-hover:bg-amber-400/40" />
         <span
           className={cn(
-            "flex h-7 shrink-0 items-center justify-center rounded-full px-3 text-[10px] font-black uppercase tracking-wider text-black",
+            "flex h-7 shrink-0 items-center justify-center rounded-full px-2.5 text-[10px] font-black uppercase tracking-wider text-black",
             "bg-gradient-to-r from-amber-500 to-yellow-400 shadow-[0_0_12px_rgba(251,191,36,0.35)]",
             "hover:from-amber-400 hover:to-yellow-300 active:scale-95"
           )}
@@ -100,11 +100,11 @@ export function VipRewardChip({ catalog, userReward, reached, onClaim, claiming 
     return (
       <span
         className={cn(
-          "flex h-9 max-w-[148px] shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-bold",
+          "flex h-9 max-w-[165px] shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-bold",
           "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
         )}
       >
-        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/20">
+        <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/20">
           <Check className="h-3 w-3" strokeWidth={3} />
         </div>
         <span className="truncate">{label}</span>
@@ -116,7 +116,7 @@ export function VipRewardChip({ catalog, userReward, reached, onClaim, claiming 
   return (
     <span
       className={cn(
-        "flex h-9 max-w-[148px] shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1",
+        "flex h-9 max-w-[165px] shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1",
         isLocked
           ? "border-purple-500/25 bg-purple-500/5 text-purple-300/55"
           : "border-amber-400/30 bg-amber-500/10 text-amber-200/80"
