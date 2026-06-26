@@ -1,28 +1,47 @@
-## Problema
+## Objetivo
 
-El bloque override actual en `src/styles.css` (líneas 2997–3046) sólo re-define un puñado de clases (`text-white`, `text-purple-*`, `bg-[#0c0620]`, etc.). No cubre los gradientes (`from-[#1a0b3a]`, `bg-gradient-to-r`, etc.), ni los colores de los headers de rango (BRONCE/PLATA), ni varias clases que el modo claro global desatura. Resultado: el `/vip` queda en un híbrido — textos pálidos, headers desteñidos y fondos morados claros.
+Reorganizar `/perfil` con una grilla de **Accesos Rápidos** (estilo iconos en cuadrícula como la imagen señalada), agrupando las secciones actuales en 4 módulos. Cada acceso abre su propia subsección/ruta. "Mis Datos" pasa a ser un desplegable colapsado por defecto.
 
-## Solución
+## Lo que se mantiene intacto
 
-Usar el mismo patrón ya probado en `/mis-recargas`, `/transacciones` y los modales de auth: la clase `.theme-dark-fixed`. Ese bloque (líneas 28–62) ya reasigna **todas** las variables de tema, fondos, textos y superficies a su versión oscura para cualquier descendiente. Es la forma garantizada de forzar modo oscuro sin parches clase-por-clase.
+- Header de perfil (avatar, nombre, nivel/rango VIP, barra de progreso)
+- Balance Principal + Balance Bonus
+- Banner VIP ("Disfruta de beneficios exclusivos")
+- Avatares coleccionables
+- Bottom nav
 
-### Cambios
+## Nueva sección: ACCESOS RÁPIDOS (grilla 4 columnas)
 
-1. **`src/routes/vip.tsx`**
-   - Añadir la clase `theme-dark-fixed` al `div` raíz junto a `vip-page`:
-     ```
-     className="vip-page theme-dark-fixed min-h-screen bg-[#060210] text-white"
-     ```
+Reemplaza los bloques sueltos de "Seguridad de la cuenta" y la lista vertical (Mis Recargas, Retirar saldo, Historial, Eventos, Verificación).
 
-2. **`src/styles.css`**
-   - Eliminar el bloque override de las líneas 2997–3046 (ya no hace falta).
-   - Eliminar las exclusiones `:not(.vip-page):not(.vip-page *)` y `:not(.vip-page *)` añadidas en las reglas de modo claro (líneas 23, 453, 460, 464, 492, 498, 937, 941, 945–946, 950, 954). Con `theme-dark-fixed` aplicado al root del VIP, esas reglas ya no afectan al subtree y las exclusiones se vuelven ruido.
+| Icono | Título | Contenido agrupado |
+|---|---|---|
+| 🛡️ | **Seguridad** | Correo, Contraseña, Teléfono, Verificación de Identidad |
+| 💳 | **Movimientos** | Mis Recargas, Retirar saldo, Historial de Transacciones |
+| 🎯 | **Actividad** | Eventos (y futuras: misiones, logros) |
+| ⚙️ | **Ajustes** | Apariencia (claro/oscuro), Cerrar sesión, datos de cuenta |
 
-### Resultado esperado
+Cada tile: ícono morado arriba, label corto debajo, fondo blanco con borde sutil (mismo estilo de las cards actuales del perfil claro). Al tocar abre una vista dedicada.
 
-- Header card "TU RANGO ACTUAL / MAESTRO III" con fondo morado oscuro sólido, borde brillante e iconos vivos como en modo oscuro.
-- Headers BRONCE / PLATA con su gradiente completo y texto blanco.
-- Sub-rangos (Bronce V, IV…) con su color ámbar/morado original, sin desaturar.
-- Fondo `#060210` plano en toda la página.
+## Mis Datos → Desplegable
 
-No se toca lógica, ni `/perfil`, ni los componentes compartidos (`VipBadge`, `VipCard`, `VipRewardChip`) en otras rutas: siguen respetando modo claro fuera del VIP.
+Convertir el bloque "MIS DATOS" en un acordeón colapsado por defecto:
+- Header clickeable: "Mis Datos" + chevron
+- Al expandir muestra Nombres, Apellidos, Género, Nacimiento, Teléfono, Documento, Expedición + botón "Editar datos"
+
+## Implementación técnica
+
+- `src/routes/perfil.tsx`: reemplazar las cards de Seguridad y la lista de accesos por una `<QuickAccessGrid>` (4 tiles). Envolver "Mis Datos" en `<Collapsible>` (shadcn) o estado local con animación.
+- Nuevas rutas para los detalles agrupados:
+  - `src/routes/perfil.seguridad.tsx` — contiene Correo / Contraseña / Teléfono / Verificación (las cards actuales reubicadas)
+  - `src/routes/perfil.movimientos.tsx` — links a `/mis-recargas`, `/retirar`, `/transacciones`
+  - `src/routes/perfil.actividad.tsx` — link a `/eventos` y futuras
+  - `src/routes/perfil.ajustes.tsx` — apariencia, cerrar sesión
+- Alternativa más liviana: en vez de 4 rutas nuevas, abrir cada grupo como un Sheet/Drawer modal desde la misma página de perfil. **Recomiendo rutas** para que sean navegables y compartibles.
+- Solo afecta presentación/agrupación; no toca lógica de negocio ni datos.
+
+## Confirmaciones que necesito
+
+1. ¿Te sirven los 4 grupos propuestos (Seguridad, Movimientos, Actividad, Ajustes)? ¿O prefieres otra distribución/nombres?
+2. ¿Subsecciones como **rutas nuevas** (`/perfil/seguridad`, etc.) o como **drawers/sheets** dentro del perfil?
+3. ¿"Verificación de Identidad" entra en **Seguridad** (mi propuesta) o la dejamos como tile suelto?
