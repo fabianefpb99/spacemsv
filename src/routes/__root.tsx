@@ -14,6 +14,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
 import { supabase } from "@/integrations/supabase/client";
 import { MissionCompleteFloater } from "@/components/MissionCompleteFloater";
+import { VipLevelUpFloater } from "@/components/VipLevelUpFloater";
 import { SmoothImageLoader } from "@/components/SmoothImageLoader";
 import { DEFAULT_AVATAR_URL } from "@/lib/avatars";
 
