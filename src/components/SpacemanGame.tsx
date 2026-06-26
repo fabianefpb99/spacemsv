@@ -1097,7 +1097,7 @@ export function SpacemanGame() {
                       />
                     </>
                   )}
-                  <div className="relative w-full">
+                  <div className="relative w-full" data-no-smooth-image>
                     <img
                       src={astronautIdlePng}
                       alt="Astronauta"
