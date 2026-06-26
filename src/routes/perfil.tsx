@@ -24,6 +24,7 @@ import {
   Receipt,
 } from "lucide-react";
 import { Copy, Check, Users, ChevronDown, UserPlus, Wallet } from "lucide-react";
+import { ShieldCheck, ArrowDownUp, CalendarRange, SlidersHorizontal, Sun, Moon } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
@@ -41,6 +42,9 @@ import { Sparkles } from "lucide-react";
 import { PersonalDataDialog } from "@/components/profile/PersonalDataDialog";
 import { ChangePasswordDialog } from "@/components/profile/ChangePasswordDialog";
 import { BrandLoader } from "@/components/BrandLoader";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useTheme } from "@/hooks/useTheme";
 
 export const Route = createFileRoute("/perfil")({
   head: () => ({
