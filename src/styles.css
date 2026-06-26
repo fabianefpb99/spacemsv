@@ -20,7 +20,7 @@ html.light body {
 }
 
 /* Page-level outer wrappers */
-html.light .bg-\[\#060210\]:not(header):not(nav):not(.theme-dark-fixed):not(.vip-page):not(.vip-page *) {
+html.light .bg-\[\#060210\]:not(header):not(nav):not(.theme-dark-fixed) {
   background-color: #faf9f6 !important;
   color: #1f1530;
 }
@@ -450,18 +450,18 @@ html.light .profile-balance-card.border-amber-400\/60 a {
 }
 
 /* VIP progress strip — solid white in light mode */
-html.light .profile-vip-progress:not(.vip-page *) {
+html.light .profile-vip-progress {
   background: #ffffff !important;
   background-image: none !important;
   border-color: rgba(59, 20, 104, 0.18) !important;
   box-shadow: none !important;
   filter: none !important;
 }
-html.light .profile-vip-progress:not(.vip-page *) :is(.text-white, .text-purple-200\/70, .text-amber-300, .text-yellow-300, .text-slate-100, .text-cyan-200, .text-sky-200, .text-fuchsia-200, .text-fuchsia-300, .text-amber-200) {
+html.light .profile-vip-progress :is(.text-white, .text-purple-200\/70, .text-amber-300, .text-yellow-300, .text-slate-100, .text-cyan-200, .text-sky-200, .text-fuchsia-200, .text-fuchsia-300, .text-amber-200) {
   color: #3b1468 !important;
   text-shadow: none !important;
 }
-html.light .profile-vip-progress:not(.vip-page *) .bg-purple-500\/20 {
+html.light .profile-vip-progress .bg-purple-500\/20 {
   background: #ede4ff !important;
 }
 
@@ -489,13 +489,13 @@ html.light header.bg-\[\#060210\] svg {
   color: #2a1d4d !important;
 }
 /* VIP sub-rank badge — keep gray background and white roman numerals in light mode */
-html.light .vip-sub-badge.vip-sub-badge:not(.vip-page *) {
+html.light .vip-sub-badge.vip-sub-badge {
   background-color: rgba(0, 0, 0, 0.7) !important;
   color: #ffffff !important;
   border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
-html.light .vip-sub-badge.vip-sub-badge:not(.vip-page *) * {
+html.light .vip-sub-badge.vip-sub-badge * {
   color: #ffffff !important;
 }
 
@@ -934,24 +934,24 @@ html.dark .promo-banner .promo-banner__chev--glass svg * {
     0 var(--vip-notch)
   );
 }
-html.light .vip-frame:not(.vip-page *) {
+html.light .vip-frame {
   background: #3b1468 !important;
   filter: none !important;
 }
-html.light .vip-frame:not(.vip-page *) > .vip-frame-inner {
+html.light .vip-frame > .vip-frame-inner {
   background: #ffffff !important;
   color: #3b1468 !important;
 }
-html.light .vip-frame:not(.vip-page *) > .vip-frame-inner::before,
-html.light .vip-frame:not(.vip-page *) > .vip-frame-inner::after {
+html.light .vip-frame > .vip-frame-inner::before,
+html.light .vip-frame > .vip-frame-inner::after {
   background: #3b1468 !important;
   box-shadow: none !important;
 }
-html.light .vip-frame:not(.vip-page *) > .vip-frame-inner :is(.text-white, .text-white\/90, .text-purple-200\/70, .text-amber-300, .text-yellow-300, .text-slate-100, .text-cyan-200, .text-sky-200, .text-fuchsia-200, .text-amber-200) {
+html.light .vip-frame > .vip-frame-inner :is(.text-white, .text-white\/90, .text-purple-200\/70, .text-amber-300, .text-yellow-300, .text-slate-100, .text-cyan-200, .text-sky-200, .text-fuchsia-200, .text-amber-200) {
   color: #3b1468 !important;
   text-shadow: none !important;
 }
-html.light .vip-frame:not(.vip-page *) > .vip-frame-inner [style*="drop-shadow"] {
+html.light .vip-frame > .vip-frame-inner [style*="drop-shadow"] {
   filter: none !important;
 }
 /* Bright corner accents along the bevels (4 short bars). */
