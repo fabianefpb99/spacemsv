@@ -22,6 +22,7 @@ import { HamburgerDrawer } from "@/components/HamburgerDrawer";
 import { UserAvatar } from "@/components/UserAvatar";
 import { generateRecentFillerWins, type FillerWin } from "@/lib/fillers";
 import { getRecentPublicWins, type RecentWin } from "@/lib/recent-wins.functions";
+import { useUnlockedAvatars } from "@/hooks/useUnlockedAvatars";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
 import heroImg from "@/assets/home-hero.jpg";
 import heroMinesImg from "@/assets/home-hero-mines.jpg";
@@ -255,6 +256,9 @@ const SLIDES = [
 function HomePage() {
   const me = useMe();
   const { user, loading: authLoading } = useAuth();
+  // Pre-warm the avatar caches (mission:/ vip:) while the user is on Home so
+  // entering /perfil doesn't flash the default astronaut before resolving.
+  useUnlockedAvatars();
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   // Never show a fake demo amount. If not logged in, show a dash; if logged
   // in but balance hasn't arrived yet, also show a dash so we don't flash $0.
