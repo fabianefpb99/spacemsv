@@ -181,6 +181,7 @@ function RootComponent() {
           <SmoothImageLoader />
           <Outlet />
           <MissionCompleteFloater />
+          <VipLevelUpFloater />
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
