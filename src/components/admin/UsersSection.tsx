@@ -29,7 +29,7 @@ import {
   adminSetBlock,
 } from "@/lib/admin/admin.functions";
 import { adminGetUserVipSnapshot } from "@/lib/vip/rewards.functions";
-import { RANK_META, subForLevel, type VipRank, type VipSub } from "@/lib/vip/vip.shared";
+import { RANK_META, rankForLevel, subForLevel, type VipRank, type VipSub } from "@/lib/vip/vip.shared";
 import { VipBadge } from "@/components/vip/VipBadge";
 import {
   KpiCard,
@@ -702,15 +702,16 @@ function UserVipPanel({ userId }: { userId: string }) {
   }
   if (!q.data) return null;
   const lvl = q.data.current_level || 1;
-  const sub = subForLevel(lvl);
-  const meta = RANK_META[sub.rank as VipRank];
+  const rank: VipRank = rankForLevel(lvl);
+  const sub: VipSub = subForLevel(lvl);
+  const meta = RANK_META[rank];
   return (
     <Panel title="VIP">
       <div className="flex items-center gap-3 rounded-xl border border-purple-500/20 bg-[#150830]/40 p-3">
-        <VipBadge rank={sub.rank as VipRank} sub={sub.sub as VipSub} size="md" art />
+        <VipBadge rank={rank} sub={sub} size="md" art />
         <div className="min-w-0 flex-1">
           <div className={`text-sm font-black ${meta.text}`}>
-            {meta.label} {sub.sub}
+            {meta.label} {sub}
           </div>
           <div className="text-[11px] text-purple-200/70">
             Nivel <span className="font-bold text-white">{lvl}</span> ·{" "}
