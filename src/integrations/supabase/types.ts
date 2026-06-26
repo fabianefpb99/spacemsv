@@ -1498,6 +1498,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      admin_reset_vip_progress: {
+        Args: { p_target_user_id: string }
+        Returns: Json
+      }
       admin_set_block: {
         Args: { p_blocked: boolean; p_target_user_id: string }
         Returns: boolean

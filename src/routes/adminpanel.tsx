@@ -41,6 +41,7 @@ import { HomeContentSection } from "@/components/admin/HomeContentSection";
 import { DrawerSection } from "@/components/admin/DrawerSection";
 import { MissionsSection } from "@/components/admin/MissionsSection";
 import { VipRewardsSection } from "@/components/admin/VipRewardsSection";
+import { BenefitsSection } from "@/components/admin/BenefitsSection";
 
 export const Route = createFileRoute("/adminpanel")({
   head: () => ({
@@ -61,6 +62,7 @@ const SECTIONS: { id: AdminSection; label: string; icon: typeof Home; ready: boo
   { id: "usuarios", label: "Usuarios", icon: Users, ready: true },
   { id: "rtp", label: "RTP de Juegos", icon: Percent, ready: true },
   { id: "vip_rewards", label: "Premios VIP", icon: Star, ready: true },
+  { id: "beneficios", label: "Beneficios", icon: Gift, ready: true },
   { id: "ganancias", label: "Ganancias del Casino", icon: TrendingUp, ready: true },
   { id: "recargas", label: "Recargas", icon: WalletIcon, ready: true },
   { id: "retiros", label: "Retiros", icon: Download, ready: true },
@@ -144,6 +146,8 @@ function AdminPanelPage() {
         return <RtpSection />;
       case "vip_rewards":
         return <VipRewardsSection />;
+      case "beneficios":
+        return <BenefitsSection />;
       case "ganancias":
         return <EarningsSection />;
       case "recargas":
