@@ -91,6 +91,11 @@ export function getMissionAvatarUrl(key: string): string | undefined {
   return missionAvatarUrlCache.get(key);
 }
 
+export function rememberVipAvatar(rewardId: string, url: string) {
+  if (!rewardId || !url) return;
+  missionAvatarUrlCache.set(`vip:${rewardId}`, url);
+}
+
 export function getAvatarUrl(key: string | null | undefined): string {
   if (!key) {
     // New users have no avatar_key set yet. Fall back to the default
@@ -98,7 +103,7 @@ export function getAvatarUrl(key: string | null | undefined): string {
     // (forever-spinning) avatar.
     return DEFAULT_AVATAR_URL;
   }
-  if (key.startsWith("mission:")) {
+  if (key.startsWith("mission:") || key.startsWith("vip:")) {
     return missionAvatarUrlCache.get(key) ?? DEFAULT_AVATAR_URL;
   }
   const found = AVATAR_OPTIONS.find((o) => o.key === key);
