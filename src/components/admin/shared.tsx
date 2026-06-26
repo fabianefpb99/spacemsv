@@ -8,6 +8,7 @@ export type AdminSection =
   | "usuarios"
   | "rtp"
   | "vip_rewards"
+  | "beneficios"
   | "ganancias"
   | "recargas"
   | "retiros"
