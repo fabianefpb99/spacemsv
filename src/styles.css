@@ -3007,3 +3007,41 @@ html.light :not(.theme-dark-fixed) p.ranking-empty-text.text-purple-200\/70 {
   color: #ffffff !important;
 }
 
+/* =================================================================
+ * Profile quickbar — single continuous horizontal pill with tabs.
+ * Dark mode: subtle purple bar with active fuchsia text + underline.
+ * Light mode: white pill, muted gray inactive, purple active + underline.
+ * ================================================================= */
+.profile-quickbar {
+  position: relative;
+}
+.profile-quickbar-tab {
+  position: relative;
+  background: transparent;
+  border: 0;
+}
+.profile-quickbar-tab.is-active::after {
+  content: "";
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  bottom: 4px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+}
+
+/* Light mode overrides for the quickbar */
+html.light .profile-page .profile-quickbar {
+  background: #ffffff !important;
+  background-image: none !important;
+  border: 1px solid #EAEAEA !important;
+  box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 4px 12px rgba(16,24,40,.06) !important;
+}
+html.light .profile-page .profile-quickbar-tab {
+  color: #8A8A95 !important;
+}
+html.light .profile-page .profile-quickbar-tab.is-active {
+  color: #7C3AED !important;
+}
+

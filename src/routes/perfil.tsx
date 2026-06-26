@@ -42,7 +42,6 @@ import { Sparkles } from "lucide-react";
 import { PersonalDataDialog } from "@/components/profile/PersonalDataDialog";
 import { ChangePasswordDialog } from "@/components/profile/ChangePasswordDialog";
 import { BrandLoader } from "@/components/BrandLoader";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useTheme } from "@/hooks/useTheme";
 
@@ -122,7 +121,7 @@ function PerfilPage() {
   const [dataDialogOpen, setDataDialogOpen] = useState(false);
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
-  const [openSheet, setOpenSheet] = useState<null | "seg" | "mov" | "act" | "aju">(null);
+  const [activeTab, setActiveTab] = useState<"seg" | "mov" | "act" | "aju">("seg");
   const [misDatosOpen, setMisDatosOpen] = useState(false);
   const { theme, toggle: toggleTheme } = useTheme();
   const [minElapsed, setMinElapsed] = useState(false);
@@ -494,28 +493,112 @@ function PerfilPage() {
 
         {/* Accesos rápidos */}
         <SectionTitle>Accesos rápidos</SectionTitle>
-        <section className="grid grid-cols-4 gap-2">
-          <QuickTile
-            icon={<ShieldCheck className="h-5 w-5" />}
-            label="Seguridad"
-            onClick={() => setOpenSheet("seg")}
-          />
-          <QuickTile
-            icon={<ArrowDownUp className="h-5 w-5" />}
-            label="Movimientos"
-            onClick={() => setOpenSheet("mov")}
-          />
-          <QuickTile
-            icon={<CalendarRange className="h-5 w-5" />}
-            label="Actividad"
-            onClick={() => setOpenSheet("act")}
-          />
-          <QuickTile
-            icon={<SlidersHorizontal className="h-5 w-5" />}
-            label="Ajustes"
-            onClick={() => setOpenSheet("aju")}
-          />
-        </section>
+        <nav className="profile-quickbar flex items-stretch overflow-hidden rounded-2xl border border-purple-500/30 bg-[#0c0620]/80">
+          {([
+            { id: "seg", label: "Seguridad", icon: ShieldCheck },
+            { id: "mov", label: "Movimientos", icon: ArrowDownUp },
+            { id: "act", label: "Actividad", icon: CalendarRange },
+            { id: "aju", label: "Ajustes", icon: SlidersHorizontal },
+          ] as const).map((t) => {
+            const Icon = t.icon;
+            const active = activeTab === t.id;
+            return (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setActiveTab(t.id)}
+                className={cn(
+                  "profile-quickbar-tab flex flex-1 flex-col items-center justify-center gap-1 py-2.5 text-[10px] font-bold uppercase tracking-wider transition",
+                  active
+                    ? "is-active text-fuchsia-300"
+                    : "text-purple-200/60 hover:text-purple-100",
+                )}
+                aria-pressed={active}
+              >
+                <Icon className="h-5 w-5" />
+                <span>{t.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Panel inline según pestaña seleccionada */}
+        <div className="profile-quickpanel mt-2 space-y-2">
+          {activeTab === "seg" && (
+            <>
+              <SecurityRow
+                icon={<Mail className="h-4 w-4 text-purple-200" />}
+                title="Correo Electrónico"
+                subtitle={email}
+                status={emailVerified ? "ok" : "muted"}
+                statusLabel={emailVerified ? "Verificado" : "Sin verificar"}
+              />
+              <button type="button" onClick={() => setPasswordDialogOpen(true)} className="block w-full text-left">
+                <SecurityRow
+                  icon={<Lock className="h-4 w-4 text-purple-200" />}
+                  title="Contraseña"
+                  subtitle="Cambia tu contraseña periódicamente"
+                  actionLabel="Cambiar"
+                />
+              </button>
+              <SecurityRow
+                icon={<Phone className="h-4 w-4 text-purple-200" />}
+                title="Número de Teléfono"
+                subtitle={fullProfile.data?.phone || "No vinculado"}
+                status={fullProfile.data?.phone ? "ok" : "muted"}
+                statusLabel={fullProfile.data?.phone ? "Vinculado" : "No vinculado"}
+              />
+              <SecurityRow
+                icon={<IdCard className="h-4 w-4 text-purple-200" />}
+                title="Verificación de Identidad"
+                subtitle={verified ? "Documento aprobado" : "Pendiente de completar"}
+                status={verified ? "ok" : "muted"}
+                statusLabel={verified ? "Completado" : "No completado"}
+              />
+            </>
+          )}
+          {activeTab === "mov" && (
+            <>
+              <Link to="/mis-recargas" className="block">
+                <LinkRow icon={<WalletIcon className="h-4 w-4 text-purple-200" />} label="Mis Recargas" />
+              </Link>
+              <Link to="/retiros" className="block">
+                <LinkRow icon={<Banknote className="h-4 w-4 text-amber-300" />} label="Retirar saldo" />
+              </Link>
+              <Link to="/transacciones" className="block">
+                <LinkRow icon={<Receipt className="h-4 w-4 text-purple-200" />} label="Historial de Transacciones" />
+              </Link>
+            </>
+          )}
+          {activeTab === "act" && (
+            <Link to="/eventos" className="block">
+              <LinkRow icon={<CalendarDays className="h-4 w-4 text-fuchsia-300" />} label="Eventos" />
+            </Link>
+          )}
+          {activeTab === "aju" && (
+            <>
+              <button type="button" onClick={toggleTheme} className="block w-full text-left">
+                <SecurityRow
+                  icon={theme === "dark" ? <Moon className="h-4 w-4 text-purple-200" /> : <Sun className="h-4 w-4 text-amber-300" />}
+                  title="Apariencia"
+                  subtitle={theme === "dark" ? "Modo oscuro" : "Modo claro"}
+                  actionLabel="Cambiar"
+                />
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  await signOut();
+                  navigate({ to: "/home" });
+                }}
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-rose-500/50 bg-rose-500/10 py-3 text-sm font-bold uppercase tracking-wider text-rose-300 hover:bg-rose-500/20"
+              >
+                <LogOut className="h-4 w-4" />
+                Cerrar Sesión
+              </button>
+            </>
+          )}
+        </div>
 
         {/* Estadísticas */}
         <SectionTitle>Estadísticas</SectionTitle>
@@ -625,112 +708,6 @@ function PerfilPage() {
         </Collapsible>
 
       </div>
-      {/* Quick-access sheets */}
-      <Sheet open={openSheet === "seg"} onOpenChange={(v) => !v && setOpenSheet(null)}>
-        <SheetContent side="bottom" className="profile-sheet max-h-[85vh] overflow-y-auto rounded-t-2xl border-t border-purple-500/30 bg-[#0c0620] text-white">
-          <SheetHeader>
-            <SheetTitle className="text-white">Seguridad de la cuenta</SheetTitle>
-            <SheetDescription className="text-purple-200/70">Datos sensibles de acceso y verificación.</SheetDescription>
-          </SheetHeader>
-          <div className="mt-3 space-y-2">
-            <SecurityRow
-              icon={<Mail className="h-4 w-4 text-purple-200" />}
-              title="Correo Electrónico"
-              subtitle={email}
-              status={emailVerified ? "ok" : "muted"}
-              statusLabel={emailVerified ? "Verificado" : "Sin verificar"}
-            />
-            <button type="button" onClick={() => { setOpenSheet(null); setPasswordDialogOpen(true); }} className="block w-full text-left">
-              <SecurityRow
-                icon={<Lock className="h-4 w-4 text-purple-200" />}
-                title="Contraseña"
-                subtitle="Cambia tu contraseña periódicamente"
-                actionLabel="Cambiar"
-              />
-            </button>
-            <SecurityRow
-              icon={<Phone className="h-4 w-4 text-purple-200" />}
-              title="Número de Teléfono"
-              subtitle={fullProfile.data?.phone || "No vinculado"}
-              status={fullProfile.data?.phone ? "ok" : "muted"}
-              statusLabel={fullProfile.data?.phone ? "Vinculado" : "No vinculado"}
-            />
-            <SecurityRow
-              icon={<IdCard className="h-4 w-4 text-purple-200" />}
-              title="Verificación de Identidad"
-              subtitle={verified ? "Documento aprobado" : "Pendiente de completar"}
-              status={verified ? "ok" : "muted"}
-              statusLabel={verified ? "Completado" : "No completado"}
-            />
-          </div>
-        </SheetContent>
-      </Sheet>
-
-      <Sheet open={openSheet === "mov"} onOpenChange={(v) => !v && setOpenSheet(null)}>
-        <SheetContent side="bottom" className="profile-sheet max-h-[85vh] overflow-y-auto rounded-t-2xl border-t border-purple-500/30 bg-[#0c0620] text-white">
-          <SheetHeader>
-            <SheetTitle className="text-white">Movimientos</SheetTitle>
-            <SheetDescription className="text-purple-200/70">Recargas, retiros e historial financiero.</SheetDescription>
-          </SheetHeader>
-          <div className="mt-3 space-y-2">
-            <Link to="/mis-recargas" onClick={() => setOpenSheet(null)} className="block">
-              <LinkRow icon={<WalletIcon className="h-4 w-4 text-purple-200" />} label="Mis Recargas" />
-            </Link>
-            <Link to="/retiros" onClick={() => setOpenSheet(null)} className="block">
-              <LinkRow icon={<Banknote className="h-4 w-4 text-amber-300" />} label="Retirar saldo" />
-            </Link>
-            <Link to="/transacciones" onClick={() => setOpenSheet(null)} className="block">
-              <LinkRow icon={<Receipt className="h-4 w-4 text-purple-200" />} label="Historial de Transacciones" />
-            </Link>
-          </div>
-        </SheetContent>
-      </Sheet>
-
-      <Sheet open={openSheet === "act"} onOpenChange={(v) => !v && setOpenSheet(null)}>
-        <SheetContent side="bottom" className="profile-sheet max-h-[85vh] overflow-y-auto rounded-t-2xl border-t border-purple-500/30 bg-[#0c0620] text-white">
-          <SheetHeader>
-            <SheetTitle className="text-white">Actividad</SheetTitle>
-            <SheetDescription className="text-purple-200/70">Eventos y promociones disponibles para ti.</SheetDescription>
-          </SheetHeader>
-          <div className="mt-3 space-y-2">
-            <Link to="/eventos" onClick={() => setOpenSheet(null)} className="block">
-              <LinkRow icon={<CalendarDays className="h-4 w-4 text-fuchsia-300" />} label="Eventos" />
-            </Link>
-          </div>
-        </SheetContent>
-      </Sheet>
-
-      <Sheet open={openSheet === "aju"} onOpenChange={(v) => !v && setOpenSheet(null)}>
-        <SheetContent side="bottom" className="profile-sheet max-h-[85vh] overflow-y-auto rounded-t-2xl border-t border-purple-500/30 bg-[#0c0620] text-white">
-          <SheetHeader>
-            <SheetTitle className="text-white">Ajustes</SheetTitle>
-            <SheetDescription className="text-purple-200/70">Apariencia y sesión.</SheetDescription>
-          </SheetHeader>
-          <div className="mt-3 space-y-2">
-            <button type="button" onClick={toggleTheme} className="block w-full text-left">
-              <SecurityRow
-                icon={theme === "dark" ? <Moon className="h-4 w-4 text-purple-200" /> : <Sun className="h-4 w-4 text-amber-300" />}
-                title="Apariencia"
-                subtitle={theme === "dark" ? "Modo oscuro" : "Modo claro"}
-                actionLabel="Cambiar"
-              />
-            </button>
-            <button
-              type="button"
-              onClick={async () => {
-                setOpenSheet(null);
-                await signOut();
-                navigate({ to: "/home" });
-              }}
-              className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl border border-rose-500/50 bg-rose-500/10 py-3 text-sm font-bold uppercase tracking-wider text-rose-300 hover:bg-rose-500/20"
-            >
-              <LogOut className="h-4 w-4" />
-              Cerrar Sesión
-            </button>
-          </div>
-        </SheetContent>
-      </Sheet>
-
       {user && (
         <PersonalDataDialog
           open={dataDialogOpen}
@@ -876,29 +853,6 @@ function LinkRow({
         {trailing}
         <ChevronRight className="h-4 w-4" />
       </span>
-    </button>
-  );
-}
-
-function QuickTile({
-  icon,
-  label,
-  onClick,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="profile-quick-tile flex flex-col items-center justify-center gap-1.5 rounded-xl border border-purple-500/30 bg-[#0c0620]/80 px-1.5 py-3 text-purple-100 transition hover:border-fuchsia-500/50 hover:bg-[#150830]/70"
-    >
-      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-600/20 text-purple-200 ring-1 ring-purple-400/30">
-        {icon}
-      </span>
-      <span className="text-[10px] font-bold uppercase tracking-wider text-white">{label}</span>
     </button>
   );
 }
