@@ -40,6 +40,7 @@ export function SkeletonImage({
 
   return (
     <span
+      data-no-smooth-image
       className={`skeleton-img-wrap block ${loaded ? "loaded" : "skeleton"} ${wrapperClassName}`}
       style={{ borderRadius: rounded, ...wrapperStyle }}
     >
