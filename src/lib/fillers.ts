@@ -156,21 +156,23 @@ export function generateRecentFillerWins(
   const totalEventsToday = Math.max(8, Math.round((minutesOfDay / 60) * eventsPerHour));
 
   const wins: FillerWin[] = [];
-  // Sample with replacement: pick roster entries weighted by net_amount.
-  const weights = roster.map((r) => Math.max(1, r.net_amount));
-  const totalW = weights.reduce((a, b) => a + b, 0);
+
+  // Shuffle the full roster so EVERY filler gets events (no weighting —
+  // that caused the same 3-4 top earners to dominate the panel).
+  // If count > roster.length we wrap around with a second shuffled pass.
+  const order: number[] = [];
+  while (order.length < count) {
+    const idxs = Array.from({ length: roster.length }, (_, i) => i);
+    // Fisher-Yates with our seeded rng
+    for (let i = idxs.length - 1; i > 0; i--) {
+      const j = Math.floor(rnd() * (i + 1));
+      [idxs[i], idxs[j]] = [idxs[j], idxs[i]];
+    }
+    order.push(...idxs);
+  }
 
   for (let i = 0; i < count; i++) {
-    // weighted pick
-    let pick = rnd() * totalW;
-    let idx = 0;
-    for (let j = 0; j < weights.length; j++) {
-      pick -= weights[j];
-      if (pick <= 0) {
-        idx = j;
-        break;
-      }
-    }
+    const idx = order[i];
     const f = roster[idx];
     // Per-event payout: net_amount / totalEventsToday with ±60% jitter.
     const base = f.net_amount / totalEventsToday;
