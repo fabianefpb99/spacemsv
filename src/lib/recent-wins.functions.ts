@@ -1,9 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
+import { resolveAvatarUrls } from "@/lib/avatars.server";
 
 export type RecentWin = {
   user_id: string;
   username: string;
   avatar_key: string | null;
+  avatar_url?: string | null;
   game: string;
   amount: number;
   multiplier: number;
@@ -19,7 +21,7 @@ export const getRecentPublicWins = createServerFn({ method: "GET" }).handler(
     );
     if (error) return [];
     if (!Array.isArray(data)) return [];
-    return data.map((r: any) => ({
+    const rows: RecentWin[] = data.map((r: any) => ({
       user_id: String(r.user_id),
       username: String(r.username ?? "Jugador"),
       avatar_key: r.avatar_key ?? null,
@@ -27,6 +29,11 @@ export const getRecentPublicWins = createServerFn({ method: "GET" }).handler(
       amount: Number(r.amount ?? 0),
       multiplier: Number(r.multiplier ?? 1),
       created_at: String(r.created_at),
+    }));
+    const urlMap = await resolveAvatarUrls(rows.map((r) => r.avatar_key));
+    return rows.map((r) => ({
+      ...r,
+      avatar_url: r.avatar_key ? urlMap.get(r.avatar_key) ?? null : null,
     }));
   },
 );
