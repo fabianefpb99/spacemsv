@@ -147,3 +147,19 @@ export const adminGetUserVipSnapshot = createServerFn({ method: "POST" })
       rewards: (rewards ?? []) as UserVipRewardRow[],
     };
   });
+
+/* ---- Admin: full VIP reset for a user ---- */
+export const adminResetUserVip = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ userId: z.string().uuid() }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { data: res, error } = await context.supabase.rpc(
+      "admin_reset_vip_progress",
+      { p_target_user_id: data.userId } as never,
+    );
+    if (error) throw new Error(error.message);
+    return res as { ok: boolean; deleted_rewards: number };
+  });
