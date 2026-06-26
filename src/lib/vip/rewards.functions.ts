@@ -69,15 +69,15 @@ export const adminUpsertVipReward = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const { data: row, error } = await context.supabase.rpc("admin_upsert_vip_reward", {
-      p_rank: data.rank,
-      p_sub: data.sub_division,
+      p_rank: data.rank as never,
+      p_sub: data.sub_division as never,
       p_kind: data.reward_kind,
       p_amount: data.reward_amount,
-      p_avatar_key: data.reward_avatar_key ?? null,
-      p_label: data.reward_label ?? null,
-      p_image_url: data.reward_image_url ?? null,
+      p_avatar_key: (data.reward_avatar_key ?? "") as string,
+      p_label: (data.reward_label ?? "") as string,
+      p_image_url: (data.reward_image_url ?? "") as string,
       p_is_active: data.is_active,
-    });
+    } as never);
     if (error) throw new Error(error.message);
     return Array.isArray(row) ? row[0] : row;
   });
