@@ -304,7 +304,7 @@ function HomePage() {
       avatar_key: w.avatar_key ?? "avatar-1",
       game: prettyGameName(w.game),
       amount: Math.round(w.amount),
-      mult: 0, // 0 = win real, se muestra como "¡GANÓ!"
+      mult: w.multiplier > 0 ? w.multiplier : 1,
       ageSec: Math.max(0, Math.floor((Date.now() - new Date(w.created_at).getTime()) / 1000)),
     }));
     const TARGET = 16;
@@ -996,11 +996,7 @@ function HomePage() {
                       <span className="home-money-sign neon-green mr-0.5">$</span>
                       <span className="text-white">{formatCOP(w.amount)} COP</span>
                     </div>
-                    {w.mult > 0 ? (
-                      <div className="home-win-mult text-[10px] font-bold text-purple-300">{w.mult.toFixed(2)}x</div>
-                    ) : (
-                      <div className="home-win-mult text-[10px] font-bold text-emerald-300">¡GANÓ!</div>
-                    )}
+                    <div className="home-win-mult text-[10px] font-bold text-purple-300">{w.mult.toFixed(2)}x</div>
                   </div>
                 </li>
               ))}
