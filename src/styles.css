@@ -2993,3 +2993,54 @@ html.light :not(.theme-dark-fixed) p.ranking-empty-text.text-purple-200\/70 {
 .auth-dialog-skip:hover {
   color: #ffffff !important;
 }
+
+/* ------------------------------------------------------------------
+ * VIP page (/vip): always render dark, no matter the global theme.
+ * Re-assert dark surfaces / text on any element inside `.vip-page`,
+ * overriding the broad `html.light` rules above. This avoids
+ * touching every individual light-mode rule with a `:not(.vip-page *)`.
+ * ------------------------------------------------------------------ */
+html.light .vip-page,
+html.light .vip-page * {
+  text-shadow: none;
+}
+html.light .vip-page :is(
+  .bg-\[\#0c0620\],
+  .bg-\[\#0c0620\]\/60,
+  .bg-\[\#0c0620\]\/80,
+  .bg-\[\#0c0620\]\/85,
+  .bg-\[\#0c0620\]\/95
+) {
+  background-color: rgb(12 6 32 / 0.85) !important;
+  border-color: rgb(168 85 247 / 0.2) !important;
+  box-shadow: none !important;
+}
+html.light .vip-page .bg-\[\#060210\] {
+  background-color: #060210 !important;
+}
+html.light .vip-page .text-white { color: #ffffff !important; }
+html.light .vip-page .text-white\/90 { color: rgb(255 255 255 / 0.9) !important; }
+html.light .vip-page .text-white\/80 { color: rgb(255 255 255 / 0.8) !important; }
+html.light .vip-page .text-purple-100,
+html.light .vip-page .text-purple-100\/80 { color: #ede9fe !important; }
+html.light .vip-page .text-purple-200,
+html.light .vip-page .text-purple-200\/80,
+html.light .vip-page .text-purple-200\/70,
+html.light .vip-page .text-purple-200\/60 { color: rgb(221 214 254 / 0.85) !important; }
+html.light .vip-page .text-purple-300,
+html.light .vip-page .text-purple-300\/70,
+html.light .vip-page .text-purple-300\/80,
+html.light .vip-page .text-purple-300\/50 { color: rgb(196 181 253 / 0.7) !important; }
+html.light .vip-page .text-fuchsia-300 { color: #f0abfc !important; }
+html.light .vip-page .text-fuchsia-200 { color: #f5d0fe !important; }
+html.light .vip-page .text-amber-200 { color: #fde68a !important; }
+html.light .vip-page .text-amber-300 { color: #fcd34d !important; }
+html.light .vip-page .text-yellow-300 { color: #fde047 !important; }
+html.light .vip-page .text-cyan-200 { color: #a5f3fc !important; }
+html.light .vip-page .text-sky-200 { color: #bae6fd !important; }
+html.light .vip-page .text-slate-100 { color: #f1f5f9 !important; }
+html.light .vip-page .bg-purple-500\/10 { background-color: rgb(168 85 247 / 0.1) !important; }
+html.light .vip-page .bg-purple-500\/20 { background-color: rgb(168 85 247 / 0.2) !important; }
+html.light .vip-page .divide-purple-500\/10 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgb(168 85 247 / 0.1) !important;
+}
