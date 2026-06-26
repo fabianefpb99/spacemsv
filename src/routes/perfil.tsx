@@ -857,29 +857,6 @@ function LinkRow({
   );
 }
 
-function QuickTile({
-  icon,
-  label,
-  onClick,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="profile-quick-tile flex flex-col items-center justify-center gap-1.5 rounded-xl border border-purple-500/30 bg-[#0c0620]/80 px-1.5 py-3 text-purple-100 transition hover:border-fuchsia-500/50 hover:bg-[#150830]/70"
-    >
-      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-600/20 text-purple-200 ring-1 ring-purple-400/30">
-        {icon}
-      </span>
-      <span className="text-[10px] font-bold uppercase tracking-wider text-white">{label}</span>
-    </button>
-  );
-}
-
 function GoogleIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 48 48" aria-hidden="true">
