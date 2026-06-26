@@ -28,6 +28,9 @@ import {
   adminResetPassword,
   adminSetBlock,
 } from "@/lib/admin/admin.functions";
+import { adminGetUserVipSnapshot } from "@/lib/vip/rewards.functions";
+import { RANK_META, subForLevel, type VipRank, type VipSub } from "@/lib/vip/vip.shared";
+import { VipBadge } from "@/components/vip/VipBadge";
 import {
   KpiCard,
   Panel,
@@ -388,6 +391,9 @@ function UserDetailDrawer({ userId, onClose }: { userId: string; onClose: () => 
                 ? new Date(detail.data.lastSignInAt).toLocaleString("es-CO")
                 : "—"}
             </div>
+
+            {/* VIP snapshot */}
+            <UserVipPanel userId={userId} />
 
             {/* Balance actions */}
             <Panel title="Ajustar saldo">
