@@ -26,6 +26,8 @@ import {
   type UserVipRewardRow,
 } from "@/lib/vip/rewards.functions";
 import { useAuth } from "@/hooks/useAuth";
+import { playRewardSound } from "@/lib/reward-sound";
+import type { MeData } from "@/hooks/useMe";
 
 export const Route = createFileRoute("/vip")({
   head: () => ({
@@ -79,18 +81,33 @@ function VipPage() {
 
   const claimFn = useServerFn(claimVipReward);
   const claim = useMutation({
-    mutationFn: (rewardId: string) => claimFn({ data: { rewardId } }),
+    mutationFn: (rewardId: string) => {
+      // Trigger sound immediately on user gesture (avoids autoplay block).
+      playRewardSound();
+      return claimFn({ data: { rewardId } });
+    },
     onSuccess: (res) => {
       if (res.kind === "bonus") {
         toast.success(`+$${new Intl.NumberFormat("es-CO").format(res.amount ?? 0)} de saldo bonus`);
+        // Optimistic bonus balance bump so /perfil + header reflejen al instante.
+        if (user) {
+          qc.setQueryData<MeData | null>(["me", user.id], (prev) => {
+            if (!prev) return prev;
+            const newBonus = typeof res.new_bonus_balance === "number"
+              ? res.new_bonus_balance
+              : prev.bonus_balance + Number(res.amount ?? 0);
+            return { ...prev, bonus_balance: newBonus };
+          });
+        }
       } else if (res.kind === "avatar") {
         toast.success("¡Avatar desbloqueado!");
       } else {
         toast.success("Premio reclamado");
       }
       qc.invalidateQueries({ queryKey: ["vip-my-rewards"] });
-      qc.invalidateQueries({ queryKey: ["user-balance"] });
-      qc.invalidateQueries({ queryKey: ["balance"] });
+      qc.invalidateQueries({ queryKey: ["me"] });
+      qc.invalidateQueries({ queryKey: ["vip"] });
+      qc.invalidateQueries({ queryKey: ["unlocked-avatars"] });
     },
     onError: (e: unknown) => {
       toast.error(e instanceof Error ? e.message : "No se pudo reclamar");
