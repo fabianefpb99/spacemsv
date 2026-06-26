@@ -6,6 +6,7 @@ const SMOOTH_ATTR = "data-smooth-image";
 
 function shouldSmoothImage(img: HTMLImageElement) {
   if (img.closest("[data-no-smooth-image]")) return false;
+  if (img.closest(".skeleton-img-wrap")) return false;
   const src = img.currentSrc || img.getAttribute("src") || "";
   if (!src || src.startsWith("data:")) return false;
   const path = src.split("?")[0]?.toLowerCase() ?? "";

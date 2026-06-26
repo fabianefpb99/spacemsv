@@ -73,6 +73,13 @@ html.light .home-game-card {
   border-color: rgba(59, 20, 104, 0.18) !important;
   box-shadow: none !important;
 }
+.home-game-card,
+.home-game-card * {
+  cursor: pointer;
+}
+.home-game-card * {
+  pointer-events: none !important;
+}
 .home-game-title {
   color: #ffffff !important;
 }

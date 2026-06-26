@@ -510,7 +510,6 @@ function HomePage() {
       dragged: false,
       axis: null,
     };
-    el.setPointerCapture(event.pointerId);
   };
 
   const handleFeaturedPointerMove = (event: PointerEvent<HTMLDivElement>) => {
@@ -520,20 +519,23 @@ function HomePage() {
     if (!drag.active || !el) return;
     const delta = event.clientX - drag.startX;
     const verticalDelta = event.clientY - drag.startY;
-    if (!drag.axis && Math.max(Math.abs(delta), Math.abs(verticalDelta)) > 6) {
+    if (!drag.axis && Math.max(Math.abs(delta), Math.abs(verticalDelta)) > 10) {
       drag.axis = Math.abs(delta) > Math.abs(verticalDelta) ? "x" : "y";
     }
     if (drag.axis === "y") return;
-    if (Math.abs(delta) > 4) drag.dragged = true;
-    el.scrollLeft = drag.scrollLeft - delta;
+    if (drag.axis === "x" && Math.abs(delta) > 16) {
+      drag.dragged = true;
+      el.scrollLeft = drag.scrollLeft - delta;
+    }
   };
 
   const stopFeaturedDrag = (event: PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === "touch") return;
-    const el = featuredScrollRef.current;
     featuredDragRef.current.active = false;
     featuredDragRef.current.axis = null;
-    if (el?.hasPointerCapture(event.pointerId)) el.releasePointerCapture(event.pointerId);
+    setTimeout(() => {
+      featuredDragRef.current.dragged = false;
+    }, 0);
   };
 
   useEffect(() => {
