@@ -27,6 +27,7 @@ import {
 } from "@/lib/vip/rewards.functions";
 import { useAuth } from "@/hooks/useAuth";
 import { playRewardSound } from "@/lib/reward-sound";
+import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
 import type { MeData } from "@/hooks/useMe";
 
 export const Route = createFileRoute("/vip")({
@@ -50,6 +51,7 @@ export const Route = createFileRoute("/vip")({
 });
 
 function VipPage() {
+  useForceDarkTheme();
   const navigate = useNavigate();
   const vip = useVip();
   const data = vip.data;
@@ -124,7 +126,7 @@ function VipPage() {
   );
 
   return (
-    <div className="vip-page theme-dark-fixed min-h-screen bg-[#060210] text-white">
+    <div className="vip-page min-h-screen bg-[#060210] text-white">
       <div className="mx-auto flex min-h-screen max-w-md flex-col px-3 pb-12 pt-4 sm:max-w-lg sm:px-4">
         {/* Header */}
         <header
