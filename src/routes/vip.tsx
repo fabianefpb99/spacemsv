@@ -1,5 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, Lock, Sparkles, Star } from "lucide-react";
+import { ArrowLeft, Lock, Sparkles } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { useVip } from "@/hooks/useVip";
 import {
@@ -14,6 +18,14 @@ import {
   type VipRank,
 } from "@/lib/vip/vip.shared";
 import { VipBadge } from "@/components/vip/VipBadge";
+import { VipRewardChip } from "@/components/vip/VipRewardChip";
+import {
+  claimVipReward,
+  listMyVipRewards,
+  type VipRankRewardRow,
+  type UserVipRewardRow,
+} from "@/lib/vip/rewards.functions";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/vip")({
   head: () => ({
@@ -41,6 +53,58 @@ function VipPage() {
   const data = vip.data;
   const levels = data?.levels ?? [];
   const progress = computeProgress(data?.user_vip?.total_xp ?? 0, levels);
+  const { user } = useAuth();
+  const qc = useQueryClient();
+
+  const catalogQ = useQuery({
+    queryKey: ["vip-rewards-catalog"],
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("vip_rank_rewards" as never)
+        .select("*")
+        .order("min_level", { ascending: true });
+      if (error) throw error;
+      return (data ?? []) as unknown as VipRankRewardRow[];
+    },
+  });
+
+  const myRewardsFn = useServerFn(listMyVipRewards);
+  const myRewardsQ = useQuery({
+    queryKey: ["vip-my-rewards", user?.id ?? null],
+    enabled: !!user,
+    staleTime: 15_000,
+    queryFn: () => myRewardsFn(),
+  });
+
+  const claimFn = useServerFn(claimVipReward);
+  const claim = useMutation({
+    mutationFn: (rewardId: string) => claimFn({ data: { rewardId } }),
+    onSuccess: (res) => {
+      if (res.kind === "bonus") {
+        toast.success(`+$${new Intl.NumberFormat("es-CO").format(res.amount ?? 0)} de saldo bonus`);
+      } else if (res.kind === "avatar") {
+        toast.success("¡Avatar desbloqueado!");
+      } else {
+        toast.success("Premio reclamado");
+      }
+      qc.invalidateQueries({ queryKey: ["vip-my-rewards"] });
+      qc.invalidateQueries({ queryKey: ["user-balance"] });
+      qc.invalidateQueries({ queryKey: ["balance"] });
+    },
+    onError: (e: unknown) => {
+      toast.error(e instanceof Error ? e.message : "No se pudo reclamar");
+    },
+  });
+
+  const catalogByKey = new Map<string, VipRankRewardRow>();
+  (catalogQ.data ?? []).forEach((r) =>
+    catalogByKey.set(`${r.rank}:${r.sub_division}`, r),
+  );
+  const userByKey = new Map<string, UserVipRewardRow>();
+  (myRewardsQ.data ?? []).forEach((r) =>
+    userByKey.set(`${r.rank}:${r.sub_division}`, r),
+  );
 
   return (
     <div className="min-h-screen bg-[#060210] text-white">
@@ -130,6 +194,10 @@ function VipPage() {
               levels={levels}
               currentLevel={progress.displayLevel}
               userIsMax={progress.isMax}
+              catalogByKey={catalogByKey}
+              userByKey={userByKey}
+              onClaim={(id) => claim.mutate(id)}
+              claimingId={claim.isPending ? claim.variables ?? null : null}
             />
           ))}
         </div>
@@ -156,11 +224,19 @@ function RankSection({
   levels,
   currentLevel,
   userIsMax,
+  catalogByKey,
+  userByKey,
+  onClaim,
+  claimingId,
 }: {
   rank: VipRank;
   levels: VipLevelRow[];
   currentLevel: number;
   userIsMax: boolean;
+  catalogByKey: Map<string, VipRankRewardRow>;
+  userByKey: Map<string, UserVipRewardRow>;
+  onClaim: (rewardId: string) => void;
+  claimingId: string | null;
 }) {
   const meta = RANK_META[rank];
   const range = RANK_RANGES[rank];
@@ -216,6 +292,9 @@ function RankSection({
           const subTargetXp = lvls[lvls.length - 1].xp_required;
           const reached = currentLevel >= subFrom;
           const isCurrent = currentLevel >= subFrom && currentLevel <= subTo;
+          const key = `${rank}:${sub}`;
+          const catalog = catalogByKey.get(key) ?? null;
+          const userReward = userByKey.get(key) ?? null;
           return (
             <div
               key={sub}
@@ -233,8 +312,16 @@ function RankSection({
                   Niveles {subFrom}–{subTo} · {formatXp(subTargetXp)} XP
                 </div>
               </div>
-              {!reached && !userIsMax && <Lock className="h-3.5 w-3.5 text-purple-300/50" />}
-              {reached && <Star className={cn("h-3.5 w-3.5", meta.text)} />}
+              <VipRewardChip
+                catalog={catalog}
+                userReward={userReward}
+                reached={reached}
+                onClaim={onClaim}
+                claiming={claimingId === userReward?.id}
+              />
+              {!reached && !userIsMax && (!catalog || catalog.reward_kind === "none") && (
+                <Lock className="h-3.5 w-3.5 text-purple-300/50" />
+              )}
             </div>
           );
         })}
