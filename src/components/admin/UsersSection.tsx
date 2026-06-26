@@ -683,3 +683,80 @@ function Field({ k, v }: { k: string; v: any }) {
     </div>
   );
 }
+
+function UserVipPanel({ userId }: { userId: string }) {
+  const fn = useServerFn(adminGetUserVipSnapshot);
+  const q = useQuery({
+    queryKey: ["admin-user-vip", userId],
+    queryFn: () => fn({ data: { userId } }),
+  });
+
+  if (q.isLoading) {
+    return (
+      <Panel title="VIP">
+        <div className="flex items-center justify-center py-4 text-purple-200/70">
+          <Loader2 className="h-4 w-4 animate-spin" />
+        </div>
+      </Panel>
+    );
+  }
+  if (!q.data) return null;
+  const lvl = q.data.current_level || 1;
+  const sub = subForLevel(lvl);
+  const meta = RANK_META[sub.rank as VipRank];
+  return (
+    <Panel title="VIP">
+      <div className="flex items-center gap-3 rounded-xl border border-purple-500/20 bg-[#150830]/40 p-3">
+        <VipBadge rank={sub.rank as VipRank} sub={sub.sub as VipSub} size="md" art />
+        <div className="min-w-0 flex-1">
+          <div className={`text-sm font-black ${meta.text}`}>
+            {meta.label} {sub.sub}
+          </div>
+          <div className="text-[11px] text-purple-200/70">
+            Nivel <span className="font-bold text-white">{lvl}</span> ·{" "}
+            <span className="font-bold text-white">
+              {new Intl.NumberFormat("es-CO").format(q.data.total_xp)}
+            </span>{" "}
+            XP
+          </div>
+        </div>
+      </div>
+      {q.data.rewards.length > 0 && (
+        <div className="mt-3">
+          <div className="mb-1 text-[10px] font-bold uppercase tracking-widest text-purple-300/70">
+            Últimos premios desbloqueados
+          </div>
+          <ul className="space-y-1">
+            {q.data.rewards.map((r) => (
+              <li
+                key={r.id}
+                className="flex items-center justify-between rounded-md border border-purple-500/15 bg-[#0c0620]/60 px-2 py-1.5 text-[11px]"
+              >
+                <span className="text-white">
+                  {r.rank.toUpperCase()} {r.sub_division}
+                  {r.reward_kind === "bonus" && (
+                    <span className="ml-2 text-amber-300">
+                      +${formatCOP(r.reward_amount)} bonus
+                    </span>
+                  )}
+                  {r.reward_kind === "avatar" && (
+                    <span className="ml-2 text-fuchsia-300">Avatar</span>
+                  )}
+                </span>
+                <span
+                  className={`rounded-full border px-2 py-0.5 text-[9px] uppercase tracking-widest ${
+                    r.claimed_at
+                      ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+                      : "border-amber-500/40 bg-amber-500/10 text-amber-300"
+                  }`}
+                >
+                  {r.claimed_at ? "Reclamado" : "Pendiente"}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </Panel>
+  );
+}
