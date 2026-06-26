@@ -2393,6 +2393,13 @@ html.light .profile-page .profile-vip-progress {
 html.light .profile-page .profile-vip-progress .bg-purple-500\/20 {
   background: #F1ECFB !important;
 }
+/* The XP fill inside the progress bar — the unified white card rule above
+ * strips background-image, so the gradient never paints. Force a solid
+ * brand purple fill so the bar is visible against the lavender track. */
+html.light .profile-page .profile-vip-progress .bg-purple-500\/20 > div {
+  background: linear-gradient(90deg, #7C3AED 0%, #A855F7 100%) !important;
+  background-image: linear-gradient(90deg, #7C3AED 0%, #A855F7 100%) !important;
+}
 html.light .profile-page .profile-vip-progress :is(.font-display, .text-fuchsia-300) {
   color: #5B21B6 !important;
 }
