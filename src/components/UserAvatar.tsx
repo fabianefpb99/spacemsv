@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { getAvatarUrl, rememberMissionAvatar } from "@/lib/avatars";
+import { getAvatarUrl, getMissionAvatarUrl, rememberMissionAvatar } from "@/lib/avatars";
 import { cn } from "@/lib/utils";
 
 /**
@@ -66,7 +66,15 @@ export function UserAvatar({
   // Ensure mission avatars are loaded into the cache app-wide.
   useMissionAvatarMap();
 
-  const url = avatarUrl || getAvatarUrl(avatarKey);
+  // For collectible keys (mission:/vip:) avoid the default-astronaut flash:
+  // while the cache hasn't resolved the real URL yet, keep `url` empty so we
+  // render the spinner instead of swapping to the default and then back.
+  const isCollectible =
+    !!avatarKey && (avatarKey.startsWith("mission:") || avatarKey.startsWith("vip:"));
+  const resolvedCollectible = isCollectible ? getMissionAvatarUrl(avatarKey!) : undefined;
+  const url =
+    avatarUrl ||
+    (isCollectible ? resolvedCollectible ?? "" : getAvatarUrl(avatarKey));
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {

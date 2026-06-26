@@ -1221,6 +1221,7 @@ export type Database = {
     Views: {
       admin_users_overview: {
         Row: {
+          avatar_key: string | null
           balance: number | null
           bonus_balance: number | null
           created_at: string | null

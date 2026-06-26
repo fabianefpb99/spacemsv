@@ -17,8 +17,8 @@ import {
   Wallet as WalletIcon,
   X,
 } from "lucide-react";
-import astronaut from "@/assets/astronaut.svg";
 import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
+import { UserAvatar } from "@/components/UserAvatar";
 import {
   adminAdjustBalance,
   adminAdjustXp,
@@ -123,8 +123,8 @@ export function UsersSection() {
                   onClick={() => setSelected(u.id)}
                   className="flex w-full items-center gap-3 rounded-xl border border-purple-500/20 bg-[#150830]/60 p-2.5 text-left transition hover:border-fuchsia-500/50 hover:bg-[#1a0b3a]/80"
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-fuchsia-400/40 bg-purple-900/40">
-                    <img src={astronaut} alt="" className="h-7 w-7 object-contain" />
+                  <div className="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full border border-fuchsia-400/40 bg-purple-900/40">
+                    <UserAvatar avatarKey={u.avatar_key} avatarUrl={u.avatar_url} alt="" spinnerSize="sm" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
@@ -300,8 +300,13 @@ function UserDetailDrawer({ userId, onClose }: { userId: string; onClose: () => 
           <div className="space-y-4 p-4">
             {/* Identity */}
             <div className="flex items-center gap-3 rounded-2xl border border-fuchsia-500/40 bg-gradient-to-b from-[#1a0b3a] to-[#0c0620] p-3">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-fuchsia-400/60 bg-purple-900/40">
-                <img src={astronaut} alt="" className="h-10 w-10 object-contain" />
+              <div className="relative flex h-14 w-14 shrink-0 overflow-hidden rounded-full border-2 border-fuchsia-400/60 bg-purple-900/40">
+                <UserAvatar
+                  avatarKey={(detail.data.profile as { avatar_key?: string | null } | null)?.avatar_key ?? null}
+                  avatarUrl={(detail.data as { avatar_url?: string | null }).avatar_url ?? null}
+                  alt=""
+                  spinnerSize="md"
+                />
               </div>
               <div className="min-w-0 flex-1">
                 <div className="font-display truncate text-base font-black text-white">

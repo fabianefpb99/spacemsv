@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { resolveAvatarUrls } from "@/lib/avatars.server";
 
 async function getSupabaseAdmin() {
   return (await import("@/integrations/supabase/client.server")).supabaseAdmin;
@@ -72,7 +73,13 @@ export const adminListUsers = createServerFn({ method: "POST" })
 
     const { data: rows, count, error } = await q.range(from, to);
     if (error) throw new Error(error.message);
-    return { rows: rows ?? [], total: count ?? 0, page: data.page, pageSize: data.pageSize };
+    const list = rows ?? [];
+    const resolved = await resolveAvatarUrls(list.map((r) => (r as { avatar_key?: string | null }).avatar_key));
+    const withAvatars = list.map((r) => {
+      const key = (r as { avatar_key?: string | null }).avatar_key ?? null;
+      return { ...(r as Record<string, unknown>), avatar_url: key ? resolved.get(key) ?? null : null };
+    });
+    return { rows: withAvatars, total: count ?? 0, page: data.page, pageSize: data.pageSize };
   });
 
 /* ----------------------------- User detail ----------------------------- */
@@ -94,6 +101,9 @@ export const adminGetUserDetail = createServerFn({ method: "POST" })
       supabaseAdmin.auth.admin.getUserById(data.userId),
     ]);
     const authUser = "data" in authUserRes ? authUserRes.data.user : null;
+    const avatarKey = (profile as { avatar_key?: string | null } | null)?.avatar_key ?? null;
+    const resolved = await resolveAvatarUrls([avatarKey]);
+    const avatar_url = avatarKey ? resolved.get(avatarKey) ?? null : null;
 
     let totalBet = 0,
       totalWin = 0,
@@ -113,6 +123,7 @@ export const adminGetUserDetail = createServerFn({ method: "POST" })
 
     return {
       profile,
+      avatar_url,
       balance: Number(bal?.balance ?? 0),
       bonus_balance: Number(bal?.bonus_balance ?? 0),
       stats: {
