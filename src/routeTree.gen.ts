@@ -36,6 +36,7 @@ import { Route as PayBrebRouteImport } from './routes/pay_.breb'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as ApiPublicImgSplatRouteImport } from './routes/api/public/img.$'
 
 const VipRoute = VipRouteImport.update({
   id: '/vip',
@@ -173,6 +174,11 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicImgSplatRoute = ApiPublicImgSplatRouteImport.update({
+  id: '/api/public/img/$',
+  path: '/api/public/img/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -199,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/transacciones': typeof TransaccionesRoute
   '/vip': typeof VipRoute
   '/pay/breb': typeof PayBrebRoute
+  '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -228,6 +235,7 @@ export interface FileRoutesByTo {
   '/transacciones': typeof TransaccionesRoute
   '/vip': typeof VipRoute
   '/pay/breb': typeof PayBrebRoute
+  '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -258,6 +266,7 @@ export interface FileRoutesById {
   '/transacciones': typeof TransaccionesRoute
   '/vip': typeof VipRoute
   '/pay_/breb': typeof PayBrebRoute
+  '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -289,6 +298,7 @@ export interface FileRouteTypes {
     | '/transacciones'
     | '/vip'
     | '/pay/breb'
+    | '/api/public/img/$'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -318,6 +328,7 @@ export interface FileRouteTypes {
     | '/transacciones'
     | '/vip'
     | '/pay/breb'
+    | '/api/public/img/$'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -347,6 +358,7 @@ export interface FileRouteTypes {
     | '/transacciones'
     | '/vip'
     | '/pay_/breb'
+    | '/api/public/img/$'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -377,6 +389,7 @@ export interface RootRouteChildren {
   TransaccionesRoute: typeof TransaccionesRoute
   VipRoute: typeof VipRoute
   PayBrebRoute: typeof PayBrebRoute
+  ApiPublicImgSplatRoute: typeof ApiPublicImgSplatRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -573,6 +586,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/img/$': {
+      id: '/api/public/img/$'
+      path: '/api/public/img/$'
+      fullPath: '/api/public/img/$'
+      preLoaderRoute: typeof ApiPublicImgSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -601,6 +621,7 @@ const rootRouteChildren: RootRouteChildren = {
   TransaccionesRoute: TransaccionesRoute,
   VipRoute: VipRoute,
   PayBrebRoute: PayBrebRoute,
+  ApiPublicImgSplatRoute: ApiPublicImgSplatRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
@@ -608,13 +629,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

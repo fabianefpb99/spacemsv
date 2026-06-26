@@ -124,6 +124,7 @@ export type FillerWin = {
   id: string;
   username: string;
   avatar_key: string;
+  avatar_url?: string | null;
   game: string;
   amount: number;
   mult: number;

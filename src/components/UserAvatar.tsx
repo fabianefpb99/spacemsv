@@ -46,11 +46,19 @@ function spinnerSizeClass(size: Size) {
  */
 export function UserAvatar({
   avatarKey,
+  avatarUrl,
   alt = "",
   className,
   spinnerSize = "md",
 }: {
   avatarKey: string | null | undefined;
+  /**
+   * Optional fully-resolved URL. When provided, takes precedence over
+   * `avatarKey` lookup. Used by ranking/recent-wins where the server already
+   * resolves mission:/vip: keys, so the UI doesn't have to wait for the
+   * per-user mission/vip avatar cache to populate.
+   */
+  avatarUrl?: string | null;
   alt?: string;
   className?: string;
   spinnerSize?: Size;
@@ -58,7 +66,7 @@ export function UserAvatar({
   // Ensure mission avatars are loaded into the cache app-wide.
   useMissionAvatarMap();
 
-  const url = getAvatarUrl(avatarKey);
+  const url = avatarUrl || getAvatarUrl(avatarKey);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {

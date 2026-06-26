@@ -5,11 +5,13 @@ import {
   getColombiaParts,
   type FillerEntry,
 } from "@/lib/fillers";
+import { resolveAvatarUrls } from "@/lib/avatars.server";
 
 export type RankingEntry = {
   user_id: string;
   username: string;
   avatar_key: string | null;
+  avatar_url?: string | null;
   net_amount: number;
 };
 
@@ -61,9 +63,20 @@ export const getRankingPublic = createServerFn({ method: "GET" }).handler(
     const fillersGeneral = generateFillers("general", 5, dateKey, hour);
     const fillersArena = generateFillers("arena", 10, dateKey, hour);
 
+    const winners = mergeAndTop(toEntries(winnersRes.data), fillersGeneral, 10);
+    const arena = mergeAndTop(toEntries(arenaRes.data), fillersArena, 10);
+
+    // Resolve mission:/vip: avatar keys to URLs server-side so the ranking UI
+    // never shows the default astronaut while waiting for per-user queries.
+    const allKeys = [...winners, ...arena].map((e) => e.avatar_key);
+    const urlMap = await resolveAvatarUrls(allKeys);
+    const attach = (e: RankingEntry): RankingEntry => ({
+      ...e,
+      avatar_url: e.avatar_key ? urlMap.get(e.avatar_key) ?? null : null,
+    });
     return {
-      winners: mergeAndTop(toEntries(winnersRes.data), fillersGeneral, 10),
-      arena: mergeAndTop(toEntries(arenaRes.data), fillersArena, 10),
+      winners: winners.map(attach),
+      arena: arena.map(attach),
     };
   },
 );

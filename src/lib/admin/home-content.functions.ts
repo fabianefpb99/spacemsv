@@ -23,12 +23,30 @@ function isStoragePath(url: string) {
   return !!url && !url.startsWith("http") && !url.startsWith("/__l5e/") && !url.startsWith("data:");
 }
 
-async function resolveUrl(url: string) {
-  if (!isStoragePath(url)) return url;
-  const admin = await getSupabaseAdmin();
-  const { data } = await admin.storage.from(BUCKET).createSignedUrl(url, SIGN_TTL);
-  return data?.signedUrl ?? url;
+/**
+ * Extract the storage path from a Supabase signed URL like
+ * `https://<ref>.supabase.co/storage/v1/object/sign/home-content/<path>?token=...`.
+ * Returns null when the input isn't a signed URL for this bucket.
+ */
+function extractStoragePath(url: string): string | null {
+  const m = url.match(/\/storage\/v1\/object\/(?:sign|public)\/home-content\/([^?]+)/);
+  return m ? decodeURIComponent(m[1]) : null;
 }
+
+function toProxyUrl(path: string) {
+  return `/api/public/img/${BUCKET}/${path}`;
+}
+
+async function resolveUrl(url: string) {
+  if (!url) return url;
+  // Storage path (legacy): rewrite to stable proxy URL so browsers cache.
+  if (isStoragePath(url)) return toProxyUrl(url);
+  // Existing signed Supabase URL → strip token, use stable proxy URL.
+  const path = extractStoragePath(url);
+  if (path) return toProxyUrl(path);
+  return url;
+}
+
 
 /* ---------------- SLIDES ---------------- */
 
