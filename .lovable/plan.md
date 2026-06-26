@@ -1,35 +1,28 @@
-## Objetivo
-Hacer que `/vip` siempre se renderice con la paleta oscura, eliminando del CSS todas las reglas `html.light` que afectan a esa pantalla — sin usar el enfoque "forzar dark theme" que ha causado problemas antes, y sin tocar `/perfil` (que comparte algunas clases VIP).
+## Problema
 
-## Estrategia
-Marcar la raíz de `/vip` con una clase propia (`vip-page`) y, en cada regla `html.light` que pinte componentes VIP, **excluir** los descendientes de `.vip-page`. Así esa pantalla nunca tiene estilos de modo claro que pisar, y las mismas clases siguen funcionando en `/perfil` u otros lugares.
+El bloque override actual en `src/styles.css` (líneas 2997–3046) sólo re-define un puñado de clases (`text-white`, `text-purple-*`, `bg-[#0c0620]`, etc.). No cubre los gradientes (`from-[#1a0b3a]`, `bg-gradient-to-r`, etc.), ni los colores de los headers de rango (BRONCE/PLATA), ni varias clases que el modo claro global desatura. Resultado: el `/vip` queda en un híbrido — textos pálidos, headers desteñidos y fondos morados claros.
 
-## Cambios
+## Solución
 
-### 1. `src/routes/vip.tsx`
-- Añadir `vip-page` al `<div className="min-h-screen bg-[#060210] text-white">` raíz. No se cambia ningún color/clase visual; solo se agrega el marcador.
+Usar el mismo patrón ya probado en `/mis-recargas`, `/transacciones` y los modales de auth: la clase `.theme-dark-fixed`. Ese bloque (líneas 28–62) ya reasigna **todas** las variables de tema, fondos, textos y superficies a su versión oscura para cualquier descendiente. Es la forma garantizada de forzar modo oscuro sin parches clase-por-clase.
 
-### 2. `src/styles.css` — neutralizar light en `/vip`
-Acotar (NO borrar — para no romper `/perfil`) cada regla `html.light` que toca elementos presentes en `/vip`, añadiendo `:not(.vip-page *)` o un selector equivalente con `:where()`:
+### Cambios
 
-- Línea 23 — `html.light .bg-[#060210]:not(header):not(nav):not(.theme-dark-fixed)` → añadir `:not(.vip-page):not(.vip-page *)`.
-- Línea 453 — `html.light .profile-vip-progress` → excluir cuando esté dentro de `.vip-page`.
-- Línea 460 — bloque de colores de texto del progress VIP → misma exclusión.
-- Línea 464 — `bg-purple-500/20` dentro del progress → misma exclusión.
-- Línea 492 / 498 — `html.light .vip-sub-badge.vip-sub-badge` (y `*`) → misma exclusión.
-- Línea 937 — `html.light .vip-frame` → misma exclusión.
-- Línea 941 — `html.light .vip-frame > .vip-frame-inner` → misma exclusión.
-- Líneas 945-946 — `::before/::after` de `.vip-frame-inner` → misma exclusión.
-- Línea 950 — colores de texto dentro de `.vip-frame-inner` → misma exclusión.
-- Línea 954 — `drop-shadow` dentro de `.vip-frame-inner` → misma exclusión.
+1. **`src/routes/vip.tsx`**
+   - Añadir la clase `theme-dark-fixed` al `div` raíz junto a `vip-page`:
+     ```
+     className="vip-page theme-dark-fixed min-h-screen bg-[#060210] text-white"
+     ```
 
-(Las reglas que ya van scopeadas con `.profile-page` no se tocan: solo afectan a `/perfil`.)
+2. **`src/styles.css`**
+   - Eliminar el bloque override de las líneas 2997–3046 (ya no hace falta).
+   - Eliminar las exclusiones `:not(.vip-page):not(.vip-page *)` y `:not(.vip-page *)` añadidas en las reglas de modo claro (líneas 23, 453, 460, 464, 492, 498, 937, 941, 945–946, 950, 954). Con `theme-dark-fixed` aplicado al root del VIP, esas reglas ya no afectan al subtree y las exclusiones se vuelven ruido.
 
-### 3. Verificación
-- Cambiar a modo claro en la app, ir a `/vip`: fondo, tarjetas, badges, barra de progreso y chips de premios deben verse exactamente igual que en modo oscuro.
-- Visitar `/perfil` en modo claro y confirmar que su estilo claro sigue intacto.
-- Visitar `/home` en modo claro y confirmar que no cambió nada.
+### Resultado esperado
 
-## Notas técnicas
-- Se prefiere `:not(.vip-page *)` sobre eliminar reglas porque varias clases (`vip-frame`, `vip-sub-badge`, `profile-vip-progress`) se reutilizan en `/perfil`; borrarlas dejaría `/perfil` sin estilo claro.
-- No se introducen reglas nuevas tipo `html.light .vip-page * { color: ... }`. La idea es justo lo opuesto: que en `/vip` simplemente **no exista** ninguna sobrescritura de light, dejando que ganen los estilos base (oscuros) ya definidos por las clases de Tailwind y los hex hard-codeados del componente.
+- Header card "TU RANGO ACTUAL / MAESTRO III" con fondo morado oscuro sólido, borde brillante e iconos vivos como en modo oscuro.
+- Headers BRONCE / PLATA con su gradiente completo y texto blanco.
+- Sub-rangos (Bronce V, IV…) con su color ámbar/morado original, sin desaturar.
+- Fondo `#060210` plano en toda la página.
+
+No se toca lógica, ni `/perfil`, ni los componentes compartidos (`VipBadge`, `VipCard`, `VipRewardChip`) en otras rutas: siguen respetando modo claro fuera del VIP.
