@@ -533,6 +533,9 @@ function HomePage() {
     if (event.pointerType === "touch") return;
     featuredDragRef.current.active = false;
     featuredDragRef.current.axis = null;
+    setTimeout(() => {
+      featuredDragRef.current.dragged = false;
+    }, 0);
   };
 
   useEffect(() => {
