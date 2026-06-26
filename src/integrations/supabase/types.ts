@@ -1715,6 +1715,7 @@ export type Database = {
           avatar_key: string
           created_at: string
           game: string
+          multiplier: number
           user_id: string
           username: string
         }[]

@@ -6,6 +6,7 @@ export type RecentWin = {
   avatar_key: string | null;
   game: string;
   amount: number;
+  multiplier: number;
   created_at: string;
 };
 
@@ -24,6 +25,7 @@ export const getRecentPublicWins = createServerFn({ method: "GET" }).handler(
       avatar_key: r.avatar_key ?? null,
       game: String(r.game ?? "casino"),
       amount: Number(r.amount ?? 0),
+      multiplier: Number(r.multiplier ?? 1),
       created_at: String(r.created_at),
     }));
   },

@@ -1,38 +1,25 @@
-# Rediseño de cards en "Juegos Destacados"
+## Objetivo
 
-Solo cambio visual. No se toca: scroll horizontal, drag, queries, datos, tags ni routing.
+Que el panel "Últimas ganancias" muestre SIEMPRE el multiplicador (ej. `1.08x`, `3.57x`) tanto para fillers como para jugadores reales. Eliminar el texto `¡GANÓ!`.
 
-## Cambios en `src/routes/home.tsx` (cards dentro del scroll, líneas ~742-772)
+## Cambios
 
-1. **Card como contenedor de imagen full-bleed**
-   - Cambiar `aspect-square` (cuadrado) → relación más alta tipo póster (`aspect-[3/4]`) para mantener proporción del ejemplo (imagen vertical).
-   - Eliminar el wrapper de texto inferior (`<div className="flex min-h-[42px]...">`) y el sub-bloque de imagen separado.
-   - La `<Link>` pasa a ser `relative` con `overflow-hidden`, y dentro:
-     - `SkeletonImage` ocupa `absolute inset-0 h-full w-full object-cover`.
-     - Capa de degradado inferior `absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/90 via-black/55 to-transparent` para que el texto sea legible sin tapar la ilustración.
-     - Contenedor de texto `absolute inset-x-0 bottom-0 px-2 pb-2 pt-6 text-center` con sangrado (padding) para que el título y tag nunca toquen los bordes.
+### 1) Backend — `get_recent_public_wins` (nueva migración)
+Recalcular la RPC para devolver también el multiplicador real de la apuesta:
 
-2. **Título sobre la imagen, ligeramente debajo de la mitad**
-   - Mismo texto (`gameName`), tipografía display, blanco, `font-black uppercase`, tamaño responsivo (`text-[10px] sm:text-xs`), `drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]` para contraste.
-   - Posicionado dentro del bloque inferior (queda ~55-60% bajando desde arriba gracias al `pt-6` + gradiente).
+- Añadir columna `multiplier numeric` al RETURNS.
+- Hacer `LEFT JOIN public.game_bets b ON b.round_id = t.game_round_id AND b.user_id = t.user_id`.
+- `multiplier = ROUND(b.payout / NULLIF(b.amount,0), 2)`.
+- Fallback: si no hay bet asociado (algún `win` sin round), `multiplier = ROUND(t.amount / NULLIF((SELECT ...),0), 2)` no es viable → usar `COALESCE(..., 1.00)` para no romper UI.
+- Mantener filtros (`type='win'`, `amount>0`, últimas 24h) y el `GRANT EXECUTE` existente.
 
-3. **Tag (NUEVO/POPULAR/VIP/etc.)**
-   - Se mantiene debajo del título, con las mismas clases de color por variante (`g.tagCls`), pero `px-2 py-0.5 text-[8px]`, sangrado garantizado por el padding del contenedor.
+### 2) Frontend — `src/lib/recent-wins.functions.ts`
+- Añadir `multiplier: number` al tipo `RecentWin` y al `map` del handler.
 
-4. **Bordes y sombra de la card**
-   - Conservar `rounded-xl` y el borde fucsia ya existente (regla actual en modo oscuro). Sin cambios funcionales en clases globales.
+### 3) Frontend — `src/routes/home.tsx`
+- En el mapeo de `recentWinsQ.data` a `FillerWin`, asignar `mult: w.multiplier` (eliminar el `0` sentinel y el comentario).
+- En el render (línea ~1002), reemplazar el bloque condicional `¡GANÓ!` por siempre mostrar `{mult.toFixed(2)}x` con el mismo estilo morado/violeta que ya usan los fillers.
+- Eliminar cualquier referencia a la rama `mult === 0`.
 
-5. **Modo claro**
-   - El degradado oscuro y texto blanco son fijos dentro de la card (independiente del tema), lo que asegura legibilidad en ambos modos sin tocar reglas de `theme-dark-fixed` ni styles.css.
-
-## Lo que NO se toca
-
-- `featuredScrollRef`, drag handlers, `home-featured-scroll`, ancho de cada card (`w-[22%] min-w-[22%]`).
-- Queries, caching, `gamesList`, `formatGameTag`, mapeo de tag colors.
-- Banners de BlackJack/Ruleta y resto del home.
-- Imágenes/SVGs/lógica de juegos.
-
-## Verificación
-
-- Build/typecheck automático.
-- Vista en preview móvil (390px) confirmando: imagen full-bleed, título sobre imagen ligeramente debajo del centro, tag debajo, padding visible en los 4 lados del texto, scroll horizontal funciona igual.
+## Resultado visual
+Todas las filas (reales y fillers) muestran `$ monto COP` + `N.NNx` debajo, con el mismo formato. Sin `¡GANÓ!` en ningún caso.
