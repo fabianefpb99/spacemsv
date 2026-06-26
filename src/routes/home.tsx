@@ -563,14 +563,20 @@ function HomePage() {
         drag.axis = Math.abs(delta) > Math.abs(verticalDelta) ? "x" : "y";
       }
       if (drag.axis === "y") return;
-      if (Math.abs(delta) > 4) drag.dragged = true;
-      el.scrollLeft = drag.scrollLeft - delta;
+      if (drag.axis === "x" && Math.abs(delta) > 8) {
+        drag.dragged = true;
+        el.scrollLeft = drag.scrollLeft - delta;
+      }
       event.preventDefault();
     };
 
     const stopTouchDrag = () => {
       featuredDragRef.current.active = false;
       featuredDragRef.current.axis = null;
+      // Reset dragged shortly after so the next tap isn't blocked
+      setTimeout(() => {
+        featuredDragRef.current.dragged = false;
+      }, 0);
     };
 
     el.addEventListener("touchstart", handleTouchStart, { passive: true });
