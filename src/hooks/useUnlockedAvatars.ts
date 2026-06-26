@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
-import { rememberMissionAvatar, type AvatarKey } from "@/lib/avatars";
+import { rememberMissionAvatar, rememberVipAvatar, type AvatarKey } from "@/lib/avatars";
 
 export type CollectibleItem = {
   /** Stable id: avatar key for legacy items, `mission:<id>` for mission rewards. */
@@ -82,7 +82,7 @@ export function useUnlockedAvatars() {
       const unlocked = new Set<AvatarKey>();
       const arenaWins = 0;
 
-      const [missionsRes, unlocksRes] = await Promise.all([
+      const [missionsRes, unlocksRes, vipRewardsRes] = await Promise.all([
         supabase
           .from("missions")
           .select("id, title, subtitle, reward_image_url, reward_label, is_active")
@@ -93,6 +93,11 @@ export function useUnlockedAvatars() {
           .from("user_avatar_unlocks")
           .select("mission_id")
           .eq("user_id", user!.id),
+        supabase
+          .from("user_vip_rewards" as never)
+          .select("id, reward_kind, reward_image_url, reward_label, rank, sub_division, claimed_at")
+          .eq("user_id", user!.id)
+          .eq("reward_kind", "avatar"),
       ]);
 
       const unlockedMissionIds = new Set(
@@ -116,7 +121,30 @@ export function useUnlockedAvatars() {
           };
         });
 
-      const items = missionItems;
+      const vipItems: CollectibleItem[] = (
+        (vipRewardsRes.data ?? []) as Array<{
+          id: string;
+          reward_image_url: string | null;
+          reward_label: string | null;
+          rank: string;
+          sub_division: string;
+          claimed_at: string | null;
+        }>
+      )
+        .filter((v) => !!v.reward_image_url)
+        .map((v) => {
+          rememberVipAvatar(v.id, v.reward_image_url as string);
+          return {
+            id: `vip:${v.id}`,
+            avatarKey: `vip:${v.id}`,
+            imageUrl: v.reward_image_url as string,
+            label: v.reward_label || `VIP ${String(v.rank).toUpperCase()} ${v.sub_division}`,
+            unlocked: !!v.claimed_at,
+            unlockHint: `Reclama en VIP: ${String(v.rank).toUpperCase()} ${v.sub_division}`,
+          };
+        });
+
+      const items = [...missionItems, ...vipItems];
       const unlockedCount = items.filter((i) => i.unlocked).length;
       return {
         items,

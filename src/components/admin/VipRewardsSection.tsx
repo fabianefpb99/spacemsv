@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Loader2, RefreshCw, Save, Gift } from "lucide-react";
+import { Loader2, RefreshCw, Save, Gift, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { Panel } from "./shared";
 import {
@@ -10,10 +10,11 @@ import {
   type VipRankRewardRow,
   type VipRewardKind,
 } from "@/lib/vip/rewards.functions";
-import { AVATAR_OPTIONS, getAvatarUrl } from "@/lib/avatars";
 import { RANK_META, RANK_ORDER, type VipRank, type VipSub } from "@/lib/vip/vip.shared";
 import { VipBadge } from "@/components/vip/VipBadge";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 const SUBS: VipSub[] = ["V", "IV", "III", "II", "I"];
 
@@ -94,20 +95,44 @@ function RewardRow({ row }: { row: VipRankRewardRow }) {
   const qc = useQueryClient();
   const upsertFn = useServerFn(adminUpsertVipReward);
   const isInitialSub = row.min_level === 1; // Bronce V
+  const { user } = useAuth();
 
   const [kind, setKind] = useState<VipRewardKind>(row.reward_kind);
   const [amount, setAmount] = useState<string>(String(row.reward_amount ?? 0));
-  const [avatarKey, setAvatarKey] = useState<string>(row.reward_avatar_key ?? "");
+  const [imageUrl, setImageUrl] = useState<string>(row.reward_image_url ?? "");
   const [label, setLabel] = useState<string>(row.reward_label ?? "");
   const [isActive, setIsActive] = useState<boolean>(row.is_active);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     setKind(row.reward_kind);
     setAmount(String(row.reward_amount ?? 0));
-    setAvatarKey(row.reward_avatar_key ?? "");
+    setImageUrl(row.reward_image_url ?? "");
     setLabel(row.reward_label ?? "");
     setIsActive(row.is_active);
   }, [row]);
+
+  async function handleUpload(file: File) {
+    if (!user?.id) return toast.error("Sesión no detectada");
+    if (file.size > 2 * 1024 * 1024) return toast.error("Máximo 2 MB. Recomendado 512×512 PNG.");
+    setUploading(true);
+    const ext = file.name.split(".").pop() || "png";
+    const path = `${user.id}/${row.rank}-${row.sub_division}-${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage
+      .from("vip-rewards")
+      .upload(path, file, { contentType: file.type, upsert: false });
+    if (upErr) {
+      setUploading(false);
+      return toast.error(upErr.message);
+    }
+    const { data, error: signErr } = await supabase.storage
+      .from("vip-rewards")
+      .createSignedUrl(path, 60 * 60 * 24 * 365 * 10);
+    setUploading(false);
+    if (signErr || !data?.signedUrl) return toast.error(signErr?.message || "No se pudo generar URL");
+    setImageUrl(data.signedUrl);
+    toast.success("Imagen subida");
+  }
 
   const save = useMutation({
     mutationFn: () =>
@@ -117,10 +142,9 @@ function RewardRow({ row }: { row: VipRankRewardRow }) {
           sub_division: row.sub_division,
           reward_kind: kind,
           reward_amount: Number(amount) || 0,
-          reward_avatar_key: kind === "avatar" ? avatarKey || null : null,
+          reward_avatar_key: null,
           reward_label: label || null,
-          reward_image_url:
-            kind === "avatar" && avatarKey ? getAvatarUrl(avatarKey) : null,
+          reward_image_url: kind === "avatar" ? imageUrl || null : null,
           is_active: isActive,
         },
       }),
@@ -174,26 +198,42 @@ function RewardRow({ row }: { row: VipRankRewardRow }) {
             )}
 
             {kind === "avatar" && (
-              <select
-                value={avatarKey}
-                onChange={(e) => setAvatarKey(e.target.value)}
-                className="rounded-md border border-purple-500/30 bg-[#150830] px-2 py-1.5 text-xs text-white"
-              >
-                <option value="">— Elige avatar —</option>
-                {AVATAR_OPTIONS.map((a) => (
-                  <option key={a.key} value={a.key}>
-                    {a.label}
-                  </option>
-                ))}
-              </select>
-            )}
-
-            {kind === "avatar" && avatarKey && (
-              <img
-                src={getAvatarUrl(avatarKey)}
-                alt=""
-                className="h-8 w-8 rounded-full border border-fuchsia-400/40 object-cover"
-              />
+              <div className="flex items-center gap-2">
+                {imageUrl ? (
+                  <img
+                    src={imageUrl}
+                    alt=""
+                    className="h-10 w-10 rounded-full border border-amber-400/60 object-cover"
+                  />
+                ) : (
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-purple-500/40 text-[8px] text-purple-300/60">
+                    PNG
+                  </div>
+                )}
+                <label
+                  className={cn(
+                    "inline-flex cursor-pointer items-center gap-1 rounded-md border border-fuchsia-400/50 bg-fuchsia-500/10 px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-fuchsia-200 hover:bg-fuchsia-500/20",
+                    uploading && "pointer-events-none opacity-60",
+                  )}
+                >
+                  {uploading ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <Upload className="h-3 w-3" />
+                  )}
+                  {imageUrl ? "Reemplazar" : "Subir"}
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) handleUpload(f);
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+              </div>
             )}
 
             {kind !== "none" && (
