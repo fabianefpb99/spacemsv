@@ -392,6 +392,12 @@ html.light .auth-popover {
 html.light .auth-popover :is(.text-white, .text-purple-100, .text-purple-100\/80, .text-purple-100\/90, .text-purple-200\/60, .text-purple-200\/70) {
   color: #3b1468 !important;
 }
+/* "Bono: $XXX" line — was amber/yellow, illegible on white. */
+html.light .auth-popover .text-yellow-300,
+html.light .auth-popover .text-amber-300,
+html.light .auth-popover .text-amber-200 {
+  color: #3b1468 !important;
+}
 html.light .auth-popover .auth-money-sign,
 html.light .auth-popover .neon-green {
   color: #3b1468 !important;
@@ -2392,6 +2398,13 @@ html.light .profile-page .profile-vip-progress {
 }
 html.light .profile-page .profile-vip-progress .bg-purple-500\/20 {
   background: #F1ECFB !important;
+}
+/* The XP fill inside the progress bar — the unified white card rule above
+ * strips background-image, so the gradient never paints. Force a solid
+ * brand purple fill so the bar is visible against the lavender track. */
+html.light .profile-page .profile-vip-progress .bg-purple-500\/20 > div {
+  background: linear-gradient(90deg, #7C3AED 0%, #A855F7 100%) !important;
+  background-image: linear-gradient(90deg, #7C3AED 0%, #A855F7 100%) !important;
 }
 html.light .profile-page .profile-vip-progress :is(.font-display, .text-fuchsia-300) {
   color: #5B21B6 !important;
