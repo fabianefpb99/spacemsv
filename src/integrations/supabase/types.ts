@@ -962,6 +962,48 @@ export type Database = {
         }
         Relationships: []
       }
+      user_vip_rewards: {
+        Row: {
+          claimed_at: string | null
+          id: string
+          rank: Database["public"]["Enums"]["vip_rank"]
+          reward_amount: number
+          reward_avatar_key: string | null
+          reward_image_url: string | null
+          reward_kind: string
+          reward_label: string | null
+          sub_division: Database["public"]["Enums"]["vip_sub"]
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          claimed_at?: string | null
+          id?: string
+          rank: Database["public"]["Enums"]["vip_rank"]
+          reward_amount?: number
+          reward_avatar_key?: string | null
+          reward_image_url?: string | null
+          reward_kind: string
+          reward_label?: string | null
+          sub_division: Database["public"]["Enums"]["vip_sub"]
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          claimed_at?: string | null
+          id?: string
+          rank?: Database["public"]["Enums"]["vip_rank"]
+          reward_amount?: number
+          reward_avatar_key?: string | null
+          reward_image_url?: string | null
+          reward_kind?: string
+          reward_label?: string | null
+          sub_division?: Database["public"]["Enums"]["vip_sub"]
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       vip_config: {
         Row: {
           cap_level: number
@@ -1019,6 +1061,48 @@ export type Database = {
           reward_amount?: number
           sub_division?: Database["public"]["Enums"]["vip_sub"]
           xp_required?: number
+        }
+        Relationships: []
+      }
+      vip_rank_rewards: {
+        Row: {
+          is_active: boolean
+          min_level: number
+          rank: Database["public"]["Enums"]["vip_rank"]
+          reward_amount: number
+          reward_avatar_key: string | null
+          reward_image_url: string | null
+          reward_kind: string
+          reward_label: string | null
+          sub_division: Database["public"]["Enums"]["vip_sub"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          is_active?: boolean
+          min_level: number
+          rank: Database["public"]["Enums"]["vip_rank"]
+          reward_amount?: number
+          reward_avatar_key?: string | null
+          reward_image_url?: string | null
+          reward_kind?: string
+          reward_label?: string | null
+          sub_division: Database["public"]["Enums"]["vip_sub"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          is_active?: boolean
+          min_level?: number
+          rank?: Database["public"]["Enums"]["vip_rank"]
+          reward_amount?: number
+          reward_avatar_key?: string | null
+          reward_image_url?: string | null
+          reward_kind?: string
+          reward_label?: string | null
+          sub_division?: Database["public"]["Enums"]["vip_sub"]
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -1210,6 +1294,10 @@ export type Database = {
           p_game: string
           p_user_id: string
         }
+        Returns: undefined
+      }
+      _check_vip_rewards: {
+        Args: { p_level: number; p_user_id: string }
         Returns: undefined
       }
       _credit_win: {
@@ -1430,6 +1518,37 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      admin_upsert_vip_reward: {
+        Args: {
+          p_amount: number
+          p_avatar_key: string
+          p_image_url: string
+          p_is_active: boolean
+          p_kind: string
+          p_label: string
+          p_rank: Database["public"]["Enums"]["vip_rank"]
+          p_sub: Database["public"]["Enums"]["vip_sub"]
+        }
+        Returns: {
+          is_active: boolean
+          min_level: number
+          rank: Database["public"]["Enums"]["vip_rank"]
+          reward_amount: number
+          reward_avatar_key: string | null
+          reward_image_url: string | null
+          reward_kind: string
+          reward_label: string | null
+          sub_division: Database["public"]["Enums"]["vip_sub"]
+          updated_at: string
+          updated_by: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "vip_rank_rewards"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       award_xp: {
         Args: { p_bet_amount: number; p_user_id: string }
         Returns: undefined
@@ -1539,6 +1658,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      claim_vip_reward: { Args: { p_reward_id: string }; Returns: Json }
       confirm_deposit_request: {
         Args: {
           p_first_name: string
