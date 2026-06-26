@@ -66,7 +66,7 @@ export function VipRewardChip({ catalog, userReward, reached, onClaim, claiming 
         }}
         disabled={claiming}
         className={cn(
-          "group flex h-9 max-w-[165px] shrink-0 items-center gap-1.5 rounded-full border px-1.5 py-1 transition",
+          "group flex h-9 w-[145px] shrink-0 items-center gap-1.5 rounded-full border px-1.5 py-1 transition",
           "border-purple-500/30 bg-[#0c0620]/90 shadow-lg backdrop-blur-sm",
           "hover:border-amber-400/50 hover:shadow-amber-500/10",
           "disabled:opacity-60"
@@ -78,8 +78,8 @@ export function VipRewardChip({ catalog, userReward, reached, onClaim, claiming 
         <div className="h-5 w-px shrink-0 bg-purple-500/30 group-hover:bg-amber-400/40" />
         <span
           className={cn(
-            "flex h-7 shrink-0 items-center justify-center rounded-full px-2.5 text-[10px] font-black uppercase tracking-[0.05em] text-black",
-            "bg-gradient-to-r from-amber-500 to-yellow-400 shadow-[0_0_12px_rgba(251,191,36,0.35)]",
+            "flex h-7 shrink-0 items-center justify-center rounded-full px-2 text-[10px] font-black uppercase tracking-tight text-black",
+            "bg-gradient-to-r from-amber-500 to-yellow-400 shadow-[0_0_8px_rgba(251,191,36,0.25)]",
             "hover:from-amber-400 hover:to-yellow-300 active:scale-95"
           )}
         >
