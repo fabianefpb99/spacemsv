@@ -107,7 +107,7 @@ function VipPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#060210] text-white">
+    <div className="vip-page min-h-screen bg-[#060210] text-white">
       <div className="mx-auto flex min-h-screen max-w-md flex-col px-3 pb-12 pt-4 sm:max-w-lg sm:px-4">
         {/* Header */}
         <header
