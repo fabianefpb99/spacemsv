@@ -17,6 +17,7 @@ import {
   Percent,
   Settings as SettingsIcon,
   Sparkles,
+  Star,
   TrendingUp,
   Users,
   Wallet as WalletIcon,
@@ -39,6 +40,7 @@ import { WithdrawalsSection } from "@/components/admin/WithdrawalsSection";
 import { HomeContentSection } from "@/components/admin/HomeContentSection";
 import { DrawerSection } from "@/components/admin/DrawerSection";
 import { MissionsSection } from "@/components/admin/MissionsSection";
+import { VipRewardsSection } from "@/components/admin/VipRewardsSection";
 
 export const Route = createFileRoute("/adminpanel")({
   head: () => ({
@@ -58,6 +60,7 @@ const SECTIONS: { id: AdminSection; label: string; icon: typeof Home; ready: boo
   { id: "dashboard", label: "Dashboard", icon: Home, ready: true },
   { id: "usuarios", label: "Usuarios", icon: Users, ready: true },
   { id: "rtp", label: "RTP de Juegos", icon: Percent, ready: true },
+  { id: "vip_rewards", label: "Premios VIP", icon: Star, ready: true },
   { id: "ganancias", label: "Ganancias del Casino", icon: TrendingUp, ready: true },
   { id: "recargas", label: "Recargas", icon: WalletIcon, ready: true },
   { id: "retiros", label: "Retiros", icon: Download, ready: true },
@@ -139,6 +142,8 @@ function AdminPanelPage() {
         return <UsersSection />;
       case "rtp":
         return <RtpSection />;
+      case "vip_rewards":
+        return <VipRewardsSection />;
       case "ganancias":
         return <EarningsSection />;
       case "recargas":
