@@ -457,7 +457,13 @@ function PerfilPage() {
                       src={opt.imageUrl}
                       alt={opt.label}
                       className={cn("h-full w-full object-cover", !isUnlocked && "grayscale")}
-                      loading="lazy"
+                      decoding="async"
+                      onError={(e) => {
+                        // Hide the broken image element so the lock overlay
+                        // sits on the neutral tile background instead of an
+                        // empty <img> box.
+                        (e.currentTarget as HTMLImageElement).style.visibility = "hidden";
+                      }}
                     />
                     {!isUnlocked && (
                       <span className="absolute inset-0 flex items-center justify-center bg-black/55">
