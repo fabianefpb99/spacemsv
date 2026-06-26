@@ -29,6 +29,8 @@ export type UserRow = {
   created_at: string | null;
   balance: number | null;
   bonus_balance: number | null;
+  avatar_key: string | null;
+  avatar_url: string | null;
 };
 
 export type DepositRow = {
