@@ -66,7 +66,7 @@ export function VipRewardChip({ catalog, userReward, reached, onClaim, claiming 
         }}
         disabled={claiming}
         className={cn(
-          "group flex h-9 w-[145px] shrink-0 items-center gap-1.5 rounded-full border px-1.5 py-1 transition",
+          "group flex h-9 min-w-[145px] max-w-[180px] shrink-0 items-center gap-1.5 rounded-full border px-1.5 py-1 transition",
           "border-purple-500/30 bg-[#0c0620]/90 shadow-lg backdrop-blur-sm",
           "hover:border-amber-400/50 hover:shadow-amber-500/10",
           "disabled:opacity-60"
