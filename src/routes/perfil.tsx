@@ -122,6 +122,9 @@ function PerfilPage() {
   const [dataDialogOpen, setDataDialogOpen] = useState(false);
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const [openSheet, setOpenSheet] = useState<null | "seg" | "mov" | "act" | "aju">(null);
+  const [misDatosOpen, setMisDatosOpen] = useState(false);
+  const { theme, toggle: toggleTheme } = useTheme();
   const [minElapsed, setMinElapsed] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setMinElapsed(true), 1060);
