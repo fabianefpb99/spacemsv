@@ -302,6 +302,7 @@ function HomePage() {
       id: `real:${w.user_id}:${w.created_at}`,
       username: w.username,
       avatar_key: w.avatar_key ?? "avatar-1",
+      avatar_url: w.avatar_url ?? null,
       game: prettyGameName(w.game),
       amount: Math.round(w.amount),
       mult: w.multiplier > 0 ? w.multiplier : 1,
@@ -985,7 +986,7 @@ function HomePage() {
                   className="home-win-row flex h-[44px] items-center gap-3 rounded-lg border border-purple-500/20 bg-[#150830]/60 px-2.5"
                 >
                   <div className="home-win-avatar h-8 w-8 shrink-0 overflow-hidden rounded-full bg-purple-600/30 ring-1 ring-purple-400/30">
-                    <UserAvatar avatarKey={w.avatar_key} alt={w.username} spinnerSize="sm" />
+                    <UserAvatar avatarKey={w.avatar_key} avatarUrl={w.avatar_url} alt={w.username} spinnerSize="sm" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="home-win-user truncate text-xs font-semibold text-white">{w.username}</div>
