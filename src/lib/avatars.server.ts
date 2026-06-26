@@ -19,7 +19,7 @@ export async function resolveAvatarUrls(
 
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-  const tasks: Promise<unknown>[] = [];
+  const tasks: PromiseLike<unknown>[] = [];
   if (missionIds.size > 0) {
     tasks.push(
       supabaseAdmin
