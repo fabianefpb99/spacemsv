@@ -149,7 +149,7 @@ export function PersonalDataForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-3">
+    <form onSubmit={onSubmit} className="personal-data-form space-y-3">
       <div className="grid grid-cols-2 gap-2">
         <Field label="Primer nombre *">
           <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
@@ -167,10 +167,10 @@ export function PersonalDataForm({
 
       <Field label="Género *">
         <Select value={gender} onValueChange={setGender}>
-          <SelectTrigger>
+          <SelectTrigger className="personal-data-select-trigger">
             <SelectValue placeholder="Selecciona" />
           </SelectTrigger>
-          <SelectContent className="z-[200]">
+          <SelectContent className="personal-data-select-content z-[200]">
             <SelectItem value="masculino">Masculino</SelectItem>
             <SelectItem value="femenino">Femenino</SelectItem>
             <SelectItem value="otro">Otro</SelectItem>
@@ -198,10 +198,10 @@ export function PersonalDataForm({
       <div className="grid grid-cols-[110px_1fr] gap-2">
         <Field label="Tipo doc. *">
           <Select value={docType} onValueChange={setDocType}>
-            <SelectTrigger>
+            <SelectTrigger className="personal-data-select-trigger">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="z-[200]">
+            <SelectContent className="personal-data-select-content z-[200]">
               <SelectItem value="CC">Cédula</SelectItem>
               <SelectItem value="CE">C. Extranjería</SelectItem>
               <SelectItem value="PA">Pasaporte</SelectItem>
@@ -253,7 +253,7 @@ export function PersonalDataForm({
       <Button
         type="submit"
         disabled={loading}
-        className="w-full bg-purple-600 hover:bg-purple-500"
+        className="personal-data-submit w-full bg-purple-600 hover:bg-purple-500"
       >
         {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : submitLabel}
       </Button>

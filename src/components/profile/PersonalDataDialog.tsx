@@ -36,14 +36,18 @@ export function PersonalDataDialog({
   if (!open || typeof document === "undefined") return null;
 
   return createPortal(
-    <div className="dark fixed inset-0 z-[130] overflow-hidden" role="dialog" aria-modal="true" style={{ colorScheme: "dark" }}>
+    <div
+      className="personal-data-dialog fixed inset-0 z-[130] overflow-hidden"
+      role="dialog"
+      aria-modal="true"
+    >
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={() => onOpenChange(false)}
         aria-hidden="true"
       />
       <div className="relative flex min-h-dvh items-center justify-center overflow-y-auto px-4 py-6">
-        <div className="relative box-border w-full max-w-md rounded-lg border border-purple-500/40 bg-[#0c0620] p-4 text-white shadow-2xl sm:p-6 max-h-[calc(100dvh-2rem)] overflow-y-auto">
+        <div className="personal-data-dialog-panel relative box-border max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-lg border border-purple-500/40 bg-[#0c0620] p-4 text-white shadow-2xl sm:p-6">
           <button
             type="button"
             onClick={() => onOpenChange(false)}
