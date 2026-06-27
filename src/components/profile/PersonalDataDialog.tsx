@@ -36,7 +36,7 @@ export function PersonalDataDialog({
   if (!open || typeof document === "undefined") return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[130] overflow-hidden" role="dialog" aria-modal="true">
+    <div className="dark fixed inset-0 z-[130] overflow-hidden" role="dialog" aria-modal="true" style={{ colorScheme: "dark" }}>
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={() => onOpenChange(false)}
