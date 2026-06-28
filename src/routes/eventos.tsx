@@ -389,19 +389,23 @@ function EventosPage() {
   const spBadgeValue = sp?.badge_value ?? "x2";
   const spBadgeLabel = sp?.badge_label ?? "XP";
   const [customEndsText, setCustomEndsText] = useState("");
+  const spEndsAt = sp?.ends_at;
   useEffect(() => {
-    if (!sp?.ends_at) return;
-    const tick = () => {
-      const diff = Math.max(0, new Date(sp.ends_at!).getTime() - Date.now());
-      const d = Math.floor(diff / 86_400_000);
-      const h = Math.floor((diff % 86_400_000) / 3_600_000);
-      const m = Math.floor((diff % 3_600_000) / 60_000);
-      setCustomEndsText(d > 0 ? `${d}d ${h}h ${m}m` : `${h}h ${m}m`);
-    };
-    tick();
-    const i = setInterval(tick, 30_000);
-    return () => clearInterval(i);
-  }, [sp?.ends_at]);
+    if (!spEndsAt) return;
+    const diff = Math.max(0, new Date(spEndsAt).getTime() - Date.now());
+    const d = Math.floor(diff / 86_400_000);
+    const h = Math.floor((diff % 86_400_000) / 3_600_000);
+    const m = Math.floor((diff % 3_600_000) / 60_000);
+    setCustomEndsText(d > 0 ? `${d}d ${h}h ${m}m` : `${h}h ${m}m`);
+  }, [spEndsAt]);
+  useVisibleInterval(() => {
+    if (!spEndsAt) return;
+    const diff = Math.max(0, new Date(spEndsAt).getTime() - Date.now());
+    const d = Math.floor(diff / 86_400_000);
+    const h = Math.floor((diff % 86_400_000) / 3_600_000);
+    const m = Math.floor((diff % 3_600_000) / 60_000);
+    setCustomEndsText(d > 0 ? `${d}d ${h}h ${m}m` : `${h}h ${m}m`);
+  }, spEndsAt ? 30_000 : null);
   const spTimerText = sp?.ends_at ? customEndsText : weekendTimer;
 
   const dbMissions: Mission[] = (missionsQ.data ?? []).map((r: any) => ({
