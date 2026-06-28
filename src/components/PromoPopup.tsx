@@ -56,7 +56,16 @@ export function PromoPopup() {
     };
     tick();
 
-    const id = setInterval(tick, 1000);
+    let id: number | null = window.setInterval(tick, 1000);
+    const onVisibility = () => {
+      if (document.hidden) {
+        if (id != null) { window.clearInterval(id); id = null; }
+      } else if (id == null) {
+        tick();
+        id = window.setInterval(tick, 1000);
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
 
     const img = new Image();
     img.src = comboImg;
@@ -74,7 +83,8 @@ export function PromoPopup() {
     }
 
     return () => {
-      clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisibility);
+      if (id != null) window.clearInterval(id);
       img.onload = null;
       img.onerror = null;
     };

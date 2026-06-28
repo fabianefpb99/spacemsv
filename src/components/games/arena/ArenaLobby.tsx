@@ -9,6 +9,7 @@ import novaSelectAudio from "@/assets/audio/arena/nova-select.mp3.asset.json";
 import shadowSelectAudio from "@/assets/audio/arena/shadow-select.mp3.asset.json";
 import titanSelectAudio from "@/assets/audio/arena/titan-select.mp3.asset.json";
 import { playSound, preloadSound } from "@/lib/webAudioPlayer";
+import { useVisibleInterval } from "@/hooks/useVisibleInterval";
 
 const LOBBY_HITBOXES: Record<ArenaCharacterId, string> = {
   nova: "left-[9%] w-[18%]",
@@ -140,13 +141,10 @@ const GLITCH_DURATION_MS = 600;
 
 function GlitchText({ text, className }: { text: string; className?: string }) {
   const [glitch, setGlitch] = useState(false);
-  useEffect(() => {
-    const id = setInterval(() => {
-      setGlitch(true);
-      setTimeout(() => setGlitch(false), GLITCH_DURATION_MS);
-    }, GLITCH_INTERVAL_MS);
-    return () => clearInterval(id);
-  }, []);
+  useVisibleInterval(() => {
+    setGlitch(true);
+    setTimeout(() => setGlitch(false), GLITCH_DURATION_MS);
+  }, GLITCH_INTERVAL_MS);
   return (
     <span
       data-text={text}

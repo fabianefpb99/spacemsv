@@ -1,5 +1,6 @@
 import { AuthControl } from "@/components/auth/AuthControl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useVisibleInterval } from "@/hooks/useVisibleInterval";
 import { FitText } from "@/components/ui/fit-text";
 import { BetAmount } from "@/components/games/BetAmount";
 import { flushSync } from "react-dom";
@@ -1007,25 +1008,19 @@ export function SlotGame() {
       }
     });
   }, []);
-  useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(t);
-  }, []);
+  useVisibleInterval(() => setNow(Date.now()), 1000);
   // Fake other players' history
-  useEffect(() => {
-    const t = setInterval(() => {
-      const sid = pickWeightedSymbol();
-      const sym = SYMBOLS[SYMBOL_INDEX.get(sid)!];
-      const count = 3 + Math.floor(Math.random() * 3);
-      const stake = [500, 1000, 2000, 5000, 10000][Math.floor(Math.random() * 5)];
-      const mult = sym.pay[count - 3];
-      const amount = Math.floor(stake * mult);
-      setHistory((h) =>
-        [{ id: ++historyId.current, user: pickUser(), symbolId: sym.id, multiplier: mult, amount, ts: Date.now() }, ...h].slice(0, 30)
-      );
-    }, 3200);
-    return () => clearInterval(t);
-  }, []);
+  useVisibleInterval(() => {
+    const sid = pickWeightedSymbol();
+    const sym = SYMBOLS[SYMBOL_INDEX.get(sid)!];
+    const count = 3 + Math.floor(Math.random() * 3);
+    const stake = [500, 1000, 2000, 5000, 10000][Math.floor(Math.random() * 5)];
+    const mult = sym.pay[count - 3];
+    const amount = Math.floor(stake * mult);
+    setHistory((h) =>
+      [{ id: ++historyId.current, user: pickUser(), symbolId: sym.id, multiplier: mult, amount, ts: Date.now() }, ...h].slice(0, 30)
+    );
+  }, 3200);
 
   const spin = useCallback(async () => {
     if (spinning || inFlightRef.current) return;
@@ -1134,11 +1129,10 @@ export function SlotGame() {
   }, [autoSpin, spinning, bet, balance, spin, isAuthed]);
 
   // Cycle through wins to highlight one at a time
-  useEffect(() => {
-    if (wins.length === 0) return;
-    const t = setInterval(() => setHighlightTick((x) => x + 1), 1100);
-    return () => clearInterval(t);
-  }, [wins.length]);
+  useVisibleInterval(
+    () => setHighlightTick((x) => x + 1),
+    wins.length === 0 ? null : 1100,
+  );
 
   // Count-up animation for the win amount (with coin cascade sound).
   useEffect(() => {

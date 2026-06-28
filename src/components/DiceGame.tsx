@@ -2,6 +2,7 @@ import { AuthControl } from "@/components/auth/AuthControl";
 import { FitText } from "@/components/ui/fit-text";
 import { BetAmount } from "@/components/games/BetAmount";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useVisibleInterval } from "@/hooks/useVisibleInterval";
 import { Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import pageBg from "@/assets/mines-page-bg.png";
@@ -152,21 +153,18 @@ export function DiceGame() {
   // Cierra cualquier audio de un juego previo al entrar.
   useEffect(() => { stopAllGameAudio(); }, []);
 
-  // Ambient fake history
-  useEffect(() => {
-    const t = setInterval(() => {
-      const m = MULTS[Math.floor(Math.random() * MULTS.length)];
-      const s: Side = Math.random() < 0.5 ? "low" : "high";
-      const { roll, won } = fakeRollDice(s, m);
-      const stake = [500, 1000, 2000, 5000, 10000][Math.floor(Math.random() * 5)];
-      const amount = won ? Math.floor(stake * m) : stake;
-      setHistory((h) => [
-        { id: ++historyId.current, user: pickUser(), side: s, roll, multiplier: m, amount, won },
-        ...h,
-      ].slice(0, 30));
-    }, 3200);
-    return () => clearInterval(t);
-  }, []);
+  // Ambient fake history (pausado en background)
+  useVisibleInterval(() => {
+    const m = MULTS[Math.floor(Math.random() * MULTS.length)];
+    const s: Side = Math.random() < 0.5 ? "low" : "high";
+    const { roll, won } = fakeRollDice(s, m);
+    const stake = [500, 1000, 2000, 5000, 10000][Math.floor(Math.random() * 5)];
+    const amount = won ? Math.floor(stake * m) : stake;
+    setHistory((h) => [
+      { id: ++historyId.current, user: pickUser(), side: s, roll, multiplier: m, amount, won },
+      ...h,
+    ].slice(0, 30));
+  }, 3200);
 
   // Clean up the animation timer if the component unmounts mid-roll.
   useEffect(() => () => {

@@ -23,6 +23,7 @@ import { UserAvatar } from "@/components/UserAvatar";
 import { generateRecentFillerWins, type FillerWin } from "@/lib/fillers";
 import { getRecentPublicWins, type RecentWin } from "@/lib/recent-wins.functions";
 import { useUnlockedAvatars } from "@/hooks/useUnlockedAvatars";
+import { useVisibleInterval } from "@/hooks/useVisibleInterval";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
 import heroImg from "@/assets/home-hero.jpg";
 import heroMinesImg from "@/assets/home-hero-mines.jpg";
@@ -283,16 +284,18 @@ function HomePage() {
   const [lastWins, setLastWins] = useState<FillerWin[]>(() =>
     generateRecentFillerWins(20, 0),
   );
+  // Genera el primer batch en cliente y luego refresca cada ~12 s.
+  // El intervalo se pausa cuando la pestaña está oculta (ahorro CPU/batería).
   useEffect(() => {
-    const tick = () => {
-      const now = Date.now();
-      setWinsNowMs(now);
-      setLastWins(generateRecentFillerWins(20, now));
-    };
-    tick();
-    const id = window.setInterval(tick, 8_000);
-    return () => window.clearInterval(id);
+    const now = Date.now();
+    setWinsNowMs(now);
+    setLastWins(generateRecentFillerWins(20, now));
   }, []);
+  useVisibleInterval(() => {
+    const now = Date.now();
+    setWinsNowMs(now);
+    setLastWins(generateRecentFillerWins(20, now));
+  }, 12_000);
 
   // Ganancias reales (prioridad sobre fillers). Refresca cada 30 s.
   const fetchRecentWins = useServerFn(getRecentPublicWins);
@@ -604,11 +607,10 @@ function HomePage() {
     };
   }, [gamesList.length]);
 
-  useEffect(() => {
-    if (slidesList.length <= 1) return;
-    const id = setInterval(() => setSlide((s) => (s + 1) % slidesList.length), 5000);
-    return () => clearInterval(id);
-  }, [slidesList.length]);
+  useVisibleInterval(
+    () => setSlide((s) => (s + 1) % slidesList.length),
+    slidesList.length > 1 ? 5000 : null,
+  );
 
   // Auto-ocultar flechas al cargar y cada vez que cambia el slide
   useEffect(() => {
