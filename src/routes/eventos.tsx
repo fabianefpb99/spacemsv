@@ -28,6 +28,7 @@ import { AuthControl } from "@/components/auth/AuthControl";
 import { NotificationBell } from "@/components/admin/NotificationBell";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { HamburgerDrawer } from "@/components/HamburgerDrawer";
+import { useVisibleInterval } from "@/hooks/useVisibleInterval";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
 import { useQuery } from "@tanstack/react-query";
@@ -222,8 +223,7 @@ const TABS: { id: "all" | MissionType; label: string; icon: React.ReactNode }[] 
 
 function useDailyCountdown() {
   const [text, setText] = useState("");
-  useEffect(() => {
-    const tick = () => {
+  const tick = () => {
       const now = new Date();
       const next = new Date(now);
       next.setHours(24, 0, 0, 0);
@@ -233,18 +233,15 @@ function useDailyCountdown() {
       const s = Math.floor((diff % 60_000) / 1000);
       const pad = (n: number) => n.toString().padStart(2, "0");
       setText(`${pad(h)}:${pad(m)}:${pad(s)}`);
-    };
-    tick();
-    const i = setInterval(tick, 1000);
-    return () => clearInterval(i);
-  }, []);
+  };
+  useEffect(tick, []);
+  useVisibleInterval(tick, 1000);
   return text;
 }
 
 function useWeekendCountdown() {
   const [text, setText] = useState("");
-  useEffect(() => {
-    const tick = () => {
+  const tick = () => {
       const now = new Date();
       // Lunes 00:00 (fin del finde)
       const end = new Date(now);
@@ -257,11 +254,9 @@ function useWeekendCountdown() {
       const h = Math.floor((diff % 86_400_000) / 3_600_000);
       const m = Math.floor((diff % 3_600_000) / 60_000);
       setText(`${d}d ${h}h ${m}m`);
-    };
-    tick();
-    const i = setInterval(tick, 30_000);
-    return () => clearInterval(i);
-  }, []);
+  };
+  useEffect(tick, []);
+  useVisibleInterval(tick, 30_000);
   return text;
 }
 
