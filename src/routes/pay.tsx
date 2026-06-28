@@ -77,19 +77,19 @@ function PayPage() {
   // auto-restarts when it hits 00:00 (psychological urgency).
   const BONUS_MS = 10 * 60 * 1000;
   const [bonusLeft, setBonusLeft] = useState(BONUS_MS);
+  const bonusDeadlineRef = useRef<number>(0);
   useEffect(() => {
-    let deadline = Date.now() + BONUS_MS;
+    bonusDeadlineRef.current = Date.now() + BONUS_MS;
     setBonusLeft(BONUS_MS);
-    const id = setInterval(() => {
-      let left = deadline - Date.now();
-      if (left <= 0) {
-        deadline = Date.now() + BONUS_MS;
-        left = BONUS_MS;
-      }
-      setBonusLeft(left);
-    }, 1000);
-    return () => clearInterval(id);
   }, []);
+  useVisibleInterval(() => {
+    let left = bonusDeadlineRef.current - Date.now();
+    if (left <= 0) {
+      bonusDeadlineRef.current = Date.now() + BONUS_MS;
+      left = BONUS_MS;
+    }
+    setBonusLeft(left);
+  }, 1000);
   const bonusMin = Math.floor(bonusLeft / 60000);
   const bonusSec = Math.floor((bonusLeft % 60000) / 1000);
   const bonusLabel = `${String(bonusMin).padStart(2, "0")}:${String(bonusSec).padStart(2, "0")}`;
