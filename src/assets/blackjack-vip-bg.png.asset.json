@@ -1,11 +1,11 @@
 {
   "version": 1,
-  "asset_id": "808c0acb-69cc-4d9f-8c48-6750412e9aa2",
+  "asset_id": "1a21a3d4-8e54-4818-9ff2-0e67f5a766e9",
   "project_id": "3e7b1e46-62a0-4b73-a211-f1299a4e2ab6",
-  "url": "/__l5e/assets-v1/808c0acb-69cc-4d9f-8c48-6750412e9aa2/blackjack-vip-bg.png",
-  "r2_key": "a/v1/3e7b1e46-62a0-4b73-a211-f1299a4e2ab6/808c0acb-69cc-4d9f-8c48-6750412e9aa2/blackjack-vip-bg.png",
-  "original_filename": "blackjack-vip-bg.png",
-  "size": 2233684,
-  "content_type": "image/png",
-  "created_at": "2026-06-25T05:59:49Z"
+  "url": "/__l5e/assets-v1/1a21a3d4-8e54-4818-9ff2-0e67f5a766e9/blackjack-vip-bg.webp",
+  "r2_key": "a/v1/3e7b1e46-62a0-4b73-a211-f1299a4e2ab6/1a21a3d4-8e54-4818-9ff2-0e67f5a766e9/blackjack-vip-bg.webp",
+  "original_filename": "blackjack-vip-bg.webp",
+  "size": 117198,
+  "content_type": "image/webp",
+  "created_at": "2026-06-28T04:14:39Z"
 }

@@ -1,11 +1,11 @@
 {
   "version": 1,
-  "asset_id": "e210248e-b743-4216-9917-066d920be183",
+  "asset_id": "925db252-addd-48f1-93a4-e9f0d0aefe24",
   "project_id": "3e7b1e46-62a0-4b73-a211-f1299a4e2ab6",
-  "url": "/__l5e/assets-v1/e210248e-b743-4216-9917-066d920be183/avatar-3.png",
-  "r2_key": "a/v1/3e7b1e46-62a0-4b73-a211-f1299a4e2ab6/e210248e-b743-4216-9917-066d920be183/avatar-3.png",
-  "original_filename": "avatar-3.png",
-  "size": 280108,
-  "content_type": "image/png",
-  "created_at": "2026-06-03T17:13:37Z"
+  "url": "/__l5e/assets-v1/925db252-addd-48f1-93a4-e9f0d0aefe24/avatar-3.webp",
+  "r2_key": "a/v1/3e7b1e46-62a0-4b73-a211-f1299a4e2ab6/925db252-addd-48f1-93a4-e9f0d0aefe24/avatar-3.webp",
+  "original_filename": "avatar-3.webp",
+  "size": 29192,
+  "content_type": "image/webp",
+  "created_at": "2026-06-28T04:15:46Z"
 }

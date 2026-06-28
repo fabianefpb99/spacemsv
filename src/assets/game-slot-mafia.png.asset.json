@@ -1,11 +1,11 @@
 {
   "version": 1,
-  "asset_id": "53436b17-96e2-4262-97c3-f6183637a15b",
+  "asset_id": "bc51c96e-0bc2-48eb-995b-0a2670625926",
   "project_id": "3e7b1e46-62a0-4b73-a211-f1299a4e2ab6",
-  "url": "/__l5e/assets-v1/53436b17-96e2-4262-97c3-f6183637a15b/game-slot-mafia.png",
-  "r2_key": "a/v1/3e7b1e46-62a0-4b73-a211-f1299a4e2ab6/53436b17-96e2-4262-97c3-f6183637a15b/game-slot-mafia.png",
-  "original_filename": "game-slot-mafia.png",
-  "size": 306670,
-  "content_type": "image/png",
-  "created_at": "2026-06-25T22:06:19Z"
+  "url": "/__l5e/assets-v1/bc51c96e-0bc2-48eb-995b-0a2670625926/game-slot-mafia.webp",
+  "r2_key": "a/v1/3e7b1e46-62a0-4b73-a211-f1299a4e2ab6/bc51c96e-0bc2-48eb-995b-0a2670625926/game-slot-mafia.webp",
+  "original_filename": "game-slot-mafia.webp",
+  "size": 47470,
+  "content_type": "image/webp",
+  "created_at": "2026-06-28T04:15:29Z"
 }
