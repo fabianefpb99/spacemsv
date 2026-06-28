@@ -140,13 +140,10 @@ const GLITCH_DURATION_MS = 600;
 
 function GlitchText({ text, className }: { text: string; className?: string }) {
   const [glitch, setGlitch] = useState(false);
-  useEffect(() => {
-    const id = setInterval(() => {
-      setGlitch(true);
-      setTimeout(() => setGlitch(false), GLITCH_DURATION_MS);
-    }, GLITCH_INTERVAL_MS);
-    return () => clearInterval(id);
-  }, []);
+  useVisibleInterval(() => {
+    setGlitch(true);
+    setTimeout(() => setGlitch(false), GLITCH_DURATION_MS);
+  }, GLITCH_INTERVAL_MS);
   return (
     <span
       data-text={text}
