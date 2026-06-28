@@ -1,11 +1,11 @@
 {
   "version": 1,
-  "asset_id": "aff5345b-936d-4ab9-83b7-991540ec6bd4",
+  "asset_id": "51c57fce-614c-4c83-80e9-312bb876e7c0",
   "project_id": "3e7b1e46-62a0-4b73-a211-f1299a4e2ab6",
-  "url": "/__l5e/assets-v1/aff5345b-936d-4ab9-83b7-991540ec6bd4/arena-fight-final.png",
-  "r2_key": "a/v1/3e7b1e46-62a0-4b73-a211-f1299a4e2ab6/aff5345b-936d-4ab9-83b7-991540ec6bd4/arena-fight-final.png",
-  "original_filename": "arena-fight-final.png",
-  "size": 822003,
-  "content_type": "image/png",
-  "created_at": "2026-06-06T15:09:18Z"
+  "url": "/__l5e/assets-v1/51c57fce-614c-4c83-80e9-312bb876e7c0/arena-fight-final.webp",
+  "r2_key": "a/v1/3e7b1e46-62a0-4b73-a211-f1299a4e2ab6/51c57fce-614c-4c83-80e9-312bb876e7c0/arena-fight-final.webp",
+  "original_filename": "arena-fight-final.webp",
+  "size": 133414,
+  "content_type": "image/webp",
+  "created_at": "2026-06-28T04:14:48Z"
 }

@@ -1,11 +1,11 @@
 {
   "version": 1,
-  "asset_id": "1fefb8b7-c71f-4950-8deb-6786cb0b69a6",
+  "asset_id": "68b5686d-59c9-44ba-8e0f-5f4f73f49773",
   "project_id": "3e7b1e46-62a0-4b73-a211-f1299a4e2ab6",
-  "url": "/__l5e/assets-v1/1fefb8b7-c71f-4950-8deb-6786cb0b69a6/mission-coins.png",
-  "r2_key": "a/v1/3e7b1e46-62a0-4b73-a211-f1299a4e2ab6/1fefb8b7-c71f-4950-8deb-6786cb0b69a6/mission-coins.png",
-  "original_filename": "mission-coins.png",
-  "size": 1245029,
-  "content_type": "image/png",
-  "created_at": "2026-06-10T02:19:38Z"
+  "url": "/__l5e/assets-v1/68b5686d-59c9-44ba-8e0f-5f4f73f49773/mission-coins.webp",
+  "r2_key": "a/v1/3e7b1e46-62a0-4b73-a211-f1299a4e2ab6/68b5686d-59c9-44ba-8e0f-5f4f73f49773/mission-coins.webp",
+  "original_filename": "mission-coins.webp",
+  "size": 18810,
+  "content_type": "image/webp",
+  "created_at": "2026-06-28T04:15:06Z"
 }

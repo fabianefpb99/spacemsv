@@ -1,11 +1,11 @@
 {
   "version": 1,
-  "asset_id": "60b1c70d-a290-4ec1-b25c-f2ce72828877",
+  "asset_id": "ccec3c88-8006-4f8b-aa9e-6f24a0cfd644",
   "project_id": "3e7b1e46-62a0-4b73-a211-f1299a4e2ab6",
-  "url": "/__l5e/assets-v1/60b1c70d-a290-4ec1-b25c-f2ce72828877/game-blackjack.png",
-  "r2_key": "a/v1/3e7b1e46-62a0-4b73-a211-f1299a4e2ab6/60b1c70d-a290-4ec1-b25c-f2ce72828877/game-blackjack.png",
-  "original_filename": "game-blackjack.png",
-  "size": 284387,
-  "content_type": "image/png",
-  "created_at": "2026-06-25T22:06:03Z"
+  "url": "/__l5e/assets-v1/ccec3c88-8006-4f8b-aa9e-6f24a0cfd644/game-blackjack.webp",
+  "r2_key": "a/v1/3e7b1e46-62a0-4b73-a211-f1299a4e2ab6/ccec3c88-8006-4f8b-aa9e-6f24a0cfd644/game-blackjack.webp",
+  "original_filename": "game-blackjack.webp",
+  "size": 26670,
+  "content_type": "image/webp",
+  "created_at": "2026-06-28T04:15:37Z"
 }

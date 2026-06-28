@@ -1,11 +1,11 @@
 {
   "version": 1,
-  "asset_id": "c78d5ffd-b6b3-4b9d-a7e0-4b9a3aae8a84",
+  "asset_id": "746a38c8-2427-4cc9-ba98-38466d4654a3",
   "project_id": "3e7b1e46-62a0-4b73-a211-f1299a4e2ab6",
-  "url": "/__l5e/assets-v1/c78d5ffd-b6b3-4b9d-a7e0-4b9a3aae8a84/game-dice.png",
-  "r2_key": "a/v1/3e7b1e46-62a0-4b73-a211-f1299a4e2ab6/c78d5ffd-b6b3-4b9d-a7e0-4b9a3aae8a84/game-dice.png",
-  "original_filename": "game-dice.png",
-  "size": 284512,
-  "content_type": "image/png",
-  "created_at": "2026-06-25T22:05:58Z"
+  "url": "/__l5e/assets-v1/746a38c8-2427-4cc9-ba98-38466d4654a3/game-dice.webp",
+  "r2_key": "a/v1/3e7b1e46-62a0-4b73-a211-f1299a4e2ab6/746a38c8-2427-4cc9-ba98-38466d4654a3/game-dice.webp",
+  "original_filename": "game-dice.webp",
+  "size": 30150,
+  "content_type": "image/webp",
+  "created_at": "2026-06-28T04:15:34Z"
 }

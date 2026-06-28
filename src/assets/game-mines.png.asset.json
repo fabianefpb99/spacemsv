@@ -1,11 +1,11 @@
 {
   "version": 1,
-  "asset_id": "98a43670-5158-4c93-aa90-ed7339d640d0",
+  "asset_id": "2205f790-cd60-4853-a1b0-8bea22e6415b",
   "project_id": "3e7b1e46-62a0-4b73-a211-f1299a4e2ab6",
-  "url": "/__l5e/assets-v1/98a43670-5158-4c93-aa90-ed7339d640d0/game-mines.png",
-  "r2_key": "a/v1/3e7b1e46-62a0-4b73-a211-f1299a4e2ab6/98a43670-5158-4c93-aa90-ed7339d640d0/game-mines.png",
-  "original_filename": "game-mines.png",
-  "size": 300826,
-  "content_type": "image/png",
-  "created_at": "2026-06-25T22:05:55Z"
+  "url": "/__l5e/assets-v1/2205f790-cd60-4853-a1b0-8bea22e6415b/game-mines.webp",
+  "r2_key": "a/v1/3e7b1e46-62a0-4b73-a211-f1299a4e2ab6/2205f790-cd60-4853-a1b0-8bea22e6415b/game-mines.webp",
+  "original_filename": "game-mines.webp",
+  "size": 29858,
+  "content_type": "image/webp",
+  "created_at": "2026-06-28T04:15:32Z"
 }
