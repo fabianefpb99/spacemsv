@@ -279,11 +279,17 @@ function HomePage() {
   // Wins dinámicos coherentes con el ranking (mismos fillers).
   // Se rotan cada ~25 s para que el panel se sienta vivo.
   // Más fillers + rotación más rápida para que la lista se sienta viva.
+  const [winsNowMs, setWinsNowMs] = useState(0);
   const [lastWins, setLastWins] = useState<FillerWin[]>(() =>
-    generateRecentFillerWins(20, Date.now()),
+    generateRecentFillerWins(20, 0),
   );
   useEffect(() => {
-    const tick = () => setLastWins(generateRecentFillerWins(20, Date.now()));
+    const tick = () => {
+      const now = Date.now();
+      setWinsNowMs(now);
+      setLastWins(generateRecentFillerWins(20, now));
+    };
+    tick();
     const id = window.setInterval(tick, 8_000);
     return () => window.clearInterval(id);
   }, []);
@@ -310,7 +316,7 @@ function HomePage() {
       game: prettyGameName(w.game),
       amount: Math.round(w.amount),
       mult: w.multiplier > 0 ? w.multiplier : 1,
-      ageSec: Math.max(0, Math.floor((Date.now() - new Date(w.created_at).getTime()) / 1000)),
+      ageSec: Math.max(0, Math.floor(((winsNowMs || Date.now()) - new Date(w.created_at).getTime()) / 1000)),
     }));
     const TARGET = 16;
     const REAL_MAX = 5;
