@@ -9,6 +9,7 @@ import novaSelectAudio from "@/assets/audio/arena/nova-select.mp3.asset.json";
 import shadowSelectAudio from "@/assets/audio/arena/shadow-select.mp3.asset.json";
 import titanSelectAudio from "@/assets/audio/arena/titan-select.mp3.asset.json";
 import { playSound, preloadSound } from "@/lib/webAudioPlayer";
+import { useVisibleInterval } from "@/hooks/useVisibleInterval";
 
 const LOBBY_HITBOXES: Record<ArenaCharacterId, string> = {
   nova: "left-[9%] w-[18%]",
