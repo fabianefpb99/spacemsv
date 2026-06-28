@@ -2,6 +2,7 @@ import { AuthControl } from "@/components/auth/AuthControl";
 import { FitText } from "@/components/ui/fit-text";
 import { BetAmount } from "@/components/games/BetAmount";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useVisibleInterval } from "@/hooks/useVisibleInterval";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Link } from "@tanstack/react-router";
 import { Menu, Minus, Plus, Volume2, VolumeX, ChevronDown, Bomb, Gem, TrendingUp } from "lucide-react";
@@ -369,27 +370,20 @@ export function MinesGame() {
     return () => { stopAllMinesSfx(); };
   }, []);
 
-  // tick for relative times + auto fake wins
-  useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(t);
-  }, []);
-  useEffect(() => {
-    const t = setInterval(() => {
-      // One entry at a time so it visually empuja a los demás
-      const exploded = Math.random() < 0.18;
-      const mn = 1 + Math.floor(Math.random() * 8);
-      const pk = exploded ? 0 : 1 + Math.floor(Math.random() * Math.min(6, TILES - mn));
-      const mult = exploded ? 0 : multiplierFor(mn, pk);
-      const stake = [500, 1000, 2000, 5000, 10000][Math.floor(Math.random() * 5)];
-      const amount = exploded ? stake : Math.floor(stake * mult);
-      setHistory((h) => [
-        { id: ++historyId.current, user: pickUser(), mines: mn, multiplier: mult, amount, exploded, ts: Date.now() },
-        ...h,
-      ].slice(0, 30));
-    }, 2800);
-    return () => clearInterval(t);
-  }, []);
+  // tick for relative times + auto fake wins (pausados en background)
+  useVisibleInterval(() => setNow(Date.now()), 1000);
+  useVisibleInterval(() => {
+    const exploded = Math.random() < 0.18;
+    const mn = 1 + Math.floor(Math.random() * 8);
+    const pk = exploded ? 0 : 1 + Math.floor(Math.random() * Math.min(6, TILES - mn));
+    const mult = exploded ? 0 : multiplierFor(mn, pk);
+    const stake = [500, 1000, 2000, 5000, 10000][Math.floor(Math.random() * 5)];
+    const amount = exploded ? stake : Math.floor(stake * mult);
+    setHistory((h) => [
+      { id: ++historyId.current, user: pickUser(), mines: mn, multiplier: mult, amount, exploded, ts: Date.now() },
+      ...h,
+    ].slice(0, 30));
+  }, 2800);
 
   useEffect(() => { setAudioMuted(muted); }, [muted]);
 
