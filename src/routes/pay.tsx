@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { ArrowLeft, Check, CreditCard, ChevronDown } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import nequiLogo from "@/assets/nequi.svg";
 import bancolombiaLogo from "@/assets/bancolombia.svg";
 import brebLogo from "@/assets/bre-b.svg";
@@ -12,6 +12,7 @@ import { AuthControl } from "@/components/auth/AuthControl";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { useMe } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
+import { useVisibleInterval } from "@/hooks/useVisibleInterval";
 
 export const Route = createFileRoute("/pay")({
   head: () => ({
