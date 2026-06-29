@@ -3361,9 +3361,9 @@ html.light .profile-page .profile-quickbar-tab.is-active {
 .chicken-foot-shadow {
   position: absolute;
   left: 50%;
-  bottom: -4px;
+  bottom: 6px;
   width: 55%;
-  height: 12px;
+  height: 8px;
   transform: translateX(-50%) scale(1);
   border-radius: 9999px;
   background: radial-gradient(
@@ -3372,7 +3372,7 @@ html.light .profile-page .profile-quickbar-tab.is-active {
     rgba(0, 0, 0, 0.32) 45%,
     rgba(0, 0, 0, 0) 75%
   );
-  filter: blur(2px);
+  filter: blur(1px);
   pointer-events: none;
   z-index: -1;
   opacity: 0.9;
@@ -3402,6 +3402,7 @@ html.light .profile-page .profile-quickbar-tab.is-active {
   50%  { transform: translateX(-50%) scale(1.1);  opacity: 1; }
   100% { transform: translateX(-50%) scale(1);    opacity: 0.9; }
 }
+
 
 /* idle: pequeño bobbing */
 .chicken-fx-idle {
