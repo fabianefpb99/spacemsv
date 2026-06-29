@@ -2856,6 +2856,22 @@ html.light .promo-countdown-text.text-white {
   color: #ffffff !important;
   text-shadow: 0 0 8px rgba(168, 85, 247, 0.7) !important;
 }
+html.light [data-promo-popup="starter"] .promo-countdown-box,
+html.light [data-promo-popup="starter"] .promo-countdown-box.bg-\[\#1a0530\]\/95 {
+  background: #1a0530 !important;
+  background-color: #1a0530 !important;
+  opacity: 1 !important;
+  filter: none !important;
+}
+html.light [data-promo-popup="starter"] .promo-countdown-box .promo-countdown-text,
+html.light [data-promo-popup="starter"] .promo-countdown-box .promo-countdown-text.text-white,
+html.light [data-promo-popup="starter"].bg-black\/40 .promo-countdown-box .promo-countdown-text.text-white:not(.theme-dark-fixed *) {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  opacity: 1 !important;
+  filter: none !important;
+  text-shadow: 0 0 8px rgba(168, 85, 247, 0.7) !important;
+}
 
 /* Eventos hero: force title and subtitle to white above all light-mode text rewrites */
 .eventos-hero-title,
