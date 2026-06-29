@@ -121,7 +121,6 @@ export function ChickenGame() {
   const [chickenFx, setChickenFx] = useState<ChickenFx>("idle");
   const [rightFx, setRightFx] = useState<RightFx>("none");
   const [rightVisible, setRightVisible] = useState(false);
-  const [rightAsteroidKey, setRightAsteroidKey] = useState(0);
   const [muted, setMuted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [online] = useState(217);
@@ -379,11 +378,9 @@ export function ChickenGame() {
     // el siguiente banner entre limpio (sin duplicado durante el salto).
     setDisplayedStep(pub.step);
     // (step/currentMult/nextMult ya se commitearon arriba; aquí solo
-    //  reseteamos posiciones y disparamos el fade-in del nuevo asteroide
-    //  derecho cambiando su `key` — sin un frame en blanco.)
+    //  reseteamos posiciones manteniendo un único asteroide derecho estable.)
     setRightFx("none");
     setChickenFx("idle");
-    setRightAsteroidKey((k) => k + 1);
     setPhase("playing");
     actionInFlightRef.current = false;
   }, [phase, jumpFn, applyBalance, recoverAfterActionError, resetToIdle]);
@@ -493,7 +490,6 @@ export function ChickenGame() {
           {/* asteroide DERECHO — el próximo objetivo. Entra por la derecha. */}
           {rightVisible && (phase === "playing" || phase === "jumping" || phase === "lost") && (
             <div
-              key={rightAsteroidKey}
               className={`chicken-slot chicken-slot-right ${rightFx === "shake-break" ? "chicken-asteroid-shake" : ""} ${rightFx === "broken" && (chickenFx === "fall" || chickenFx === "fail-still") ? "chicken-asteroid-falling" : ""}`}
               data-fade={phase === "playing" && chickenFx === "idle" ? "in" : "stay"}
             >
