@@ -3279,10 +3279,12 @@ html.light .profile-page .profile-quickbar-tab.is-active {
   transform: translateX(-50%);
 }
 .chicken-slot-right {
-  /* Visible parcialmente por la derecha — telegrafía el próximo objetivo. */
-  right: -14%;
-  width: 40%;
-  bottom: 12%;
+  /* Visible parcialmente por la derecha — telegrafía el próximo objetivo.
+     MISMO width/bottom que el central para que al llegar al centro no haya
+     "mini-zoom" ni salto vertical. */
+  right: -16%;
+  width: 46%;
+  bottom: 10%;
   transition: opacity 280ms ease-out, transform 280ms ease-out;
 }
 .chicken-slot-right[data-fade="in"] {
@@ -3335,10 +3337,12 @@ html.light .profile-page .profile-quickbar-tab.is-active {
 /* GALLINA — siempre centrada, grande, protagonista. Nunca se mueve en X. */
 .chicken-sprite {
   position: absolute;
-  bottom: 18%;
+  /* Subimos la gallina para que sus patas se apoyen en la parte plana del
+     asteroide (≈ centro-alto del sprite del asteroide), no en su base. */
+  bottom: 26%;
   left: 50%;
-  margin-left: -23%; /* centrado horizontal exacto sin alterar transforms de animación */
-  width: 46%;
+  margin-left: -22%; /* centrado horizontal exacto sin alterar transforms de animación */
+  width: 44%;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -3439,6 +3443,6 @@ html.light .profile-page .profile-quickbar-tab.is-active {
   animation: chickenRightToCenter 480ms cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
 }
 @keyframes chickenRightToCenter {
-  from { right: -14%; transform: translateX(0); }
+  from { right: -16%; transform: translateX(0); }
   to   { right: 50%;  transform: translateX(50%); }
 }
