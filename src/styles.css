@@ -3635,6 +3635,11 @@ html.light .profile-page .profile-quickbar-tab.is-active {
 
 /* Asteroide roto desvaneciéndose mientras la gallina cae al vacío. */
 .chicken-slot.chicken-asteroid-falling {
+  /* Mantener el asteroide roto anclado al centro (donde aterrizó la gallina).
+     Sin esto, al sobreescribir `chickenRightToCenter` con !important, la regla
+     base `right: -16%` vuelve a aplicar y el asteroide "salta" un frame hacia
+     la derecha antes de caer, simulando que apareciera un próximo objetivo. */
+  right: 50% !important;
   animation: chickenAsteroidFall 520ms cubic-bezier(0.55, 0.05, 0.8, 0.9) forwards !important;
 }
 @keyframes chickenAsteroidFall {
