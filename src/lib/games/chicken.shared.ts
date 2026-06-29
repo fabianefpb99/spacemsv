@@ -27,17 +27,34 @@ export function chickenSafeProb(step: number): number {
   return Math.max(SAFE_PROB_FLOOR, p);
 }
 
+/** Pre-computed multipliers so the first jump starts low and the curve keeps
+ *  the same relative growth between steps. Step 1 is anchored to 1.05x and
+ *  each following step preserves the original RTP-based ratios. */
+function buildStepMultipliers(): number[] {
+  const original: number[] = [1, CHICKEN_RTP * (1 / chickenSafeProb(1))];
+  for (let i = 2; i <= CHICKEN_MAX_STEPS; i++) {
+    original[i] = original[i - 1] * (1 / chickenSafeProb(i));
+  }
+
+  const multipliers: number[] = [1];
+  multipliers[1] = 1.05; // low first-jump payout
+  for (let i = 2; i <= CHICKEN_MAX_STEPS; i++) {
+    const ratio = original[i] / original[i - 1];
+    multipliers[i] = Math.round(multipliers[i - 1] * ratio * 100) / 100;
+  }
+  return multipliers;
+}
+
+const CHICKEN_STEP_MULTIPLIERS = buildStepMultipliers();
+
 /**
  * Cash-out multiplier after `step` successful jumps.
- * Formula: RTP * prod_{i=1..step} (1 / safeProb(i))
+ * Starts at 1.05x for the first safe jump and grows with the same
+ * relative progression as the original RTP curve.
  */
 export function chickenMultiplier(step: number): number {
   if (step <= 0) return 1;
-  let m = CHICKEN_RTP;
-  for (let i = 1; i <= step; i++) {
-    m *= 1 / chickenSafeProb(i);
-  }
-  return Math.round(m * 100) / 100;
+  return CHICKEN_STEP_MULTIPLIERS[Math.min(step, CHICKEN_MAX_STEPS)];
 }
 
 export type ChickenPhase = "playing" | "result";
