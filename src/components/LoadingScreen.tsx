@@ -13,7 +13,7 @@ import gameBlackjackAsset from "@/assets/game-blackjack.png.asset.json";
 import gameBlackjackVipAsset from "@/assets/game-blackjack-vip.png.asset.json";
 import gameRuletaAsset from "@/assets/game-ruleta.png.asset.json";
 import gameArenaAsset from "@/assets/game-arena.png.asset.json";
-import chickenLoadAsset from "@/assets/chicken/chicken-idle.png.asset.json";
+import chickenLoadAsset from "@/assets/game-chicken.webp.asset.json";
 const gameSpaceman = gameSpacemanAsset.url;
 const gameSlotMafia = gameSlotMafiaAsset.url;
 const gameMines = gameMinesAsset.url;
