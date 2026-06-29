@@ -222,6 +222,7 @@ export function ChickenGame() {
     if (phase !== "idle" || dealInFlightRef.current) return;
     if (bet < CHICKEN_MIN_BET || bet > balance) return;
     dealInFlightRef.current = true;
+    setIsDealing(true);
     setError(null);
     const prevBalance = balance;
     applyBalance(Math.max(0, balance - bet));
@@ -247,6 +248,7 @@ export function ChickenGame() {
       setError(toFriendlyError(e, "No se pudo iniciar la partida."));
     } finally {
       dealInFlightRef.current = false;
+      setIsDealing(false);
     }
   }, [phase, bet, balance, dealFn, applyBalance, recoverAfterActionError]);
 
