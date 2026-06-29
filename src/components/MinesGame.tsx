@@ -212,6 +212,9 @@ export function MinesGame() {
       queryClient.setQueryData<MeData | null>(["me", user.id], (prev) =>
         prev ? { ...prev, balance: newBalance } : prev,
       );
+      // Refetch en background para sincronizar `bonus_balance`
+      // (el servidor sólo devuelve el saldo real tras `adjust_balance`).
+      queryClient.invalidateQueries({ queryKey: ["me"] });
     },
     [queryClient, user],
   );
