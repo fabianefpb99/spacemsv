@@ -267,6 +267,11 @@ export function ChickenGame() {
     //    así su latencia se "esconde" en esta fase de carga visual.
     setChickenFx("prepare");
     playChickenJumpSound();
+    // A mitad del "cargando impulso" suena un cluck (alterna entre 2 muestras)
+    //  — refuerza la sensación de que la gallina está tomando aire.
+    const safeSoundTimer = window.setTimeout(() => {
+      playChickenSafeSound();
+    }, Math.floor(PREPARE_MIN_MS / 2));
     const reqP = withTimeout(
       jumpFn({ data: { session_id: sess.id, nonce: sess.nonce, client_action_id: uuid() } }),
       7000,
@@ -279,6 +284,7 @@ export function ChickenGame() {
       const [res] = await Promise.all([reqP, delay(PREPARE_MIN_MS)]);
       view = res;
     } catch (e) {
+      window.clearTimeout(safeSoundTimer);
       await recoverAfterActionError(e);
       setError(toFriendlyError(e, "No se pudo saltar."));
       // Snap chicken back to idle on the central asteroid.
@@ -287,6 +293,20 @@ export function ChickenGame() {
       actionInFlightRef.current = false;
       return;
     }
+    window.clearTimeout(safeSoundTimer);
+
+    const pubEarly = view.public_state;
+    sessionRef.current = { id: view.session_id, nonce: view.nonce };
+    applyBalance(view.new_balance);
+    // ⚡ HUD sincronizado: actualizamos saltos/cobro/siguiente AHORA, en
+    // cuanto el servidor respondió (justo al terminar la fase de carga),
+    // sin esperar a que termine la animación de salto.
+    if (!(pubEarly.phase === "result" && pubEarly.outcome === "lost")) {
+      setStep(pubEarly.step);
+      setCurrentMult(pubEarly.multiplier);
+      setNextMult(pubEarly.nextMultiplier ?? 0);
+    }
+
     // 2. JUMP sprite + salto vertical rápido. Ya tenemos el resultado en mano,
     //    así que la animación nunca se queda "congelada" esperando al servidor.
     setChickenFx("jump-left-to-right");
@@ -295,8 +315,6 @@ export function ChickenGame() {
     await delay(JUMP_MS);
 
     const pub = view.public_state;
-    sessionRef.current = { id: view.session_id, nonce: view.nonce };
-    applyBalance(view.new_balance);
 
     if (pub.phase === "result" && pub.outcome === "lost") {
       // BROKEN: chicken just landed on the right asteroid; break it + fall.
@@ -315,8 +333,6 @@ export function ChickenGame() {
 
     if (pub.phase === "result" && pub.outcome === "won") {
       // Auto-cashout at max step.
-      setStep(pub.step);
-      setCurrentMult(pub.multiplier);
       setChickenFx("land-bounce");
       playCashoutSound();
       await delay(LAND_BOUNCE_MS);
@@ -335,10 +351,8 @@ export function ChickenGame() {
     // Slide both asteroids + chicken left so the "right" position becomes the new "left".
     setChickenFx("slide-to-left");
     await delay(SLIDE_MS);
-    // Commit new step state, reset positions, fade in new right asteroid.
-    setStep(pub.step);
-    setCurrentMult(pub.multiplier);
-    setNextMult(pub.nextMultiplier);
+    // (step/currentMult/nextMult ya se commitearon arriba; aquí sólo
+    //  reseteamos posiciones y fade-in del nuevo asteroide derecho.)
     setRightVisible(false);
     setRightFx("none");
     setChickenFx("idle");
