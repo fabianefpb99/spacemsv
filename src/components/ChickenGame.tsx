@@ -592,10 +592,10 @@ export function ChickenGame() {
           )}
 
           {phase === "lost" && (
-            <div className="pointer-events-none absolute inset-x-0 top-4 z-20 flex justify-center">
+            <div className="pointer-events-none absolute inset-x-0 top-1/2 z-20 flex -translate-y-1/2 justify-center">
               <div className="result-pop-lose rounded-xl border border-rose-500/60 bg-[#0c0620]/85 px-5 py-3 text-center">
-                <div className="font-display text-2xl font-black neon-red">¡SE ROMPIÓ!</div>
-                <div className="text-xs font-bold text-rose-300">Perdiste tu apuesta</div>
+                <div className="font-display text-2xl font-black neon-red">¡Te caíste!</div>
+                <div className="text-xs font-bold text-rose-300">Juguemos otra</div>
               </div>
             </div>
           )}
