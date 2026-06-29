@@ -3412,7 +3412,7 @@ html.light .profile-page .profile-quickbar-tab.is-active {
 }
 
 /* Overlay de estrés: parpadea brevemente cada ~3s con un fade suave
-   (sin flash brusco), manteniendo el párpado visible un poco más. */
+   (sin flash brusco), manteniendo el párpado visible ~30% más de tiempo. */
 .chicken-stress-blink {
   position: absolute;
   left: 0;
@@ -3427,8 +3427,8 @@ html.light .profile-page .profile-quickbar-tab.is-active {
 }
 @keyframes chicken-stress-blink {
   0%, 89% { opacity: 0; }
-  91% { opacity: 1; }
-  96% { opacity: 1; }
+  90% { opacity: 1; }
+  96.5% { opacity: 1; }
   98%, 100% { opacity: 0; }
 }
 
