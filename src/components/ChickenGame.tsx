@@ -8,8 +8,8 @@ import {
   setMuted as setAudioMuted,
   isMuted,
   playCashoutSound,
-  playCrashSound,
-  playDiceRollSound,
+  playChickenJumpSound,
+  playChickenLossSound,
   stopAllGameAudio,
 } from "@/lib/gameAudio";
 import { useServerFn } from "@tanstack/react-start";
@@ -264,7 +264,7 @@ export function ChickenGame() {
     // 1. PREPARE sprite + glow azul. Disparamos YA el request al servidor,
     //    así su latencia se "esconde" en esta fase de carga visual.
     setChickenFx("prepare");
-    playDiceRollSound();
+    playChickenJumpSound();
     const reqP = withTimeout(
       jumpFn({ data: { session_id: sess.id, nonce: sess.nonce, client_action_id: uuid() } }),
       7000,
@@ -299,7 +299,7 @@ export function ChickenGame() {
     if (pub.phase === "result" && pub.outcome === "lost") {
       // BROKEN: chicken just landed on the right asteroid; break it + fall.
       setRightFx("shake-break");
-      playCrashSound();
+      playChickenLossSound();
       await delay(BROKEN_SHAKE_MS);
       setRightFx("broken");
       setChickenFx("fall");
