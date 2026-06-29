@@ -523,6 +523,52 @@ export function resetRevealStreak() {
   revealStreak = 0;
 }
 
+// ---- Chicken jump "blop" (tiny pop click) ----
+// Sonido mínimo, profesional, tipo "pop / blop" para el salto de Chicken Road.
+// Generado vía osciladores para no depender de un mp3 y mantener volumen
+// idéntico en iOS y Android (Web Audio respeta gain).
+export function playChickenJumpSound() {
+  const c = getCtx();
+  if (!c || muted || !masterGain) return;
+  const now = c.currentTime;
+
+  // Capa 1: pop con sweep ascendente rápido (sine 200 → 720 Hz).
+  const pop = c.createOscillator();
+  pop.type = "sine";
+  pop.frequency.setValueAtTime(200, now);
+  pop.frequency.exponentialRampToValueAtTime(720, now + 0.08);
+  const pg = c.createGain();
+  pg.gain.setValueAtTime(0, now);
+  pg.gain.linearRampToValueAtTime(0.18, now + 0.008);
+  pg.gain.exponentialRampToValueAtTime(0.0001, now + 0.13);
+  pop.connect(pg).connect(masterGain);
+  pop.start(now);
+  pop.stop(now + 0.15);
+
+  // Capa 2: micro click brillante para el ataque.
+  const tick = c.createOscillator();
+  tick.type = "triangle";
+  tick.frequency.value = 1800;
+  const tg = c.createGain();
+  tg.gain.setValueAtTime(0, now);
+  tg.gain.linearRampToValueAtTime(0.05, now + 0.003);
+  tg.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
+  tick.connect(tg).connect(masterGain);
+  tick.start(now);
+  tick.stop(now + 0.05);
+}
+
+// ---- Chicken loss sample (mp3 via Web Audio para respetar volumen en iOS) ----
+export function playChickenLossSound() {
+  if (muted) return;
+  if (typeof window === "undefined") return;
+  import("./webAudioPlayer").then(({ playSound }) => {
+    playSound("/__l5e/assets-v1/02731642-5b1e-497b-8542-16bcdeb9413c/chicken-loss.mp3", {
+      volume: 0.35,
+    });
+  }).catch(() => { /* ignore */ });
+}
+
 // ---- Coin cascade sound (used while win counter animates up) ----
 // Slot payout should feel like many coins hitting a metal tray: dry, fast,
 // slightly chaotic, with little bursts of 2-3 impacts. Avoid pitched sweeps
