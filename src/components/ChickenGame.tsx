@@ -546,12 +546,17 @@ export function ChickenGame() {
           {step >= 1 &&
             (phase === "playing" ||
               (phase === "jumping" &&
-                (chickenFx === "land-bounce" || chickenFx === "slide-to-left"))) && (
+                (chickenFx === "prepare" ||
+                  chickenFx === "jump" ||
+                  chickenFx === "land-bounce" ||
+                  chickenFx === "slide-to-left"))) && (
             <div
               key={step}
               className="chicken-motivation-banner px-6"
             >
-              <div className="chicken-motivation-text max-w-[18rem] text-center">
+              <div
+                className={`chicken-motivation-text max-w-[18rem] text-center ${chickenFx === "slide-to-left" ? "is-exiting" : ""}`}
+              >
                 <div
                   className="font-display text-2xl font-black uppercase leading-tight tracking-tight text-white sm:text-3xl"
                   style={{ textShadow: "0 3px 10px rgba(0,0,0,0.85)" }}
