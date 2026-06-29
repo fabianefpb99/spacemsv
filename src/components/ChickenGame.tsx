@@ -541,13 +541,14 @@ export function ChickenGame() {
             <div className="chicken-motivation-banner">
               <div className="chicken-motivation-enter text-center">
                 <div
-                  className="font-display text-6xl font-black uppercase tracking-tight text-white sm:text-7xl"
-                  style={{ textShadow: "0 4px 14px rgba(0,0,0,0.85)" }}
+                  className="chicken-cluck-title font-display text-6xl font-black uppercase tracking-tight text-white sm:text-7xl"
+                  data-text="¡CLUCK!"
                 >
                   ¡CLUCK!
                 </div>
-                <div className="mt-2 font-display text-xs font-bold uppercase tracking-widest text-purple-100/90">
-                  ¿Hasta dónde llegarás?
+                <div className="chicken-cluck-subtitle mt-2 font-display text-xs font-bold uppercase tracking-widest text-purple-100/90">
+                  <span key="a" className="chicken-cluck-sub chicken-cluck-sub-a">¿Hasta dónde llegarás?</span>
+                  <span key="b" className="chicken-cluck-sub chicken-cluck-sub-b">Apuesta ahora</span>
                 </div>
               </div>
             </div>
