@@ -390,6 +390,11 @@ export function ChickenGame() {
         backgroundRepeat: "no-repeat",
       }}
     >
+      {/* Partículas suaves en diagonal (↘→↙). CSS puro, sin canvas/JS. */}
+      <div className="chicken-particles" aria-hidden="true">
+        <span className="chicken-particles-layer chicken-particles-layer-1" />
+        <span className="chicken-particles-layer chicken-particles-layer-2" />
+      </div>
       <div className="relative mx-auto flex h-[100dvh] max-w-md flex-col px-3 pb-[calc(env(safe-area-inset-bottom,0px)+0.4rem)] pt-2 sm:max-w-lg sm:px-4">
         {/* Header — idéntico al resto de juegos */}
         <header
