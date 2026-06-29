@@ -3432,12 +3432,14 @@ html.light .profile-page .profile-quickbar-tab.is-active {
   98%, 100% { opacity: 0; }
 }
 
-/* Sombra ovalada bajo las patas — simula contacto con la roca. */
+/* Sombra ovalada bajo las patas — simula contacto con la roca.
+   Desplazada ligeramente a la derecha y un poco más arriba para que
+   la pata derecha (desde la vista del usuario) también toque la sombra. */
 .chicken-foot-shadow {
   position: absolute;
-  left: 54%;
-  bottom: 4px;
-  width: 60%;
+  left: 58%;
+  bottom: 2px;
+  width: 68%;
   height: 8px;
   transform: translateX(-50%) scale(1);
   border-radius: 9999px;
