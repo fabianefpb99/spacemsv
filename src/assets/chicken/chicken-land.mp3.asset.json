@@ -1,11 +1,11 @@
 {
   "version": 1,
-  "asset_id": "5a586475-cdbd-4620-b9a4-b700bba66216",
+  "asset_id": "d28e0002-e233-41dc-a106-69e1b224d532",
   "project_id": "3e7b1e46-62a0-4b73-a211-f1299a4e2ab6",
-  "url": "/__l5e/assets-v1/5a586475-cdbd-4620-b9a4-b700bba66216/chicken-land.mp3",
-  "r2_key": "a/v1/3e7b1e46-62a0-4b73-a211-f1299a4e2ab6/5a586475-cdbd-4620-b9a4-b700bba66216/chicken-land.mp3",
+  "url": "/__l5e/assets-v1/d28e0002-e233-41dc-a106-69e1b224d532/chicken-land.mp3",
+  "r2_key": "a/v1/3e7b1e46-62a0-4b73-a211-f1299a4e2ab6/d28e0002-e233-41dc-a106-69e1b224d532/chicken-land.mp3",
   "original_filename": "chicken-land.mp3",
-  "size": 12000,
+  "size": 4460,
   "content_type": "audio/mpeg",
-  "created_at": "2026-06-29T15:28:21Z"
+  "created_at": "2026-06-29T15:31:50Z"
 }
