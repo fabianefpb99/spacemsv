@@ -507,10 +507,7 @@ export function ChickenGame() {
                 className="chicken-asteroid-img"
                 draggable={false}
               />
-              {nextMult > 0 &&
-                (phase === "playing" ||
-                  (phase === "jumping" &&
-                    (chickenFx === "land-bounce" || chickenFx === "slide-to-left"))) && (
+              {nextMult > 0 && phase === "playing" && chickenFx === "idle" && (
                 <div className="chicken-mult-chip">{nextMult.toFixed(2)}x</div>
               )}
             </div>
