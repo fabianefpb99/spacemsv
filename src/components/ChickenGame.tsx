@@ -10,6 +10,7 @@ import {
   playCashoutSound,
   playChickenJumpSound,
   playChickenLossSound,
+  playChickenLandSound,
   stopAllGameAudio,
 } from "@/lib/gameAudio";
 import { useServerFn } from "@tanstack/react-start";
@@ -328,6 +329,7 @@ export function ChickenGame() {
 
     // SAFE jump, round continues.
     setChickenFx("land-bounce");
+    playChickenLandSound();
     await delay(LAND_BOUNCE_MS);
     // Slide both asteroids + chicken left so the "right" position becomes the new "left".
     setChickenFx("slide-to-left");
