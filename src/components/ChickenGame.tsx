@@ -528,7 +528,7 @@ export function ChickenGame() {
           {/* Banner inicial CLUCK — arriba de la gallina */}
           {phase === "idle" && (
             <div className="chicken-motivation-banner">
-              <div className="chicken-motivation-text text-center">
+              <div className="chicken-motivation-enter text-center">
                 <div
                   className="font-display text-6xl font-black uppercase tracking-tight text-white sm:text-7xl"
                   style={{ textShadow: "0 4px 14px rgba(0,0,0,0.85)" }}
