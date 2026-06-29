@@ -34,13 +34,13 @@ import {
   CHICKEN_MIN_BET,
   chickenMultiplier,
 } from "@/lib/games/chicken.shared";
-import bgAsset from "@/assets/chicken/background-space.png.asset.json";
+import bgAsset from "@/assets/chicken/background-space.webp.asset.json";
 import chickenIdleAsset from "@/assets/chicken/chicken-idle.png.asset.json";
 import chickenPrepareAsset from "@/assets/chicken/chicken-prepare.png.asset.json";
 import chickenJumpAsset from "@/assets/chicken/chicken-jump.png.asset.json";
 import chickenFailAsset from "@/assets/chicken/chicken-fail.png.asset.json";
-import asteroidAsset from "@/assets/chicken/asteroid.png.asset.json";
-import asteroidBrokenAsset from "@/assets/chicken/asteroid-broken.png.asset.json";
+import asteroidAsset from "@/assets/chicken/asteroid.webp.asset.json";
+import asteroidBrokenAsset from "@/assets/chicken/asteroid-broken.webp.asset.json";
 
 const BG = bgAsset.url;
 const IMG_IDLE = chickenIdleAsset.url;
@@ -89,7 +89,7 @@ type ChickenFx = "idle" | "prepare" | "jump-left-to-right" | "land-bounce" | "sl
 const PREPARE_MIN_MS = 240;
 const JUMP_MS = 240;
 const LAND_BOUNCE_MS = 140;
-const SLIDE_MS = 320;
+const SLIDE_MS = 240;
 const BROKEN_SHAKE_MS = 320;
 const FALL_MS = 600;
 
