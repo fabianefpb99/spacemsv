@@ -3257,10 +3257,6 @@ html.light .profile-page .profile-quickbar-tab.is-active {
   /* Sin fondo ni borde — los asteroides y la gallina flotan directamente
      sobre el fondo espacial de la página. */
   background: transparent;
-  /* Cámara fija, vertical, para dar protagonismo a la gallina centrada. */
-  aspect-ratio: 4 / 5;
-  max-height: 64vh;
-  min-height: 320px;
   width: 100%;
 }
 

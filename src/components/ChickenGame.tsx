@@ -115,6 +115,7 @@ export function ChickenGame() {
   const [rightVisible, setRightVisible] = useState(false);
   const [muted, setMuted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [online] = useState(217);
 
   const sessionRef = useRef<{ id: string; nonce: number } | null>(null);
   const dealInFlightRef = useRef(false);
@@ -349,20 +350,19 @@ export function ChickenGame() {
 
   return (
     <div
-      className="relative min-h-screen text-white"
+      className="relative h-[100dvh] overflow-hidden text-white"
       style={{
         backgroundColor: "#060210",
         backgroundImage: `url(${BG})`,
         backgroundSize: "cover",
         backgroundPosition: "center top",
         backgroundRepeat: "no-repeat",
-        backgroundAttachment: "fixed",
       }}
     >
-      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4">
+      <div className="relative mx-auto flex h-[100dvh] max-w-md flex-col px-3 pb-[calc(env(safe-area-inset-bottom,0px)+0.4rem)] pt-2 sm:max-w-lg sm:px-4">
         {/* Header — idéntico al resto de juegos */}
         <header
-          className="flex items-center justify-between bg-[#060210]/80 backdrop-blur-sm border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
+          className="flex shrink-0 items-center justify-between bg-[#060210]/80 backdrop-blur-sm border-b border-purple-500/20 pb-2 px-3 -mx-3 -mt-2"
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <div className="flex items-center gap-1">
@@ -389,13 +389,13 @@ export function ChickenGame() {
         </header>
 
         {/* Online + mute */}
-        <div className="mt-2 flex items-center justify-between">
+        <div className="mt-1.5 flex shrink-0 items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="relative inline-flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
             </span>
-            <span className="text-xs font-semibold text-white/90">CHICKEN ROAD</span>
+            <span className="text-xs font-semibold text-white/90">{online} ONLINE</span>
           </div>
           <button
             onClick={() => setMuted((m) => !m)}
@@ -407,7 +407,7 @@ export function ChickenGame() {
         </div>
 
         {/* HUD: paso actual + siguiente pago + cobrar */}
-        <section className="mt-2 grid grid-cols-3 gap-2 rounded-2xl border border-purple-500/30 glass-panel p-2 sm:p-2.5">
+        <section className="mt-1.5 shrink-0 grid grid-cols-3 gap-2 rounded-2xl border border-purple-500/30 glass-panel p-2">
           <div className="text-center">
             <div className="text-[9px] uppercase tracking-widest text-purple-200/70">Saltos</div>
             <div className="mt-1 rounded-lg border border-purple-500/40 bg-[#160830]/60 py-1.5">
@@ -435,7 +435,7 @@ export function ChickenGame() {
         {/* Escena (cámara fija; la gallina permanece centrada, los asteroides se mueven hacia ella).
             Sin marco/borde — se mezcla directamente con el fondo espacial de la página. */}
         <section
-          className="chicken-stage relative mt-2"
+          className="chicken-stage relative mt-1.5 min-h-0 flex-1"
           data-anim={chickenFx}
         >
           {/* asteroide CENTRAL (sobre el que está parada la gallina) */}
@@ -512,7 +512,7 @@ export function ChickenGame() {
         </section>
 
         {/* Panel de apuesta — idéntico a Mines */}
-        <section className="mt-2 rounded-2xl border border-purple-500/30 glass-panel p-2.5">
+        <section className="mt-1.5 shrink-0 rounded-2xl border border-purple-500/30 glass-panel p-2">
           <div className="text-center text-[10px] uppercase tracking-widest text-purple-200/70">Apuesta (COP)</div>
           <div className="mt-1.5 flex items-center gap-2">
             <button
@@ -631,7 +631,6 @@ export function ChickenGame() {
           )}
         </section>
 
-        <div className="h-3" />
       </div>
     </div>
   );
