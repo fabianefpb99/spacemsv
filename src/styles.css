@@ -3724,14 +3724,16 @@ html.light .profile-page .profile-quickbar-tab.is-active {
 }
 
 /* Partículas espaciales suaves — viajan en diagonal desde arriba-derecha
-   hacia abajo-izquierda. Implementado con 2 capas de radial-gradient
-   tileadas + transform animado (GPU-friendly, sin canvas ni JS). */
+   hacia abajo-izquierda. Implementado con 2 capas ligeras de radial-gradient
+   tileadas + transform animado (GPU-friendly). Cantidad y opacidad reducidas
+   para evitar saturar la GPU en móviles. */
 .chicken-particles {
   position: absolute;
   inset: 0;
   pointer-events: none;
   overflow: hidden;
   z-index: 0;
+  contain: layout paint;
 }
 .chicken-particles-layer {
   position: absolute;
@@ -3741,37 +3743,33 @@ html.light .profile-page .profile-quickbar-tab.is-active {
   height: 200%;
   background-repeat: repeat;
   will-change: transform;
-  opacity: 0.9;
 }
 .chicken-particles-layer-1 {
   background-image:
-    radial-gradient(2.4px 2.4px at 14% 22%, rgba(255,255,255,1),   transparent 65%),
-    radial-gradient(2px   2px   at 62% 8%,  rgba(190,210,255,1),   transparent 65%),
-    radial-gradient(2.8px 2.8px at 84% 64%, rgba(255,255,255,0.95), transparent 65%),
-    radial-gradient(2px   2px   at 32% 78%, rgba(210,190,255,0.95), transparent 65%),
-    radial-gradient(1.8px 1.8px at 48% 46%, rgba(255,255,255,0.9),  transparent 65%),
-    radial-gradient(2px   2px   at 8%  62%, rgba(255,235,200,0.9),  transparent 65%),
-    radial-gradient(2.2px 2.2px at 92% 28%, rgba(255,255,255,0.95), transparent 65%);
-  background-size: 180px 180px;
-  animation: chickenParticlesDrift 18s linear infinite;
+    radial-gradient(1.8px 1.8px at 22% 30%, rgba(255,255,255,0.9),   transparent 60%),
+    radial-gradient(1.6px 1.6px at 70% 18%, rgba(190,210,255,0.85),  transparent 60%),
+    radial-gradient(2px   2px   at 84% 72%, rgba(255,255,255,0.85), transparent 60%),
+    radial-gradient(1.6px 1.6px at 38% 86%, rgba(210,190,255,0.8),  transparent 60%);
+  background-size: 240px 240px;
+  opacity: 0.75;
+  animation: chickenParticlesDrift 20s linear infinite;
 }
 .chicken-particles-layer-2 {
   background-image:
-    radial-gradient(3px 3px at 20% 40%, rgba(255,255,255,0.85), transparent 65%),
-    radial-gradient(2.4px 2.4px at 70% 30%, rgba(255,220,180,0.8), transparent 65%),
-    radial-gradient(2.6px 2.6px at 50% 80%, rgba(200,220,255,0.8), transparent 65%),
-    radial-gradient(2.4px 2.4px at 88% 88%, rgba(255,255,255,0.85), transparent 65%);
-  background-size: 300px 300px;
-  opacity: 0.7;
-  animation: chickenParticlesDrift2 32s linear infinite;
+    radial-gradient(2.2px 2.2px at 28% 45%, rgba(255,255,255,0.75), transparent 60%),
+    radial-gradient(1.8px 1.8px at 68% 35%, rgba(255,220,180,0.7),  transparent 60%),
+    radial-gradient(2px   2px   at 52% 82%, rgba(200,220,255,0.7),  transparent 60%);
+  background-size: 360px 360px;
+  opacity: 0.55;
+  animation: chickenParticlesDrift2 36s linear infinite;
 }
 @keyframes chickenParticlesDrift {
   from { transform: translate3d(0, 0, 0); }
-  to   { transform: translate3d(-180px, 180px, 0); }
+  to   { transform: translate3d(-240px, 240px, 0); }
 }
 @keyframes chickenParticlesDrift2 {
   from { transform: translate3d(0, 0, 0); }
-  to   { transform: translate3d(-300px, 300px, 0); }
+  to   { transform: translate3d(-360px, 360px, 0); }
 }
 @media (prefers-reduced-motion: reduce) {
   .chicken-particles-layer { animation: none; }
