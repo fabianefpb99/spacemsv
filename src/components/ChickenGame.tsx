@@ -527,8 +527,8 @@ export function ChickenGame() {
 
           {/* Banner inicial CLUCK — arriba de la gallina */}
           {phase === "idle" && (
-            <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex justify-center pt-2">
-              <div className="animate-scale-in text-center">
+            <div className="chicken-motivation-banner">
+              <div className="chicken-motivation-text text-center">
                 <div
                   className="font-display text-6xl font-black uppercase tracking-tight text-white sm:text-7xl"
                   style={{ textShadow: "0 4px 14px rgba(0,0,0,0.85)" }}
@@ -549,9 +549,9 @@ export function ChickenGame() {
                 (chickenFx === "land-bounce" || chickenFx === "slide-to-left"))) && (
             <div
               key={step}
-              className="pointer-events-none absolute inset-x-0 top-3 z-20 flex justify-center px-6"
+              className="chicken-motivation-banner px-6"
             >
-              <div className="animate-scale-in max-w-[18rem] text-center">
+              <div className="chicken-motivation-text max-w-[18rem] text-center">
                 <div
                   className="font-display text-2xl font-black uppercase leading-tight tracking-tight text-white sm:text-3xl"
                   style={{ textShadow: "0 3px 10px rgba(0,0,0,0.85)" }}
