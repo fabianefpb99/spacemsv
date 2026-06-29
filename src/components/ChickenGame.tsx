@@ -537,7 +537,7 @@ export function ChickenGame() {
           )}
 
           {/* Banner inicial CLUCK — arriba de la gallina */}
-          {phase === "idle" && (
+          {phase === "idle" && !isDealing && (
             <div className="chicken-motivation-banner">
               <div className="chicken-motivation-enter text-center">
                 <div
@@ -549,6 +549,17 @@ export function ChickenGame() {
                 <div className="chicken-cluck-subtitle mt-2 font-display text-xs font-bold uppercase tracking-widest text-purple-100/90">
                   <span key="a" className="chicken-cluck-sub chicken-cluck-sub-a">¿Hasta dónde llegarás?</span>
                   <span key="b" className="chicken-cluck-sub chicken-cluck-sub-b">Apuesta ahora</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* READY verde — aparece inmediatamente tras pulsar JUGAR */}
+          {phase === "idle" && isDealing && (
+            <div className="chicken-motivation-banner">
+              <div className="chicken-motivation-enter text-center">
+                <div className="chicken-ready-title font-display text-6xl font-black uppercase tracking-tight text-emerald-400 sm:text-7xl">
+                  READY
                 </div>
               </div>
             </div>
