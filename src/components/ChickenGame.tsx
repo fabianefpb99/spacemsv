@@ -233,6 +233,7 @@ export function ChickenGame() {
       sessionRef.current = { id: view.session_id, nonce: view.nonce };
       applyBalance(view.new_balance);
       setStep(view.public_state.step);
+      setDisplayedStep(view.public_state.step);
       setCurrentMult(view.public_state.multiplier);
       setNextMult(view.public_state.nextMultiplier);
       setRightVisible(true);
