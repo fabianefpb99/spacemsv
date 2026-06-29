@@ -3357,6 +3357,52 @@ html.light .profile-page .profile-quickbar-tab.is-active {
   filter: drop-shadow(0 10px 14px rgba(0,0,0,0.6));
 }
 
+/* Sombra ovalada bajo las patas — simula contacto con la roca. */
+.chicken-foot-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  width: 55%;
+  height: 12px;
+  transform: translateX(-50%) scale(1);
+  border-radius: 9999px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.32) 45%,
+    rgba(0, 0, 0, 0) 75%
+  );
+  filter: blur(2px);
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.9;
+  transition: opacity 160ms ease-out, transform 160ms ease-out;
+}
+.chicken-fx-prepare ~ .chicken-foot-shadow,
+.chicken-fx-prepare .chicken-foot-shadow {
+  transform: translateX(-50%) scale(0.85);
+  opacity: 1;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.4) 45%,
+    rgba(0, 0, 0, 0) 75%
+  );
+}
+.chicken-fx-land-bounce .chicken-foot-shadow {
+  animation: chickenFootBounce 160ms ease-out;
+}
+.chicken-fx-jump-left-to-right .chicken-foot-shadow,
+.chicken-fx-fall .chicken-foot-shadow,
+.chicken-fx-fail-still .chicken-foot-shadow {
+  opacity: 0;
+}
+@keyframes chickenFootBounce {
+  0%   { transform: translateX(-50%) scale(0.85); opacity: 0.6; }
+  50%  { transform: translateX(-50%) scale(1.1);  opacity: 1; }
+  100% { transform: translateX(-50%) scale(1);    opacity: 0.9; }
+}
+
 /* idle: pequeño bobbing */
 .chicken-fx-idle {
   animation: chickenIdle 2400ms ease-in-out infinite;
