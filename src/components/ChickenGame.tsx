@@ -15,6 +15,7 @@ import {
   stopAllGameAudio,
   startChickenBgMusic,
   stopChickenBgMusic,
+  preloadChickenSounds,
 } from "@/lib/gameAudio";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
@@ -191,6 +192,9 @@ export function ChickenGame() {
   useEffect(() => { setAudioMuted(muted); }, [muted]);
   useEffect(() => {
     stopAllGameAudio();
+    // Pre-decode los SFX para que el sonido de pérdida/aterrizaje suene
+    // sincronizado con la animación desde la primera ronda (sin lag móvil).
+    preloadChickenSounds();
     // Inicia la música de fondo (puede requerir gesto del usuario; reintenta abajo)
     startChickenBgMusic();
     return () => { stopChickenBgMusic(); };
@@ -503,10 +507,7 @@ export function ChickenGame() {
                 className="chicken-asteroid-img"
                 draggable={false}
               />
-              {nextMult > 0 &&
-                (phase === "playing" ||
-                  (phase === "jumping" &&
-                    (chickenFx === "land-bounce" || chickenFx === "slide-to-left"))) && (
+              {nextMult > 0 && phase === "playing" && chickenFx === "idle" && (
                 <div className="chicken-mult-chip">{nextMult.toFixed(2)}x</div>
               )}
             </div>

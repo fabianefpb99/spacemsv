@@ -560,11 +560,28 @@ export function playChickenJumpSound() {
 }
 
 // ---- Chicken loss sample (mp3 via Web Audio para respetar volumen en iOS) ----
+const CHICKEN_LOSS_URL = "/__l5e/assets-v1/02731642-5b1e-497b-8542-16bcdeb9413c/chicken-loss.mp3";
+const CHICKEN_LAND_URL = "/__l5e/assets-v1/d28e0002-e233-41dc-a106-69e1b224d532/chicken-land.mp3";
+
+/**
+ * Precarga los SFX de Chicken Space para que el primer play no tenga
+ * latencia de fetch+decode (esto causaba un retraso audible entre la caída
+ * y el sonido de pérdida, sobre todo en mobile).
+ */
+export function preloadChickenSounds() {
+  if (typeof window === "undefined") return;
+  import("./webAudioPlayer").then(({ preloadSound }) => {
+    preloadSound(CHICKEN_LOSS_URL);
+    preloadSound(CHICKEN_LAND_URL);
+    for (const u of CHICKEN_SAFE_URLS) preloadSound(u);
+  }).catch(() => { /* ignore */ });
+}
+
 export function playChickenLossSound() {
   if (muted) return;
   if (typeof window === "undefined") return;
   import("./webAudioPlayer").then(({ playSound }) => {
-    playSound("/__l5e/assets-v1/02731642-5b1e-497b-8542-16bcdeb9413c/chicken-loss.mp3", {
+    playSound(CHICKEN_LOSS_URL, {
       volume: 0.35,
     });
   }).catch(() => { /* ignore */ });
@@ -575,7 +592,7 @@ export function playChickenLandSound() {
   if (muted) return;
   if (typeof window === "undefined") return;
   import("./webAudioPlayer").then(({ playSound }) => {
-    playSound("/__l5e/assets-v1/d28e0002-e233-41dc-a106-69e1b224d532/chicken-land.mp3", {
+    playSound(CHICKEN_LAND_URL, {
       volume: 0.32,
     });
   }).catch(() => { /* ignore */ });
