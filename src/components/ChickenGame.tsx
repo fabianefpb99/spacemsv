@@ -8,8 +8,8 @@ import {
   setMuted as setAudioMuted,
   isMuted,
   playCashoutSound,
-  playCrashSound,
-  playDiceRollSound,
+  playChickenJumpSound,
+  playChickenLossSound,
   stopAllGameAudio,
 } from "@/lib/gameAudio";
 import { useServerFn } from "@tanstack/react-start";
@@ -264,7 +264,7 @@ export function ChickenGame() {
     // 1. PREPARE sprite + glow azul. Disparamos YA el request al servidor,
     //    así su latencia se "esconde" en esta fase de carga visual.
     setChickenFx("prepare");
-    playDiceRollSound();
+    playChickenJumpSound();
     const reqP = withTimeout(
       jumpFn({ data: { session_id: sess.id, nonce: sess.nonce, client_action_id: uuid() } }),
       7000,
@@ -299,7 +299,7 @@ export function ChickenGame() {
     if (pub.phase === "result" && pub.outcome === "lost") {
       // BROKEN: chicken just landed on the right asteroid; break it + fall.
       setRightFx("shake-break");
-      playCrashSound();
+      playChickenLossSound();
       await delay(BROKEN_SHAKE_MS);
       setRightFx("broken");
       setChickenFx("fall");
@@ -501,6 +501,23 @@ export function ChickenGame() {
             </div>
           )}
 
+          {/* Micro-banner motivacional tras cada salto exitoso */}
+          {phase === "playing" && step >= 1 && (
+            <div
+              key={step}
+              className="pointer-events-none absolute inset-x-0 top-1 z-20 flex justify-center"
+            >
+              <div className="animate-scale-in text-center">
+                <div
+                  className="font-display text-2xl font-black uppercase tracking-tight text-white sm:text-3xl"
+                  style={{ textShadow: "0 3px 10px rgba(0,0,0,0.85)" }}
+                >
+                  {chickenEncouragement(step)}
+                </div>
+              </div>
+            </div>
+          )}
+
           {phase === "lost" && (
             <div className="pointer-events-none absolute inset-x-0 top-4 z-20 flex justify-center">
               <div className="result-pop-lose rounded-xl border border-rose-500/60 bg-[#0c0620]/85 px-5 py-3 text-center">
@@ -662,4 +679,19 @@ function chickenSpriteFor(fx: ChickenFx): string {
 
 function delay(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
+}
+
+const ENCOURAGEMENTS = [
+  "¿Otra más?",
+  "¡Y si saltamos otra!",
+  "¡Cluuuck!",
+  "¡Sigue, sigue!",
+  "¡Una más, valiente!",
+  "¡Cluck cluck!",
+  "¡No pares ahora!",
+  "¡Vamos por más!",
+];
+function chickenEncouragement(step: number): string {
+  if (step <= 0) return "";
+  return ENCOURAGEMENTS[(step - 1) % ENCOURAGEMENTS.length];
 }
