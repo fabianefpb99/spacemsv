@@ -13,6 +13,8 @@ import {
   playChickenLandSound,
   playChickenSafeSound,
   stopAllGameAudio,
+  startChickenBgMusic,
+  stopChickenBgMusic,
 } from "@/lib/gameAudio";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
@@ -182,6 +184,9 @@ export function ChickenGame() {
   useEffect(() => { setAudioMuted(muted); }, [muted]);
   useEffect(() => {
     stopAllGameAudio();
+    // Inicia la música de fondo (puede requerir gesto del usuario; reintenta abajo)
+    startChickenBgMusic();
+    return () => { stopChickenBgMusic(); };
   }, []);
   // Sync muted toggle with global audio state.
   useEffect(() => { setMuted(isMuted()); }, []);
