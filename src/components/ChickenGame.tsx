@@ -554,7 +554,7 @@ export function ChickenGame() {
           )}
 
           {/* Micro-banner motivacional tras cada salto exitoso */}
-          {step >= 1 &&
+          {displayedStep >= 1 &&
             (phase === "playing" ||
               (phase === "jumping" &&
                 (chickenFx === "prepare" ||
@@ -562,7 +562,7 @@ export function ChickenGame() {
                   chickenFx === "land-bounce" ||
                   chickenFx === "slide-to-left"))) && (
             <div
-              key={step}
+              key={displayedStep}
               className="chicken-motivation-banner px-6"
             >
               <div
@@ -572,7 +572,7 @@ export function ChickenGame() {
                   className="font-display text-2xl font-black uppercase leading-tight tracking-tight text-white sm:text-3xl"
                   style={{ textShadow: "0 3px 10px rgba(0,0,0,0.85)" }}
                 >
-                  {chickenEncouragement(step)}
+                  {chickenEncouragement(displayedStep)}
                 </div>
               </div>
             </div>
