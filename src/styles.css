@@ -3267,7 +3267,7 @@ html.light .profile-page .profile-quickbar-tab.is-active {
 /* slots: posición CENTRAL (bajo la gallina) y DERECHA (próximo destino entrando) */
 .chicken-slot {
   position: absolute;
-  bottom: 10%;
+  bottom: 6%;
   width: 46%;
   aspect-ratio: 1 / 0.85;
   display: flex;
@@ -3286,7 +3286,7 @@ html.light .profile-page .profile-quickbar-tab.is-active {
      "mini-zoom" ni salto vertical. */
   right: -16%;
   width: 46%;
-  bottom: 10%;
+  bottom: 6%;
   transition: opacity 280ms ease-out, transform 280ms ease-out;
 }
 .chicken-slot-right[data-fade="in"] {
