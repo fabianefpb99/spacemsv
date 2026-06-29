@@ -474,9 +474,9 @@ export function ChickenGame() {
             />
           </div>
 
-          {/* Banner inicial CLUCK */}
+          {/* Banner inicial CLUCK — arriba de la gallina */}
           {phase === "idle" && (
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex justify-center pt-2">
               <div className="animate-scale-in text-center">
                 <div
                   className="font-display text-6xl font-black uppercase tracking-tight text-white sm:text-7xl"
@@ -492,7 +492,7 @@ export function ChickenGame() {
           )}
 
           {phase === "lost" && (
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="pointer-events-none absolute inset-x-0 top-4 z-20 flex justify-center">
               <div className="result-pop-lose rounded-xl border border-rose-500/60 bg-[#0c0620]/85 px-5 py-3 text-center">
                 <div className="font-display text-2xl font-black neon-red">¡SE ROMPIÓ!</div>
                 <div className="text-xs font-bold text-rose-300">Perdiste tu apuesta</div>
@@ -501,7 +501,7 @@ export function ChickenGame() {
           )}
 
           {phase === "cashed" && (
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="pointer-events-none absolute inset-x-0 top-4 z-20 flex justify-center">
               <div className="result-pop-win rounded-xl border border-emerald-500/60 bg-[#0c0620]/90 px-5 py-3 text-center">
                 <div className="text-[10px] uppercase tracking-widest text-emerald-200/80">¡Cobraste!</div>
                 <div className="font-display text-2xl font-black neon-green">+{formatCOP(lastPayout)} COP</div>
