@@ -1048,7 +1048,21 @@ export function startChickenBgMusic() {
     if (!chickenBg) return;
     fadeAudio(a, 0, CHICKEN_BG_TARGET_VOLUME, CHICKEN_BG_FADE_MS);
     scheduleChickenCrossfade();
-  }).catch(() => { /* requiere gesto del usuario; reintentará al primer click */ });
+  }).catch(() => {
+    // Autoplay bloqueado — reintenta al primer gesto del usuario.
+    const retry = () => {
+      if (!chickenBg) return;
+      chickenBg.active.play().then(() => {
+        if (!chickenBg) return;
+        fadeAudio(chickenBg.active, 0, CHICKEN_BG_TARGET_VOLUME, CHICKEN_BG_FADE_MS);
+        scheduleChickenCrossfade();
+      }).catch(() => {});
+      window.removeEventListener("pointerdown", retry);
+      window.removeEventListener("keydown", retry);
+    };
+    window.addEventListener("pointerdown", retry, { once: true });
+    window.addEventListener("keydown", retry, { once: true });
+  });
 }
 
 export function stopChickenBgMusic() {
