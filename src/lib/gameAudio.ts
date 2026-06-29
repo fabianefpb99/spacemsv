@@ -574,8 +574,8 @@ export function playChickenLandSound() {
   if (muted) return;
   if (typeof window === "undefined") return;
   import("./webAudioPlayer").then(({ playSound }) => {
-    playSound("/__l5e/assets-v1/5a586475-cdbd-4620-b9a4-b700bba66216/chicken-land.mp3", {
-      volume: 0.3,
+    playSound("/__l5e/assets-v1/d28e0002-e233-41dc-a106-69e1b224d532/chicken-land.mp3", {
+      volume: 0.32,
     });
   }).catch(() => { /* ignore */ });
 }
