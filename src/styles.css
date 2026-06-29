@@ -3407,7 +3407,13 @@ html.light .profile-page .profile-quickbar-tab.is-active {
   z-index: -1;
 }
 .chicken-stage[data-anim="prepare"] .chicken-sprite::before {
-  animation: chickenChargeGlow 520ms ease-in-out infinite;
+  /* Doble animación:
+     - pulso rápido (latido del glow)
+     - rampa lenta que SUBE la intensidad mientras esperamos al servidor,
+       así el jugador siente que está "cargando fuerza" en vez de esperar. */
+  animation:
+    chickenChargeGlow 520ms ease-in-out infinite,
+    chickenChargeRamp 1600ms ease-out forwards;
 }
 @keyframes chickenChargeGlow {
   0%, 100% {
@@ -3419,6 +3425,20 @@ html.light .profile-page .profile-quickbar-tab.is-active {
     opacity: 1;
     transform: translate(-50%, 35%) scale(1.18);
     filter: blur(9px) brightness(1.25);
+  }
+}
+/* Rampa de intensidad — el glow se vuelve más grande y brillante a medida
+   que la espera se alarga (sin loop, se queda en el estado final). */
+@keyframes chickenChargeRamp {
+  0% {
+    --chicken-glow-boost: 1;
+    filter: blur(6px) brightness(1) saturate(1);
+  }
+  60% {
+    filter: blur(10px) brightness(1.5) saturate(1.4);
+  }
+  100% {
+    filter: blur(14px) brightness(2.1) saturate(1.8) hue-rotate(-12deg);
   }
 }
 
