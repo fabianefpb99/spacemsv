@@ -13,9 +13,9 @@ export const CHICKEN_MAX_STEPS = 20;
 /** RTP baked into each safe-jump multiplier (house edge ~3%). */
 const CHICKEN_RTP = 0.97;
 /** Base probability that the next asteroid is SAFE. */
-const SAFE_PROB_BASE = 0.86;
+const SAFE_PROB_BASE = 0.81;
 /** Slight decrease per step to ramp up tension. Floor at 0.55. */
-const SAFE_PROB_DECAY = 0.005;
+const SAFE_PROB_DECAY = 0.007;
 const SAFE_PROB_FLOOR = 0.55;
 
 /**
