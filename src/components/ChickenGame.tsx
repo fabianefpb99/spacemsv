@@ -80,9 +80,13 @@ type RightFx = "none" | "shake-break" | "broken";
 /** Substate for the chicken sprite during animation. */
 type ChickenFx = "idle" | "prepare" | "jump-left-to-right" | "land-bounce" | "slide-to-left" | "fall" | "fail-still";
 
-const PREPARE_MS = 160;
-const JUMP_MS = 280;
-const LAND_BOUNCE_MS = 160;
+/** Mínimo que dura la fase de "carga" (sprite prepare + glow azul).
+ *  Si el servidor responde antes, esperamos hasta este mínimo para que el
+ *  jugador vea el impulso. Si responde después, el glow simplemente sigue
+ *  pulsando hasta que llega la respuesta. */
+const PREPARE_MIN_MS = 240;
+const JUMP_MS = 240;
+const LAND_BOUNCE_MS = 140;
 const SLIDE_MS = 320;
 const BROKEN_SHAKE_MS = 320;
 const FALL_MS = 600;
@@ -256,13 +260,10 @@ export function ChickenGame() {
     actionInFlightRef.current = true;
     setError(null);
     setPhase("jumping");
-    // 1. PREPARE sprite.
+    // 1. PREPARE sprite + glow azul. Disparamos YA el request al servidor,
+    //    así su latencia se "esconde" en esta fase de carga visual.
     setChickenFx("prepare");
     playDiceRollSound();
-    await delay(PREPARE_MS);
-    // 2. JUMP sprite + arc translate.
-    setChickenFx("jump-left-to-right");
-    // Kick off the server request in parallel with the visible jump arc.
     const reqP = withTimeout(
       jumpFn({ data: { session_id: sess.id, nonce: sess.nonce, client_action_id: uuid() } }),
       7000,
@@ -270,17 +271,25 @@ export function ChickenGame() {
     );
     let view: ChickenSessionView;
     try {
-      const [res] = await Promise.all([reqP, delay(JUMP_MS)]);
+      // Esperamos a que: (a) el servidor responda, y (b) se cumpla el mínimo
+      // visual de carga. Lo que tarde más manda.
+      const [res] = await Promise.all([reqP, delay(PREPARE_MIN_MS)]);
       view = res;
     } catch (e) {
       await recoverAfterActionError(e);
       setError(toFriendlyError(e, "No se pudo saltar."));
-      // Snap chicken back to idle on left asteroid.
+      // Snap chicken back to idle on the central asteroid.
       setChickenFx("idle");
       setPhase("playing");
       actionInFlightRef.current = false;
       return;
     }
+    // 2. JUMP sprite + salto vertical rápido. Ya tenemos el resultado en mano,
+    //    así que la animación nunca se queda "congelada" esperando al servidor.
+    setChickenFx("jump-left-to-right");
+    // Pequeño respiro para que el render del sprite "jump" arranque limpio
+    // antes de hacer el resto del cálculo.
+    await delay(JUMP_MS);
 
     const pub = view.public_state;
     sessionRef.current = { id: view.session_id, nonce: view.nonce };

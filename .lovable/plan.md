@@ -1,97 +1,58 @@
-# Chicken Road — Plan de implementación
 
-Juego nativo de BETSPACE construido con la misma arquitectura, HUD, header, tipografía y tokens visuales de Mines/Dados/Arena. Sin Canvas/WebGL/físicas — solo React + CSS (transform/opacity).
+## Objetivo
 
-## 1. Assets
+Que la gallina nunca se "congele" en el aire. El delay del servidor debe absorberse durante la preparación del salto (con un efecto visible de impulso azul), no durante el salto ni la caída. Y quitar el cuadro/borde que encierra el escenario del juego.
 
-Subir los 7 archivos como Lovable Assets (los muestras como referencia hoy, los esperaré en build mode):
+## Cambios
 
+### 1. Reordenar el flujo del salto
+
+Hoy el flujo es:
+```text
+prepare (160ms fijos) → jump (280ms en paralelo con request) → land/break
 ```
-src/assets/chicken/background-space.png.asset.json
-src/assets/chicken/chicken-idle.png.asset.json
-src/assets/chicken/chicken-prepare.png.asset.json
-src/assets/chicken/chicken-jump.png.asset.json
-src/assets/chicken/chicken-fail.png.asset.json
-src/assets/chicken/asteroid.png.asset.json
-src/assets/chicken/asteroid-broken.png.asset.json
+Si el servidor tarda 600ms, la gallina queda 300+ms quieta en el aire con la sprite "jump".
+
+Nuevo flujo:
+```text
+prepare (mínimo 220ms, espera al servidor con glow azul) → jump (≈220ms) → land/break (rápido)
 ```
+- Disparar `jumpFn(...)` **al entrar en `prepare`**, no al entrar en `jump`.
+- La fase `prepare` dura `max(PREPARE_MIN_MS, tiempo_real_del_request)`. Mientras espera, el sprite "prepare" se queda visible con un glow azul pulsante (charging).
+- En cuanto llega la respuesta y se cumple el mínimo, arranca la animación `jump` ya con el resultado conocido. Sin esperas en el aire.
+- Acelerar la caída/aterrizaje: bajada más corta (~160–200ms) con easing más agresivo, para que el "plop" sobre el asteroide sea inmediato.
 
-## 2. Backend (Supabase + server fns)
+### 2. Efecto visual de carga ("impulso azul")
 
-Reutilizamos el patrón de Mines (sesión persistida en `game_sessions`, RPC `bj_apply_action`, `adjustBalance` idempotente).
+- Añadir un anillo/glow azul cyan alrededor de la gallina mientras está en `prepare-waiting`.
+- Implementación CSS: pseudo-elemento `::after` en `.chicken-sprite` con `box-shadow` / `radial-gradient` azul que pulsa (~600ms loop) hasta que sale de la fase.
+- Pequeño "shake" o vibración sutil del sprite para reforzar la sensación de impulso.
+- Cuando llega la respuesta del servidor, un flash blanco-azul rápido (~120ms) marca el "release" y arranca el salto. Si la respuesta llega antes del mínimo, el flash se dispara justo al final del mínimo.
 
-**`src/lib/games/chicken.shared.ts`** — constantes y matemática pura:
-- `CHICKEN_MIN_BET=500`, `MAX=50000`, `STEP=500`
-- `CHICKEN_MAX_STEPS = 20` (saltos máximos)
-- `chickenMultiplier(step)` — fórmula `RTP * prod (1 / safeProb)` con RTP ~0.97 y `safeProb` que decrece por paso (~0.95 → ~0.55). Genera la curva 1.18, 1.35, 1.72, 2.15, …
-- Tipos `ChickenPublicState { bet, step, multiplier, nextMultiplier, phase: "playing"|"result", outcome?, payout?, brokenAt? }`
+### 3. Quitar el marco del escenario
 
-**`src/lib/games/chicken.server.ts`** — `placeBrokenSequence()`: usando `cryptoRandomInt`, para cada índice 1..MAX decide BROKEN con probabilidad `1 - safeProb(step)`. Devuelve `boolean[]` (toda la secuencia se fija al inicio para que el server no pueda re-rollear y el outcome sea verificable).
+- En `src/components/ChickenGame.tsx`, la sección `.chicken-stage` tiene `rounded-2xl border border-purple-500/30` y un fondo radial propio. Eso es lo que se ve como "cuadro".
+- Quitar el `border`, el `rounded-2xl` y el `overflow-hidden`.
+- Quitar también el `background` radial de `.chicken-stage` en `src/styles.css` para que el escenario se mezcle con el fondo espacial de la página. El stage seguirá teniendo `aspect-ratio` para preservar proporciones, pero sin contorno visible.
+- Verificar que ninguna animación dependa de `overflow-hidden` (la caída de la gallina ya sale por abajo; con overflow visible podría asomar fuera del stage — si molesta, recortar solo verticalmente con `clip-path` en lugar de un borde redondeado).
 
-**`src/lib/games/chicken.functions.ts`** — server fns con `requireSupabaseAuth`:
-- `chickenResume()` → estado de sesión abierta (oculta secuencia futura).
-- `chickenDeal({ bet, client_action_id })` → cierra sesión previa, debita, genera secuencia, inserta `game_sessions` con `game:"chicken"`, `state:{ brokenSeq }`, `public_state` inicial (step=0, multiplier=1, nextMultiplier=tabla[1]).
-- `chickenJump({ session_id, nonce, client_action_id })` → consulta `brokenSeq[step+1]`. Si SAFE: avanza step, actualiza nextMultiplier. Si BROKEN: cierra sesión, `outcome:"lost"`, `brokenAt:step+1`.
-- `chickenCashout({ session_id, nonce, client_action_id })` → paga `bet * multiplier(step)`, exige `step >= 1`.
+## Detalles técnicos
 
-Patrón idéntico a `minesReveal/minesCashout` (maskPublic oculta `brokenSeq`). No requiere migración: `game_sessions` ya acepta cualquier valor de `game`.
+Archivos afectados:
+- `src/components/ChickenGame.tsx`
+  - Renombrar/añadir estado: `prepare`, `prepare-waiting`, `jump`, `land-bounce`, etc. (o reutilizar `prepare` extendiendo su duración hasta que llegue la respuesta).
+  - Mover el `jumpFn(...)` al inicio de `prepare`. Hacer `Promise.all([reqP, delay(PREPARE_MIN_MS)])`.
+  - Una vez resuelto, reproducir un breve `release flash` (clase CSS de ~120ms) y luego setear `chickenFx = "jump-left-to-right"`.
+  - Bajar `JUMP_MS` a ~220ms y `LAND_BOUNCE_MS` a ~140ms.
+  - Quitar `rounded-2xl border border-purple-500/30 overflow-hidden` del `<section className="chicken-stage ...">`.
+- `src/styles.css`
+  - `.chicken-stage`: quitar `background` y `border-radius`/borde; mantener `aspect-ratio`.
+  - Añadir `.chicken-fx-prepare-waiting` con glow azul pulsante (keyframes `chickenChargeGlow`).
+  - Añadir `.chicken-fx-release-flash` (~120ms) para el destello al soltar.
+  - Reescribir keyframes de `chickenHopInPlace` para que la caída sea más corta y rápida que la subida.
 
-## 3. Frontend
+## Resultado esperado
 
-**`src/components/ChickenGame.tsx`** — copia la estructura de `MinesGame.tsx`:
-- Header del juego idéntico (logo, balance, menú, sonido).
-- HUD inferior idéntico: `BetAmount`, botones −/+, quick adds (+500/+1K/+2K/+5K), botón principal full-width verde.
-- Reutiliza `useMe`, `useServerFn`, `clampBetToStep`, `playCashoutSound`/`playCrashSound`, `toFriendlyError`.
-
-**Escena (centro de pantalla, cámara fija):**
-- `<div class="chicken-stage">` con `background-space.png` como `background-image` (cover, sin parallax).
-- Dos slots absolutos: `.asteroid-left` (donde está la gallina) y `.asteroid-right` (siguiente, visible solo cuando hay partida activa).
-- Gallina absoluta sobre `asteroid-left` (25–30% del alto útil), animaciones por `className` swap (`idle`/`prepare`/`jump`/`fail`).
-- Multiplicador sobre `asteroid-right`: chip con el mismo estilo del badge de Mines.
-- Mensaje central inicial "CLUCK! / ¿Hasta dónde llegarás?" con la misma clase del overlay FIGHT! de Arena (`.arena-fight-banner` o equivalente reusada) — fade-out al pulsar JUGAR.
-
-**Estados del botón principal:**
-| Fase | Botón(es) |
-|------|-----------|
-| `idle` (sin partida) | JUGAR |
-| `playing` step=0 | SALTAR |
-| `playing` step≥1 | COBRAR · SALTAR |
-| `result` | JUGAR DE NUEVO |
-
-**Secuencia visual del salto** (CSS keyframes, ~700ms total):
-1. `chicken-prepare` 150ms.
-2. `chicken-jump` + translate X+Y arco (transform translate3d, sin librerías) hasta el centro de `asteroid-right` 450ms.
-3. Si SAFE: aterriza, micro-rebote (`transform: scale 1→1.05→1`), vuelve a `idle`. La escena "desliza" el asteroide derecho a la posición izquierda (transform translateX 300ms) y aparece el nuevo derecho con el siguiente multiplicador (opacity 0→1).
-4. Si BROKEN: aterriza un instante (50ms), el asteroide derecho cambia a `asteroid-broken.png` + sacudida (`@keyframes shake`), la gallina cae (`translateY` + `rotate` + opacity → 0) con `chicken-fail`. Llamamos `playCrashSound`.
-
-Toda la animación se dispara **después** de que el server responda, usando la respuesta para decidir SAFE/BROKEN — el cliente nunca conoce la secuencia futura.
-
-## 4. Ruta y registro
-
-**`src/routes/chicken.tsx`** — clon de `dados.tsx`:
-```tsx
-useForceDarkTheme();
-<RequireAuth><LoadingScreen variant="chicken"><ChickenGame /></LoadingScreen></RequireAuth>
-```
-Meta tags propios. Añadir `variant: "chicken"` en `LoadingScreen` (mismo loader, fondo de chicken).
-
-**Integración home:** añadir `game-chicken.png` (asset existente o reusar `chicken-idle` recortado) a `src/lib/admin/home-defaults.ts` para que aparezca en "Juegos destacados" y en el panel admin.
-
-## 5. Arquitectura extensible (eventos de derrota futuros)
-
-`public_state` lleva `lossKind?: "broken" | "ufo" | "meteor" | "blackhole"`. El server hoy solo emite `"broken"`. Cuando se añadan OVNIs/meteoritos basta con:
-- ampliar `placeBrokenSequence` para devolver `{ kind, step }[]`,
-- en el cliente, un `switch(lossKind)` que dispare la animación correspondiente.
-
-La lógica de apuesta, debit/credit, multiplicadores y estados no cambia.
-
-## Detalles técnicos resumidos
-
-- Sin Canvas/WebGL. Solo `transform`, `translate3d`, `opacity`, `@keyframes`.
-- `will-change: transform` solo en la gallina durante el salto.
-- Imágenes precargadas vía `<link rel="preload">` en `LoadingScreen` para evitar pop-in.
-- Sonidos: `playDiceRollSound` (salto), `playCashoutSound` (cobrar), `playCrashSound` (fail).
-- Idempotencia con `client_action_id` UUID por acción (deal/jump/cashout), igual que Mines.
-- Sin cambios en design system, header, HUD, tipografía ni colores existentes.
-
-¿Confirmas para implementar? Si tienes una curva de multiplicadores específica que prefieras (por ejemplo "quiero llegar a 50x en el salto 20"), dímela y la calibro antes de codificar.
+- La gallina prepara el salto con un glow azul claro pulsando. Mientras dure el delay del servidor, este glow se ve más intenso.
+- En cuanto el servidor responde, un destello breve y la gallina salta hacia arriba y cae rápido sobre el nuevo asteroide (o cae al vacío si se rompe). Ya no hay sensación de "congelada en el aire".
+- El escenario ya no está dentro de un cuadrado: la gallina y los asteroides parecen flotar directamente sobre el fondo espacial de la página.
