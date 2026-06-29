@@ -11,6 +11,7 @@ import {
   playChickenJumpSound,
   playChickenLossSound,
   playChickenLandSound,
+  playChickenSafeSound,
   stopAllGameAudio,
 } from "@/lib/gameAudio";
 import { useServerFn } from "@tanstack/react-start";
@@ -417,7 +418,7 @@ export function ChickenGame() {
             </div>
           </div>
           <div className="text-center">
-            <div className="text-[9px] uppercase tracking-widest text-purple-200/70">Siguiente pago</div>
+            <div className="text-[9px] uppercase tracking-widest text-purple-200/70">Siguiente X</div>
             <div className="mt-1 rounded-lg border border-emerald-500/30 bg-emerald-950/30 py-1.5">
               <span className="font-display text-base font-bold neon-green">
                 {nextMult > 0 ? `${nextMult.toFixed(2)}x` : "—"}
@@ -425,7 +426,7 @@ export function ChickenGame() {
             </div>
           </div>
           <div className="text-center">
-            <div className="text-[9px] uppercase tracking-widest text-purple-200/70">Retirar</div>
+            <div className="text-[9px] uppercase tracking-widest text-purple-200/70">Cobro</div>
             <div className="mt-1 rounded-lg border border-purple-500/40 bg-purple-950/30 py-1.5">
               <span className="font-display text-base font-bold text-purple-200">
                 {step > 0 ? `${currentMult.toFixed(2)}x` : "—"}
