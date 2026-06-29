@@ -111,6 +111,10 @@ export function ChickenGame() {
   const [bet, setBet] = useState(2000);
   const [phase, setPhase] = useState<Phase>("idle");
   const [step, setStep] = useState(0);                     // safe jumps confirmed
+  // Step "visible" para el banner motivacional. Se actualiza solo cuando la
+  // gallina ya aterrizó en el nuevo asteroide, para evitar que el banner
+  // se remonte (duplicado) durante el salto.
+  const [displayedStep, setDisplayedStep] = useState(0);
   const [nextMult, setNextMult] = useState<number>(chickenMultiplier(1));
   const [currentMult, setCurrentMult] = useState<number>(1);
   const [lastPayout, setLastPayout] = useState<number>(0);
@@ -139,6 +143,7 @@ export function ChickenGame() {
   const resetToIdle = useCallback(() => {
     setPhase("idle");
     setStep(0);
+    setDisplayedStep(0);
     setNextMult(chickenMultiplier(1));
     setCurrentMult(1);
     setChickenFx("idle");
@@ -153,6 +158,7 @@ export function ChickenGame() {
     const pub = view.public_state;
     applyBalance(view.new_balance);
     setStep(pub.step);
+    setDisplayedStep(pub.step);
     setCurrentMult(pub.multiplier);
     setNextMult(pub.nextMultiplier || 0);
     if (pub.phase === "playing") {
@@ -227,6 +233,7 @@ export function ChickenGame() {
       sessionRef.current = { id: view.session_id, nonce: view.nonce };
       applyBalance(view.new_balance);
       setStep(view.public_state.step);
+      setDisplayedStep(view.public_state.step);
       setCurrentMult(view.public_state.multiplier);
       setNextMult(view.public_state.nextMultiplier);
       setRightVisible(true);
@@ -367,6 +374,10 @@ export function ChickenGame() {
     // Slide both asteroids + chicken left so the "right" position becomes the new "left".
     setChickenFx("slide-to-left");
     await delay(SLIDE_MS);
+    // El banner motivacional previo ya completó su salida hacia la izquierda
+    // junto con el asteroide. Ahora sí promovemos el step "visible" para que
+    // el siguiente banner entre limpio (sin duplicado durante el salto).
+    setDisplayedStep(pub.step);
     // (step/currentMult/nextMult ya se commitearon arriba; aquí solo
     //  reseteamos posiciones y disparamos el fade-in del nuevo asteroide
     //  derecho cambiando su `key` — sin un frame en blanco.)
@@ -543,7 +554,7 @@ export function ChickenGame() {
           )}
 
           {/* Micro-banner motivacional tras cada salto exitoso */}
-          {step >= 1 &&
+          {displayedStep >= 1 &&
             (phase === "playing" ||
               (phase === "jumping" &&
                 (chickenFx === "prepare" ||
@@ -551,7 +562,7 @@ export function ChickenGame() {
                   chickenFx === "land-bounce" ||
                   chickenFx === "slide-to-left"))) && (
             <div
-              key={step}
+              key={displayedStep}
               className="chicken-motivation-banner px-6"
             >
               <div
@@ -561,7 +572,7 @@ export function ChickenGame() {
                   className="font-display text-2xl font-black uppercase leading-tight tracking-tight text-white sm:text-3xl"
                   style={{ textShadow: "0 3px 10px rgba(0,0,0,0.85)" }}
                 >
-                  {chickenEncouragement(step)}
+                  {chickenEncouragement(displayedStep)}
                 </div>
               </div>
             </div>
