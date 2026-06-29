@@ -3249,3 +3249,161 @@ html.light .profile-page .profile-quickbar-tab.is-active {
   color: #7C3AED !important;
 }
 
+
+/* ============================================================
+   CHICKEN ROAD — stage, asteroids, sprite animations
+   ============================================================ */
+.chicken-stage {
+  background: radial-gradient(ellipse at 50% 0%, rgba(80,30,150,0.25), transparent 65%), rgba(12,4,32,0.45);
+  /* Aspect ratio cuadrado para mantener cámara fija y proporciones consistentes. */
+  aspect-ratio: 1 / 1;
+  max-height: 60vh;
+  min-height: 280px;
+  width: 100%;
+}
+
+/* slots: dos posiciones fijas, izquierda y derecha, dentro del stage */
+.chicken-slot {
+  position: absolute;
+  bottom: 12%;
+  width: 38%;
+  aspect-ratio: 1 / 0.85;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+}
+.chicken-slot-left  { left: 6%; }
+.chicken-slot-right { right: 6%; transition: opacity 280ms ease-out, transform 280ms ease-out; }
+.chicken-slot-right[data-fade="in"] {
+  animation: chickenSlotFadeIn 280ms ease-out both;
+}
+@keyframes chickenSlotFadeIn {
+  from { opacity: 0; transform: translateX(18px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.chicken-asteroid-img {
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter: drop-shadow(0 8px 12px rgba(0,0,0,0.55));
+}
+
+.chicken-asteroid-shake {
+  animation: chickenAsteroidShake 320ms ease-in-out;
+}
+@keyframes chickenAsteroidShake {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  20%  { transform: translateX(-4px) translateY(-2px); }
+  40%  { transform: translateX(4px)  translateY(2px); }
+  60%  { transform: translateX(-3px) translateY(-1px); }
+  80%  { transform: translateX(3px)  translateY(1px); }
+}
+
+/* Chip de multiplicador encima del asteroide derecho */
+.chicken-mult-chip {
+  position: absolute;
+  top: -8%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 10px;
+  border-radius: 9999px;
+  border: 1px solid rgba(34,197,94,0.55);
+  background: rgba(8, 30, 18, 0.85);
+  color: #4ade80;
+  font-family: var(--font-display, inherit);
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 8px rgba(74,222,128,0.55);
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.45);
+}
+
+/* GALLINA — siempre absoluta, posicionada sobre el asteroide izquierdo por defecto */
+.chicken-sprite {
+  position: absolute;
+  bottom: 18%;
+  left: 9%;
+  width: 28%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+  will-change: transform, opacity;
+  transition: transform 0ms;
+}
+.chicken-sprite-img {
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.55));
+}
+
+/* idle: pequeño bobbing */
+.chicken-fx-idle {
+  animation: chickenIdle 2400ms ease-in-out infinite;
+}
+@keyframes chickenIdle {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-2%); }
+}
+
+/* prepare: ligera compresión hacia abajo */
+.chicken-fx-prepare {
+  animation: chickenPrepare 180ms ease-out forwards;
+}
+@keyframes chickenPrepare {
+  from { transform: translateY(0) scaleY(1); }
+  to   { transform: translateY(4%) scaleY(0.94); }
+}
+
+/* salto en arco hacia el asteroide derecho */
+.chicken-fx-jump-left-to-right {
+  animation: chickenJumpArc 480ms cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+}
+@keyframes chickenJumpArc {
+  0%   { transform: translate(0%, 0%) rotate(-2deg); }
+  45%  { transform: translate(80%, -55%) rotate(-6deg); }
+  100% { transform: translate(160%, 0%) rotate(2deg); }
+}
+
+/* aterrizaje: rebote rápido */
+.chicken-fx-land-bounce {
+  transform: translate(160%, 0%);
+  animation: chickenLandBounce 220ms ease-out forwards;
+}
+@keyframes chickenLandBounce {
+  0%   { transform: translate(160%, -8%) scaleY(0.95); }
+  50%  { transform: translate(160%, 2%)  scaleY(1.05); }
+  100% { transform: translate(160%, 0%)  scaleY(1); }
+}
+
+/* desliza la gallina (con el "nuevo izquierdo") de vuelta al slot izquierdo */
+.chicken-fx-slide-to-left {
+  animation: chickenSlideToLeft 320ms ease-in-out forwards;
+}
+@keyframes chickenSlideToLeft {
+  from { transform: translate(160%, 0%); }
+  to   { transform: translate(0%, 0%); }
+}
+
+/* caída al vacío tras romper el asteroide */
+.chicken-fx-fall {
+  transform: translate(160%, 0%);
+  animation: chickenFall 600ms cubic-bezier(0.55, 0.05, 0.8, 0.9) forwards;
+}
+@keyframes chickenFall {
+  0%   { transform: translate(160%, 0%)   rotate(0deg);   opacity: 1; }
+  60%  { transform: translate(170%, 70%)  rotate(180deg); opacity: 0.85; }
+  100% { transform: translate(180%, 180%) rotate(360deg); opacity: 0; }
+}
+
+/* estado final tras caer: invisible */
+.chicken-fx-fail-still {
+  opacity: 0;
+  transform: translate(180%, 180%);
+}

@@ -27,6 +27,7 @@ import { Route as MinesRouteImport } from './routes/mines'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as EventosRouteImport } from './routes/eventos'
 import { Route as DadosRouteImport } from './routes/dados'
+import { Route as ChickenRouteImport } from './routes/chicken'
 import { Route as BlackjackvipRouteImport } from './routes/blackjackvip'
 import { Route as BlackjackRouteImport } from './routes/blackjack'
 import { Route as ArenaRouteImport } from './routes/arena'
@@ -128,6 +129,11 @@ const DadosRoute = DadosRouteImport.update({
   path: '/dados',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChickenRoute = ChickenRouteImport.update({
+  id: '/chicken',
+  path: '/chicken',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlackjackvipRoute = BlackjackvipRouteImport.update({
   id: '/blackjackvip',
   path: '/blackjackvip',
@@ -186,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/arena': typeof ArenaRoute
   '/blackjack': typeof BlackjackRoute
   '/blackjackvip': typeof BlackjackvipRoute
+  '/chicken': typeof ChickenRoute
   '/dados': typeof DadosRoute
   '/eventos': typeof EventosRoute
   '/home': typeof HomeRoute
@@ -216,6 +223,7 @@ export interface FileRoutesByTo {
   '/arena': typeof ArenaRoute
   '/blackjack': typeof BlackjackRoute
   '/blackjackvip': typeof BlackjackvipRoute
+  '/chicken': typeof ChickenRoute
   '/dados': typeof DadosRoute
   '/eventos': typeof EventosRoute
   '/home': typeof HomeRoute
@@ -247,6 +255,7 @@ export interface FileRoutesById {
   '/arena': typeof ArenaRoute
   '/blackjack': typeof BlackjackRoute
   '/blackjackvip': typeof BlackjackvipRoute
+  '/chicken': typeof ChickenRoute
   '/dados': typeof DadosRoute
   '/eventos': typeof EventosRoute
   '/home': typeof HomeRoute
@@ -279,6 +288,7 @@ export interface FileRouteTypes {
     | '/arena'
     | '/blackjack'
     | '/blackjackvip'
+    | '/chicken'
     | '/dados'
     | '/eventos'
     | '/home'
@@ -309,6 +319,7 @@ export interface FileRouteTypes {
     | '/arena'
     | '/blackjack'
     | '/blackjackvip'
+    | '/chicken'
     | '/dados'
     | '/eventos'
     | '/home'
@@ -339,6 +350,7 @@ export interface FileRouteTypes {
     | '/arena'
     | '/blackjack'
     | '/blackjackvip'
+    | '/chicken'
     | '/dados'
     | '/eventos'
     | '/home'
@@ -370,6 +382,7 @@ export interface RootRouteChildren {
   ArenaRoute: typeof ArenaRoute
   BlackjackRoute: typeof BlackjackRoute
   BlackjackvipRoute: typeof BlackjackvipRoute
+  ChickenRoute: typeof ChickenRoute
   DadosRoute: typeof DadosRoute
   EventosRoute: typeof EventosRoute
   HomeRoute: typeof HomeRoute
@@ -523,6 +536,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DadosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/chicken': {
+      id: '/chicken'
+      path: '/chicken'
+      fullPath: '/chicken'
+      preLoaderRoute: typeof ChickenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blackjackvip': {
       id: '/blackjackvip'
       path: '/blackjackvip'
@@ -602,6 +622,7 @@ const rootRouteChildren: RootRouteChildren = {
   ArenaRoute: ArenaRoute,
   BlackjackRoute: BlackjackRoute,
   BlackjackvipRoute: BlackjackvipRoute,
+  ChickenRoute: ChickenRoute,
   DadosRoute: DadosRoute,
   EventosRoute: EventosRoute,
   HomeRoute: HomeRoute,
@@ -629,13 +650,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

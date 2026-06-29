@@ -17,6 +17,7 @@ import gameBlackjackAsset from "@/assets/game-blackjack.png.asset.json";
 import gameBlackjackVipAsset from "@/assets/game-blackjack-vip.png.asset.json";
 import gameArenaAsset from "@/assets/game-arena.png.asset.json";
 import gameRuletaAsset from "@/assets/game-ruleta.png.asset.json";
+import gameChickenAsset from "@/assets/chicken/chicken-idle.png.asset.json";
 const gameSpaceman = gameSpacemanAsset.url;
 const gameSlotMafia = gameSlotMafiaAsset.url;
 const gameMines = gameMinesAsset.url;
@@ -25,6 +26,7 @@ const gameBlackjack = gameBlackjackAsset.url;
 const gameBlackjackVip = gameBlackjackVipAsset.url;
 const gameArena = gameArenaAsset.url;
 const gameRuleta = gameRuletaAsset.url;
+const gameChicken = gameChickenAsset.url;
 
 export type DefaultSlide = {
   img: string;
@@ -62,4 +64,5 @@ export const DEFAULT_FEATURED: DefaultFeatured[] = [
   { name: "ARENA", img: gameArena, tag: "NUEVO", tag_color: "emerald", to: "/arena" },
   { name: "RULETA", img: gameRuleta, tag: "CLÁSICO", tag_color: "rose", to: "/ruleta" },
   { name: "BLACKJACK VIP", img: gameBlackjackVip, tag: "VIP", tag_color: "amber", to: "/blackjackvip" },
+  { name: "CHICKEN\nROAD", img: gameChicken, tag: "NUEVO", tag_color: "emerald", to: "/chicken" },
 ];
