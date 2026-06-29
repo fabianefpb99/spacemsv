@@ -569,6 +569,17 @@ export function playChickenLossSound() {
   }).catch(() => { /* ignore */ });
 }
 
+// ---- Chicken safe landing on platform ----
+export function playChickenLandSound() {
+  if (muted) return;
+  if (typeof window === "undefined") return;
+  import("./webAudioPlayer").then(({ playSound }) => {
+    playSound("/__l5e/assets-v1/5a586475-cdbd-4620-b9a4-b700bba66216/chicken-land.mp3", {
+      volume: 0.3,
+    });
+  }).catch(() => { /* ignore */ });
+}
+
 // ---- Coin cascade sound (used while win counter animates up) ----
 // Slot payout should feel like many coins hitting a metal tray: dry, fast,
 // slightly chaotic, with little bursts of 2-3 impacts. Avoid pitched sweeps
