@@ -474,6 +474,16 @@ export function ChickenGame() {
             />
           </div>
 
+          {/* Indicador de "cargando impulso" durante la espera del servidor */}
+          {chickenFx === "prepare" && (
+            <div className="chicken-charge-hint pointer-events-none">
+              <span className="chicken-charge-hint-text">CARGANDO IMPULSO</span>
+              <span className="chicken-charge-hint-dots">
+                <i /><i /><i />
+              </span>
+            </div>
+          )}
+
           {/* Banner inicial CLUCK — arriba de la gallina */}
           {phase === "idle" && (
             <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex justify-center pt-2">
