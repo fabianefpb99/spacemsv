@@ -139,6 +139,11 @@ export function ChickenGame() {
       queryClient.setQueryData<MeData | null>(["me", user.id], (prev) =>
         prev ? { ...prev, balance: newBalance } : prev,
       );
+      // El servidor sólo retorna `balance` (real). El bono se consume
+      // primero en `adjust_balance`, así que disparamos un refetch en
+      // segundo plano para sincronizar `bonus_balance` y evitar que el
+      // HUD muestre un bono ya gastado durante varios tiros.
+      queryClient.invalidateQueries({ queryKey: ["me"] });
     },
     [queryClient, user],
   );
