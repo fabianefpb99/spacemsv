@@ -186,6 +186,13 @@ export function ChickenGame() {
   // Sync muted toggle with global audio state.
   useEffect(() => { setMuted(isMuted()); }, []);
 
+  // Pre-cache the broken asteroid so el swap mid-aire es instantáneo
+  // (sin un parpadeo mientras decode el WebP).
+  useEffect(() => {
+    const img = new Image();
+    img.src = IMG_ASTEROID_BROKEN;
+  }, []);
+
   const recoverAfterActionError = useCallback(async (err: unknown) => {
     const raw = err instanceof Error ? err.message.toLowerCase() : String(err).toLowerCase();
     const looksAuthError =
@@ -318,11 +325,14 @@ export function ChickenGame() {
     const pub = view.public_state;
 
     if (pub.phase === "result" && pub.outcome === "lost") {
-      // BROKEN: chicken just landed on the right asteroid; break it + fall.
-      setRightFx("shake-break");
-      playChickenLossSound();
-      await delay(BROKEN_SHAKE_MS);
+      // LOSS: con la gallina aún en el aire, el asteroide ya se rompe
+      // (cambia a textura "broken"). Luego la gallina cae a través del hueco
+      // y el asteroide roto se desvanece.
       setRightFx("broken");
+      playChickenLossSound();
+      // Pequeña pausa para que el jugador vea el cambio "íntegro → roto"
+      // mientras la gallina sigue su arco.
+      await delay(140);
       setChickenFx("fall");
       await delay(FALL_MS);
       setChickenFx("fail-still");
@@ -463,7 +473,7 @@ export function ChickenGame() {
           {rightVisible && (phase === "playing" || phase === "jumping" || phase === "lost") && (
             <div
               key={rightAsteroidKey}
-              className={`chicken-slot chicken-slot-right ${rightFx === "shake-break" ? "chicken-asteroid-shake" : ""}`}
+              className={`chicken-slot chicken-slot-right ${rightFx === "shake-break" ? "chicken-asteroid-shake" : ""} ${rightFx === "broken" && (chickenFx === "fall" || chickenFx === "fail-still") ? "chicken-asteroid-falling" : ""}`}
               data-fade={phase === "playing" && chickenFx === "idle" ? "in" : "stay"}
             >
               <img
