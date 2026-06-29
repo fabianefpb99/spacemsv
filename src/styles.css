@@ -2847,6 +2847,16 @@ html.light .promo-close-btn svg {
   stroke: #ffffff !important;
 }
 
+/* Promo popup countdown: keep dark-mode look in light mode (white text on dark box) */
+html.light .promo-countdown-box {
+  background-color: #1a0530 !important;
+}
+html.light .promo-countdown-text,
+html.light .promo-countdown-text.text-white {
+  color: #ffffff !important;
+  text-shadow: 0 0 8px rgba(168, 85, 247, 0.7) !important;
+}
+
 /* Eventos hero: force title and subtitle to white above all light-mode text rewrites */
 .eventos-hero-title,
 html.light .eventos-hero-title,
