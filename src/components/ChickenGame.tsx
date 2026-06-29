@@ -123,6 +123,7 @@ export function ChickenGame() {
   const [rightVisible, setRightVisible] = useState(false);
   const [muted, setMuted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDealing, setIsDealing] = useState(false);
   const [online] = useState(217);
 
   const sessionRef = useRef<{ id: string; nonce: number } | null>(null);
