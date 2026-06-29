@@ -423,14 +423,17 @@ export function ChickenGame() {
           </div>
         </section>
 
-        {/* Escena (cámara fija) */}
-        <section className="chicken-stage relative mt-2 overflow-hidden rounded-2xl border border-purple-500/30">
-          {/* slot izquierdo */}
-          <div className="chicken-slot chicken-slot-left">
+        {/* Escena (cámara fija; la gallina permanece centrada, los asteroides se mueven hacia ella) */}
+        <section
+          className="chicken-stage relative mt-2 overflow-hidden rounded-2xl border border-purple-500/30"
+          data-anim={chickenFx}
+        >
+          {/* asteroide CENTRAL (sobre el que está parada la gallina) */}
+          <div className="chicken-slot chicken-slot-center">
             <img src={IMG_ASTEROID} alt="" className="chicken-asteroid-img" draggable={false} />
           </div>
 
-          {/* slot derecho (solo durante partida) */}
+          {/* asteroide DERECHO — el próximo objetivo. Entra por la derecha. */}
           {rightVisible && (phase === "playing" || phase === "jumping" || phase === "lost") && (
             <div
               className={`chicken-slot chicken-slot-right ${rightFx === "shake-break" ? "chicken-asteroid-shake" : ""}`}
