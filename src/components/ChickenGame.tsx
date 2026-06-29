@@ -149,6 +149,7 @@ export function ChickenGame() {
     setChickenFx("idle");
     setRightFx("none");
     setRightVisible(false);
+    setIsDealing(false);
     sessionRef.current = null;
   }, []);
 
