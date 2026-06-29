@@ -135,9 +135,9 @@ export function PromoPopup() {
             className="absolute flex items-center justify-center"
             style={{ left: "67.5%", top: "63.5%", width: "27.5%", height: "11%" }}
           >
-            <div className="flex h-full w-full items-center justify-center rounded-md bg-[#1a0530]/95 px-1">
+            <div className="promo-countdown-box flex h-full w-full items-center justify-center rounded-md bg-[#1a0530]/95 px-1">
               <span
-                className="font-display font-black tabular-nums leading-none text-white"
+                className="promo-countdown-text font-display font-black tabular-nums leading-none text-white"
                 style={{
                   fontSize: "clamp(14px, 4.2vw, 26px)",
                   textShadow: "0 0 8px rgba(168,85,247,0.7)",
