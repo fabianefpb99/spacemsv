@@ -3419,28 +3419,26 @@ html.light .profile-page .profile-quickbar-tab.is-active {
    el "slide" el asteroide central sale por la izquierda y el
    derecho entra hasta colocarse bajo la gallina (centro).
    ============================================================ */
+.chicken-stage[data-anim="jump-left-to-right"] .chicken-slot-center,
 .chicken-stage[data-anim="land-bounce"] .chicken-slot-center,
-.chicken-stage[data-anim="slide-to-left"] .chicken-slot-center {
-  animation: chickenCenterExitLeft 540ms cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+.chicken-stage[data-anim="slide-to-left"] .chicken-slot-center,
+.chicken-stage[data-anim="fall"] .chicken-slot-center,
+.chicken-stage[data-anim="fail-still"] .chicken-slot-center {
+  animation: chickenCenterExitLeft 480ms cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
 }
 @keyframes chickenCenterExitLeft {
   from { transform: translateX(-50%); opacity: 1; }
-  to   { transform: translateX(-220%); opacity: 0; }
+  to   { transform: translateX(-260%); opacity: 0; }
 }
 
+.chicken-stage[data-anim="jump-left-to-right"] .chicken-slot-right,
 .chicken-stage[data-anim="land-bounce"] .chicken-slot-right,
-.chicken-stage[data-anim="slide-to-left"] .chicken-slot-right {
-  animation: chickenRightToCenter 540ms cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+.chicken-stage[data-anim="slide-to-left"] .chicken-slot-right,
+.chicken-stage[data-anim="fall"] .chicken-slot-right,
+.chicken-stage[data-anim="fail-still"] .chicken-slot-right {
+  animation: chickenRightToCenter 480ms cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
 }
 @keyframes chickenRightToCenter {
   from { right: -14%; transform: translateX(0); }
   to   { right: 50%;  transform: translateX(50%); }
-}
-
-/* Cuando se rompe, el asteroide derecho ya viajó hasta el centro: lo dejamos ahí
-   para shake/break + caída de la gallina. */
-.chicken-stage[data-anim="fall"] .chicken-slot-right,
-.chicken-stage[data-anim="fail-still"] .chicken-slot-right {
-  right: 50%;
-  transform: translateX(50%);
 }
