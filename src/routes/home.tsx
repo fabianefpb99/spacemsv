@@ -32,6 +32,7 @@ import heroDiceImg from "@/assets/home-hero-dice.jpg";
 import heroBlackjackImg from "@/assets/home-hero-blackjack.jpg";
 import heroRuletaImg from "@/assets/home-hero-ruleta.jpg";
 import heroArenaImg from "@/assets/home-hero-arena.png.asset.json";
+import heroChickenImg from "@/assets/home-hero-chicken.webp.asset.json";
 import gameSpacemanAsset from "@/assets/game-spaceman.png.asset.json";
 import gameSlotMafiaAsset from "@/assets/game-slot-mafia.png.asset.json";
 import gameMinesAsset from "@/assets/game-mines.png.asset.json";
@@ -40,6 +41,7 @@ import gameBlackjackAsset from "@/assets/game-blackjack.png.asset.json";
 import gameBlackjackVipAsset from "@/assets/game-blackjack-vip.png.asset.json";
 import gameArenaAsset from "@/assets/game-arena.png.asset.json";
 import gameRuletaAsset from "@/assets/game-ruleta.png.asset.json";
+import gameChickenAsset from "@/assets/game-chicken.webp.asset.json";
 const gameSpaceman = gameSpacemanAsset.url;
 const gameSlotMafia = gameSlotMafiaAsset.url;
 const gameMines = gameMinesAsset.url;
@@ -48,6 +50,7 @@ const gameBlackjack = gameBlackjackAsset.url;
 const gameBlackjackVip = gameBlackjackVipAsset.url;
 const gameArena = gameArenaAsset.url;
 const gameRuleta = gameRuletaAsset.url;
+const gameChicken = gameChickenAsset.url;
 import gift3d from "@/assets/gift-3d.png";
 
 function prettyGameName(g: string): string {
