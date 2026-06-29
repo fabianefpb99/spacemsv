@@ -89,6 +89,7 @@ export function stopAllGameAudio() {
   try { stopFlight(); } catch {}
   try { stopBlackjackAmbient(); } catch {}
   try { stopAmbient(); } catch {}
+  try { stopChickenBgMusic(); } catch {}
   if (typeof window !== "undefined") {
     try { window.dispatchEvent(new Event(AUDIO_STOP_ALL_EVENT)); } catch {}
   }
@@ -934,4 +935,149 @@ export function playRevealSound() {
   cg.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
   click.connect(cg).connect(masterGain);
   click.start(now); click.stop(now + 0.06);
+}
+
+// ============================================================
+// Chicken background music — seamless loop con crossfade.
+// El track dura ~30s y la transición usa dos <audio> alternados
+// con fade-in / fade-out de 2.5s para que no se sienta el final.
+// ============================================================
+const CHICKEN_BG_URL =
+  "/__l5e/assets-v1/6b8acc14-7918-49f5-b3df-effd7f797d43/chicken-bg.mp3";
+const CHICKEN_BG_FADE_MS = 2500;
+const CHICKEN_BG_TARGET_VOLUME = 0.22;
+
+type ChickenBgState = {
+  a: HTMLAudioElement;
+  b: HTMLAudioElement;
+  active: HTMLAudioElement;
+  raf: number | null;
+  scheduler: number | null;
+  visHooked: boolean;
+  onVis?: () => void;
+  onBlur?: () => void;
+  onFocus?: () => void;
+};
+let chickenBg: ChickenBgState | null = null;
+
+function fadeAudio(el: HTMLAudioElement, from: number, to: number, ms: number) {
+  const start = performance.now();
+  el.volume = Math.max(0, Math.min(1, from));
+  const tick = (now: number) => {
+    if (!chickenBg) return;
+    const t = Math.min(1, (now - start) / ms);
+    const v = from + (to - from) * t;
+    try { el.volume = muted ? 0 : Math.max(0, Math.min(1, v)); } catch {}
+    if (t < 1) requestAnimationFrame(tick);
+    else if (to <= 0.001) {
+      try { el.pause(); el.currentTime = 0; } catch {}
+    }
+  };
+  requestAnimationFrame(tick);
+}
+
+function scheduleChickenCrossfade() {
+  if (!chickenBg) return;
+  if (chickenBg.scheduler != null) {
+    window.clearTimeout(chickenBg.scheduler);
+    chickenBg.scheduler = null;
+  }
+  const current = chickenBg.active;
+  const duration = current.duration;
+  if (!isFinite(duration) || duration <= 0) {
+    // Metadata aún no disponible — reintenta corto.
+    chickenBg.scheduler = window.setTimeout(scheduleChickenCrossfade, 500);
+    return;
+  }
+  const remainingMs = Math.max(0, (duration - current.currentTime) * 1000);
+  const fireIn = Math.max(50, remainingMs - CHICKEN_BG_FADE_MS);
+  chickenBg.scheduler = window.setTimeout(() => {
+    if (!chickenBg) return;
+    const next = chickenBg.active === chickenBg.a ? chickenBg.b : chickenBg.a;
+    try { next.currentTime = 0; } catch {}
+    next.volume = 0;
+    next.play().then(() => {
+      if (!chickenBg) return;
+      fadeAudio(next, 0, CHICKEN_BG_TARGET_VOLUME, CHICKEN_BG_FADE_MS);
+      fadeAudio(current, current.volume, 0, CHICKEN_BG_FADE_MS);
+      chickenBg.active = next;
+      scheduleChickenCrossfade();
+    }).catch(() => {
+      // Si falló, reintenta scheduling con el actual.
+      if (chickenBg) scheduleChickenCrossfade();
+    });
+  }, fireIn);
+}
+
+export function startChickenBgMusic() {
+  if (typeof window === "undefined") return;
+  if (chickenBg) return; // ya activo
+  const a = new Audio(CHICKEN_BG_URL);
+  const b = new Audio(CHICKEN_BG_URL);
+  for (const el of [a, b]) {
+    el.loop = false;
+    el.preload = "auto";
+    el.volume = 0;
+    el.muted = muted;
+  }
+  chickenBg = { a, b, active: a, raf: null, scheduler: null, visHooked: false };
+  // Hook visibility / focus para pausar.
+  const pauseBoth = () => {
+    if (!chickenBg) return;
+    try { chickenBg.a.pause(); } catch {}
+    try { chickenBg.b.pause(); } catch {}
+    if (chickenBg.scheduler != null) {
+      window.clearTimeout(chickenBg.scheduler);
+      chickenBg.scheduler = null;
+    }
+  };
+  const resume = () => {
+    if (!chickenBg || muted) return;
+    chickenBg.active.play().then(() => scheduleChickenCrossfade()).catch(() => {});
+  };
+  chickenBg.onVis = () => { if (document.hidden) pauseBoth(); else resume(); };
+  chickenBg.onBlur = pauseBoth;
+  chickenBg.onFocus = () => { if (!document.hidden) resume(); };
+  document.addEventListener("visibilitychange", chickenBg.onVis);
+  window.addEventListener("pagehide", chickenBg.onBlur);
+  window.addEventListener("blur", chickenBg.onBlur);
+  window.addEventListener("focus", chickenBg.onFocus);
+  chickenBg.visHooked = true;
+
+  a.play().then(() => {
+    if (!chickenBg) return;
+    fadeAudio(a, 0, CHICKEN_BG_TARGET_VOLUME, CHICKEN_BG_FADE_MS);
+    scheduleChickenCrossfade();
+  }).catch(() => {
+    // Autoplay bloqueado — reintenta al primer gesto del usuario.
+    const retry = () => {
+      if (!chickenBg) return;
+      chickenBg.active.play().then(() => {
+        if (!chickenBg) return;
+        fadeAudio(chickenBg.active, 0, CHICKEN_BG_TARGET_VOLUME, CHICKEN_BG_FADE_MS);
+        scheduleChickenCrossfade();
+      }).catch(() => {});
+      window.removeEventListener("pointerdown", retry);
+      window.removeEventListener("keydown", retry);
+    };
+    window.addEventListener("pointerdown", retry, { once: true });
+    window.addEventListener("keydown", retry, { once: true });
+  });
+}
+
+export function stopChickenBgMusic() {
+  if (!chickenBg) return;
+  const s = chickenBg;
+  chickenBg = null;
+  if (s.scheduler != null) window.clearTimeout(s.scheduler);
+  try { s.a.pause(); s.a.src = ""; s.a.load(); } catch {}
+  try { s.b.pause(); s.b.src = ""; s.b.load(); } catch {}
+  if (s.visHooked) {
+    if (s.onVis) document.removeEventListener("visibilitychange", s.onVis);
+    if (s.onBlur) {
+      window.removeEventListener("pagehide", s.onBlur);
+      window.removeEventListener("blur", s.onBlur);
+    }
+    if (s.onFocus) window.removeEventListener("focus", s.onFocus);
+  }
 }
