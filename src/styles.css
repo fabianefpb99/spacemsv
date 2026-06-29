@@ -3411,7 +3411,8 @@ html.light .profile-page .profile-quickbar-tab.is-active {
   filter: drop-shadow(0 10px 14px rgba(0,0,0,0.6));
 }
 
-/* Overlay de estrés: parpadea cada segundo con la gallina quieta. */
+/* Overlay de estrés: parpadea brevemente cada ~3s, sin sombra propia
+   (heredaría la del sprite base y se vería doble). */
 .chicken-stress-blink {
   position: absolute;
   left: 0;
@@ -3421,11 +3422,12 @@ html.light .profile-page .profile-quickbar-tab.is-active {
   height: auto;
   pointer-events: none;
   opacity: 0;
-  animation: chicken-stress-blink 1s steps(1, end) infinite;
+  filter: none;
+  animation: chicken-stress-blink 3s steps(1, end) infinite;
 }
 @keyframes chicken-stress-blink {
-  0%, 88% { opacity: 0; }
-  89%, 97% { opacity: 1; }
+  0%, 92% { opacity: 0; }
+  93%, 97% { opacity: 1; }
   98%, 100% { opacity: 0; }
 }
 
