@@ -3442,6 +3442,56 @@ html.light .profile-page .profile-quickbar-tab.is-active {
   }
 }
 
+/* Texto "CARGANDO IMPULSO..." que aparece debajo de la gallina mientras
+   esperamos al servidor. Suave fade-in + leve glow azul a juego con el
+   impulso de las patas. */
+.chicken-charge-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 1.5%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: rgba(8, 22, 48, 0.7);
+  border: 1px solid rgba(96, 165, 250, 0.55);
+  box-shadow: 0 0 14px rgba(59, 130, 246, 0.55);
+  z-index: 3;
+  animation: chickenChargeHintIn 240ms ease-out both;
+}
+.chicken-charge-hint-text {
+  font-family: var(--font-display, inherit);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  color: #dbeafe;
+  text-shadow: 0 0 8px rgba(96, 165, 250, 0.9);
+}
+.chicken-charge-hint-dots {
+  display: inline-flex;
+  gap: 3px;
+}
+.chicken-charge-hint-dots i {
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  background: #93c5fd;
+  box-shadow: 0 0 6px rgba(147, 197, 253, 0.9);
+  animation: chickenChargeDots 900ms ease-in-out infinite;
+}
+.chicken-charge-hint-dots i:nth-child(2) { animation-delay: 150ms; }
+.chicken-charge-hint-dots i:nth-child(3) { animation-delay: 300ms; }
+@keyframes chickenChargeHintIn {
+  from { opacity: 0; transform: translate(-50%, 6px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+@keyframes chickenChargeDots {
+  0%, 100% { opacity: 0.35; transform: translateY(0); }
+  50%      { opacity: 1;    transform: translateY(-2px); }
+}
+
 /* Destello breve al "soltar" el impulso, justo cuando arranca el salto. */
 .chicken-stage[data-anim="jump-left-to-right"] .chicken-sprite::before {
   animation: chickenReleaseFlash 180ms ease-out forwards;
