@@ -32,6 +32,7 @@ import heroDiceImg from "@/assets/home-hero-dice.jpg";
 import heroBlackjackImg from "@/assets/home-hero-blackjack.jpg";
 import heroRuletaImg from "@/assets/home-hero-ruleta.jpg";
 import heroArenaImg from "@/assets/home-hero-arena.png.asset.json";
+import heroChickenImg from "@/assets/home-hero-chicken.webp.asset.json";
 import gameSpacemanAsset from "@/assets/game-spaceman.png.asset.json";
 import gameSlotMafiaAsset from "@/assets/game-slot-mafia.png.asset.json";
 import gameMinesAsset from "@/assets/game-mines.png.asset.json";
@@ -40,6 +41,7 @@ import gameBlackjackAsset from "@/assets/game-blackjack.png.asset.json";
 import gameBlackjackVipAsset from "@/assets/game-blackjack-vip.png.asset.json";
 import gameArenaAsset from "@/assets/game-arena.png.asset.json";
 import gameRuletaAsset from "@/assets/game-ruleta.png.asset.json";
+import gameChickenAsset from "@/assets/game-chicken.webp.asset.json";
 const gameSpaceman = gameSpacemanAsset.url;
 const gameSlotMafia = gameSlotMafiaAsset.url;
 const gameMines = gameMinesAsset.url;
@@ -48,6 +50,7 @@ const gameBlackjack = gameBlackjackAsset.url;
 const gameBlackjackVip = gameBlackjackVipAsset.url;
 const gameArena = gameArenaAsset.url;
 const gameRuleta = gameRuletaAsset.url;
+const gameChicken = gameChickenAsset.url;
 import gift3d from "@/assets/gift-3d.png";
 
 function prettyGameName(g: string): string {
@@ -180,6 +183,7 @@ const GAMES = [
   { name: "ARENA", img: gameArena, tag: "NUEVO", tagCls: "bg-emerald-600 text-white border-emerald-400", to: "/arena" },
   { name: "RULETA", img: gameRuleta, tag: "CLÁSICO", tagCls: "bg-rose-600 text-white border-rose-400", to: "/ruleta" },
   { name: "BLACKJACK VIP", img: gameBlackjackVip, tag: "VIP", tagCls: "bg-amber-500 text-black border-amber-300", to: "/blackjackvip" },
+  { name: "CHICKEN SPACE", img: gameChicken, tag: "NUEVO", tagCls: "bg-emerald-600 text-white border-emerald-400", to: "/chicken" },
 ];
 
 function formatGameTag(tag: string) {
@@ -211,6 +215,14 @@ const SLIDES = [
     desc: "Apuesta, multiplica\ny gana en las estrellas.",
     cta: "Jugar ahora",
     to: "/spaceman" as const,
+  },
+  {
+    img: heroChickenImg.url,
+    eyebrow: "ATRÉVETE EN",
+    title: "CHICKEN SPACE",
+    desc: "Salta entre asteroides\ny multiplica tu apuesta.",
+    cta: "Jugar Chicken",
+    to: "/chicken" as const,
   },
   {
     img: heroMinesImg,
