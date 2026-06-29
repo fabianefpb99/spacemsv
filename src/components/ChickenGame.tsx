@@ -34,13 +34,13 @@ import {
   CHICKEN_MIN_BET,
   chickenMultiplier,
 } from "@/lib/games/chicken.shared";
-import bgAsset from "@/assets/chicken/background-space.png.asset.json";
+import bgAsset from "@/assets/chicken/background-space.webp.asset.json";
 import chickenIdleAsset from "@/assets/chicken/chicken-idle.png.asset.json";
 import chickenPrepareAsset from "@/assets/chicken/chicken-prepare.png.asset.json";
 import chickenJumpAsset from "@/assets/chicken/chicken-jump.png.asset.json";
 import chickenFailAsset from "@/assets/chicken/chicken-fail.png.asset.json";
-import asteroidAsset from "@/assets/chicken/asteroid.png.asset.json";
-import asteroidBrokenAsset from "@/assets/chicken/asteroid-broken.png.asset.json";
+import asteroidAsset from "@/assets/chicken/asteroid.webp.asset.json";
+import asteroidBrokenAsset from "@/assets/chicken/asteroid-broken.webp.asset.json";
 
 const BG = bgAsset.url;
 const IMG_IDLE = chickenIdleAsset.url;
@@ -89,7 +89,7 @@ type ChickenFx = "idle" | "prepare" | "jump-left-to-right" | "land-bounce" | "sl
 const PREPARE_MIN_MS = 240;
 const JUMP_MS = 240;
 const LAND_BOUNCE_MS = 140;
-const SLIDE_MS = 320;
+const SLIDE_MS = 240;
 const BROKEN_SHAKE_MS = 320;
 const FALL_MS = 600;
 
@@ -115,6 +115,7 @@ export function ChickenGame() {
   const [chickenFx, setChickenFx] = useState<ChickenFx>("idle");
   const [rightFx, setRightFx] = useState<RightFx>("none");
   const [rightVisible, setRightVisible] = useState(false);
+  const [rightAsteroidKey, setRightAsteroidKey] = useState(0);
   const [muted, setMuted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [online] = useState(217);
@@ -351,14 +352,12 @@ export function ChickenGame() {
     // Slide both asteroids + chicken left so the "right" position becomes the new "left".
     setChickenFx("slide-to-left");
     await delay(SLIDE_MS);
-    // (step/currentMult/nextMult ya se commitearon arriba; aquí sólo
-    //  reseteamos posiciones y fade-in del nuevo asteroide derecho.)
-    setRightVisible(false);
+    // (step/currentMult/nextMult ya se commitearon arriba; aquí solo
+    //  reseteamos posiciones y disparamos el fade-in del nuevo asteroide
+    //  derecho cambiando su `key` — sin un frame en blanco.)
     setRightFx("none");
     setChickenFx("idle");
-    // brief tick so React unmounts the old right asteroid before the new one fades in
-    await delay(40);
-    setRightVisible(true);
+    setRightAsteroidKey((k) => k + 1);
     setPhase("playing");
     actionInFlightRef.current = false;
   }, [phase, jumpFn, applyBalance, recoverAfterActionError, resetToIdle]);
@@ -463,6 +462,7 @@ export function ChickenGame() {
           {/* asteroide DERECHO — el próximo objetivo. Entra por la derecha. */}
           {rightVisible && (phase === "playing" || phase === "jumping" || phase === "lost") && (
             <div
+              key={rightAsteroidKey}
               className={`chicken-slot chicken-slot-right ${rightFx === "shake-break" ? "chicken-asteroid-shake" : ""}`}
               data-fade={phase === "playing" && chickenFx === "idle" ? "in" : "stay"}
             >
@@ -472,7 +472,10 @@ export function ChickenGame() {
                 className="chicken-asteroid-img"
                 draggable={false}
               />
-              {nextMult > 0 && phase === "playing" && (
+              {nextMult > 0 &&
+                (phase === "playing" ||
+                  (phase === "jumping" &&
+                    (chickenFx === "land-bounce" || chickenFx === "slide-to-left"))) && (
                 <div className="chicken-mult-chip">{nextMult.toFixed(2)}x</div>
               )}
             </div>
@@ -489,6 +492,7 @@ export function ChickenGame() {
               className="chicken-sprite-img"
               draggable={false}
             />
+            <span className="chicken-foot-shadow" aria-hidden="true" />
           </div>
 
           {/* Indicador de "cargando impulso" durante la espera del servidor */}
@@ -519,7 +523,10 @@ export function ChickenGame() {
           )}
 
           {/* Micro-banner motivacional tras cada salto exitoso */}
-          {phase === "playing" && step >= 1 && (
+          {step >= 1 &&
+            (phase === "playing" ||
+              (phase === "jumping" &&
+                (chickenFx === "land-bounce" || chickenFx === "slide-to-left"))) && (
             <div
               key={step}
               className="pointer-events-none absolute inset-x-0 top-3 z-20 flex justify-center px-6"

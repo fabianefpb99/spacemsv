@@ -1,58 +1,73 @@
+# Chicken Road — Sincronización, peso y sombra de patas
 
-## Objetivo
+## 1. Diagnóstico del delay
 
-Que la gallina nunca se "congele" en el aire. El delay del servidor debe absorberse durante la preparación del salto (con un efecto visible de impulso azul), no durante el salto ni la caída. Y quitar el cuadro/borde que encierra el escenario del juego.
+Hoy, tras un salto seguro, hacemos en orden:
 
-## Cambios
-
-### 1. Reordenar el flujo del salto
-
-Hoy el flujo es:
-```text
-prepare (160ms fijos) → jump (280ms en paralelo con request) → land/break
 ```
-Si el servidor tarda 600ms, la gallina queda 300+ms quieta en el aire con la sprite "jump".
-
-Nuevo flujo:
-```text
-prepare (mínimo 220ms, espera al servidor con glow azul) → jump (≈220ms) → land/break (rápido)
+prepare (240ms) → jump (240ms) → land-bounce (140ms) → slide (320ms) → setRightVisible(false) → 40ms → setRightVisible(true) → setPhase("playing")
 ```
-- Disparar `jumpFn(...)` **al entrar en `prepare`**, no al entrar en `jump`.
-- La fase `prepare` dura `max(PREPARE_MIN_MS, tiempo_real_del_request)`. Mientras espera, el sprite "prepare" se queda visible con un glow azul pulsante (charging).
-- En cuanto llega la respuesta y se cumple el mínimo, arranca la animación `jump` ya con el resultado conocido. Sin esperas en el aire.
-- Acelerar la caída/aterrizaje: bajada más corta (~160–200ms) con easing más agresivo, para que el "plop" sobre el asteroide sea inmediato.
 
-### 2. Efecto visual de carga ("impulso azul")
+Aunque `setStep / setNextMult` ya se actualizan apenas responde el servidor, los **renders condicionados a `phase === "playing"`** se atrasan ~700ms:
 
-- Añadir un anillo/glow azul cyan alrededor de la gallina mientras está en `prepare-waiting`.
-- Implementación CSS: pseudo-elemento `::after` en `.chicken-sprite` con `box-shadow` / `radial-gradient` azul que pulsa (~600ms loop) hasta que sale de la fase.
-- Pequeño "shake" o vibración sutil del sprite para reforzar la sensación de impulso.
-- Cuando llega la respuesta del servidor, un flash blanco-azul rápido (~120ms) marca el "release" y arranca el salto. Si la respuesta llega antes del mínimo, el flash se dispara justo al final del mínimo.
+- **Texto motivador** (`{phase === "playing" && step >= 1 ? ... }`): no aparece hasta que termina el slide.
+- **Chip del multiplicador en el asteroide derecho** (`nextMult > 0 && phase === "playing"`): desaparece durante todo el salto/slide y vuelve cuando ya cargó el nuevo asteroide (con su propio fade-in).
+- **Asteroide derecho nuevo**: se desmonta tras el slide y se vuelve a montar 40ms después + fade-in, lo que añade otro pequeño "pop" tardío.
 
-### 3. Quitar el marco del escenario
+## 2. Cambios en `src/components/ChickenGame.tsx`
 
-- En `src/components/ChickenGame.tsx`, la sección `.chicken-stage` tiene `rounded-2xl border border-purple-500/30` y un fondo radial propio. Eso es lo que se ve como "cuadro".
-- Quitar el `border`, el `rounded-2xl` y el `overflow-hidden`.
-- Quitar también el `background` radial de `.chicken-stage` en `src/styles.css` para que el escenario se mezcle con el fondo espacial de la página. El stage seguirá teniendo `aspect-ratio` para preservar proporciones, pero sin contorno visible.
-- Verificar que ninguna animación dependa de `overflow-hidden` (la caída de la gallina ya sale por abajo; con overflow visible podría asomar fuera del stage — si molesta, recortar solo verticalmente con `clip-path` en lugar de un borde redondeado).
+- **Texto motivador** — cambiar la condición a:
+  `(phase === "playing" || phase === "jumping") && step >= 1 && chickenFx !== "prepare" && chickenFx !== "jump-left-to-right"`.
+  Así el banner aparece **en el instante del `land-bounce`**, junto con el sonido de patas, no después del slide.
 
-## Detalles técnicos
+- **Chip de "Siguiente X" sobre el asteroide derecho** — permitir que se muestre también durante `jumping` cuando `chickenFx` ya está en `land-bounce` o `slide-to-left` (no en `prepare` ni `jump`). Evita el "se va y vuelve".
 
-Archivos afectados:
-- `src/components/ChickenGame.tsx`
-  - Renombrar/añadir estado: `prepare`, `prepare-waiting`, `jump`, `land-bounce`, etc. (o reutilizar `prepare` extendiendo su duración hasta que llegue la respuesta).
-  - Mover el `jumpFn(...)` al inicio de `prepare`. Hacer `Promise.all([reqP, delay(PREPARE_MIN_MS)])`.
-  - Una vez resuelto, reproducir un breve `release flash` (clase CSS de ~120ms) y luego setear `chickenFx = "jump-left-to-right"`.
-  - Bajar `JUMP_MS` a ~220ms y `LAND_BOUNCE_MS` a ~140ms.
-  - Quitar `rounded-2xl border border-purple-500/30 overflow-hidden` del `<section className="chicken-stage ...">`.
-- `src/styles.css`
-  - `.chicken-stage`: quitar `background` y `border-radius`/borde; mantener `aspect-ratio`.
-  - Añadir `.chicken-fx-prepare-waiting` con glow azul pulsante (keyframes `chickenChargeGlow`).
-  - Añadir `.chicken-fx-release-flash` (~120ms) para el destello al soltar.
-  - Reescribir keyframes de `chickenHopInPlace` para que la caída sea más corta y rápida que la subida.
+- **Aparición del próximo asteroide** — eliminar el ciclo `setRightVisible(false) → delay(40) → setRightVisible(true)`. En su lugar, al terminar el slide:
+  - Resetear la animación CSS forzando un `key` numérico (`rightAsteroidKey` que incremente). El `key` cambia el nodo y dispara el fade-in sin un frame en blanco.
+  - Esto elimina ~40ms muertos + reduce el "pop" tardío de la plataforma siguiente.
 
-## Resultado esperado
+- **Compactar el slide** — bajar `SLIDE_MS` de 320 → 240 (la plataforma siguiente llega antes al centro; sigue legible, ya tenemos `land-bounce` cubriendo el aterrizaje).
 
-- La gallina prepara el salto con un glow azul claro pulsando. Mientras dure el delay del servidor, este glow se ve más intenso.
-- En cuanto el servidor responde, un destello breve y la gallina salta hacia arriba y cae rápido sobre el nuevo asteroide (o cae al vacío si se rompe). Ya no hay sensación de "congelada en el aire".
-- El escenario ya no está dentro de un cuadrado: la gallina y los asteroides parecen flotar directamente sobre el fondo espacial de la página.
+- **Sombra de patas** — añadir un `<span className="chicken-foot-shadow" />` dentro del wrapper `chicken-sprite`, posicionado justo bajo el sprite. Se oculta en `fall` y `fail-still`.
+
+## 3. CSS — `src/styles.css`
+
+- `.chicken-foot-shadow`: óvalo radial gris-negro semitransparente (`radial-gradient(ellipse, rgba(0,0,0,0.45), transparent 70%)`), `~52% × 10px`, anclado en `bottom: -2px`, `left: 50%`, `translateX(-50%)`, `z-index: -1` respecto al sprite, con `filter: blur(2px)`.
+- Variantes:
+  - Durante `prepare`: sombra ligeramente más oscura/contraída (simula que la gallina presiona la roca).
+  - Durante `land-bounce`: pulso rápido (scale 0.9→1) acompañando el rebote.
+  - Durante `fall` / `fail-still`: `opacity: 0`.
+- Mantener `pointer-events: none`.
+
+## 4. Optimización de imágenes (peso)
+
+Convertir a **WebP** los assets pesados de Chicken Road, igual que hicimos con el resto de juegos. Objetivo: ≥80% de reducción manteniendo calidad visual.
+
+| Asset                      | Tamaño actual | Acción                                  |
+| -------------------------- | ------------- | --------------------------------------- |
+| `background-space.png`     | 2.10 MB       | → WebP q82, max 1600px (≈ 200–300 KB)   |
+| `asteroid.png`             | 162 KB        | → WebP q85 (≈ 25–40 KB)                 |
+| `asteroid-broken.png`      | 162 KB        | → WebP q85 (≈ 25–40 KB)                 |
+| `chicken-idle / prepare / jump / fail` | (revisar)   | → WebP q88 si reduce peso real          |
+
+Pasos:
+1. Descargar el PNG original desde la URL del `.asset.json`.
+2. Comprimir con `ffmpeg` / `cwebp` (ya disponible).
+3. Subir el WebP como nuevo asset (crea nuevo `.asset.json`).
+4. Reemplazar los imports en `ChickenGame.tsx` por los nuevos `.webp.asset.json`.
+5. Borrar los `.png.asset.json` antiguos.
+
+Verificación: cargar `/chicken`, confirmar visualmente que los sprites se ven igual, medir Network.
+
+## 5. Verificación
+
+- Reproducir el juego en preview con Playwright headless:
+  - Capturar screenshot durante `land-bounce` → el texto motivador y el chip de multiplicador del próximo asteroide ya deben estar visibles.
+  - Confirmar que ya no hay un "pop" tardío del asteroide siguiente.
+- Revisar el Network: el fondo debe pesar < 400 KB (vs 2.1 MB actuales).
+- Confirmar que en `prepare` se sigue viendo el glow azul + "CARGANDO IMPULSO" sin cambios.
+
+## Fuera de alcance
+
+- No tocamos lógica de servidor (`chicken.functions.ts`, `chicken.server.ts`, `chicken.shared.ts`).
+- No tocamos el flujo de audio ni los timings de `prepare` (el delay percibido del servidor ya está enmascarado allí).
