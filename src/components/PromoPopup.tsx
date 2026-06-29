@@ -104,6 +104,7 @@ export function PromoPopup() {
 
   return (
     <div
+      data-promo-popup="starter"
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4 py-6 backdrop-blur-sm animate-in fade-in duration-300"
       role="dialog"
       aria-modal="true"
