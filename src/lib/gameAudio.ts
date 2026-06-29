@@ -89,6 +89,7 @@ export function stopAllGameAudio() {
   try { stopFlight(); } catch {}
   try { stopBlackjackAmbient(); } catch {}
   try { stopAmbient(); } catch {}
+  try { stopChickenBgMusic(); } catch {}
   if (typeof window !== "undefined") {
     try { window.dispatchEvent(new Event(AUDIO_STOP_ALL_EVENT)); } catch {}
   }
