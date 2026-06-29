@@ -374,6 +374,10 @@ export function ChickenGame() {
     // Slide both asteroids + chicken left so the "right" position becomes the new "left".
     setChickenFx("slide-to-left");
     await delay(SLIDE_MS);
+    // El banner motivacional previo ya completó su salida hacia la izquierda
+    // junto con el asteroide. Ahora sí promovemos el step "visible" para que
+    // el siguiente banner entre limpio (sin duplicado durante el salto).
+    setDisplayedStep(pub.step);
     // (step/currentMult/nextMult ya se commitearon arriba; aquí solo
     //  reseteamos posiciones y disparamos el fade-in del nuevo asteroide
     //  derecho cambiando su `key` — sin un frame en blanco.)
