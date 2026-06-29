@@ -15,6 +15,7 @@ import {
   stopAllGameAudio,
   startChickenBgMusic,
   stopChickenBgMusic,
+  preloadChickenSounds,
 } from "@/lib/gameAudio";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
@@ -191,6 +192,9 @@ export function ChickenGame() {
   useEffect(() => { setAudioMuted(muted); }, [muted]);
   useEffect(() => {
     stopAllGameAudio();
+    // Pre-decode los SFX para que el sonido de pérdida/aterrizaje suene
+    // sincronizado con la animación desde la primera ronda (sin lag móvil).
+    preloadChickenSounds();
     // Inicia la música de fondo (puede requerir gesto del usuario; reintenta abajo)
     startChickenBgMusic();
     return () => { stopChickenBgMusic(); };
