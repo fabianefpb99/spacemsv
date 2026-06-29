@@ -3260,6 +3260,64 @@ html.light .profile-page .profile-quickbar-tab.is-active {
   width: 100%;
 }
 
+/* Banners motivacionales: posicionados más abajo, nunca empujan elementos
+   porque son absolutos. Entran desde la derecha y salen hacia la izquierda. */
+.chicken-motivation-banner {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 4rem;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+.chicken-motivation-text {
+  animation: chickenMotivationPop 2.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: transform, opacity;
+}
+.chicken-motivation-enter {
+  animation: chickenMotivationEnter 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: transform, opacity;
+}
+@keyframes chickenMotivationEnter {
+  from {
+    opacity: 0;
+    transform: translateX(45px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+@keyframes chickenMotivationPop {
+  0% {
+    opacity: 0;
+    transform: translateX(45px) scale(0.96);
+  }
+  12% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  78% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-45px) scale(0.98);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chicken-motivation-text,
+  .chicken-motivation-enter {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+
 /* slots: posición CENTRAL (bajo la gallina) y DERECHA (próximo destino entrando) */
 .chicken-slot {
   position: absolute;
