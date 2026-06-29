@@ -580,6 +580,22 @@ export function playChickenLandSound() {
   }).catch(() => { /* ignore */ });
 }
 
+// ---- Chicken "cluck" safe vocal — alterna entre 2 muestras ----
+const CHICKEN_SAFE_URLS = [
+  "/__l5e/assets-v1/e7db2d0d-ac42-4ccb-8707-c5e87cdd91df/chicken-safe-1.mp3",
+  "/__l5e/assets-v1/208d2caf-e90d-4ffd-8fbf-e6807dbe5075/chicken-safe-2.mp3",
+];
+let chickenSafeIdx = 0;
+export function playChickenSafeSound() {
+  if (muted) return;
+  if (typeof window === "undefined") return;
+  const url = CHICKEN_SAFE_URLS[chickenSafeIdx % CHICKEN_SAFE_URLS.length];
+  chickenSafeIdx = (chickenSafeIdx + 1) % CHICKEN_SAFE_URLS.length;
+  import("./webAudioPlayer").then(({ playSound }) => {
+    playSound(url, { volume: 0.28 });
+  }).catch(() => { /* ignore */ });
+}
+
 // ---- Coin cascade sound (used while win counter animates up) ----
 // Slot payout should feel like many coins hitting a metal tray: dry, fast,
 // slightly chaotic, with little bursts of 2-3 impacts. Avoid pitched sweeps
