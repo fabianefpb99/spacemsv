@@ -80,9 +80,9 @@ type RightFx = "none" | "shake-break" | "broken";
 /** Substate for the chicken sprite during animation. */
 type ChickenFx = "idle" | "prepare" | "jump-left-to-right" | "land-bounce" | "slide-to-left" | "fall" | "fail-still";
 
-const PREPARE_MS = 180;
-const JUMP_MS = 480;
-const LAND_BOUNCE_MS = 220;
+const PREPARE_MS = 160;
+const JUMP_MS = 280;
+const LAND_BOUNCE_MS = 160;
 const SLIDE_MS = 320;
 const BROKEN_SHAKE_MS = 320;
 const FALL_MS = 600;
