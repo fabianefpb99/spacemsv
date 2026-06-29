@@ -39,6 +39,7 @@ import {
 } from "@/lib/games/chicken.shared";
 import bgAsset from "@/assets/chicken/background-space.webp.asset.json";
 import chickenIdleAsset from "@/assets/chicken/chicken-idle.png.asset.json";
+import chickenStressAsset from "@/assets/chicken/chicken-stress.png.asset.json";
 import chickenPrepareAsset from "@/assets/chicken/chicken-prepare.png.asset.json";
 import chickenJumpAsset from "@/assets/chicken/chicken-jump.png.asset.json";
 import chickenFailAsset from "@/assets/chicken/chicken-fail.png.asset.json";
@@ -47,6 +48,7 @@ import asteroidBrokenAsset from "@/assets/chicken/asteroid-broken.webp.asset.jso
 
 const BG = bgAsset.url;
 const IMG_IDLE = chickenIdleAsset.url;
+const IMG_STRESS = chickenStressAsset.url;
 const IMG_PREPARE = chickenPrepareAsset.url;
 const IMG_JUMP = chickenJumpAsset.url;
 const IMG_FAIL = chickenFailAsset.url;
@@ -524,6 +526,15 @@ export function ChickenGame() {
               className="chicken-sprite-img"
               draggable={false}
             />
+            {chickenFx === "idle" && (phase === "idle" || phase === "playing") && (
+              <img
+                src={IMG_STRESS}
+                alt=""
+                className="chicken-sprite-img chicken-stress-blink"
+                draggable={false}
+                aria-hidden="true"
+              />
+            )}
             <span className="chicken-foot-shadow" aria-hidden="true" />
           </div>
 
