@@ -432,9 +432,10 @@ export function ChickenGame() {
           </div>
         </section>
 
-        {/* Escena (cámara fija; la gallina permanece centrada, los asteroides se mueven hacia ella) */}
+        {/* Escena (cámara fija; la gallina permanece centrada, los asteroides se mueven hacia ella).
+            Sin marco/borde — se mezcla directamente con el fondo espacial de la página. */}
         <section
-          className="chicken-stage relative mt-2 overflow-hidden rounded-2xl border border-purple-500/30"
+          className="chicken-stage relative mt-2"
           data-anim={chickenFx}
         >
           {/* asteroide CENTRAL (sobre el que está parada la gallina) */}
