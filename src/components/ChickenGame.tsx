@@ -111,6 +111,10 @@ export function ChickenGame() {
   const [bet, setBet] = useState(2000);
   const [phase, setPhase] = useState<Phase>("idle");
   const [step, setStep] = useState(0);                     // safe jumps confirmed
+  // Step "visible" para el banner motivacional. Se actualiza solo cuando la
+  // gallina ya aterrizó en el nuevo asteroide, para evitar que el banner
+  // se remonte (duplicado) durante el salto.
+  const [displayedStep, setDisplayedStep] = useState(0);
   const [nextMult, setNextMult] = useState<number>(chickenMultiplier(1));
   const [currentMult, setCurrentMult] = useState<number>(1);
   const [lastPayout, setLastPayout] = useState<number>(0);
@@ -139,6 +143,7 @@ export function ChickenGame() {
   const resetToIdle = useCallback(() => {
     setPhase("idle");
     setStep(0);
+    setDisplayedStep(0);
     setNextMult(chickenMultiplier(1));
     setCurrentMult(1);
     setChickenFx("idle");
@@ -153,6 +158,7 @@ export function ChickenGame() {
     const pub = view.public_state;
     applyBalance(view.new_balance);
     setStep(pub.step);
+    setDisplayedStep(pub.step);
     setCurrentMult(pub.multiplier);
     setNextMult(pub.nextMultiplier || 0);
     if (pub.phase === "playing") {
