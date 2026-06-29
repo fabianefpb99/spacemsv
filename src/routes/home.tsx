@@ -183,6 +183,7 @@ const GAMES = [
   { name: "ARENA", img: gameArena, tag: "NUEVO", tagCls: "bg-emerald-600 text-white border-emerald-400", to: "/arena" },
   { name: "RULETA", img: gameRuleta, tag: "CLÁSICO", tagCls: "bg-rose-600 text-white border-rose-400", to: "/ruleta" },
   { name: "BLACKJACK VIP", img: gameBlackjackVip, tag: "VIP", tagCls: "bg-amber-500 text-black border-amber-300", to: "/blackjackvip" },
+  { name: "CHICKEN SPACE", img: gameChicken, tag: "NUEVO", tagCls: "bg-emerald-600 text-white border-emerald-400", to: "/chicken" },
 ];
 
 function formatGameTag(tag: string) {
@@ -214,6 +215,14 @@ const SLIDES = [
     desc: "Apuesta, multiplica\ny gana en las estrellas.",
     cta: "Jugar ahora",
     to: "/spaceman" as const,
+  },
+  {
+    img: heroChickenImg.url,
+    eyebrow: "ATRÉVETE EN",
+    title: "CHICKEN SPACE",
+    desc: "Salta entre asteroides\ny multiplica tu apuesta.",
+    cta: "Jugar Chicken",
+    to: "/chicken" as const,
   },
   {
     img: heroMinesImg,
