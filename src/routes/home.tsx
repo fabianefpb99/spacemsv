@@ -178,12 +178,12 @@ const GAMES = [
   { name: "SPACEMAN", img: gameSpaceman, tag: "POPULAR", tagCls: "bg-purple-600 text-white border-purple-400", to: "/spaceman" },
   { name: "SLOT", img: gameSlotMafia, tag: "NUEVO", tagCls: "bg-emerald-600 text-white border-emerald-400", to: "/slot" },
   { name: "MINAS", img: gameMines, tag: "POPULAR", tagCls: "bg-purple-600 text-white border-purple-400", to: "/mines" },
-  { name: "DICE", img: gameDice, tag: "CLÁSICO", tagCls: "bg-rose-600 text-white border-rose-400", to: "/dados" },
+  { name: "CHICKEN SPACE", img: gameChicken, tag: "NUEVO", tagCls: "bg-emerald-600 text-white border-emerald-400", to: "/chicken" },
   { name: "BLACKJACK", img: gameBlackjack, tag: "POPULAR", tagCls: "bg-purple-600 text-white border-purple-400", to: "/blackjack" },
   { name: "ARENA", img: gameArena, tag: "NUEVO", tagCls: "bg-emerald-600 text-white border-emerald-400", to: "/arena" },
   { name: "RULETA", img: gameRuleta, tag: "CLÁSICO", tagCls: "bg-rose-600 text-white border-rose-400", to: "/ruleta" },
   { name: "BLACKJACK VIP", img: gameBlackjackVip, tag: "VIP", tagCls: "bg-amber-500 text-black border-amber-300", to: "/blackjackvip" },
-  { name: "CHICKEN SPACE", img: gameChicken, tag: "NUEVO", tagCls: "bg-emerald-600 text-white border-emerald-400", to: "/chicken" },
+  { name: "DICE", img: gameDice, tag: "CLÁSICO", tagCls: "bg-rose-600 text-white border-rose-400", to: "/dados" },
 ];
 
 function formatGameTag(tag: string) {
