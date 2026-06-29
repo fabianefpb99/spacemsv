@@ -3266,14 +3266,18 @@ html.light .profile-page .profile-quickbar-tab.is-active {
   position: absolute;
   left: 0;
   right: 0;
-  top: 4rem;
+  top: 2rem;
   z-index: 20;
   display: flex;
   justify-content: center;
   pointer-events: none;
 }
 .chicken-motivation-text {
-  animation: chickenMotivationPop 2.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: chickenMotivationEnter 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: transform, opacity;
+}
+.chicken-motivation-text.is-exiting {
+  animation: chickenMotivationExit 0.45s cubic-bezier(0.4, 0, 1, 1) forwards;
   will-change: transform, opacity;
 }
 .chicken-motivation-enter {
@@ -3290,22 +3294,14 @@ html.light .profile-page .profile-quickbar-tab.is-active {
     transform: translateX(0) scale(1);
   }
 }
-@keyframes chickenMotivationPop {
-  0% {
-    opacity: 0;
-    transform: translateX(45px) scale(0.96);
-  }
-  12% {
+@keyframes chickenMotivationExit {
+  from {
     opacity: 1;
     transform: translateX(0) scale(1);
   }
-  78% {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-  }
-  100% {
+  to {
     opacity: 0;
-    transform: translateX(-45px) scale(0.98);
+    transform: translateX(-60px) scale(0.96);
   }
 }
 @media (prefers-reduced-motion: reduce) {
