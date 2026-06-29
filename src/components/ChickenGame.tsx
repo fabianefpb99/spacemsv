@@ -547,7 +547,7 @@ export function ChickenGame() {
             (phase === "playing" ||
               (phase === "jumping" &&
                 (chickenFx === "prepare" ||
-                  chickenFx === "jump" ||
+                  chickenFx === "jump-left-to-right" ||
                   chickenFx === "land-bounce" ||
                   chickenFx === "slide-to-left"))) && (
             <div
