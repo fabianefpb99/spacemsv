@@ -123,6 +123,7 @@ export function ChickenGame() {
   const [rightVisible, setRightVisible] = useState(false);
   const [muted, setMuted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDealing, setIsDealing] = useState(false);
   const [online] = useState(217);
 
   const sessionRef = useRef<{ id: string; nonce: number } | null>(null);
@@ -148,6 +149,7 @@ export function ChickenGame() {
     setChickenFx("idle");
     setRightFx("none");
     setRightVisible(false);
+    setIsDealing(false);
     sessionRef.current = null;
   }, []);
 
@@ -220,6 +222,7 @@ export function ChickenGame() {
     if (phase !== "idle" || dealInFlightRef.current) return;
     if (bet < CHICKEN_MIN_BET || bet > balance) return;
     dealInFlightRef.current = true;
+    setIsDealing(true);
     setError(null);
     const prevBalance = balance;
     applyBalance(Math.max(0, balance - bet));
@@ -245,6 +248,7 @@ export function ChickenGame() {
       setError(toFriendlyError(e, "No se pudo iniciar la partida."));
     } finally {
       dealInFlightRef.current = false;
+      setIsDealing(false);
     }
   }, [phase, bet, balance, dealFn, applyBalance, recoverAfterActionError]);
 
@@ -533,7 +537,7 @@ export function ChickenGame() {
           )}
 
           {/* Banner inicial CLUCK — arriba de la gallina */}
-          {phase === "idle" && (
+          {phase === "idle" && !isDealing && (
             <div className="chicken-motivation-banner">
               <div className="chicken-motivation-enter text-center">
                 <div
@@ -545,6 +549,17 @@ export function ChickenGame() {
                 <div className="chicken-cluck-subtitle mt-2 font-display text-xs font-bold uppercase tracking-widest text-purple-100/90">
                   <span key="a" className="chicken-cluck-sub chicken-cluck-sub-a">¿Hasta dónde llegarás?</span>
                   <span key="b" className="chicken-cluck-sub chicken-cluck-sub-b">Apuesta ahora</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* READY verde — aparece inmediatamente tras pulsar JUGAR */}
+          {phase === "idle" && isDealing && (
+            <div className="chicken-motivation-banner">
+              <div className="chicken-motivation-enter text-center">
+                <div className="chicken-ready-title font-display text-6xl font-black uppercase tracking-tight text-emerald-400 sm:text-7xl">
+                  READY
                 </div>
               </div>
             </div>

@@ -3822,6 +3822,24 @@ html.light .profile-page .profile-quickbar-tab.is-active {
   50%  { opacity: 0; transform: translateY(-4px); }
   100% { opacity: 0; transform: translateY(-4px); }
 }
+
+/* READY — aparece inmediatamente tras pulsar JUGAR, mismo sitio que CLUCK */
+.chicken-ready-title {
+  position: relative;
+  display: inline-block;
+  color: #4ade80;
+  text-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.85),
+    0 0 22px rgba(74, 222, 128, 0.55);
+  animation: chickenReadyPulse 1.1s ease-in-out infinite;
+}
+@keyframes chickenReadyPulse {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50%      { transform: scale(1.04); filter: brightness(1.15); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chicken-ready-title { animation: none; }
+}
 @media (prefers-reduced-motion: reduce) {
   .chicken-cluck-title,
   .chicken-cluck-title::before,
