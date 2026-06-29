@@ -10,6 +10,7 @@ import {
   playCashoutSound,
   playChickenJumpSound,
   playChickenLossSound,
+  playChickenLandSound,
   stopAllGameAudio,
 } from "@/lib/gameAudio";
 import { useServerFn } from "@tanstack/react-start";
@@ -328,6 +329,7 @@ export function ChickenGame() {
 
     // SAFE jump, round continues.
     setChickenFx("land-bounce");
+    playChickenLandSound();
     await delay(LAND_BOUNCE_MS);
     // Slide both asteroids + chicken left so the "right" position becomes the new "left".
     setChickenFx("slide-to-left");
@@ -505,11 +507,11 @@ export function ChickenGame() {
           {phase === "playing" && step >= 1 && (
             <div
               key={step}
-              className="pointer-events-none absolute inset-x-0 top-1 z-20 flex justify-center"
+              className="pointer-events-none absolute inset-x-0 top-3 z-20 flex justify-center px-6"
             >
-              <div className="animate-scale-in text-center">
+              <div className="animate-scale-in max-w-[18rem] text-center">
                 <div
-                  className="font-display text-2xl font-black uppercase tracking-tight text-white sm:text-3xl"
+                  className="font-display text-2xl font-black uppercase leading-tight tracking-tight text-white sm:text-3xl"
                   style={{ textShadow: "0 3px 10px rgba(0,0,0,0.85)" }}
                 >
                   {chickenEncouragement(step)}
