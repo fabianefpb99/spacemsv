@@ -2031,13 +2031,13 @@ html, body {
 }
 .dice-pip-off { width: 22px; height: 22px; }
 
-/* Cube face transforms (translateZ = half cube size = 84px) */
-.dice-front  { transform: translateZ(84px); }
-.dice-back   { transform: rotateY(180deg) translateZ(84px); }
-.dice-right  { transform: rotateY(90deg)  translateZ(84px); }
-.dice-left   { transform: rotateY(-90deg) translateZ(84px); }
-.dice-top    { transform: rotateX(90deg)  translateZ(84px); }
-.dice-bottom { transform: rotateX(-90deg) translateZ(84px); }
+/* Cube face transforms (translateZ = half cube size = 100px) */
+.dice-front  { transform: translateZ(100px); }
+.dice-back   { transform: rotateY(180deg) translateZ(100px); }
+.dice-right  { transform: rotateY(90deg)  translateZ(100px); }
+.dice-left   { transform: rotateY(-90deg) translateZ(100px); }
+.dice-top    { transform: rotateX(90deg)  translateZ(100px); }
+.dice-bottom { transform: rotateX(-90deg) translateZ(100px); }
 
 @keyframes dice-float {
   0%, 100% { transform: translateY(0); }
