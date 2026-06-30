@@ -54,13 +54,19 @@ export const playArena = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { bet, character, client_action_id, odds_perm } = data;
 
-    const { data: raw, error } = await supabase.rpc("play_arena_v1", {
-      p_user_id: userId,
-      p_bet_amount: bet,
-      p_character: character,
-      p_client_action_id: client_action_id,
-      p_odds_perm: odds_perm ?? undefined,
-    });
+    const { data: raw, error } = await (supabase.rpc as unknown as (
+      fn: string,
+      args: Record<string, unknown>,
+    ) => Promise<{ data: unknown; error: { message: string } | null }>)(
+      "play_arena_v2",
+      {
+        p_bet_amount: bet,
+        p_character: character,
+        p_client_action_id: client_action_id,
+        p_odds_perm: odds_perm ?? undefined,
+      },
+    );
+    void userId;
 
     if (error) {
       // Map known RPC exceptions to friendly Spanish messages.
