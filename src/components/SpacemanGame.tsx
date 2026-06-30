@@ -574,6 +574,21 @@ export function SpacemanGame() {
     return () => { cancelled = true; };
   }, [applyRoundRow]);
 
+  // Polling de respaldo: las rondas activas (betting/running) ya no son
+  // legibles vía RLS para evitar fugar server_seed/crash_multiplier antes
+  // del crash, así que el realtime no entrega esas transiciones. Sondeamos
+  // la RPC enmascarada cada 700ms para conducir el estado de la UI.
+  useEffect(() => {
+    const id = window.setInterval(async () => {
+      if (document.hidden) return;
+      const { data } = await supabase.rpc("spaceman_current_round");
+      if (!data) return;
+      const r = data as ServerRound & { server_now: string };
+      applyRoundRow(r, r.server_now);
+    }, 700);
+    return () => window.clearInterval(id);
+  }, [applyRoundRow]);
+
   // Realtime: cambios en cualquier ronda de spaceman
   useEffect(() => {
     const channel = supabase

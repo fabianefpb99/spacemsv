@@ -464,12 +464,17 @@ export function RouletteGame() {
 
     const actionId = crypto.randomUUID();
     try {
-      const { data, error } = await supabase.rpc("spin_roulette_v1", {
-        p_user_id: user.id,
-        p_bet_amount: bet,
-        p_choice: choice,
-        p_client_action_id: actionId,
-      });
+      const { data, error } = await (supabase.rpc as unknown as (
+        fn: string,
+        args: Record<string, unknown>,
+      ) => Promise<{ data: unknown; error: { message: string } | null }>)(
+        "spin_roulette_v2",
+        {
+          p_bet_amount: bet,
+          p_choice: choice,
+          p_client_action_id: actionId,
+        },
+      );
       if (error) throw error;
       const result = (data as { cached: { winning_segment: number; winning_color: Choice; won: boolean; payout: number } }).cached;
 
