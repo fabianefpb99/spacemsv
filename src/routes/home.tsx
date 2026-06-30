@@ -23,6 +23,7 @@ import { DesktopSidebar } from "@/components/DesktopSidebar";
 import { UserAvatar } from "@/components/UserAvatar";
 import { generateRecentFillerWins, type FillerWin } from "@/lib/fillers";
 import { getRecentPublicWins, type RecentWin } from "@/lib/recent-wins.functions";
+import { getMyFavoriteGames } from "@/lib/favorite-games.functions";
 import { useUnlockedAvatars } from "@/hooks/useUnlockedAvatars";
 import { useVisibleInterval } from "@/hooks/useVisibleInterval";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
@@ -464,6 +465,42 @@ function HomePage() {
   const existingRoutes = new Set(gamesListBase.map((g) => g.to));
   const missing = GAMES.filter((g) => !existingRoutes.has(g.to as string));
   const gamesList = [...gamesListBase, ...missing];
+
+  // Tus favoritos: top 4 juegos más jugados por el usuario (solo si jugó >=4)
+  const fetchFavorites = useServerFn(getMyFavoriteGames);
+  const favoritesQ = useQuery({
+    queryKey: ["my-favorite-games", user?.id ?? "anon"],
+    queryFn: () => fetchFavorites(),
+    enabled: !!user?.id,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false,
+  });
+  const favoriteCards = (() => {
+    const data = favoritesQ.data ?? [];
+    if (data.length < 4) return [] as typeof gamesList;
+    const dbKeyToRoute: Record<string, string> = {
+      spaceman: "/spaceman",
+      mines: "/mines",
+      slot: "/slot",
+      chicken: "/chicken",
+      blackjack: "/blackjack",
+      blackjack_vip: "/blackjackvip",
+      arena: "/arena",
+      ruleta: "/ruleta",
+      dice: "/dados",
+    };
+    const byRoute = new Map(gamesList.map((g) => [g.to as string, g]));
+    const cards: typeof gamesList = [];
+    for (const f of data) {
+      const route = dbKeyToRoute[f.game.toLowerCase()];
+      const card = route ? byRoute.get(route) : undefined;
+      if (card && !cards.includes(card)) cards.push(card);
+      if (cards.length === 4) break;
+    }
+    return cards;
+  })();
 
   const slides = slidesList.length;
   const arrowsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1155,6 +1192,49 @@ function HomePage() {
             .home-win-avatar-img[data-image-ready="true"] { opacity: 1; }
           `}</style>
         </section>
+
+        {/* Tus favoritos */}
+        {favoriteCards.length === 4 && (
+          <section className="mt-5">
+            <div className="flex items-end justify-between">
+              <h3 className="font-display text-sm font-bold uppercase tracking-widest text-white light-text-dark">
+                Tus favoritos
+              </h3>
+            </div>
+            <div className="mt-3 grid grid-cols-4 gap-2 sm:gap-3">
+              {favoriteCards.map((g) => {
+                const gameName = g.name;
+                const gameTag = formatGameTag(g.tag);
+                return (
+                  <Link
+                    key={`fav-${g.to}-${g.name}`}
+                    to={g.to}
+                    className="home-game-card group relative flex aspect-[3/4] overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400"
+                  >
+                    <SkeletonImage
+                      src={g.img}
+                      alt={gameName}
+                      loading="lazy"
+                      width={512}
+                      height={680}
+                      wrapperClassName="absolute inset-0 h-full w-full"
+                      className="h-full w-full object-cover transition group-hover:scale-105"
+                    />
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/95 via-black/70 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-2 flex flex-col items-center gap-1 px-1.5 text-center">
+                      <span className="home-game-title block w-full whitespace-pre-line font-display font-black uppercase tracking-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] text-[11px] leading-[0.9] sm:text-[12px] sm:leading-[0.95]">
+                        {gameName}
+                      </span>
+                      <span className={`inline-block rounded-full border px-2 py-[2px] text-[8px] font-bold uppercase leading-none tracking-wide ${g.tagCls}`}>
+                        {gameTag}
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
         {/* Invita y gana */}
         <section className="home-invite-card mt-4 flex items-center gap-3 rounded-xl border border-purple-500/30 bg-gradient-to-r from-[#1a0b3a]/80 to-[#0c0620] p-3 sm:p-4">
