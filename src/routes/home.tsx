@@ -762,6 +762,8 @@ function HomePage() {
         {/* Online indicator / rotating tagline */}
         <OnlineRotator
           online={online}
+          clickable={isAdmin}
+          onClick={() => setOnlineDialogOpen(true)}
           username={
             user
               ? (me.data?.profile?.username ??
@@ -770,6 +772,49 @@ function HomePage() {
               : null
           }
         />
+
+        <Dialog open={onlineDialogOpen} onOpenChange={setOnlineDialogOpen}>
+          <DialogContent className="max-w-md theme-dark-fixed border-violet-800/60 bg-[#0f0820] text-white">
+            <DialogHeader>
+              <DialogTitle className="text-white">
+                Jugadores reales conectados ({realActive})
+              </DialogTitle>
+            </DialogHeader>
+            <div className="mt-2 max-h-[60vh] overflow-y-auto">
+              {activeListQ.isLoading ? (
+                <div className="py-6 text-center text-sm text-white/60">Cargando…</div>
+              ) : !activeListQ.data || activeListQ.data.length === 0 ? (
+                <div className="py-6 text-center text-sm text-white/60">
+                  No hay jugadores activos en los últimos 10 minutos.
+                </div>
+              ) : (
+                <ul className="divide-y divide-white/10">
+                  {activeListQ.data.map((u: ActiveUser) => (
+                    <li key={u.user_id} className="flex items-center gap-3 py-2">
+                      {u.avatar_url ? (
+                        <img src={u.avatar_url} alt="" className="h-8 w-8 rounded-full object-cover" />
+                      ) : (
+                        <div className="h-8 w-8 rounded-full bg-white/10" />
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate text-sm font-semibold text-white">
+                          @{u.username ?? u.user_id.slice(0, 6)}
+                        </div>
+                        <div className="truncate text-[11px] text-white/50">
+                          {u.last_game ? `Jugando: ${prettyGameName(u.last_game)}` : "Actividad reciente"}
+                        </div>
+                      </div>
+                      <span className="inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <div className="mt-3 text-[10px] text-white/40">
+                Base mostrada: {onlineBase} (curva horaria) · Reales: {realActive}
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Hero banner */}
         <section className="theme-dark-fixed slider-neon-frame mt-[10px] overflow-hidden rounded-2xl border border-violet-800/50 bg-[#120824] shadow-[0_0_10px_rgba(76,29,149,0.35)]">
