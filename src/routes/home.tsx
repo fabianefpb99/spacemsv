@@ -23,6 +23,7 @@ import { DesktopSidebar } from "@/components/DesktopSidebar";
 import { UserAvatar } from "@/components/UserAvatar";
 import { generateRecentFillerWins, type FillerWin } from "@/lib/fillers";
 import { getRecentPublicWins, type RecentWin } from "@/lib/recent-wins.functions";
+import { getMyFavoriteGames } from "@/lib/favorite-games.functions";
 import { useUnlockedAvatars } from "@/hooks/useUnlockedAvatars";
 import { useVisibleInterval } from "@/hooks/useVisibleInterval";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
