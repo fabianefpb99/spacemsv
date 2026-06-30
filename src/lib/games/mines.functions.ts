@@ -20,6 +20,7 @@ import {
   newServerSeed,
   sha256Hex,
 } from "./engine.server";
+import { isBoostTarget } from "./boost.server";
 
 /* ------------------------------------------------------------------ */
 /* Schemas                                                             */
@@ -275,8 +276,31 @@ export const minesReveal = createServerFn({ method: "POST" })
     }
 
     const { mines, bet, picks } = session.public_state;
-    const mineSet = session.state.mineSet;
-    const isMine = mineSet.includes(data.tile_idx);
+    let mineSet = session.state.mineSet;
+    let isMine = mineSet.includes(data.tile_idx);
+
+    // Boost: si el jugador es target, movemos la mina pisada a una casilla
+    // todavía sin revelar para que el pick sea seguro. Mantenemos el conteo
+    // de minas intacto y la integridad del juego para el resto de picks.
+    if (isMine && (await isBoostTarget(userId, "mines"))) {
+      const revealed = session.public_state.revealed;
+      const occupied = new Set<number>([
+        ...revealed,
+        data.tile_idx,
+        ...mineSet,
+      ]);
+      const candidates: number[] = [];
+      for (let i = 0; i < 25; i += 1) {
+        if (!occupied.has(i)) candidates.push(i);
+      }
+      if (candidates.length > 0) {
+        const swap = candidates[Math.floor(Math.random() * candidates.length)];
+        mineSet = mineSet
+          .filter((idx) => idx !== data.tile_idx)
+          .concat(swap);
+        isMine = false;
+      }
+    }
     const revealed = [...session.public_state.revealed, data.tile_idx];
 
     let publicState: MinesPublicState;
