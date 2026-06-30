@@ -649,6 +649,7 @@ function HomePage() {
         >
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-1">
+              <div className="lg:hidden">
               <HamburgerDrawer
                 trigger={
                   <button
@@ -660,6 +661,7 @@ function HomePage() {
                   </button>
                 }
               />
+              </div>
               <Link to="/home" className="logo-shine">
                 <img
                   src={betspaceLogo}
