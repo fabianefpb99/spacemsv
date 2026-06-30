@@ -125,6 +125,45 @@ export type Database = {
         }
         Relationships: []
       }
+      boost_sessions: {
+        Row: {
+          cleanup_summary: Json | null
+          created_at: string
+          ended_at: string | null
+          ended_by: string | null
+          excluded_games: string[]
+          id: string
+          rtp_value: number
+          started_at: string
+          started_by: string
+          target_user_id: string
+        }
+        Insert: {
+          cleanup_summary?: Json | null
+          created_at?: string
+          ended_at?: string | null
+          ended_by?: string | null
+          excluded_games?: string[]
+          id?: string
+          rtp_value?: number
+          started_at?: string
+          started_by: string
+          target_user_id: string
+        }
+        Update: {
+          cleanup_summary?: Json | null
+          created_at?: string
+          ended_at?: string | null
+          ended_by?: string | null
+          excluded_games?: string[]
+          id?: string
+          rtp_value?: number
+          started_at?: string
+          started_by?: string
+          target_user_id?: string
+        }
+        Relationships: []
+      }
       deposit_requests: {
         Row: {
           amount: number
@@ -1506,6 +1545,28 @@ export type Database = {
         Args: { p_blocked: boolean; p_target_user_id: string }
         Returns: boolean
       }
+      admin_start_boost: {
+        Args: { p_rtp?: number; p_target_user_id: string }
+        Returns: {
+          cleanup_summary: Json | null
+          created_at: string
+          ended_at: string | null
+          ended_by: string | null
+          excluded_games: string[]
+          id: string
+          rtp_value: number
+          started_at: string
+          started_by: string
+          target_user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "boost_sessions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_stop_boost: { Args: { p_dry_run?: boolean }; Returns: Json }
       admin_update_rtp: {
         Args: { p_game: string; p_is_active?: boolean; p_rtp_target: number }
         Returns: {
@@ -1592,6 +1653,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      boost_autoclose_expired: { Args: never; Returns: Json }
       cancel_deposit_request: {
         Args: { p_id: string }
         Returns: {
@@ -1875,6 +1937,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_boost_target: {
+        Args: { p_game?: string; p_user_id: string }
         Returns: boolean
       }
       mark_admin_notification_read: {
