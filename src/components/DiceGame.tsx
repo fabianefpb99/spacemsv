@@ -49,10 +49,10 @@ function uuid(): string {
 }
 
 /** Landing animation length (ms) — must match `.dice-cube-rolling` keyframe duration in styles.css. */
-const LAND_ANIM_MS = 2200;
+const LAND_ANIM_MS = 1300;
 /** Minimum free-spin time before we allow the cube to land, even if the server is super fast.
  *  Prevents the dice from "snapping" the moment you click. */
-const MIN_SPIN_MS = 350;
+const MIN_SPIN_MS = 250;
 
 function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
