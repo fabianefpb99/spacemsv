@@ -1903,8 +1903,8 @@ html, body {
 
 .dice-stage {
   position: relative;
-  width: 168px;
-  height: 168px;
+  width: 200px;
+  height: 200px;
   perspective: 1100px;
   transform-style: preserve-3d;
   animation: dice-float 4s ease-in-out infinite;

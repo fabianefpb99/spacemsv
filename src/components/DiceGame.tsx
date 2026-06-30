@@ -392,7 +392,7 @@ export function DiceGame() {
               }}
             >
 
-          <div className="relative z-0 mx-auto flex h-56 w-full items-center justify-center sm:h-60">
+          <div className="relative z-0 mx-auto flex h-72 w-full items-center justify-center sm:h-80">
             {/* energy halo */}
             <div className="dice-halo" />
             <div className="dice-rings" />
