@@ -21,6 +21,7 @@ import {
   TrendingUp,
   Users,
   Wallet as WalletIcon,
+  Zap,
   X,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -42,6 +43,7 @@ import { DrawerSection } from "@/components/admin/DrawerSection";
 import { MissionsSection } from "@/components/admin/MissionsSection";
 import { VipRewardsSection } from "@/components/admin/VipRewardsSection";
 import { BenefitsSection } from "@/components/admin/BenefitsSection";
+import { BoostSection } from "@/components/admin/BoostSection";
 
 export const Route = createFileRoute("/adminpanel")({
   head: () => ({
@@ -69,6 +71,7 @@ const SECTIONS: { id: AdminSection; label: string; icon: typeof Home; ready: boo
   { id: "home_content", label: "Contenido Home", icon: ImageIcon, ready: true },
   { id: "drawer", label: "Menú Lateral", icon: PanelLeft, ready: true },
   { id: "eventos", label: "Eventos y Misiones", icon: Sparkles, ready: true },
+  { id: "boost", label: "Modo Boost", icon: Zap, ready: true },
   { id: "bonos", label: "Bonos", icon: Gift, ready: false },
   { id: "transacciones", label: "Transacciones", icon: Coins, ready: false },
   { id: "reportes", label: "Reportes", icon: BarChart3, ready: false },
@@ -160,6 +163,8 @@ function AdminPanelPage() {
         return <DrawerSection />;
       case "eventos":
         return <MissionsSection />;
+      case "boost":
+        return <BoostSection />;
       default:
         return <PlaceholderSection label={currentLabel} />;
     }

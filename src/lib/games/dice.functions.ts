@@ -17,6 +17,7 @@ import {
   newServerSeed,
   sha256Hex,
 } from "./engine.server";
+import { isBoostTarget } from "./boost.server";
 
 const RollInput = z.object({
   bet: z
@@ -109,7 +110,12 @@ export const diceRoll = createServerFn({ method: "POST" })
     // to get an integer threshold for cryptoRandomInt(10000).
     const winProb = diceWinProb(mult);
     const threshold = Math.round(winProb * 10000);
-    const won = cryptoRandomInt(10000) < threshold;
+    let won = cryptoRandomInt(10000) < threshold;
+
+    // Boost: si el jugador es target de la sesión activa, forzamos victoria.
+    if (!won && (await isBoostTarget(userId, "dice"))) {
+      won = true;
+    }
 
     // Pick face consistent with both `side` and outcome.
     //   side=low  ⇒ win means face ∈ {1,2,3}, loss means face ∈ {4,5,6}
