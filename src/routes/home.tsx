@@ -25,6 +25,10 @@ import { generateRecentFillerWins, type FillerWin } from "@/lib/fillers";
 import { getRecentPublicWins, type RecentWin } from "@/lib/recent-wins.functions";
 import { useUnlockedAvatars } from "@/hooks/useUnlockedAvatars";
 import { useVisibleInterval } from "@/hooks/useVisibleInterval";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { getActiveUsersCount, getActiveUsersList, type ActiveUser } from "@/lib/presence.functions";
+import { getHourlyOnlineBase } from "@/lib/online-base";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
 import heroImg from "@/assets/home-hero.jpg";
 import heroMinesImg from "@/assets/home-hero-mines.jpg";
@@ -89,7 +93,7 @@ function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
 }
 
-function OnlineRotator({ online, username }: { online: number; username?: string | null }) {
+function OnlineRotator({ online, username, onClick, clickable }: { online: number; username?: string | null; onClick?: () => void; clickable?: boolean }) {
   const welcome = username
     ? `👋 BIENVENIDO *@${username}*`
     : "👋 BIENVENIDO A *BETSPACE*";
@@ -151,7 +155,11 @@ function OnlineRotator({ online, username }: { online: number; username?: string
   return (
     <div className="relative mt-[10px] h-6 overflow-hidden" style={{ perspective: "600px" }}>
       {mode === "online" && (
-        <div className="absolute inset-0 flex items-center justify-start gap-2 pl-1 animate-fade-in">
+        <div
+          className={`absolute inset-0 flex items-center justify-start gap-2 pl-1 animate-fade-in ${clickable ? "cursor-pointer" : ""}`}
+          onClick={clickable ? onClick : undefined}
+          role={clickable ? "button" : undefined}
+        >
           <span className="relative inline-flex h-2 w-2">
             <span className="home-online-dot absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-80" />
             <span className="home-online-dot relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
