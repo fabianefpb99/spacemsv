@@ -186,11 +186,11 @@ export function generateRecentFillerWins(
     const isRuleta = game === "Ruleta";
 
     // Bias-to-low multiplier: rnd^2.6 → ~70% of events under ~1.6x.
-    const lowBias = Math.pow(rnd(), 2.6);
+    let lowBias = Math.pow(rnd(), 2.6);
     let multMin = 1.05;
     let multMax = 4.5;
     if (isSlot) { multMin = 1.10; multMax = 6.0; }
-    else if (isMines) { multMin = 1.15; multMax = 5.5; }
+    else if (isMines) { multMin = 1.10; multMax = 3.2; lowBias = Math.pow(rnd(), 3.2); }
     else if (isBlackjack) { multMin = 1.50; multMax = 2.5; }
     else if (isRuleta) { multMin = 2.00; multMax = 14.0; }
     const mult = multMin + lowBias * (multMax - multMin);
@@ -200,7 +200,7 @@ export function generateRecentFillerWins(
     const jitter = 0.4 + rnd() * 1.2; // 0.4× to 1.6×
     let amount = Math.max(500, Math.round((base * jitter) / 100) * 100);
     // Hard caps per game so we never show, e.g., 750k on a slot spin.
-    const cap = isSlot ? 180_000 : isMines ? 320_000 : isBlackjack ? 220_000 : isRuleta ? 600_000 : 450_000;
+    const cap = isSlot ? 180_000 : isMines ? 120_000 : isBlackjack ? 220_000 : isRuleta ? 600_000 : 450_000;
     if (amount > cap) amount = Math.round((cap * (0.55 + rnd() * 0.45)) / 100) * 100;
     const ageSec = Math.floor(rnd() * 240); // 0–4 min ago
 
