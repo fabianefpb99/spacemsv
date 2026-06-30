@@ -1,3 +1,4 @@
+import { safeRpcError } from "@/lib/server-safe-error";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -19,7 +20,7 @@ async function assertAdmin(userId: string) {
   const { data, error } = await supabaseAdmin
     .from("user_roles").select("role")
     .eq("user_id", userId).eq("role", "admin").maybeSingle();
-  if (error) throw new Error(error.message);
+  if (error) throw safeRpcError(error);
   if (!data) throw new Error("not_admin");
 }
 
@@ -103,7 +104,7 @@ export const createDeposit = createServerFn({ method: "POST" })
       console.error("[createDeposit] RPC error", {
         userId: context.userId, code: error.code, message: error.message, details: error.details,
       });
-      throw new Error(error.message);
+      throw safeRpcError(error);
     }
     return row;
   });
@@ -170,7 +171,7 @@ export const confirmDeposit = createServerFn({ method: "POST" })
         userId: context.userId, depositId: data.id,
         code: error.code, message: error.message, details: error.details, hint: error.hint,
       });
-      throw new Error(error.message);
+      throw safeRpcError(error);
     }
     console.log("[confirmDeposit] success", { userId: context.userId, depositId: data.id, status: row?.status });
     return row;
@@ -184,7 +185,7 @@ export const getMyDeposit = createServerFn({ method: "POST" })
     const { data: row, error } = await supabaseAdmin
       .from("deposit_requests").select("*")
       .eq("id", data.id).eq("user_id", context.userId).maybeSingle();
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return row;
   });
 
@@ -197,7 +198,7 @@ export const listMyDeposits = createServerFn({ method: "GET" })
       .eq("user_id", context.userId)
       .order("created_at", { ascending: false })
       .limit(50);
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return data ?? [];
   });
 
@@ -207,7 +208,7 @@ export const cancelMyDeposit = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const supa = userClient(bearer());
     const { data: row, error } = await supa.rpc("cancel_deposit_request", { p_id: data.id });
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return row;
   });
 
@@ -222,7 +223,7 @@ export const getMyPendingReview = createServerFn({ method: "GET" })
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return data;
   });
 
@@ -270,7 +271,7 @@ export const adminListDeposits = createServerFn({ method: "POST" })
     if (toDt) q = q.lte("created_at", toDt.toISOString());
 
     const { data: rows, count, error } = await q.range(from, to);
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return { rows: rows ?? [], total: count ?? 0, page: data.page, pageSize: data.pageSize };
   });
 
@@ -282,7 +283,7 @@ export const adminGetDeposit = createServerFn({ method: "POST" })
     await assertAdmin(context.userId);
     const { data: row, error } = await supabaseAdmin
       .from("deposit_requests").select("*").eq("id", data.id).maybeSingle();
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return row;
   });
 
@@ -293,7 +294,7 @@ export const adminApproveDeposit = createServerFn({ method: "POST" })
     await assertAdmin(context.userId);
     const supa = userClient(bearer());
     const { data: row, error } = await supa.rpc("admin_approve_deposit", { p_id: data.id });
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return row;
   });
 
@@ -309,7 +310,7 @@ export const adminRejectDeposit = createServerFn({ method: "POST" })
     const { data: row, error } = await supa.rpc("admin_reject_deposit", {
       p_id: data.id, p_reason: data.reason,
     });
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return row;
   });
 
@@ -321,6 +322,6 @@ export const adminPendingDepositsCount = createServerFn({ method: "GET" })
     const { count, error } = await supabaseAdmin
       .from("deposit_requests").select("id", { count: "exact", head: true })
       .eq("status", "pendiente_revision");
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return { count: count ?? 0 };
   });

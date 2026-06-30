@@ -1,3 +1,4 @@
+import { safeRpcError } from "@/lib/server-safe-error";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -130,6 +131,6 @@ export const adminUpdateDrawerSettings = createServerFn({ method: "POST" })
     const { error } = await admin
       .from("site_settings")
       .upsert({ key: KEY, value: data, updated_at: new Date().toISOString() }, { onConflict: "key" });
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return { ok: true };
   });

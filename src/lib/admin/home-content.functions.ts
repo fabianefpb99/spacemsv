@@ -1,3 +1,4 @@
+import { safeRpcError } from "@/lib/server-safe-error";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -59,7 +60,7 @@ export const adminListHomeSlides = createServerFn({ method: "GET" })
       .from("home_slides")
       .select("*")
       .order("position", { ascending: true });
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     const rows = await Promise.all(
       (data ?? []).map(async (r) => ({ ...r, image_resolved: await resolveUrl(r.image_url) })),
     );
@@ -87,13 +88,13 @@ export const adminUpsertHomeSlide = createServerFn({ method: "POST" })
     const payload = { ...data };
     if (payload.id) {
       const { error } = await admin.from("home_slides").update(payload).eq("id", payload.id);
-      if (error) throw new Error(error.message);
+      if (error) throw safeRpcError(error);
     } else {
       // remove id key when undefined
       const { id: _drop, ...insertData } = payload;
       void _drop;
       const { error } = await admin.from("home_slides").insert(insertData);
-      if (error) throw new Error(error.message);
+      if (error) throw safeRpcError(error);
     }
     return { ok: true };
   });
@@ -105,7 +106,7 @@ export const adminDeleteHomeSlide = createServerFn({ method: "POST" })
     await assertAdmin(context.userId);
     const admin = await getSupabaseAdmin();
     const { error } = await admin.from("home_slides").delete().eq("id", data.id);
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return { ok: true };
   });
 
@@ -120,7 +121,7 @@ export const adminListFeaturedGames = createServerFn({ method: "GET" })
       .from("home_featured_games")
       .select("*")
       .order("position", { ascending: true });
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     const rows = await Promise.all(
       (data ?? []).map(async (r) => ({ ...r, image_resolved: await resolveUrl(r.image_url) })),
     );
@@ -147,12 +148,12 @@ export const adminUpsertFeaturedGame = createServerFn({ method: "POST" })
     const payload = { ...data };
     if (payload.id) {
       const { error } = await admin.from("home_featured_games").update(payload).eq("id", payload.id);
-      if (error) throw new Error(error.message);
+      if (error) throw safeRpcError(error);
     } else {
       const { id: _drop, ...insertData } = payload;
       void _drop;
       const { error } = await admin.from("home_featured_games").insert(insertData);
-      if (error) throw new Error(error.message);
+      if (error) throw safeRpcError(error);
     }
     return { ok: true };
   });
@@ -164,7 +165,7 @@ export const adminDeleteFeaturedGame = createServerFn({ method: "POST" })
     await assertAdmin(context.userId);
     const admin = await getSupabaseAdmin();
     const { error } = await admin.from("home_featured_games").delete().eq("id", data.id);
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return { ok: true };
   });
 
@@ -188,7 +189,7 @@ export const adminUploadHomeImage = createServerFn({ method: "POST" })
     const { error } = await admin.storage
       .from(BUCKET)
       .upload(path, buffer, { contentType: data.content_type, upsert: false });
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     const { data: signed } = await admin.storage.from(BUCKET).createSignedUrl(path, SIGN_TTL);
     return { path, signedUrl: signed?.signedUrl ?? "" };
   });
@@ -204,7 +205,7 @@ export const adminListHomeStorageObjects = createServerFn({ method: "GET" })
       limit: 1000,
       sortBy: { column: "name", order: "asc" },
     });
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     const items = await Promise.all(
       (data ?? [])
         .filter((o) => o.name && !o.name.endsWith("/"))
@@ -242,7 +243,7 @@ export const adminReplaceHomeImage = createServerFn({ method: "POST" })
         contentType: data.content_type,
         upsert: true,
       });
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return { ok: true, size: buffer.byteLength };
   });
 
