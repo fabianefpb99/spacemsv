@@ -5,6 +5,7 @@ import { Loader2, Power, Search, ShieldAlert, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { adminListUsers } from "@/lib/admin/admin.functions";
+import { adminStartBoostFn, adminStopBoostFn } from "@/lib/admin/boost.functions";
 import { Panel } from "./shared";
 
 type ActiveBoost = {
@@ -47,6 +48,8 @@ export function BoostSection() {
 
   /* Buscar usuarios ------------------------------------------------- */
   const listFn = useServerFn(adminListUsers);
+  const startFn = useServerFn(adminStartBoostFn);
+  const stopFn = useServerFn(adminStopBoostFn);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<{ id: string; label: string } | null>(null);
   const usersQ = useQuery({
@@ -58,12 +61,9 @@ export function BoostSection() {
   /* Mutaciones ------------------------------------------------------ */
   const startMut = useMutation({
     mutationFn: async (args: { user_id: string; rtp: number }) => {
-      const { data, error } = await supabase.rpc("admin_start_boost", {
-        p_target_user_id: args.user_id,
-        p_rtp: args.rtp,
+      return await startFn({
+        data: { target_user_id: args.user_id, rtp: args.rtp },
       });
-      if (error) throw new Error(error.message);
-      return data;
     },
     onSuccess: () => {
       toast.success("Boost activado");
@@ -76,17 +76,14 @@ export function BoostSection() {
 
   const previewMut = useMutation({
     mutationFn: async (): Promise<DryRunResult> => {
-      const { data, error } = await supabase.rpc("admin_stop_boost", { p_dry_run: true });
-      if (error) throw new Error(error.message);
-      return data as DryRunResult;
+      const res = await stopFn({ data: { dry_run: true } });
+      return res as DryRunResult;
     },
   });
 
   const stopMut = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase.rpc("admin_stop_boost", { p_dry_run: false });
-      if (error) throw new Error(error.message);
-      return data;
+      return await stopFn({ data: { dry_run: false } });
     },
     onSuccess: () => {
       toast.success("Boost cerrado y datos del target borrados");
