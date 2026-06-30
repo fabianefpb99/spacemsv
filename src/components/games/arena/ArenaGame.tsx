@@ -188,7 +188,12 @@ export function ArenaGame() {
       setResult(res);
       setPhase("fighting");
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error al pelear";
+      // Surface the real error so we can debug "la partida no inicia".
+      // Includes any nested cause/details from TanStack server-fn errors.
+      const anyErr = err as { message?: string; cause?: unknown; stack?: string } | null;
+      const msg = anyErr?.message || "Error al pelear";
+      // eslint-disable-next-line no-console
+      console.error("[arena] play failed:", err, { cause: anyErr?.cause });
       toast.error(msg);
       setIsPlaying(false);
     }
