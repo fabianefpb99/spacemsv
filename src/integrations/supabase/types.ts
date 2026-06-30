@@ -1968,6 +1968,15 @@ export type Database = {
         }
         Returns: Json
       }
+      play_arena_v2: {
+        Args: {
+          p_bet_amount: number
+          p_character: string
+          p_client_action_id: string
+          p_odds_perm?: number[]
+        }
+        Returns: Json
+      }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {
@@ -2002,6 +2011,14 @@ export type Database = {
           p_choice: string
           p_client_action_id: string
           p_user_id: string
+        }
+        Returns: Json
+      }
+      spin_roulette_v2: {
+        Args: {
+          p_bet_amount: number
+          p_choice: string
+          p_client_action_id: string
         }
         Returns: Json
       }
