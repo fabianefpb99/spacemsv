@@ -6,6 +6,7 @@ import {
   Headphones,
   Wallet,
   Trophy,
+  User,
   Sun,
   Moon,
   Facebook,
@@ -18,6 +19,7 @@ import {
   Hash,
   type LucideIcon,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Switch } from "@/components/ui/switch";
@@ -34,6 +36,7 @@ const ITEMS: Item[] = [
   { label: "Mis Recargas", icon: History, to: "/mis-recargas" },
   { label: "Depósito", icon: Wallet, to: "/pay" },
   { label: "Ranking", icon: Trophy, to: "/ranking" },
+  { label: "Perfil", icon: User, to: "/perfil" },
   { label: "Soporte", icon: Headphones, to: "/soporte" },
 ];
 
@@ -52,7 +55,10 @@ export function DesktopSidebar() {
   const { theme, toggle } = useTheme();
   const navigate = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
-  const isLight = theme === "light";
+  // Avoid SSR/CSR mismatch: the theme is only known client-side.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const isLight = mounted && theme === "light";
 
   const settingsFn = useServerFn(getPublicDrawerSettings);
   const settingsQ = useQuery({
