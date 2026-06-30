@@ -290,7 +290,7 @@ export const minesReveal = createServerFn({ method: "POST" })
         ...mineSet,
       ]);
       const candidates: number[] = [];
-      for (let i = 0; i < 25; i += 1) {
+      for (let i = 0; i < MINES_TILES; i += 1) {
         if (!occupied.has(i)) candidates.push(i);
       }
       if (candidates.length > 0) {
