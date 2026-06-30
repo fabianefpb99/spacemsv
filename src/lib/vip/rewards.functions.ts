@@ -1,3 +1,4 @@
+import { safeRpcError } from "@/lib/server-safe-error";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -34,7 +35,7 @@ async function assertAdmin(ctx: { supabase: any; userId: string }) {
     _user_id: ctx.userId,
     _role: "admin",
   });
-  if (error) throw new Error(error.message);
+  if (error) throw safeRpcError(error);
   if (!data) throw new Error("not_admin");
 }
 
@@ -47,7 +48,7 @@ export const adminListVipRewards = createServerFn({ method: "GET" })
       .from("vip_rank_rewards")
       .select("*")
       .order("min_level", { ascending: true });
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return (data ?? []) as VipRankRewardRow[];
   });
 
@@ -78,7 +79,7 @@ export const adminUpsertVipReward = createServerFn({ method: "POST" })
       p_image_url: (data.reward_image_url ?? "") as string,
       p_is_active: data.is_active,
     } as never);
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return Array.isArray(row) ? row[0] : row;
   });
 
@@ -91,7 +92,7 @@ export const listMyVipRewards = createServerFn({ method: "GET" })
       .select("*")
       .eq("user_id", context.userId)
       .order("unlocked_at", { ascending: false });
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return (data ?? []) as UserVipRewardRow[];
   });
 
@@ -105,7 +106,7 @@ export const claimVipReward = createServerFn({ method: "POST" })
     const { data: res, error } = await context.supabase.rpc("claim_vip_reward", {
       p_reward_id: data.rewardId,
     });
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return res as {
       ok: boolean;
       kind?: VipRewardKind;
@@ -160,6 +161,6 @@ export const adminResetUserVip = createServerFn({ method: "POST" })
       "admin_reset_vip_progress",
       { p_target_user_id: data.userId } as never,
     );
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return res as { ok: boolean; deleted_rewards: number };
   });

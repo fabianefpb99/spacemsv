@@ -1,3 +1,4 @@
+import { safeRpcError } from "@/lib/server-safe-error";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -18,7 +19,7 @@ async function assertAdmin(userId: string) {
   const { data, error } = await supabaseAdmin
     .from("user_roles").select("role")
     .eq("user_id", userId).eq("role", "admin").maybeSingle();
-  if (error) throw new Error(error.message);
+  if (error) throw safeRpcError(error);
   if (!data) throw new Error("not_admin");
 }
 
@@ -42,7 +43,7 @@ export const createWithdrawal = createServerFn({ method: "POST" })
       p_account_identifier: data.account_identifier,
       p_account_label: data.account_label ?? null,
     });
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return row;
   });
 
@@ -55,7 +56,7 @@ export const listMyWithdrawals = createServerFn({ method: "GET" })
       .eq("user_id", context.userId)
       .order("created_at", { ascending: false })
       .limit(50);
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return data ?? [];
   });
 
@@ -65,7 +66,7 @@ export const cancelMyWithdrawal = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const supa = userClient(bearer());
     const { data: row, error } = await supa.rpc("cancel_withdrawal_request", { p_id: data.id });
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return row;
   });
 
@@ -77,7 +78,7 @@ export const listMyWithdrawalAccounts = createServerFn({ method: "GET" })
       .from("withdrawal_accounts").select("*")
       .eq("user_id", context.userId)
       .order("updated_at", { ascending: false });
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return data ?? [];
   });
 
@@ -116,7 +117,7 @@ export const adminListWithdrawals = createServerFn({ method: "POST" })
     else if (data.range === "month") fromDt = new Date(now.getTime() - 30*86400_000);
     if (fromDt) q = q.gte("created_at", fromDt.toISOString());
     const { data: rows, count, error } = await q.range(from, to);
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return { rows: rows ?? [], total: count ?? 0, page: data.page, pageSize: data.pageSize };
   });
 
@@ -128,7 +129,7 @@ export const adminGetWithdrawal = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error } = await supabaseAdmin
       .from("withdrawal_requests").select("*").eq("id", data.id).maybeSingle();
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return row;
   });
 
@@ -139,7 +140,7 @@ export const adminApproveWithdrawal = createServerFn({ method: "POST" })
     await assertAdmin(context.userId);
     const supa = userClient(bearer());
     const { data: row, error } = await supa.rpc("admin_approve_withdrawal", { p_id: data.id });
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return row;
   });
 
@@ -155,7 +156,7 @@ export const adminRejectWithdrawal = createServerFn({ method: "POST" })
     const { data: row, error } = await supa.rpc("admin_reject_withdrawal", {
       p_id: data.id, p_reason: data.reason,
     });
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return row;
   });
 
@@ -167,6 +168,6 @@ export const adminPendingWithdrawalsCount = createServerFn({ method: "GET" })
     const { count, error } = await supabaseAdmin
       .from("withdrawal_requests").select("id", { count: "exact", head: true })
       .eq("status", "pendiente");
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return { count: count ?? 0 };
   });

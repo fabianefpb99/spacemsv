@@ -1,3 +1,4 @@
+import { safeRpcError } from "@/lib/server-safe-error";
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
@@ -85,7 +86,7 @@ export const getMyRankingPosition = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase.rpc("get_my_today_position");
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     const row = Array.isArray(data) ? data[0] : null;
     const realRank = row ? Number((row as any).rank) : null;
     const myNet = row ? Number((row as any).net_amount ?? 0) : 0;

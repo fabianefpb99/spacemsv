@@ -1,3 +1,4 @@
+import { safeRpcError } from "@/lib/server-safe-error";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -27,7 +28,7 @@ export const listAdminNotifications = createServerFn({ method: "GET" })
       .select("id,type,title,body,link,meta,read_by,created_at")
       .order("created_at", { ascending: false })
       .limit(80);
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return (data ?? []).map((n) => ({
       ...n,
       read: Array.isArray(n.read_by) && n.read_by.includes(context.userId),
@@ -54,7 +55,7 @@ export const markAdminNotificationRead = createServerFn({ method: "POST" })
       .from("admin_notifications")
       .update({ read_by: next })
       .eq("id", data.id);
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return { ok: true };
   });
 

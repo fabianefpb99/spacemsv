@@ -1,3 +1,4 @@
+import { safeRpcError } from "@/lib/server-safe-error";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -35,7 +36,7 @@ export const checkIsAdmin = createServerFn({ method: "GET" })
       .eq("user_id", context.userId)
       .eq("role", "admin")
       .maybeSingle();
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return { isAdmin: !!data };
   });
 
@@ -77,7 +78,7 @@ export const adminListUsers = createServerFn({ method: "POST" })
     else if (data.status === "unverified") q = q.neq("verification_status", "verified");
 
     const { data: rows, count, error } = await q.range(from, to);
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     const list = rows ?? [];
     const resolved = await resolveAvatarUrls(list.map((r) => (r as { avatar_key?: string | null }).avatar_key));
     const withAvatars = list.map((r) => {
@@ -160,7 +161,7 @@ export const adminGetUserTransactions = createServerFn({ method: "POST" })
       .eq("user_id", data.userId)
       .order("created_at", { ascending: false })
       .limit(data.limit);
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return rows ?? [];
   });
 
@@ -186,7 +187,7 @@ export const adminAdjustBalance = createServerFn({ method: "POST" })
       p_target: data.target,
       p_reason: data.reason ?? undefined,
     });
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     const row = Array.isArray(res) ? res[0] : res;
     return {
       new_balance: Number(row?.new_balance ?? 0),
@@ -205,7 +206,7 @@ export const adminSetBlock = createServerFn({ method: "POST" })
       p_target_user_id: data.userId,
       p_blocked: data.blocked,
     });
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return { ok: true, blocked: data.blocked };
   });
 
@@ -227,7 +228,7 @@ export const adminAdjustXp = createServerFn({ method: "POST" })
       p_delta: data.delta,
       p_reason: data.reason ?? undefined,
     });
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     const row = Array.isArray(res) ? res[0] : res;
     return {
       total_xp: Number(row?.out_total_xp ?? 0),
@@ -248,7 +249,7 @@ export const adminResetPassword = createServerFn({ method: "POST" })
       type: "recovery",
       email,
     });
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     await supabaseAdmin.from("admin_audit_log").insert({
       admin_id: context.userId,
       action: "reset_password",
@@ -273,7 +274,7 @@ export const adminListRtp = createServerFn({ method: "GET" })
       .from("game_rtp_config")
       .select("*")
       .order("game");
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
 
     // Compute live RTP from last 30 days of transactions per game
     const since = new Date(Date.now() - 30 * 86400 * 1000).toISOString();
@@ -337,7 +338,7 @@ export const adminUpdateRtp = createServerFn({ method: "POST" })
       p_rtp_target: data.rtp_target,
       p_is_active: data.is_active ?? undefined,
     });
-    if (error) throw new Error(error.message);
+    if (error) throw safeRpcError(error);
     return row;
   });
 
@@ -388,7 +389,7 @@ export const adminGetCasinoStats = createServerFn({ method: "POST" })
         .lte("created_at", to.toISOString())
         .order("created_at", { ascending: true })
         .range(pageStart, pageStart + pageSize - 1);
-      if (error) throw new Error(error.message);
+      if (error) throw safeRpcError(error);
       if (!page || page.length === 0) break;
       txs.push(...(page as TxRow[]));
       if (page.length < pageSize) break;
@@ -496,7 +497,7 @@ export const adminGetHighWinners = createServerFn({ method: "POST" })
         .in("type", ["bet", "win"])
         .order("created_at", { ascending: true })
         .range(start, start + pageSize - 1);
-      if (error) throw new Error(error.message);
+      if (error) throw safeRpcError(error);
       if (!page || page.length === 0) break;
       for (const t of page as TxRow[]) {
         if (!t.user_id) continue;
