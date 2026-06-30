@@ -171,9 +171,16 @@ export const adminDeleteFeaturedGame = createServerFn({ method: "POST" })
 
 /* ---------------- UPLOAD (admin) ---------------- */
 
+const ALLOWED_IMAGE_MIME = [
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "image/gif",
+] as const;
+
 const uploadInput = z.object({
   filename: z.string().min(1).max(200),
-  content_type: z.string().min(1).max(100),
+  content_type: z.enum(ALLOWED_IMAGE_MIME),
   data_base64: z.string().min(10),
 });
 
@@ -226,7 +233,7 @@ export const adminListHomeStorageObjects = createServerFn({ method: "GET" })
 
 const replaceInput = z.object({
   path: z.string().min(1).max(1024),
-  content_type: z.string().min(1).max(100),
+  content_type: z.enum(ALLOWED_IMAGE_MIME),
   data_base64: z.string().min(10),
 });
 
