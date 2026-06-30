@@ -154,7 +154,11 @@ export function BoostSection() {
                   </div>
                 ) : (
                   (usersQ.data?.rows ?? []).map((u) => {
-                    const row = u as { id: string; email: string | null; username: string | null };
+                    const row = u as unknown as {
+                      id: string;
+                      email: string | null;
+                      username: string | null;
+                    };
                     const label = row.username || row.email || row.id.slice(0, 8);
                     const isSel = selected?.id === row.id;
                     return (
