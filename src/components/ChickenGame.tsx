@@ -2,7 +2,7 @@ import { AuthControl } from "@/components/auth/AuthControl";
 import { BetAmount } from "@/components/games/BetAmount";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, Minus, Plus, Volume2, VolumeX, Instagram } from "lucide-react";
+import { Menu, Minus, Plus, Volume2, VolumeX } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import {
   setMuted as setAudioMuted,
@@ -18,8 +18,7 @@ import {
   preloadChickenSounds,
 } from "@/lib/gameAudio";
 import { useServerFn } from "@tanstack/react-start";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getPublicDrawerSettings } from "@/lib/admin/drawer-content.functions";
+import { useQueryClient } from "@tanstack/react-query";
 import { useMe, type MeData } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
 import { toFriendlyError } from "@/lib/friendly-error";
@@ -106,15 +105,6 @@ export function ChickenGame() {
   const realBalance = me.data?.balance ?? 0;
   const bonusBalance = me.data?.bonus_balance ?? 0;
   const balance = realBalance + bonusBalance;
-
-  const drawerSettingsFn = useServerFn(getPublicDrawerSettings);
-  const drawerSettingsQ = useQuery({
-    queryKey: ["public-drawer"],
-    queryFn: () => drawerSettingsFn(),
-    staleTime: 60_000,
-  });
-  const instagramUrl =
-    drawerSettingsQ.data?.socials?.find((s) => s.platform === "instagram")?.url ?? "";
 
   const dealFn = useServerFn(chickenDeal);
   const jumpFn = useServerFn(chickenJump);
