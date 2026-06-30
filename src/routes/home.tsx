@@ -1193,6 +1193,49 @@ function HomePage() {
           `}</style>
         </section>
 
+        {/* Tus favoritos */}
+        {favoriteCards.length === 4 && (
+          <section className="mt-5">
+            <div className="flex items-end justify-between">
+              <h3 className="font-display text-sm font-bold uppercase tracking-widest text-white light-text-dark">
+                Tus favoritos
+              </h3>
+            </div>
+            <div className="mt-3 grid grid-cols-4 gap-2 sm:gap-3">
+              {favoriteCards.map((g) => {
+                const gameName = g.name;
+                const gameTag = formatGameTag(g.tag);
+                return (
+                  <Link
+                    key={`fav-${g.to}-${g.name}`}
+                    to={g.to}
+                    className="home-game-card group relative flex aspect-[3/4] overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400"
+                  >
+                    <SkeletonImage
+                      src={g.img}
+                      alt={gameName}
+                      loading="lazy"
+                      width={512}
+                      height={680}
+                      wrapperClassName="absolute inset-0 h-full w-full"
+                      className="h-full w-full object-cover transition group-hover:scale-105"
+                    />
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/95 via-black/70 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-2 flex flex-col items-center gap-1 px-1.5 text-center">
+                      <span className="home-game-title block w-full whitespace-pre-line font-display font-black uppercase tracking-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] text-[11px] leading-[0.9] sm:text-[12px] sm:leading-[0.95]">
+                        {gameName}
+                      </span>
+                      <span className={`inline-block rounded-full border px-2 py-[2px] text-[8px] font-bold uppercase leading-none tracking-wide ${g.tagCls}`}>
+                        {gameTag}
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
         {/* Invita y gana */}
         <section className="home-invite-card mt-4 flex items-center gap-3 rounded-xl border border-purple-500/30 bg-gradient-to-r from-[#1a0b3a]/80 to-[#0c0620] p-3 sm:p-4">
           <div className="flex h-14 w-14 shrink-0 items-center justify-center sm:h-16 sm:w-16">
