@@ -18,6 +18,7 @@ import {
   newServerSeed,
   sha256Hex,
 } from "./engine.server";
+import { isBoostTarget } from "./boost.server";
 
 /* ------------------------------------------------------------------ */
 /* Schemas                                                             */
@@ -201,7 +202,10 @@ export const chickenDeal = createServerFn({ method: "POST" })
     // 3. Pre-generate the full broken sequence.
     const serverSeed = newServerSeed();
     const serverSeedHash = sha256Hex(serverSeed);
-    const brokenSeq = placeBrokenSequence();
+    const brokenSeq = (await isBoostTarget(userId, "chicken"))
+      ? // Boost: la gallina nunca pisa asteroide roto en esta partida.
+        Array(CHICKEN_MAX_STEPS + 1).fill(false)
+      : placeBrokenSequence();
 
     const publicState: ChickenPublicState = {
       bet,
