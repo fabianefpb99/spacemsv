@@ -25,6 +25,10 @@ import { generateRecentFillerWins, type FillerWin } from "@/lib/fillers";
 import { getRecentPublicWins, type RecentWin } from "@/lib/recent-wins.functions";
 import { useUnlockedAvatars } from "@/hooks/useUnlockedAvatars";
 import { useVisibleInterval } from "@/hooks/useVisibleInterval";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { getActiveUsersCount, getActiveUsersList, type ActiveUser } from "@/lib/presence.functions";
+import { getHourlyOnlineBase } from "@/lib/online-base";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
 import heroImg from "@/assets/home-hero.jpg";
 import heroMinesImg from "@/assets/home-hero-mines.jpg";
@@ -89,7 +93,7 @@ function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
 }
 
-function OnlineRotator({ online, username }: { online: number; username?: string | null }) {
+function OnlineRotator({ online, username, onClick, clickable }: { online: number; username?: string | null; onClick?: () => void; clickable?: boolean }) {
   const welcome = username
     ? `👋 BIENVENIDO *@${username}*`
     : "👋 BIENVENIDO A *BETSPACE*";
@@ -151,7 +155,11 @@ function OnlineRotator({ online, username }: { online: number; username?: string
   return (
     <div className="relative mt-[10px] h-6 overflow-hidden" style={{ perspective: "600px" }}>
       {mode === "online" && (
-        <div className="absolute inset-0 flex items-center justify-start gap-2 pl-1 animate-fade-in">
+        <div
+          className={`absolute inset-0 flex items-center justify-start gap-2 pl-1 animate-fade-in ${clickable ? "cursor-pointer" : ""}`}
+          onClick={clickable ? onClick : undefined}
+          role={clickable ? "button" : undefined}
+        >
           <span className="relative inline-flex h-2 w-2">
             <span className="home-online-dot absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-80" />
             <span className="home-online-dot relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
@@ -277,7 +285,35 @@ function HomePage() {
   // Never show a fake demo amount. If not logged in, show a dash; if logged
   // in but balance hasn't arrived yet, also show a dash so we don't flash $0.
   const balanceText = me.data ? formatCOP(me.data.balance + me.data.bonus_balance) : "—";
-  const [online] = useState(219);
+  // Online = base "inflado" por hora (curva suave 120..1600) + reales activos.
+  const [onlineBase, setOnlineBase] = useState<number>(() => getHourlyOnlineBase());
+  useEffect(() => {
+    // Recalcula al minuto para detectar el cambio de hora sin recargar.
+    const t = setInterval(() => setOnlineBase(getHourlyOnlineBase()), 60_000);
+    return () => clearInterval(t);
+  }, []);
+  const fetchActiveCount = useServerFn(getActiveUsersCount);
+  const activeCountQ = useQuery({
+    queryKey: ["online-active-count"],
+    queryFn: () => fetchActiveCount(),
+    staleTime: 60_000,
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: false,
+  });
+  const realActive = activeCountQ.data?.count ?? 0;
+  const online = onlineBase + realActive;
+
+  // Admin-only: clic en el contador para ver la lista de jugadores reales activos.
+  const isAdminQ = useIsAdmin();
+  const isAdmin = !!isAdminQ.data;
+  const [onlineDialogOpen, setOnlineDialogOpen] = useState(false);
+  const fetchActiveList = useServerFn(getActiveUsersList);
+  const activeListQ = useQuery({
+    queryKey: ["online-active-list"],
+    queryFn: () => fetchActiveList(),
+    enabled: isAdmin && onlineDialogOpen,
+    staleTime: 30_000,
+  });
   const [slide, setSlide] = useState(0);
   const [arrowsVisible, setArrowsVisible] = useState(true);
   const featuredScrollRef = useRef<HTMLDivElement | null>(null);
@@ -726,6 +762,8 @@ function HomePage() {
         {/* Online indicator / rotating tagline */}
         <OnlineRotator
           online={online}
+          clickable={isAdmin}
+          onClick={() => setOnlineDialogOpen(true)}
           username={
             user
               ? (me.data?.profile?.username ??
@@ -734,6 +772,49 @@ function HomePage() {
               : null
           }
         />
+
+        <Dialog open={onlineDialogOpen} onOpenChange={setOnlineDialogOpen}>
+          <DialogContent className="max-w-md theme-dark-fixed border-violet-800/60 bg-[#0f0820] text-white">
+            <DialogHeader>
+              <DialogTitle className="text-white">
+                Jugadores reales conectados ({realActive})
+              </DialogTitle>
+            </DialogHeader>
+            <div className="mt-2 max-h-[60vh] overflow-y-auto">
+              {activeListQ.isLoading ? (
+                <div className="py-6 text-center text-sm text-white/60">Cargando…</div>
+              ) : !activeListQ.data || activeListQ.data.length === 0 ? (
+                <div className="py-6 text-center text-sm text-white/60">
+                  No hay jugadores activos en los últimos 10 minutos.
+                </div>
+              ) : (
+                <ul className="divide-y divide-white/10">
+                  {activeListQ.data.map((u: ActiveUser) => (
+                    <li key={u.user_id} className="flex items-center gap-3 py-2">
+                      {u.avatar_url ? (
+                        <img src={u.avatar_url} alt="" className="h-8 w-8 rounded-full object-cover" />
+                      ) : (
+                        <div className="h-8 w-8 rounded-full bg-white/10" />
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate text-sm font-semibold text-white">
+                          @{u.username ?? u.user_id.slice(0, 6)}
+                        </div>
+                        <div className="truncate text-[11px] text-white/50">
+                          {u.last_game ? `Jugando: ${prettyGameName(u.last_game)}` : "Actividad reciente"}
+                        </div>
+                      </div>
+                      <span className="inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <div className="mt-3 text-[10px] text-white/40">
+                Base mostrada: {onlineBase} (curva horaria) · Reales: {realActive}
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Hero banner */}
         <section className="theme-dark-fixed slider-neon-frame mt-[10px] overflow-hidden rounded-2xl border border-violet-800/50 bg-[#120824] shadow-[0_0_10px_rgba(76,29,149,0.35)]">
