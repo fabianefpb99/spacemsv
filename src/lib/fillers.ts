@@ -175,13 +175,33 @@ export function generateRecentFillerWins(
   for (let i = 0; i < count; i++) {
     const idx = order[i];
     const f = roster[idx];
-    // Per-event payout: net_amount / totalEventsToday with ±60% jitter.
+    const game = FILLER_GAMES[Math.floor(rnd() * FILLER_GAMES.length)];
+
+    // Per-game distribution. Multipliers are skewed LOW (low values much
+    // more common than high) using a power curve, and amounts have a
+    // realistic cap per game so we don't show absurd payouts in Slot.
+    const isSlot = game === "Slot";
+    const isMines = game === "Mines";
+    const isBlackjack = game === "Blackjack";
+    const isRuleta = game === "Ruleta";
+
+    // Bias-to-low multiplier: rnd^2.6 → ~70% of events under ~1.6x.
+    const lowBias = Math.pow(rnd(), 2.6);
+    let multMin = 1.05;
+    let multMax = 4.5;
+    if (isSlot) { multMin = 1.10; multMax = 6.0; }
+    else if (isMines) { multMin = 1.15; multMax = 5.5; }
+    else if (isBlackjack) { multMin = 1.50; multMax = 2.5; }
+    else if (isRuleta) { multMin = 2.00; multMax = 14.0; }
+    const mult = multMin + lowBias * (multMax - multMin);
+
+    // Per-event payout: scaled down for Slot to stay believable.
     const base = f.net_amount / totalEventsToday;
     const jitter = 0.4 + rnd() * 1.2; // 0.4× to 1.6×
-    const amount = Math.max(500, Math.round((base * jitter) / 100) * 100);
-
-    const mult = 1.05 + rnd() * 4.45; // 1.05x – 5.50x
-    const game = FILLER_GAMES[Math.floor(rnd() * FILLER_GAMES.length)];
+    let amount = Math.max(500, Math.round((base * jitter) / 100) * 100);
+    // Hard caps per game so we never show, e.g., 750k on a slot spin.
+    const cap = isSlot ? 180_000 : isMines ? 320_000 : isBlackjack ? 220_000 : isRuleta ? 600_000 : 450_000;
+    if (amount > cap) amount = Math.round((cap * (0.55 + rnd() * 0.45)) / 100) * 100;
     const ageSec = Math.floor(rnd() * 240); // 0–4 min ago
 
     wins.push({
