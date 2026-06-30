@@ -1939,12 +1939,12 @@ html, body {
   to   { transform: rotateX(360deg) rotateY(720deg) rotateZ(180deg); }
 }
 /* Rolling uses per-face animations that LAND on the idle resting orientation */
-.dice-cube-rolling.dice-face-1 { animation: dice-spin-roll-1 2.2s cubic-bezier(.22,.61,.36,1) forwards; }
-.dice-cube-rolling.dice-face-2 { animation: dice-spin-roll-2 2.2s cubic-bezier(.22,.61,.36,1) forwards; }
-.dice-cube-rolling.dice-face-3 { animation: dice-spin-roll-3 2.2s cubic-bezier(.22,.61,.36,1) forwards; }
-.dice-cube-rolling.dice-face-4 { animation: dice-spin-roll-4 2.2s cubic-bezier(.22,.61,.36,1) forwards; }
-.dice-cube-rolling.dice-face-5 { animation: dice-spin-roll-5 2.2s cubic-bezier(.22,.61,.36,1) forwards; }
-.dice-cube-rolling.dice-face-6 { animation: dice-spin-roll-6 2.2s cubic-bezier(.22,.61,.36,1) forwards; }
+.dice-cube-rolling.dice-face-1 { animation: dice-spin-roll-1 1.3s cubic-bezier(.22,.61,.36,1) forwards; }
+.dice-cube-rolling.dice-face-2 { animation: dice-spin-roll-2 1.3s cubic-bezier(.22,.61,.36,1) forwards; }
+.dice-cube-rolling.dice-face-3 { animation: dice-spin-roll-3 1.3s cubic-bezier(.22,.61,.36,1) forwards; }
+.dice-cube-rolling.dice-face-4 { animation: dice-spin-roll-4 1.3s cubic-bezier(.22,.61,.36,1) forwards; }
+.dice-cube-rolling.dice-face-5 { animation: dice-spin-roll-5 1.3s cubic-bezier(.22,.61,.36,1) forwards; }
+.dice-cube-rolling.dice-face-6 { animation: dice-spin-roll-6 1.3s cubic-bezier(.22,.61,.36,1) forwards; }
 
 /* When NOT rolling, dice-face-N classes lock the cube to show face N */
 .dice-cube.dice-face-1.dice-cube-idle { animation-name: dice-spin-idle; }
