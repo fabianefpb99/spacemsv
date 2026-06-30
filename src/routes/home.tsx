@@ -468,7 +468,6 @@ function HomePage() {
 
   // Tus favoritos: top 4 juegos más jugados por el usuario (solo si jugó >=4)
   const fetchFavorites = useServerFn(getMyFavoriteGames);
-  const { user } = useAuth();
   const favoritesQ = useQuery({
     queryKey: ["my-favorite-games", user?.id ?? "anon"],
     queryFn: () => fetchFavorites(),
