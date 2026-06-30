@@ -102,6 +102,7 @@ function OnlineRotator({ online, username, onClick, clickable }: { online: numbe
     "¿QUE *JUGAREMOS* HOY?",
     "*APUESTA* AHORA",
     "LA *GALAXIA* ESTÁ ABIERTA",
+    "SÍGUENOS EN *@BETSPACE.APP*",
   ];
 
   // mode: "online" shows the dot+count; "phrases" cycles the rotating phrases
