@@ -1,6 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 const ALLOWED_BUCKETS = new Set(["home-content", "vip-rewards", "mission-rewards"]);
+const ALLOWED_MIME = new Set([
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "image/gif",
+]);
 
 export const Route = createFileRoute("/api/public/img/$")({
   server: {
@@ -22,9 +28,19 @@ export const Route = createFileRoute("/api/public/img/$")({
           .download(path);
         if (error || !data) return new Response("Not found", { status: 404 });
         const buf = await data.arrayBuffer();
+        // Force a safe content-type. If the stored object's MIME isn't in
+        // the image allowlist, serve as opaque bytes so the browser never
+        // renders attacker-controlled HTML/JS from this origin.
+        const safeType = ALLOWED_MIME.has(data.type ?? "")
+          ? (data.type as string)
+          : "application/octet-stream";
         return new Response(buf, {
           headers: {
-            "content-type": data.type || "application/octet-stream",
+            "content-type": safeType,
+            "x-content-type-options": "nosniff",
+            ...(safeType === "application/octet-stream"
+              ? { "content-disposition": "attachment" }
+              : {}),
             // Stable URL + long cache so the browser and any CDN keep the
             // bytes between page refreshes. Bucket files are content-addressed
             // by upload timestamp, so re-uploads change the path.
