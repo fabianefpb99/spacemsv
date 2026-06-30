@@ -466,6 +466,43 @@ function HomePage() {
   const missing = GAMES.filter((g) => !existingRoutes.has(g.to as string));
   const gamesList = [...gamesListBase, ...missing];
 
+  // Tus favoritos: top 4 juegos más jugados por el usuario (solo si jugó >=4)
+  const fetchFavorites = useServerFn(getMyFavoriteGames);
+  const { user } = useAuth();
+  const favoritesQ = useQuery({
+    queryKey: ["my-favorite-games", user?.id ?? "anon"],
+    queryFn: () => fetchFavorites(),
+    enabled: !!user?.id,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false,
+  });
+  const favoriteCards = (() => {
+    const data = favoritesQ.data ?? [];
+    if (data.length < 4) return [] as typeof gamesList;
+    const dbKeyToRoute: Record<string, string> = {
+      spaceman: "/spaceman",
+      mines: "/mines",
+      slot: "/slot",
+      chicken: "/chicken",
+      blackjack: "/blackjack",
+      blackjack_vip: "/blackjackvip",
+      arena: "/arena",
+      ruleta: "/ruleta",
+      dice: "/dados",
+    };
+    const byRoute = new Map(gamesList.map((g) => [g.to as string, g]));
+    const cards: typeof gamesList = [];
+    for (const f of data) {
+      const route = dbKeyToRoute[f.game.toLowerCase()];
+      const card = route ? byRoute.get(route) : undefined;
+      if (card && !cards.includes(card)) cards.push(card);
+      if (cards.length === 4) break;
+    }
+    return cards;
+  })();
+
   const slides = slidesList.length;
   const arrowsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Solo arrancamos visible la PRIMERA visita (sin cache previo). Si ya hay
