@@ -285,7 +285,35 @@ function HomePage() {
   // Never show a fake demo amount. If not logged in, show a dash; if logged
   // in but balance hasn't arrived yet, also show a dash so we don't flash $0.
   const balanceText = me.data ? formatCOP(me.data.balance + me.data.bonus_balance) : "—";
-  const [online] = useState(219);
+  // Online = base "inflado" por hora (curva suave 120..1600) + reales activos.
+  const [onlineBase, setOnlineBase] = useState<number>(() => getHourlyOnlineBase());
+  useEffect(() => {
+    // Recalcula al minuto para detectar el cambio de hora sin recargar.
+    const t = setInterval(() => setOnlineBase(getHourlyOnlineBase()), 60_000);
+    return () => clearInterval(t);
+  }, []);
+  const fetchActiveCount = useServerFn(getActiveUsersCount);
+  const activeCountQ = useQuery({
+    queryKey: ["online-active-count"],
+    queryFn: () => fetchActiveCount(),
+    staleTime: 60_000,
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: false,
+  });
+  const realActive = activeCountQ.data?.count ?? 0;
+  const online = onlineBase + realActive;
+
+  // Admin-only: clic en el contador para ver la lista de jugadores reales activos.
+  const isAdminQ = useIsAdmin();
+  const isAdmin = !!isAdminQ.data;
+  const [onlineDialogOpen, setOnlineDialogOpen] = useState(false);
+  const fetchActiveList = useServerFn(getActiveUsersList);
+  const activeListQ = useQuery({
+    queryKey: ["online-active-list"],
+    queryFn: () => fetchActiveList(),
+    enabled: isAdmin && onlineDialogOpen,
+    staleTime: 30_000,
+  });
   const [slide, setSlide] = useState(0);
   const [arrowsVisible, setArrowsVisible] = useState(true);
   const featuredScrollRef = useRef<HTMLDivElement | null>(null);
