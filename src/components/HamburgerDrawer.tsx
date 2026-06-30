@@ -255,7 +255,12 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
                 )}
 
                 <div className="border-t border-purple-500/15 px-4 py-3" style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 0.75rem)" }}>
-                  <div className="flex items-center justify-between gap-3 rounded-xl border border-purple-500/20 bg-[#150830]/60 px-3 py-2.5">
+                  <button
+                    type="button"
+                    onClick={toggle}
+                    aria-label="Cambiar tema"
+                    className="flex w-full items-center justify-between gap-3 rounded-xl border border-purple-500/20 bg-[#150830]/60 px-3 py-2.5 text-left transition hover:border-fuchsia-400/40 hover:bg-[#1c0a3d]/80"
+                  >
                     <div className="flex items-center gap-2">
                       {isLight ? (
                         <Sun className="h-4 w-4 text-amber-300" />
@@ -275,8 +280,10 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
                       checked={isLight}
                       onCheckedChange={toggle}
                       aria-label="Cambiar tema"
+                      tabIndex={-1}
+                      onClick={(e) => e.stopPropagation()}
                     />
-                  </div>
+                  </button>
                 </div>
               </aside>
             </div>,
