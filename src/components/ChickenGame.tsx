@@ -107,6 +107,15 @@ export function ChickenGame() {
   const bonusBalance = me.data?.bonus_balance ?? 0;
   const balance = realBalance + bonusBalance;
 
+  const drawerSettingsFn = useServerFn(getPublicDrawerSettings);
+  const drawerSettingsQ = useQuery({
+    queryKey: ["public-drawer"],
+    queryFn: () => drawerSettingsFn(),
+    staleTime: 60_000,
+  });
+  const instagramUrl =
+    drawerSettingsQ.data?.socials?.find((s) => s.platform === "instagram")?.url ?? "";
+
   const dealFn = useServerFn(chickenDeal);
   const jumpFn = useServerFn(chickenJump);
   const cashoutFn = useServerFn(chickenCashout);
