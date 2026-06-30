@@ -566,20 +566,6 @@ export function ChickenGame() {
                 <div className="chicken-cluck-subtitle mt-2 font-display text-xs font-bold uppercase tracking-widest text-purple-100/90">
                   <span key="a" className="chicken-cluck-sub chicken-cluck-sub-a">¿Hasta dónde llegarás?</span>
                   <span key="b" className="chicken-cluck-sub chicken-cluck-sub-b">Apuesta ahora</span>
-                  {instagramUrl ? (
-                    <a
-                      key="c"
-                      href={instagramUrl}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                      className="chicken-cluck-sub chicken-cluck-sub-c inline-flex items-center justify-center gap-1.5"
-                      aria-label="Síguenos en Instagram"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <Instagram className="h-3.5 w-3.5" strokeWidth={2.2} />
-                      <span>Síguenos en @betspace.app</span>
-                    </a>
-                  ) : null}
                 </div>
               </div>
             </div>
