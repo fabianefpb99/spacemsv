@@ -19,6 +19,7 @@ import {
 } from "@/lib/admin/home-content.functions";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { HamburgerDrawer } from "@/components/HamburgerDrawer";
+import { DesktopSidebar } from "@/components/DesktopSidebar";
 import { UserAvatar } from "@/components/UserAvatar";
 import { generateRecentFillerWins, type FillerWin } from "@/lib/fillers";
 import { getRecentPublicWins, type RecentWin } from "@/lib/recent-wins.functions";
@@ -636,10 +637,11 @@ function HomePage() {
   const current = slidesList[slide] ?? slidesList[0];
 
   return (
-    <div className="min-h-screen bg-[#060210] text-white">
+    <div className="min-h-screen bg-[#060210] text-white lg:pl-[260px]">
       <BrandLoader active={showBrandLoader} minMs={1900} />
       <PromoPopup />
-      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4">
+      <DesktopSidebar />
+      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4 lg:max-w-3xl lg:px-6">
         {/* Header — must match SpacemanGame header exactly, sin icono de sonido */}
         <header
           className="flex flex-col items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
@@ -647,6 +649,7 @@ function HomePage() {
         >
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-1">
+              <div className="lg:hidden">
               <HamburgerDrawer
                 trigger={
                   <button
@@ -658,6 +661,7 @@ function HomePage() {
                   </button>
                 }
               />
+              </div>
               <Link to="/home" className="logo-shine">
                 <img
                   src={betspaceLogo}
@@ -1070,7 +1074,7 @@ function HomePage() {
 
       {/* Bottom navigation */}
       <nav
-        className="home-bottom-nav fixed inset-x-0 bottom-0 z-30 border-t border-purple-500/20 bg-[#060210]/95 backdrop-blur"
+        className="home-bottom-nav fixed inset-x-0 bottom-0 z-30 border-t border-purple-500/20 bg-[#060210]/95 backdrop-blur lg:hidden"
         style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       >
         <div className="mx-auto flex max-w-md items-end justify-between px-4 pt-2 pb-2 sm:max-w-lg">
