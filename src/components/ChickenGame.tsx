@@ -2,7 +2,7 @@ import { AuthControl } from "@/components/auth/AuthControl";
 import { BetAmount } from "@/components/games/BetAmount";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, Minus, Plus, Volume2, VolumeX } from "lucide-react";
+import { Menu, Minus, Plus, Volume2, VolumeX, Instagram } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import {
   setMuted as setAudioMuted,
@@ -18,7 +18,8 @@ import {
   preloadChickenSounds,
 } from "@/lib/gameAudio";
 import { useServerFn } from "@tanstack/react-start";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getPublicDrawerSettings } from "@/lib/admin/drawer-content.functions";
 import { useMe, type MeData } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
 import { toFriendlyError } from "@/lib/friendly-error";
