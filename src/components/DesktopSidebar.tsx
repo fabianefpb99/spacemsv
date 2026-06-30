@@ -121,6 +121,7 @@ export function DesktopSidebar() {
               src={promoImage}
               alt=""
               aria-hidden
+              data-no-smooth-image
               className="pointer-events-none absolute inset-0 h-full w-full object-cover object-right"
             />
             <div

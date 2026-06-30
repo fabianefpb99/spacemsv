@@ -102,7 +102,7 @@ function OnlineRotator({ online, username, onClick, clickable }: { online: numbe
     "¿QUE *JUGAREMOS* HOY?",
     "*APUESTA* AHORA",
     "LA *GALAXIA* ESTÁ ABIERTA",
-    "SÍGUENOS EN *@BETSPACE.APP*",
+    "Síguenos en *@betspace.app*",
   ];
 
   // mode: "online" shows the dot+count; "phrases" cycles the rotating phrases
@@ -172,13 +172,26 @@ function OnlineRotator({ online, username, onClick, clickable }: { online: numbe
         className={`absolute inset-0 flex items-center justify-center ${mode === "phrases" ? "opacity-100" : "opacity-0 pointer-events-none"}`}
         style={{ transformStyle: "preserve-3d" }}
       >
-        <span
-          key={`${phraseIdx}-${exiting ? "out" : "in"}`}
-          className={`text-[15px] font-semibold tracking-wide text-white light-text-dark whitespace-nowrap ${exiting ? "animate-cube-out" : "animate-cube-in"}`}
-          style={{ transformOrigin: "center center", backfaceVisibility: "hidden" }}
-        >
-          {renderPhrase(currentRaw)}
-        </span>
+        {currentRaw.toLowerCase().includes("síguenos") && currentRaw.toLowerCase().includes("betspace.app") ? (
+          <a
+            href="https://www.instagram.com/betspace.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            key={`${phraseIdx}-${exiting ? "out" : "in"}`}
+            className={`text-[15px] font-semibold tracking-wide text-white light-text-dark whitespace-nowrap ${exiting ? "animate-cube-out" : "animate-cube-in"}`}
+            style={{ transformOrigin: "center center", backfaceVisibility: "hidden" }}
+          >
+            {renderPhrase(currentRaw)}
+          </a>
+        ) : (
+          <span
+            key={`${phraseIdx}-${exiting ? "out" : "in"}`}
+            className={`text-[15px] font-semibold tracking-wide text-white light-text-dark whitespace-nowrap ${exiting ? "animate-cube-out" : "animate-cube-in"}`}
+            style={{ transformOrigin: "center center", backfaceVisibility: "hidden" }}
+          >
+            {renderPhrase(currentRaw)}
+          </span>
+        )}
       </div>
     </div>
   );
