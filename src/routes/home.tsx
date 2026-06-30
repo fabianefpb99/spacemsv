@@ -324,16 +324,35 @@ function HomePage() {
   // Mezcla: combina reales con fillers para que el feed siempre se vea
   // activo. Limitamos los reales (máx 5) para que no opaquen los fillers.
   const mergedWins: FillerWin[] = (() => {
-    const real: FillerWin[] = (recentWinsQ.data ?? []).map((w: RecentWin) => ({
-      id: `real:${w.user_id}:${w.created_at}`,
-      username: w.username,
-      avatar_key: w.avatar_key ?? "avatar-1",
-      avatar_url: w.avatar_url ?? null,
-      game: prettyGameName(w.game),
-      amount: Math.round(w.amount),
-      mult: w.multiplier > 0 ? w.multiplier : 1,
-      ageSec: Math.max(0, Math.floor(((winsNowMs || Date.now()) - new Date(w.created_at).getTime()) / 1000)),
-    }));
+    // Tope realista de multiplicador mostrado por juego (evita 200x+ absurdos
+    // en el panel público; el pago real al jugador no cambia).
+    const multCap = (game: string): number => {
+      const g = game.toLowerCase();
+      if (g.includes("mines") || g.includes("minas")) return 8;
+      if (g.includes("blackjack")) return 3;
+      if (g.includes("ruleta") || g.includes("roulette")) return 14;
+      if (g.includes("slot")) return 12;
+      if (g.includes("dice") || g.includes("dado")) return 10;
+      if (g.includes("spaceman")) return 25;
+      if (g.includes("chicken")) return 15;
+      return 10;
+    };
+    const real: FillerWin[] = (recentWinsQ.data ?? []).map((w: RecentWin) => {
+      const pretty = prettyGameName(w.game);
+      const cap = multCap(pretty);
+      const rawMult = w.multiplier > 0 ? w.multiplier : 1;
+      const mult = Math.min(rawMult, cap);
+      return {
+        id: `real:${w.user_id}:${w.created_at}`,
+        username: w.username,
+        avatar_key: w.avatar_key ?? "avatar-1",
+        avatar_url: w.avatar_url ?? null,
+        game: pretty,
+        amount: Math.round(w.amount),
+        mult,
+        ageSec: Math.max(0, Math.floor(((winsNowMs || Date.now()) - new Date(w.created_at).getTime()) / 1000)),
+      };
+    });
     const TARGET = 16;
     const REAL_MAX = 5;
     const realCapped = real.slice(0, REAL_MAX);
