@@ -64,7 +64,12 @@ export const adminListUsers = createServerFn({ method: "POST" })
 
     if (data.search) {
       const s = data.search.toLowerCase();
-      q = q.or(`email.ilike.%${s}%,username.ilike.%${s}%,id.ilike.%${s}%`);
+      const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (uuidRe.test(s)) {
+        q = q.or(`email.ilike.%${s}%,username.ilike.%${s}%,id.eq.${s}`);
+      } else {
+        q = q.or(`email.ilike.%${s}%,username.ilike.%${s}%`);
+      }
     }
     if (data.status === "blocked") q = q.eq("is_blocked", true);
     else if (data.status === "active") q = q.eq("is_blocked", false);
