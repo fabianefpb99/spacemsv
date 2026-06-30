@@ -641,7 +641,7 @@ function HomePage() {
       <BrandLoader active={showBrandLoader} minMs={1900} />
       <PromoPopup />
       <DesktopSidebar />
-      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4 lg:max-w-[1400px] lg:px-8">
+      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4 lg:max-w-3xl lg:px-6">
         {/* Header — must match SpacemanGame header exactly, sin icono de sonido */}
         <header
           className="flex flex-col items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
@@ -716,10 +716,8 @@ function HomePage() {
           }
         />
 
-        {/* Desktop 2-col grid: left = hero + featured + promo banners; right rail = jackpot, wins, invite */}
-        <div className="lg:mt-2 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-5">
         {/* Hero banner */}
-        <section className="theme-dark-fixed slider-neon-frame mt-[10px] overflow-hidden rounded-2xl border border-violet-800/50 bg-[#120824] shadow-[0_0_10px_rgba(76,29,149,0.35)] lg:col-start-1 lg:row-start-1 lg:!mt-0">
+        <section className="theme-dark-fixed slider-neon-frame mt-[10px] overflow-hidden rounded-2xl border border-violet-800/50 bg-[#120824] shadow-[0_0_10px_rgba(76,29,149,0.35)]">
           <div
             className="relative h-44 touch-pan-y select-none sm:h-52"
             onPointerDown={(e) => {
@@ -798,7 +796,7 @@ function HomePage() {
         </section>
 
         {/* Featured games */}
-        <section className="mt-5 lg:col-start-1 lg:row-start-2 lg:!mt-0">
+        <section className="mt-5">
           <div className="flex items-end justify-between">
             <h3 className="font-display text-sm font-bold uppercase tracking-widest text-white light-text-dark">
               Juegos destacados
@@ -875,7 +873,7 @@ function HomePage() {
         {/* BlackJack — acceso directo */}
         <Link
           to="/blackjack"
-          className="promo-banner promo-banner--blackjack relative mt-5 block h-24 overflow-hidden rounded-xl border border-fuchsia-500/70 shadow-[0_0_12px_rgba(217,70,239,0.25)] transition hover:shadow-[0_0_22px_rgba(217,70,239,0.55)] sm:h-28 lg:col-start-1 lg:row-start-3 lg:h-32 lg:!mt-0"
+          className="promo-banner promo-banner--blackjack relative mt-5 block h-24 overflow-hidden rounded-xl border border-fuchsia-500/70 shadow-[0_0_12px_rgba(217,70,239,0.25)] transition hover:shadow-[0_0_22px_rgba(217,70,239,0.55)] sm:h-28"
         >
           {/* Imagen de fondo completa */}
           <SkeletonImage
@@ -909,7 +907,7 @@ function HomePage() {
         {/* Ruleta — banner estilo BlackJack */}
         <Link
           to="/ruleta"
-          className="promo-banner promo-banner--ruleta relative mt-3 block h-24 overflow-hidden rounded-xl border border-purple-400/70 shadow-[0_0_12px_rgba(168,85,247,0.3)] transition hover:shadow-[0_0_22px_rgba(168,85,247,0.6)] sm:h-28 lg:col-start-1 lg:row-start-4 lg:h-32 lg:!mt-0"
+          className="promo-banner promo-banner--ruleta relative mt-3 block h-24 overflow-hidden rounded-xl border border-purple-400/70 shadow-[0_0_12px_rgba(168,85,247,0.3)] transition hover:shadow-[0_0_22px_rgba(168,85,247,0.6)] sm:h-28"
         >
           <SkeletonImage
             src={ruletaBanner}
@@ -941,7 +939,7 @@ function HomePage() {
         {/* Arena — banner estilo Ruleta */}
         <Link
           to="/arena"
-          className="promo-banner promo-banner--arena relative mt-3 block h-24 overflow-hidden rounded-xl border border-fuchsia-400/70 shadow-[0_0_12px_rgba(217,70,239,0.3)] transition hover:shadow-[0_0_22px_rgba(217,70,239,0.6)] sm:h-28 lg:col-start-1 lg:row-start-5 lg:h-32 lg:!mt-0"
+          className="promo-banner promo-banner--arena relative mt-3 block h-24 overflow-hidden rounded-xl border border-fuchsia-400/70 shadow-[0_0_12px_rgba(217,70,239,0.3)] transition hover:shadow-[0_0_22px_rgba(217,70,239,0.6)] sm:h-28"
         >
           <SkeletonImage
             src={heroArenaImg.url}
@@ -970,7 +968,7 @@ function HomePage() {
         </Link>
 
         {/* Jackpot — banner estilo BlackJack */}
-        <div className="promo-banner promo-banner--jackpot relative mt-3 block h-24 overflow-hidden rounded-xl border border-amber-400/70 shadow-[0_0_12px_rgba(251,191,36,0.3)] transition hover:shadow-[0_0_22px_rgba(251,191,36,0.6)] sm:h-28 lg:col-start-2 lg:row-start-1 lg:h-auto lg:min-h-[176px] lg:!mt-0">
+        <div className="promo-banner promo-banner--jackpot relative mt-3 block h-24 overflow-hidden rounded-xl border border-amber-400/70 shadow-[0_0_12px_rgba(251,191,36,0.3)] transition hover:shadow-[0_0_22px_rgba(251,191,36,0.6)] sm:h-28">
           <SkeletonImage
             src={jackpotBanner}
             alt="Jackpot"
@@ -996,7 +994,7 @@ function HomePage() {
         </div>
 
         {/* Últimas ganancias */}
-        <section className="home-wins-panel mt-5 rounded-xl border border-purple-500/30 bg-[#0c0620] p-3 sm:p-4 lg:col-start-2 lg:row-start-2 lg:row-span-3 lg:!mt-0 lg:flex lg:flex-col">
+        <section className="home-wins-panel mt-5 rounded-xl border border-purple-500/30 bg-[#0c0620] p-3 sm:p-4">
           <h3 className="home-wins-heading font-display text-xs font-bold uppercase tracking-widest text-white">
             Últimas ganancias
           </h3>
@@ -1045,7 +1043,7 @@ function HomePage() {
         </section>
 
         {/* Invita y gana */}
-        <section className="home-invite-card mt-4 flex items-center gap-3 rounded-xl border border-purple-500/30 bg-gradient-to-r from-[#1a0b3a]/80 to-[#0c0620] p-3 sm:p-4 lg:col-start-2 lg:row-start-5 lg:!mt-0">
+        <section className="home-invite-card mt-4 flex items-center gap-3 rounded-xl border border-purple-500/30 bg-gradient-to-r from-[#1a0b3a]/80 to-[#0c0620] p-3 sm:p-4">
           <div className="flex h-14 w-14 shrink-0 items-center justify-center sm:h-16 sm:w-16">
             <SkeletonImage
               src={gift3d}
@@ -1070,7 +1068,6 @@ function HomePage() {
           </button>
         </section>
 
-        </div>
         {/* Spacer for bottom nav */}
         <div className="h-24" />
       </div>
