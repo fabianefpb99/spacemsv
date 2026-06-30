@@ -19,6 +19,7 @@ import {
 } from "@/lib/admin/home-content.functions";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { HamburgerDrawer } from "@/components/HamburgerDrawer";
+import { DesktopSidebar } from "@/components/DesktopSidebar";
 import { UserAvatar } from "@/components/UserAvatar";
 import { generateRecentFillerWins, type FillerWin } from "@/lib/fillers";
 import { getRecentPublicWins, type RecentWin } from "@/lib/recent-wins.functions";
