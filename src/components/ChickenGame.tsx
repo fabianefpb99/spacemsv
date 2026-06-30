@@ -2,7 +2,7 @@ import { AuthControl } from "@/components/auth/AuthControl";
 import { BetAmount } from "@/components/games/BetAmount";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, Minus, Plus, Volume2, VolumeX } from "lucide-react";
+import { Menu, Minus, Plus, Volume2, VolumeX, Instagram } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import {
   setMuted as setAudioMuted,
@@ -18,7 +18,8 @@ import {
   preloadChickenSounds,
 } from "@/lib/gameAudio";
 import { useServerFn } from "@tanstack/react-start";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getPublicDrawerSettings } from "@/lib/admin/drawer-content.functions";
 import { useMe, type MeData } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
 import { toFriendlyError } from "@/lib/friendly-error";
@@ -105,6 +106,15 @@ export function ChickenGame() {
   const realBalance = me.data?.balance ?? 0;
   const bonusBalance = me.data?.bonus_balance ?? 0;
   const balance = realBalance + bonusBalance;
+
+  const drawerSettingsFn = useServerFn(getPublicDrawerSettings);
+  const drawerSettingsQ = useQuery({
+    queryKey: ["public-drawer"],
+    queryFn: () => drawerSettingsFn(),
+    staleTime: 60_000,
+  });
+  const instagramUrl =
+    drawerSettingsQ.data?.socials?.find((s) => s.platform === "instagram")?.url ?? "";
 
   const dealFn = useServerFn(chickenDeal);
   const jumpFn = useServerFn(chickenJump);
@@ -566,6 +576,20 @@ export function ChickenGame() {
                 <div className="chicken-cluck-subtitle mt-2 font-display text-xs font-bold uppercase tracking-widest text-purple-100/90">
                   <span key="a" className="chicken-cluck-sub chicken-cluck-sub-a">¿Hasta dónde llegarás?</span>
                   <span key="b" className="chicken-cluck-sub chicken-cluck-sub-b">Apuesta ahora</span>
+                  {instagramUrl ? (
+                    <a
+                      key="c"
+                      href={instagramUrl}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="chicken-cluck-sub chicken-cluck-sub-c inline-flex items-center justify-center gap-1.5"
+                      aria-label="Síguenos en Instagram"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Instagram className="h-3.5 w-3.5" strokeWidth={2.2} />
+                      <span>Síguenos en @betspace.app</span>
+                    </a>
+                  ) : null}
                 </div>
               </div>
             </div>

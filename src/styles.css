@@ -3820,7 +3820,7 @@ html.light .profile-page .profile-quickbar-tab.is-active {
   75%      { transform: translate(1px, -1px); opacity: 0.65; }
 }
 
-/* Subtítulo alternante: ¿Hasta dónde llegarás? ↔ Apuesta ahora (cada 3s) */
+/* Subtítulo alternante: 3 ítems (Cada uno visible 3s, total 9s) */
 .chicken-cluck-subtitle {
   position: relative;
   display: block;
@@ -3832,15 +3832,16 @@ html.light .profile-page .profile-quickbar-tab.is-active {
   inset: 0;
   text-align: center;
   opacity: 0;
-  animation: chickenSubSwap 6s ease-in-out infinite;
+  animation: chickenSubSwap 9s ease-in-out infinite;
 }
 .chicken-cluck-sub-a { animation-delay: 0s; }
 .chicken-cluck-sub-b { animation-delay: 3s; }
+.chicken-cluck-sub-c { animation-delay: 6s; }
 @keyframes chickenSubSwap {
   0%   { opacity: 0; transform: translateY(4px); }
-  6%   { opacity: 1; transform: translateY(0); }
-  44%  { opacity: 1; transform: translateY(0); }
-  50%  { opacity: 0; transform: translateY(-4px); }
+  5.56%  { opacity: 1; transform: translateY(0); }
+  27.78% { opacity: 1; transform: translateY(0); }
+  33.33% { opacity: 0; transform: translateY(-4px); }
   100% { opacity: 0; transform: translateY(-4px); }
 }
 
