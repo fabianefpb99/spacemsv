@@ -22,21 +22,8 @@ const PlayInput = z.object({
     }),
   character: z.enum(ARENA_CHARACTERS as unknown as [ArenaCharacterId, ...ArenaCharacterId[]]),
   client_action_id: z.string().uuid(),
-  odds_perm: z
-    .tuple([z.number().int(), z.number().int(), z.number().int(), z.number().int()])
-    .refine(
-      (p) => {
-        const seen = new Set<number>();
-        for (const v of p) {
-          if (v < 1 || v > 4) return false;
-          if (seen.has(v)) return false;
-          seen.add(v);
-        }
-        return true;
-      },
-      { message: "odds_perm must be a permutation of [1,2,3,4]" },
-    )
-    .optional(),
+  // odds_perm eliminado: el servidor genera la permutación con Fisher-Yates + gen_random_bytes.
+  // Aceptar del cliente permitiría escoger la asignación de pesos más favorable.
 });
 
 /**
@@ -52,7 +39,7 @@ export const playArena = createServerFn({ method: "POST" })
   .inputValidator((input) => PlayInput.parse(input))
   .handler(async ({ data, context }): Promise<ArenaRoundResult> => {
     const { supabase, userId } = context;
-    const { bet, character, client_action_id, odds_perm } = data;
+    const { bet, character, client_action_id } = data;
 
     const { data: raw, error } = await (supabase.rpc as unknown as (
       fn: string,
@@ -63,7 +50,6 @@ export const playArena = createServerFn({ method: "POST" })
         p_bet_amount: bet,
         p_character: character,
         p_client_action_id: client_action_id,
-        p_odds_perm: odds_perm ?? undefined,
       },
     );
     void userId;

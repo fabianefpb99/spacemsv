@@ -98,7 +98,7 @@ export function BoostSection() {
   return (
     <div className="space-y-4">
       <Panel
-        title="Modo Boost (contenido promocional)"
+        title="Modo Demo (100% winrate — solo marketing)"
         actions={
           <span className="inline-flex items-center gap-1 rounded-md border border-amber-400/40 bg-amber-400/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-amber-200">
             <ShieldAlert className="h-3 w-3" /> Solo admin
@@ -106,10 +106,12 @@ export function BoostSection() {
         }
       >
         <p className="mb-3 text-[11px] leading-relaxed text-purple-200/70">
-          Sube el RTP de los juegos individuales (Chicken, Mines, Dice, Roulette, Arena, Slot)
-          únicamente para la cuenta seleccionada. Spaceman queda fuera. La UI es idéntica a la
-          normal; nadie ve ningún indicador. Al apagarlo, el sistema borra quirúrgicamente
-          transacciones, rondas, misiones y reinicia saldo/VIP solo del target.
+          ⚠️ ADVERTENCIA: este modo NO ajusta RTP — fuerza que la cuenta target gane el 100% de
+          las apuestas en Chicken, Mines, Dice, Roulette, Arena y Slot (Spaceman queda fuera).
+          Úsalo únicamente para grabaciones/marketing en cuentas dedicadas. El campo "RTP" es
+          solo etiqueta cosmética; internamente cada juego devuelve victoria garantizada. Al
+          apagarlo, el sistema borra transacciones, rondas, misiones y reinicia saldo/VIP del
+          target.
         </p>
 
         {activeQ.isLoading ? (
