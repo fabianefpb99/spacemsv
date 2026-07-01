@@ -181,7 +181,7 @@ export const adminAdjustBalance = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const supabaseAdmin = await getSupabaseAdmin();
     const { data: res, error } = await supabaseAdmin.rpc("admin_adjust_balance", {
       p_target_user_id: data.userId,
       p_delta: data.amount,
@@ -203,7 +203,8 @@ export const adminSetBlock = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
-    const { error } = await context.supabase.rpc("admin_set_block", {
+    const supabaseAdmin = await getSupabaseAdmin();
+    const { error } = await supabaseAdmin.rpc("admin_set_block", {
       p_target_user_id: data.userId,
       p_blocked: data.blocked,
     });
@@ -224,10 +225,11 @@ export const adminAdjustXp = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
-    const { data: res, error } = await context.supabase.rpc("admin_adjust_xp", {
+    const supabaseAdmin = await getSupabaseAdmin();
+    const { data: res, error } = await supabaseAdmin.rpc("admin_adjust_xp", {
       p_target_user_id: data.userId,
       p_delta: data.delta,
-      p_reason: data.reason ?? undefined,
+      p_reason: data.reason ?? "",
     });
     if (error) throw safeRpcError(error);
     const row = Array.isArray(res) ? res[0] : res;
@@ -334,7 +336,8 @@ export const adminUpdateRtp = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
-    const { data: row, error } = await context.supabase.rpc("admin_update_rtp", {
+    const supabaseAdmin = await getSupabaseAdmin();
+    const { data: row, error } = await supabaseAdmin.rpc("admin_update_rtp", {
       p_game: data.game,
       p_rtp_target: data.rtp_target,
       p_is_active: data.is_active ?? undefined,
