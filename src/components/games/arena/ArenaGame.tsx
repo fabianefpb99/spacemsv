@@ -3,7 +3,6 @@ import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Menu } from "lucide-react";
 
 import { useMe } from "@/hooks/useMe";
 import { AuthControl } from "@/components/auth/AuthControl";
