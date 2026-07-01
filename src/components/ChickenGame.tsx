@@ -2,7 +2,7 @@ import { AuthControl } from "@/components/auth/AuthControl";
 import { BetAmount } from "@/components/games/BetAmount";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, Minus, Plus, Volume2, VolumeX } from "lucide-react";
+import { Minus, Plus, Volume2, VolumeX } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import {
   setMuted as setAudioMuted,

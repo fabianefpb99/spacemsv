@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useVisibleInterval } from "@/hooks/useVisibleInterval";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Link } from "@tanstack/react-router";
-import { Menu, Minus, Plus, Volume2, VolumeX, ChevronDown, Bomb, Gem, TrendingUp } from "lucide-react";
+import { Minus, Plus, Volume2, VolumeX, ChevronDown, Bomb, Gem, TrendingUp } from "lucide-react";
 import { setMuted as setAudioMuted, playCrashSound, playCashoutSound, isMuted, stopAllGameAudio, AUDIO_STOP_ALL_EVENT } from "@/lib/gameAudio";
 import coinRevealSfx from "@/assets/sfx/coin-reveal.mp3";
 import victorySfx from "@/assets/sfx/victory.mp3";

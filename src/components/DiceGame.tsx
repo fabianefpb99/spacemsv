@@ -6,7 +6,7 @@ import { useVisibleInterval } from "@/hooks/useVisibleInterval";
 import { Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import pageBg from "@/assets/mines-page-bg.png";
-import { Menu, Settings, Minus, Plus, Volume2, VolumeX, TrendingUp } from "lucide-react";
+import { Settings, Minus, Plus, Volume2, VolumeX, TrendingUp } from "lucide-react";
 import { setMuted as setAudioMuted, playCashoutSound, playCrashSound, playDiceRollSound, isMuted, stopAllGameAudio } from "@/lib/gameAudio";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";

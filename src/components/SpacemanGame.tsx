@@ -4,7 +4,7 @@ import { FitText } from "@/components/ui/fit-text";
 import { BetAmount } from "@/components/games/BetAmount";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Link } from "@tanstack/react-router";
-import { Menu, Settings, Clock, ArrowRight, Minus, Plus, Volume2, VolumeX, ChevronDown, ChevronUp } from "lucide-react";
+import { Settings, Clock, ArrowRight, Minus, Plus, Volume2, VolumeX, ChevronDown, ChevronUp } from "lucide-react";
 import bgImage from "@/assets/space-bg-full.png";
 import astronautIdlePng from "@/assets/astronaut-idle.svg";
 import astronautFlyingSrc from "@/assets/astronaut-flying.png";
