@@ -16,7 +16,6 @@ import { toFriendlyError } from "@/lib/friendly-error";
 import { diceRoll } from "@/lib/games/dice.functions";
 import { clampBetToStep } from "@/lib/games/bet-helpers";
 import {
-import { GameMenuDrawer } from "@/components/GameMenuDrawer";
   DICE_BET_STEP,
   DICE_MAX_BET,
   DICE_MIN_BET,
@@ -27,6 +26,7 @@ import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 
 type Phase = "betting" | "rolling" | "won" | "lost";
 type Side = "low" | "high";
+import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 
 // Game math + limits live in dice.shared.ts (shared with the server).
 const MULTS = DICE_MULTS;

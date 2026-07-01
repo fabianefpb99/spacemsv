@@ -16,7 +16,6 @@ import { clampBetToStep } from "@/lib/games/bet-helpers";
 import mafiaJazzUrl from "@/assets/mafia-jazz.mp3";
 import congratulationsAudio from "@/assets/audio/roulette-win/congratulations.mp3.asset.json";
 import {
-import { GameMenuDrawer } from "@/components/GameMenuDrawer";
   setBackgroundTrack,
   clearBackgroundTrack,
   getBackgroundTrack,
@@ -26,6 +25,7 @@ import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 
 type Choice = "red" | "black" | "green";
 type Phase = "idle" | "spinning" | "revealing";
+import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 type HistoryEntry = { segment: number; color: Choice };
 
 const MIN_BET = 500;

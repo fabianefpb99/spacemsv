@@ -20,12 +20,12 @@ import { withTimeout } from "@/lib/async/with-timeout";
 import { minesDeal, minesReveal, minesCashout, minesResume, type MinesSessionView } from "@/lib/games/mines.functions";
 import { clampBetToStep } from "@/lib/games/bet-helpers";
 import {
-import { GameMenuDrawer } from "@/components/GameMenuDrawer";
   MINES_TILES,
   MINES_MIN, MINES_MAX,
   MINES_MIN_BET, MINES_MAX_BET, MINES_BET_STEP,
   multiplierFor,
 } from "@/lib/games/mines.shared";
+import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 
 /** Lightweight UUID v4 for client_action_id. */
 function uuid(): string {

@@ -30,7 +30,6 @@ import {
   type BJSessionView,
 } from "@/lib/games/blackjack.functions";
 import {
-import { GameMenuDrawer } from "@/components/GameMenuDrawer";
   BJ_VARIANTS,
   type BJVariantKey,
   type BJOutcome,
@@ -41,6 +40,7 @@ import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 
 type Phase = "betting" | "dealing" | "playing" | "dealerTurn" | "result";
 type BJTheme = "space" | "vip";
+import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 type Winner = { id: number; name: string; amount: number; game: string };
 type WinnerSlot = Winner & { slotId: number };
 

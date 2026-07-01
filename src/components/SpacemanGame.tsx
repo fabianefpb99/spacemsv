@@ -17,9 +17,9 @@ import { useMe } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
 import { clampBetToStep } from "@/lib/games/bet-helpers";
-import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 
 type Phase = "betting" | "running" | "crashed";
+import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 type HistoryItem = { id: number; value: number };
 
 const MIN_BET = 500;

@@ -31,9 +31,9 @@ import hit3Audio from "@/assets/audio/arena/hit-3.mp3.asset.json";
 import hit4Audio from "@/assets/audio/arena/hit-4.mp3.asset.json";
 import hit5Audio from "@/assets/audio/arena/hit-5.mp3.asset.json";
 import hitFinalAudio from "@/assets/audio/arena/hit-final.mp3.asset.json";
-import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 
 type Phase = "lobby" | "fighting" | "result";
+import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 
 function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
