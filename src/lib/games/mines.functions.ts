@@ -15,6 +15,7 @@ import {
 import { placeMines } from "./mines.server";
 import {
   adjustBalance,
+  cryptoRandomInt,
   deriveActionId,
   getBalance,
   newServerSeed,
@@ -294,7 +295,7 @@ export const minesReveal = createServerFn({ method: "POST" })
         if (!occupied.has(i)) candidates.push(i);
       }
       if (candidates.length > 0) {
-        const swap = candidates[Math.floor(Math.random() * candidates.length)];
+        const swap = candidates[cryptoRandomInt(candidates.length)];
         mineSet = mineSet
           .filter((idx) => idx !== data.tile_idx)
           .concat(swap);
