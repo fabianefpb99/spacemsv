@@ -208,14 +208,18 @@ export function MinesGame() {
 
   // Push server-confirmed balance into the useMe cache for instant header update.
   const applyBalance = useCallback(
-    (newBalance: number) => {
+    (newBalance: number, opts?: { invalidate?: boolean }) => {
       if (!user) return;
       queryClient.setQueryData<MeData | null>(["me", user.id], (prev) =>
         prev ? { ...prev, balance: newBalance } : prev,
       );
-      // Refetch en background para sincronizar `bonus_balance`
-      // (el servidor sólo devuelve el saldo real tras `adjust_balance`).
-      queryClient.invalidateQueries({ queryKey: ["me"] });
+      // Solo revalidamos `bonus_balance` al cerrar la ronda (resultado). Durante
+      // el juego el balance oficial ya viene en cada respuesta del RPC, así que
+      // un refetch en cada reveal solo compite por ancho de banda con el
+      // siguiente reveal y añade lag perceptible.
+      if (opts?.invalidate) {
+        queryClient.invalidateQueries({ queryKey: ["me"] });
+      }
     },
     [queryClient, user],
   );
@@ -239,7 +243,8 @@ export function MinesGame() {
     const pub = view.public_state;
     setRevealed(new Set(pub.revealed));
     setPicks(pub.picks);
-    applyBalance(view.new_balance);
+    // Solo forzamos re-sync completo del bono al cerrar la ronda.
+    applyBalance(view.new_balance, { invalidate: pub.phase === "result" });
     // Whatever tiles came back as revealed/closed are no longer pending.
     setPendingTiles((prev) => {
       if (prev.size === 0 && pub.phase === "playing") return prev;

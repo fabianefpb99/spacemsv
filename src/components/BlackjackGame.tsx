@@ -335,14 +335,17 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
   // Push the server-confirmed balance into the useMe cache so the header
   // updates instantly without waiting for a refetch.
   const applyBalance = useCallback(
-    (newBalance: number) => {
+    (newBalance: number, opts?: { invalidate?: boolean }) => {
       if (!user) return;
       queryClient.setQueryData<MeData | null>(["me", user.id], (prev) =>
         prev ? { ...prev, balance: newBalance } : prev,
       );
-      // Refetch en background para sincronizar `bonus_balance`
-      // (el servidor sólo devuelve el saldo real tras `adjust_balance`).
-      queryClient.invalidateQueries({ queryKey: ["me"] });
+      // Solo invalidamos al principio y al final de la mano; los hits/insurance
+      // intermedios reciben el balance autoritativo dentro de la misma
+      // respuesta y no necesitan un GET extra a `/me`.
+      if (opts?.invalidate) {
+        queryClient.invalidateQueries({ queryKey: ["me"] });
+      }
     },
     [queryClient, user],
   );
@@ -368,7 +371,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
       setPayout(0);
       setPhase("playing");
     }
-    applyBalance(view.new_balance);
+    applyBalance(view.new_balance, { invalidate: view.public_state.phase === "result" });
   }, [applyBalance]);
 
   // Animate the dealer turn: reveal the hole card, then deal each card
@@ -419,7 +422,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
       setOutcome(pub.outcome ?? null);
       setPayout(pub.payout ?? 0);
       setPhase("result");
-      applyBalance(view.new_balance);
+      applyBalance(view.new_balance, { invalidate: true });
     },
     [animateDealerReveal, applyBalance],
   );
@@ -526,7 +529,8 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
       const initialPlayer = view.public_state.player;
       const initialDealer = view.public_state.dealer;
       sessionRef.current = { id: view.session_id, nonce: view.nonce };
-      applyBalance(view.new_balance);
+      // Debit inicial de la apuesta: revalidamos para sincronizar `bonus_balance`.
+      applyBalance(view.new_balance, { invalidate: true });
       setInsuranceOffered(!!view.public_state.insuranceOffered);
       setInsuranceTaken(false);
       setInsuranceCost(0);

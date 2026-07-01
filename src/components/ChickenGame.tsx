@@ -92,7 +92,7 @@ type ChickenFx = "idle" | "prepare" | "jump-left-to-right" | "land-bounce" | "sl
  *  Si el servidor responde antes, esperamos hasta este mínimo para que el
  *  jugador vea el impulso. Si responde después, el glow simplemente sigue
  *  pulsando hasta que llega la respuesta. */
-const PREPARE_MIN_MS = 240;
+const PREPARE_MIN_MS = 160;
 const JUMP_MS = 240;
 const LAND_BOUNCE_MS = 140;
 const SLIDE_MS = 240;
@@ -135,16 +135,18 @@ export function ChickenGame() {
   const actionInFlightRef = useRef(false);
 
   const applyBalance = useCallback(
-    (newBalance: number) => {
+    (newBalance: number, opts?: { invalidate?: boolean }) => {
       if (!user) return;
       queryClient.setQueryData<MeData | null>(["me", user.id], (prev) =>
         prev ? { ...prev, balance: newBalance } : prev,
       );
-      // El servidor sólo retorna `balance` (real). El bono se consume
-      // primero en `adjust_balance`, así que disparamos un refetch en
-      // segundo plano para sincronizar `bonus_balance` y evitar que el
-      // HUD muestre un bono ya gastado durante varios tiros.
-      queryClient.invalidateQueries({ queryKey: ["me"] });
+      // Solo revalidamos `bonus_balance` al terminar la ronda (deal / cashout /
+      // pérdida). Durante los saltos, el refetch del `useMe` competía por red
+      // con el próximo `chickenJump` y dejaba a la gallina "impulsándose"
+      // demasiado tiempo antes de aterrizar.
+      if (opts?.invalidate) {
+        queryClient.invalidateQueries({ queryKey: ["me"] });
+      }
     },
     [queryClient, user],
   );
@@ -166,7 +168,7 @@ export function ChickenGame() {
   const applyServerView = useCallback((view: ChickenSessionView) => {
     sessionRef.current = { id: view.session_id, nonce: view.nonce };
     const pub = view.public_state;
-    applyBalance(view.new_balance);
+    applyBalance(view.new_balance, { invalidate: true });
     setStep(pub.step);
     setDisplayedStep(pub.step);
     setCurrentMult(pub.multiplier);
@@ -245,7 +247,8 @@ export function ChickenGame() {
         "chicken_deal_timeout",
       );
       sessionRef.current = { id: view.session_id, nonce: view.nonce };
-      applyBalance(view.new_balance);
+      // Refetch al iniciar la ronda para sincronizar bonus_balance con el debit.
+      applyBalance(view.new_balance, { invalidate: true });
       setStep(view.public_state.step);
       setDisplayedStep(view.public_state.step);
       setCurrentMult(view.public_state.multiplier);
@@ -256,7 +259,7 @@ export function ChickenGame() {
       setPhase("playing");
     } catch (e) {
       await recoverAfterActionError(e);
-      applyBalance(prevBalance);
+      applyBalance(prevBalance, { invalidate: true });
       setError(toFriendlyError(e, "No se pudo iniciar la partida."));
     } finally {
       dealInFlightRef.current = false;
@@ -276,7 +279,7 @@ export function ChickenGame() {
         7000,
         "chicken_cashout_timeout",
       );
-      applyBalance(view.new_balance);
+      applyBalance(view.new_balance, { invalidate: true });
       setLastPayout(view.public_state.payout ?? 0);
       setCurrentMult(view.public_state.multiplier);
       playCashoutSound();
@@ -332,7 +335,10 @@ export function ChickenGame() {
 
     const pubEarly = view.public_state;
     sessionRef.current = { id: view.session_id, nonce: view.nonce };
-    applyBalance(view.new_balance);
+    // Salto intermedio: solo actualizamos el balance en cache, sin refetch.
+    // Si el salto cerró la ronda (won/lost), sí invalidamos para sincronizar
+    // el bono al final.
+    applyBalance(view.new_balance, { invalidate: pubEarly.phase === "result" });
     // ⚡ HUD sincronizado: actualizamos saltos/cobro/siguiente AHORA, en
     // cuanto el servidor respondió (justo al terminar la fase de carga),
     // sin esperar a que termine la animación de salto.
