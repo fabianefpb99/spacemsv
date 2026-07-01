@@ -151,7 +151,6 @@ export function ArenaGame() {
           bet,
           character: selected,
           client_action_id: action_id,
-          odds_perm: currentPerm ?? undefined,
         },
       });
       // Asegurar que el fondo de pelea y los sprites de los 4 personajes
