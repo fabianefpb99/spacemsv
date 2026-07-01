@@ -335,7 +335,10 @@ export function ChickenGame() {
 
     const pubEarly = view.public_state;
     sessionRef.current = { id: view.session_id, nonce: view.nonce };
-    applyBalance(view.new_balance);
+    // Salto intermedio: solo actualizamos el balance en cache, sin refetch.
+    // Si el salto cerró la ronda (won/lost), sí invalidamos para sincronizar
+    // el bono al final.
+    applyBalance(view.new_balance, { invalidate: pubEarly.phase === "result" });
     // ⚡ HUD sincronizado: actualizamos saltos/cobro/siguiente AHORA, en
     // cuanto el servidor respondió (justo al terminar la fase de carga),
     // sin esperar a que termine la animación de salto.
