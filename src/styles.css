@@ -2783,9 +2783,12 @@ html.light .cta-mission-btn.bg-amber-500:hover {
   color: #1a0033 !important;
 }
 
-/* Light mode: replace amber/yellow accents in special missions with dark purple */
-html.light :not(.theme-dark-fixed) > .text-amber-200,
-html.light :not(.theme-dark-fixed) .text-amber-200 {
+/* Light mode: replace amber/yellow accents in special missions with dark purple.
+   Must exclude BOTH the theme-dark-fixed element itself AND all its descendants;
+   using `:not(.theme-dark-fixed) .text-amber-200` alone matches whenever ANY
+   ancestor (e.g. body) is not theme-dark-fixed, so it always leaks into dark
+   subtrees like the hamburger drawer. */
+html.light .text-amber-200:not(.theme-dark-fixed):not(.theme-dark-fixed *) {
   color: #3b0764 !important;
 }
 html.light .cta-mission-btn.bg-amber-500 {
