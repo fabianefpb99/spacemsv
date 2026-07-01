@@ -26,6 +26,7 @@ import { Switch } from "@/components/ui/switch";
 import { useTheme } from "@/hooks/useTheme";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import arenaHero from "@/assets/home-hero-arena.png.asset.json";
+import blackjackVipPromo from "@/assets/promo-blackjack-vip.jpg";
 import { getPublicDrawerSettings } from "@/lib/admin/drawer-content.functions";
 
 type Item = {
@@ -67,8 +68,39 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
   });
   const promo = settingsQ.data?.promo;
   const socials = settingsQ.data?.socials ?? [];
-  const promoImage = promo?.image_url || arenaHero.url;
   const promoActive = promo?.active !== false;
+
+  const promoSlides = [
+    {
+      image: promo?.image_url || arenaHero.url,
+      eyebrow: promo?.eyebrow || "Juego destacado",
+      title: promo?.title || "ARENA",
+      subtitle: promo?.subtitle || "Combates épicos y premios reales",
+      cta_label: promo?.cta_label || "¡Pelear ahora!",
+      cta_link: (promo?.cta_link as string) || "/arena",
+      accent: "fuchsia" as const,
+    },
+    {
+      image: blackjackVipPromo,
+      eyebrow: "Mesa exclusiva",
+      title: "BLACKJACK VIP",
+      subtitle: "Límites altos y salón dorado",
+      cta_label: "¡Jugar ahora!",
+      cta_link: "/blackjackvip",
+      accent: "gold" as const,
+    },
+  ];
+
+  const [slideIdx, setSlideIdx] = useState(0);
+  useEffect(() => {
+    if (!open) return;
+    const t = setInterval(() => {
+      setSlideIdx((i) => (i + 1) % promoSlides.length);
+    }, 4200);
+    return () => clearInterval(t);
+  }, [open, promoSlides.length]);
+  const currentSlide = promoSlides[slideIdx];
+  const isGold = currentSlide.accent === "gold";
 
   useEffect(() => {
     if (!open || typeof document === "undefined") return;
@@ -192,39 +224,81 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
                     type="button"
                     onClick={() => {
                       setOpen(false);
-                      navigate({ to: (promo?.cta_link as string) || "/arena" });
+                      navigate({ to: currentSlide.cta_link });
                     }}
-                    className="group relative mt-4 block aspect-[16/10] w-full overflow-hidden rounded-2xl border border-fuchsia-500/30 bg-[#1a0a3a] text-left shadow-[0_0_24px_rgba(168,85,247,0.25)] transition hover:shadow-[0_0_32px_rgba(217,70,239,0.45)]"
-                    aria-label="Promoción Arena"
+                    className={`group relative mt-4 block aspect-[16/10] w-full overflow-hidden rounded-2xl border text-left transition ${
+                      isGold
+                        ? "border-amber-400/40 bg-[#1a1206] shadow-[0_0_24px_rgba(212,175,55,0.28)] hover:shadow-[0_0_32px_rgba(212,175,55,0.5)]"
+                        : "border-fuchsia-500/30 bg-[#1a0a3a] shadow-[0_0_24px_rgba(168,85,247,0.25)] hover:shadow-[0_0_32px_rgba(217,70,239,0.45)]"
+                    }`}
+                    aria-label={`Promoción ${currentSlide.title}`}
                     hidden={!promoActive}
                   >
                     <img
-                      src={promoImage}
+                      key={currentSlide.image}
+                      src={currentSlide.image}
                       alt=""
                       aria-hidden
-                      className="pointer-events-none absolute inset-0 h-full w-full object-cover object-right"
+                      className="pointer-events-none absolute inset-0 h-full w-full object-cover object-right animate-in fade-in duration-500"
                     />
                     <div
                       aria-hidden
                       className="absolute inset-0"
                       style={{
-                        background:
-                          "linear-gradient(90deg, rgba(10,4,24,0.95) 0%, rgba(26,10,58,0.85) 38%, rgba(26,10,58,0.15) 65%, rgba(26,10,58,0) 100%)",
+                        background: isGold
+                          ? "linear-gradient(90deg, rgba(8,5,0,0.95) 0%, rgba(26,18,6,0.88) 38%, rgba(26,18,6,0.15) 65%, rgba(26,18,6,0) 100%)"
+                          : "linear-gradient(90deg, rgba(10,4,24,0.95) 0%, rgba(26,10,58,0.85) 38%, rgba(26,10,58,0.15) 65%, rgba(26,10,58,0) 100%)",
                       }}
                     />
                     <div className="relative z-10 flex h-full flex-col justify-center gap-1.5 p-3 pr-[48%]">
-                      <span className="inline-flex w-fit items-center rounded-full bg-fuchsia-500/20 px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.12em] text-fuchsia-200 ring-1 ring-fuchsia-400/40">
-                        {promo?.eyebrow || "Juego destacado"}
+                      <span
+                        className={`inline-flex w-fit items-center rounded-full px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.12em] ring-1 ${
+                          isGold
+                            ? "bg-amber-500/15 text-amber-200 ring-amber-400/40"
+                            : "bg-fuchsia-500/20 text-fuchsia-200 ring-fuchsia-400/40"
+                        }`}
+                      >
+                        {currentSlide.eyebrow}
                       </span>
-                      <h3 className="text-lg font-black uppercase leading-none tracking-wide text-white drop-shadow-[0_0_12px_rgba(217,70,239,0.6)]">
-                        {promo?.title || "ARENA"}
+                      <h3
+                        className={`text-lg font-black uppercase leading-none tracking-wide text-white ${
+                          isGold
+                            ? "drop-shadow-[0_0_12px_rgba(212,175,55,0.65)]"
+                            : "drop-shadow-[0_0_12px_rgba(217,70,239,0.6)]"
+                        }`}
+                      >
+                        {currentSlide.title}
                       </h3>
-                      <p className="text-[10px] leading-tight text-purple-100/80">
-                        {promo?.subtitle || "Combates épicos y premios reales"}
+                      <p
+                        className={`text-[10px] leading-tight ${
+                          isGold ? "text-amber-100/80" : "text-purple-100/80"
+                        }`}
+                      >
+                        {currentSlide.subtitle}
                       </p>
-                      <span className="mt-1 inline-flex w-fit items-center rounded-md bg-gradient-to-r from-fuchsia-500 to-purple-600 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-white shadow-[0_4px_14px_rgba(217,70,239,0.5)]">
-                        {promo?.cta_label || "¡Pelear ahora!"}
+                      <span
+                        className={`mt-1 inline-flex w-fit items-center rounded-md px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider ${
+                          isGold
+                            ? "bg-gradient-to-r from-amber-400 to-yellow-600 text-black shadow-[0_4px_14px_rgba(212,175,55,0.5)]"
+                            : "bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white shadow-[0_4px_14px_rgba(217,70,239,0.5)]"
+                        }`}
+                      >
+                        {currentSlide.cta_label}
                       </span>
+                    </div>
+                    <div className="absolute bottom-1.5 left-0 right-0 z-10 flex items-center justify-center gap-1">
+                      {promoSlides.map((_, i) => (
+                        <span
+                          key={i}
+                          className={`h-1 rounded-full transition-all ${
+                            i === slideIdx
+                              ? isGold
+                                ? "w-4 bg-amber-300"
+                                : "w-4 bg-fuchsia-300"
+                              : "w-1 bg-white/30"
+                          }`}
+                        />
+                      ))}
                     </div>
                   </button>
                 </nav>
