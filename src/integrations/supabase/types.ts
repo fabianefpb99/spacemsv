@@ -1959,6 +1959,16 @@ export type Database = {
         }
         Returns: number
       }
+      play_arena_v1: {
+        Args: {
+          p_bet_amount: number
+          p_character: string
+          p_client_action_id: string
+          p_odds_perm?: number[]
+          p_user_id: string
+        }
+        Returns: Json
+      }
       play_arena_v2: {
         Args: {
           p_bet_amount: number
@@ -1996,6 +2006,15 @@ export type Database = {
         Returns: Json
       }
       spaceman_tick: { Args: never; Returns: Json }
+      spin_roulette_v1: {
+        Args: {
+          p_bet_amount: number
+          p_choice: string
+          p_client_action_id: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
       spin_roulette_v2: {
         Args: {
           p_bet_amount: number
