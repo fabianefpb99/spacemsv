@@ -371,7 +371,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
       setPayout(0);
       setPhase("playing");
     }
-    applyBalance(view.new_balance);
+    applyBalance(view.new_balance, { invalidate: view.public_state.phase === "result" });
   }, [applyBalance]);
 
   // Animate the dealer turn: reveal the hole card, then deal each card
@@ -422,7 +422,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
       setOutcome(pub.outcome ?? null);
       setPayout(pub.payout ?? 0);
       setPhase("result");
-      applyBalance(view.new_balance);
+      applyBalance(view.new_balance, { invalidate: true });
     },
     [animateDealerReveal, applyBalance],
   );
@@ -529,7 +529,8 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
       const initialPlayer = view.public_state.player;
       const initialDealer = view.public_state.dealer;
       sessionRef.current = { id: view.session_id, nonce: view.nonce };
-      applyBalance(view.new_balance);
+      // Debit inicial de la apuesta: revalidamos para sincronizar `bonus_balance`.
+      applyBalance(view.new_balance, { invalidate: true });
       setInsuranceOffered(!!view.public_state.insuranceOffered);
       setInsuranceTaken(false);
       setInsuranceCost(0);
