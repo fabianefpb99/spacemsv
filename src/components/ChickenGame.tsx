@@ -168,7 +168,7 @@ export function ChickenGame() {
   const applyServerView = useCallback((view: ChickenSessionView) => {
     sessionRef.current = { id: view.session_id, nonce: view.nonce };
     const pub = view.public_state;
-    applyBalance(view.new_balance);
+    applyBalance(view.new_balance, { invalidate: true });
     setStep(pub.step);
     setDisplayedStep(pub.step);
     setCurrentMult(pub.multiplier);
@@ -247,7 +247,8 @@ export function ChickenGame() {
         "chicken_deal_timeout",
       );
       sessionRef.current = { id: view.session_id, nonce: view.nonce };
-      applyBalance(view.new_balance);
+      // Refetch al iniciar la ronda para sincronizar bonus_balance con el debit.
+      applyBalance(view.new_balance, { invalidate: true });
       setStep(view.public_state.step);
       setDisplayedStep(view.public_state.step);
       setCurrentMult(view.public_state.multiplier);
@@ -258,7 +259,7 @@ export function ChickenGame() {
       setPhase("playing");
     } catch (e) {
       await recoverAfterActionError(e);
-      applyBalance(prevBalance);
+      applyBalance(prevBalance, { invalidate: true });
       setError(toFriendlyError(e, "No se pudo iniciar la partida."));
     } finally {
       dealInFlightRef.current = false;
@@ -278,7 +279,7 @@ export function ChickenGame() {
         7000,
         "chicken_cashout_timeout",
       );
-      applyBalance(view.new_balance);
+      applyBalance(view.new_balance, { invalidate: true });
       setLastPayout(view.public_state.payout ?? 0);
       setCurrentMult(view.public_state.multiplier);
       playCashoutSound();
