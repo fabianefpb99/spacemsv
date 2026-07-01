@@ -181,11 +181,12 @@ export const adminAdjustBalance = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
-    const { data: res, error } = await context.supabase.rpc("admin_adjust_balance", {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: res, error } = await supabaseAdmin.rpc("admin_adjust_balance", {
       p_target_user_id: data.userId,
       p_delta: data.amount,
       p_target: data.target,
-      p_reason: data.reason ?? undefined,
+      p_reason: data.reason ?? "",
     });
     if (error) throw safeRpcError(error);
     const row = Array.isArray(res) ? res[0] : res;
