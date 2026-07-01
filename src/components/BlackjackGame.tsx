@@ -5,7 +5,7 @@ import { BetAmount } from "@/components/games/BetAmount";
 import { Link } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Menu, Minus, Plus, Volume2, VolumeX } from "lucide-react";
+import { Minus, Plus, Volume2, VolumeX } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import bgAsset from "@/assets/blackjack-bg.png.asset.json";
 import bgVipAsset from "@/assets/blackjack-vip-bg.png.asset.json";
@@ -40,6 +40,7 @@ import {
 
 type Phase = "betting" | "dealing" | "playing" | "dealerTurn" | "result";
 type BJTheme = "space" | "vip";
+import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 type Winner = { id: number; name: string; amount: number; game: string };
 type WinnerSlot = Winner & { slotId: number };
 
@@ -735,9 +736,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <div className="flex items-center gap-1">
-            <Link to="/home" className="rounded-md p-2 text-white hover:bg-white/10">
-              <Menu className="h-7 w-7" strokeWidth={3} />
-            </Link>
+            <GameMenuDrawer />
             <Link to="/home">
               <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7 translate-y-px" />
             </Link>

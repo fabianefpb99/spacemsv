@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import { Menu, Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "lucide-react";
+import { Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "lucide-react";
 import { setMuted as setAudioMuted, playCashoutSound, isMuted } from "@/lib/gameAudio";
 import pageBg from "@/assets/mines-page-bg.png";
 
@@ -13,6 +13,7 @@ import goldImg from "@/assets/slot/gold.png";
 import carImg from "@/assets/slot/car.png";
 import chipImg from "@/assets/slot/chip.png";
 import cardImg from "@/assets/slot/card.png";
+import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 
 /* ============================================================
    Symbols — Mafia Royale (Peaky Blinders theme)
@@ -889,9 +890,7 @@ export function SlotGameTest() {
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.75rem)" }}
         >
           <div className="flex items-center gap-1">
-            <Link to="/home" className="rounded-md p-2 text-white hover:bg-white/10">
-              <Menu className="h-7 w-7" strokeWidth={3} />
-            </Link>
+            <GameMenuDrawer />
             <Link to="/home">
               <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7 translate-y-px" />
             </Link>

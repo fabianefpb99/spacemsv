@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, Volume2, VolumeX } from "lucide-react";
+import { Volume2, VolumeX } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import betspaceLogo from "@/assets/betspace-logo.svg";
@@ -25,6 +25,7 @@ import {
 
 type Choice = "red" | "black" | "green";
 type Phase = "idle" | "spinning" | "revealing";
+import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 type HistoryEntry = { segment: number; color: Choice };
 
 const MIN_BET = 500;
@@ -609,9 +610,7 @@ export function RouletteGame() {
         style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
       >
         <div className="flex items-center gap-1">
-          <button className="rounded-md p-2 text-white hover:bg-white/10" aria-label="Menú">
-            <Menu className="h-7 w-7" strokeWidth={3} />
-          </button>
+          <GameMenuDrawer />
           <Link to="/">
             <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7 translate-y-px cursor-pointer" />
           </Link>

@@ -13,7 +13,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toFriendlyError } from "@/lib/friendly-error";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import { Menu, Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "lucide-react";
+import { Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "lucide-react";
 import { setMuted as setAudioMuted, playCashoutSound, playCoinsSound, isMuted, setBackgroundTrack, clearBackgroundTrack, getBackgroundTrack, stopAllGameAudio, getCtx, getMasterGain, AUDIO_STOP_ALL_EVENT } from "@/lib/gameAudio";
 import pageBg from "@/assets/mines-page-bg.png";
 import mafiaJazzUrl from "@/assets/mafia-jazz.mp3";
@@ -30,6 +30,7 @@ import cardImg from "@/assets/slot/card.png";
 import bonusMegaAsset from "@/assets/audio/slot-win/bonus-1.mp3.asset.json";
 import bonusBigAsset from "@/assets/audio/slot-win/bonus-2.mp3.asset.json";
 import bonusNiceAsset from "@/assets/audio/slot-win/bonus-3.mp3.asset.json";
+import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 
 /* ============================================================
    Symbols — Mafia Royale (Peaky Blinders theme)
@@ -1205,9 +1206,7 @@ export function SlotGame() {
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <div className="flex items-center gap-1">
-            <Link to="/home" className="rounded-md p-2 text-white hover:bg-white/10">
-              <Menu className="h-7 w-7" strokeWidth={3} />
-            </Link>
+            <GameMenuDrawer />
             <Link to="/home">
               <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7 translate-y-px" />
             </Link>

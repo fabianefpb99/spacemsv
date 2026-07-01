@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useVisibleInterval } from "@/hooks/useVisibleInterval";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Link } from "@tanstack/react-router";
-import { Menu, Minus, Plus, Volume2, VolumeX, ChevronDown, Bomb, Gem, TrendingUp } from "lucide-react";
+import { Minus, Plus, Volume2, VolumeX, ChevronDown, Bomb, Gem, TrendingUp } from "lucide-react";
 import { setMuted as setAudioMuted, playCrashSound, playCashoutSound, isMuted, stopAllGameAudio, AUDIO_STOP_ALL_EVENT } from "@/lib/gameAudio";
 import coinRevealSfx from "@/assets/sfx/coin-reveal.mp3";
 import victorySfx from "@/assets/sfx/victory.mp3";
@@ -25,6 +25,7 @@ import {
   MINES_MIN_BET, MINES_MAX_BET, MINES_BET_STEP,
   multiplierFor,
 } from "@/lib/games/mines.shared";
+import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 
 /** Lightweight UUID v4 for client_action_id. */
 function uuid(): string {
@@ -585,9 +586,7 @@ export function MinesGame() {
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <div className="flex items-center gap-1">
-            <Link to="/home" className="rounded-md p-2 text-white hover:bg-white/10">
-              <Menu className="h-7 w-7" strokeWidth={3} />
-            </Link>
+            <GameMenuDrawer />
             <Link to="/home">
               <img
                 src={betspaceLogo}

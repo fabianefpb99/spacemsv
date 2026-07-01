@@ -3,7 +3,6 @@ import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Menu } from "lucide-react";
 
 import { useMe } from "@/hooks/useMe";
 import { AuthControl } from "@/components/auth/AuthControl";
@@ -34,6 +33,7 @@ import hit5Audio from "@/assets/audio/arena/hit-5.mp3.asset.json";
 import hitFinalAudio from "@/assets/audio/arena/hit-final.mp3.asset.json";
 
 type Phase = "lobby" | "fighting" | "result";
+import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 
 function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
@@ -244,9 +244,7 @@ export function ArenaGame() {
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <div className="flex items-center gap-1">
-            <Link to="/home" className="rounded-md p-2 text-white hover:bg-white/10">
-              <Menu className="h-7 w-7" strokeWidth={3} />
-            </Link>
+            <GameMenuDrawer />
             <Link to="/home">
               <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7 translate-y-px" />
             </Link>

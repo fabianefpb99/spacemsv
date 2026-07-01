@@ -6,7 +6,7 @@ import { useVisibleInterval } from "@/hooks/useVisibleInterval";
 import { Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import pageBg from "@/assets/mines-page-bg.png";
-import { Menu, Settings, Minus, Plus, Volume2, VolumeX, TrendingUp } from "lucide-react";
+import { Settings, Minus, Plus, Volume2, VolumeX, TrendingUp } from "lucide-react";
 import { setMuted as setAudioMuted, playCashoutSound, playCrashSound, playDiceRollSound, isMuted, stopAllGameAudio } from "@/lib/gameAudio";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
@@ -26,6 +26,7 @@ import {
 
 type Phase = "betting" | "rolling" | "won" | "lost";
 type Side = "low" | "high";
+import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 
 // Game math + limits live in dice.shared.ts (shared with the server).
 const MULTS = DICE_MULTS;
@@ -306,9 +307,7 @@ export function DiceGame() {
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <div className="flex items-center gap-1">
-            <button className="rounded-md p-2 text-white hover:bg-white/10">
-              <Menu className="h-7 w-7" strokeWidth={3} />
-            </button>
+            <GameMenuDrawer />
             <Link to="/home">
               <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7 translate-y-px" />
             </Link>

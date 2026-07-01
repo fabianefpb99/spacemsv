@@ -4,7 +4,7 @@ import { FitText } from "@/components/ui/fit-text";
 import { BetAmount } from "@/components/games/BetAmount";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Link } from "@tanstack/react-router";
-import { Menu, Settings, Clock, ArrowRight, Minus, Plus, Volume2, VolumeX, ChevronDown, ChevronUp } from "lucide-react";
+import { Settings, Clock, ArrowRight, Minus, Plus, Volume2, VolumeX, ChevronDown, ChevronUp } from "lucide-react";
 import bgImage from "@/assets/space-bg-full.png";
 import astronautIdlePng from "@/assets/astronaut-idle.svg";
 import astronautFlyingSrc from "@/assets/astronaut-flying.png";
@@ -19,6 +19,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { clampBetToStep } from "@/lib/games/bet-helpers";
 
 type Phase = "betting" | "running" | "crashed";
+import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 type HistoryItem = { id: number; value: number };
 
 const MIN_BET = 500;
@@ -918,9 +919,7 @@ export function SpacemanGame() {
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <div className="flex items-center gap-1">
-            <button className="rounded-md p-2 text-white hover:bg-white/10">
-              <Menu className="h-7 w-7" strokeWidth={3} />
-            </button>
+            <GameMenuDrawer />
             <Link to="/">
               <img
                 src={betspaceLogo}
