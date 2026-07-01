@@ -2356,41 +2356,8 @@ html.light .profile-page :is(
   color: #1a1033 !important;
 }
 
-/* ---------- VIP identity frame: strip futuristic HUD ---------- */
-html.light .profile-page .vip-frame {
-  padding: 0 !important;
-  clip-path: none !important;
-  border-radius: 16px !important;
-}
-html.light .profile-page .vip-frame > .vip-frame-inner {
-  clip-path: none !important;
-  border-radius: 16px !important;
-}
-html.light .profile-page .vip-frame-inner::before,
-html.light .profile-page .vip-frame-inner::after {
-  display: none !important;
-}
-/* Hairline & halo decorations off */
-html.light .profile-page .vip-frame-inner > [aria-hidden] {
-  display: none !important;
-}
-/* Avatar border — slim brand purple */
-html.light .profile-page .vip-frame-inner .profile-avatar-ring {
-  border: 2px solid #7C3AED !important;
-  box-shadow: none !important;
-}
-/* Username — brand purple */
-html.light .profile-page .vip-frame-inner .font-display {
-  color: #5B21B6 !important;
-  text-shadow: none !important;
-}
-/* Real name & meta */
-html.light .profile-page .vip-frame-inner .text-white\/90 {
-  color: #1a1033 !important;
-}
-html.light .profile-page .vip-frame-inner .text-purple-200\/70 {
-  color: #6B6B75 !important;
-}
+/* VIP identity frame keeps its dark HUD look in both themes via
+ * `theme-dark-fixed` on the wrapper — no light-mode overrides needed. */
 
 /* ---------- VIP progress strip ---------- */
 html.light .profile-page .profile-vip-progress {
@@ -2414,12 +2381,8 @@ html.light .profile-page .profile-vip-progress .text-purple-200\/70 {
 }
 
 /* ---------- Balances ---------- */
-html.light .profile-page .profile-balance-card {
-  padding: 14px !important;
-}
-/* Principal — stronger visual weight */
+/* Keep the same dimensions as dark mode (px-3 py-2.5, text-lg). */
 html.light .profile-page .profile-balance-card.border-purple-500\/40 .font-display {
-  font-size: 1.35rem !important;
   color: #1a1033 !important;
 }
 html.light .profile-page .profile-balance-card .text-purple-200\/80 {
@@ -2435,20 +2398,18 @@ html.light .profile-page .profile-balance-card .neon-green {
 html.light .profile-page .profile-balance-card .text-white {
   color: #1a1033 !important;
 }
-/* Depositar — solid purple CTA */
+/* Depositar — solid purple CTA (dark mode sizing preserved) */
 html.light .profile-page .profile-balance-card.border-purple-500\/40 a {
   background: #7C3AED !important;
   color: #ffffff !important;
   border: none !important;
-  padding: 8px 10px !important;
   font-weight: 700 !important;
 }
-/* Ver eventos — quieter outline */
+/* Ver eventos — quieter outline (dark mode sizing preserved) */
 html.light .profile-page .profile-balance-card.border-amber-400\/60 a {
   background: #FFFBF0 !important;
   color: #B45309 !important;
   border: 1px solid #F3D9A4 !important;
-  padding: 8px 10px !important;
 }
 /* Bonus card icon tone */
 html.light .profile-page .profile-balance-card.border-amber-400\/60 svg {

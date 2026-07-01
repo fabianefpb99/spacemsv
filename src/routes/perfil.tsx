@@ -233,7 +233,7 @@ function PerfilPage() {
 
         {/* Identity card — futuristic HUD frame, rank-themed */}
         <div
-          className="vip-frame mt-4"
+          className="vip-frame theme-dark-fixed mt-4"
           style={
             {
               "--vip-c1": vipTheme?.frameC1 ?? "rgba(217,70,239,0.9)",
