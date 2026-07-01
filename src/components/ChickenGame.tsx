@@ -92,7 +92,7 @@ type ChickenFx = "idle" | "prepare" | "jump-left-to-right" | "land-bounce" | "sl
  *  Si el servidor responde antes, esperamos hasta este mínimo para que el
  *  jugador vea el impulso. Si responde después, el glow simplemente sigue
  *  pulsando hasta que llega la respuesta. */
-const PREPARE_MIN_MS = 240;
+const PREPARE_MIN_MS = 160;
 const JUMP_MS = 240;
 const LAND_BOUNCE_MS = 140;
 const SLIDE_MS = 240;
@@ -135,16 +135,18 @@ export function ChickenGame() {
   const actionInFlightRef = useRef(false);
 
   const applyBalance = useCallback(
-    (newBalance: number) => {
+    (newBalance: number, opts?: { invalidate?: boolean }) => {
       if (!user) return;
       queryClient.setQueryData<MeData | null>(["me", user.id], (prev) =>
         prev ? { ...prev, balance: newBalance } : prev,
       );
-      // El servidor sólo retorna `balance` (real). El bono se consume
-      // primero en `adjust_balance`, así que disparamos un refetch en
-      // segundo plano para sincronizar `bonus_balance` y evitar que el
-      // HUD muestre un bono ya gastado durante varios tiros.
-      queryClient.invalidateQueries({ queryKey: ["me"] });
+      // Solo revalidamos `bonus_balance` al terminar la ronda (deal / cashout /
+      // pérdida). Durante los saltos, el refetch del `useMe` competía por red
+      // con el próximo `chickenJump` y dejaba a la gallina "impulsándose"
+      // demasiado tiempo antes de aterrizar.
+      if (opts?.invalidate) {
+        queryClient.invalidateQueries({ queryKey: ["me"] });
+      }
     },
     [queryClient, user],
   );
