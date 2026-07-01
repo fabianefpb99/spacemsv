@@ -243,7 +243,8 @@ export function MinesGame() {
     const pub = view.public_state;
     setRevealed(new Set(pub.revealed));
     setPicks(pub.picks);
-    applyBalance(view.new_balance);
+    // Solo forzamos re-sync completo del bono al cerrar la ronda.
+    applyBalance(view.new_balance, { invalidate: pub.phase === "result" });
     // Whatever tiles came back as revealed/closed are no longer pending.
     setPendingTiles((prev) => {
       if (prev.size === 0 && pub.phase === "playing") return prev;
