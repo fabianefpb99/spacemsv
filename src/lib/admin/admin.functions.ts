@@ -181,8 +181,8 @@ export const adminAdjustBalance = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
-    const supabaseAdmin = await getSupabaseAdmin();
-    const { data: res, error } = await supabaseAdmin.rpc("admin_adjust_balance", {
+    // Use the authenticated user's client so auth.uid() resolves inside the RPC.
+    const { data: res, error } = await context.supabase.rpc("admin_adjust_balance", {
       p_target_user_id: data.userId,
       p_delta: data.amount,
       p_target: data.target,
