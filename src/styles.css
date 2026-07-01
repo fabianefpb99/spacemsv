@@ -2356,18 +2356,8 @@ html.light .profile-page :is(
   color: #1a1033 !important;
 }
 
-/* ---------- VIP identity frame ----------
- * Keep the futuristic HUD look identical to dark mode. We intentionally
- * do NOT strip clip-path, halos, or corner decorations here so the frame
- * matches across themes. The unified white-card rule above is excluded
- * for .vip-frame via the rules below. */
-html.light .profile-page .vip-frame,
-html.light .profile-page .vip-frame > .vip-frame-inner {
-  background: transparent !important;
-  background-image: none !important;
-  border: 0 !important;
-  box-shadow: none !important;
-}
+/* VIP identity frame keeps its dark HUD look in both themes via
+ * `theme-dark-fixed` on the wrapper — no light-mode overrides needed. */
 
 /* ---------- VIP progress strip ---------- */
 html.light .profile-page .profile-vip-progress {
