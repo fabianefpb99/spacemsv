@@ -139,14 +139,18 @@ export function DiceGame() {
 
   // Push server-confirmed balance into the useMe cache for instant header update.
   const applyBalance = useCallback(
-    (newBalance: number) => {
+    (newBalance: number, opts?: { invalidate?: boolean }) => {
       if (!user) return;
       queryClient.setQueryData<MeData | null>(["me", user.id], (prev) =>
         prev ? { ...prev, balance: newBalance } : prev,
       );
-      // Refetch en background para sincronizar `bonus_balance`
-      // (el servidor sólo devuelve el saldo real tras `adjust_balance`).
-      queryClient.invalidateQueries({ queryKey: ["me"] });
+      // Solo revalidamos contra el servidor cuando la ronda ya terminó.
+      // Si invalidáramos durante la animación, el refetch traería el saldo
+      // final (ya liquidado en la BD) y el header "delataría" el resultado
+      // antes de que caiga el dado.
+      if (opts?.invalidate) {
+        queryClient.invalidateQueries({ queryKey: ["me"] });
+      }
     },
     [queryClient, user],
   );
@@ -190,7 +194,7 @@ export function DiceGame() {
     setRollPhase("idle");
     setFace(result.roll);
     setResultAmount(result.payout);
-    applyBalance(result.new_balance);
+    applyBalance(result.new_balance, { invalidate: true });
     if (result.won) {
       playCashoutSound();
       setPhase("won");
@@ -269,12 +273,10 @@ export function DiceGame() {
         window.clearTimeout(landTimerRef.current);
         landTimerRef.current = null;
       }
-      applyBalance(prevBalance);
+      applyBalance(prevBalance, { invalidate: true });
       setRollPhase("idle");
       setPhase("betting");
       setError(toFriendlyError(e, "No se pudo lanzar."));
-      // Resync from server in case the debit landed despite the throw.
-      queryClient.invalidateQueries({ queryKey: ["me"] });
     } finally {
       inFlightRef.current = false;
     }
