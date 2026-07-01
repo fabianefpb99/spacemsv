@@ -335,14 +335,17 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
   // Push the server-confirmed balance into the useMe cache so the header
   // updates instantly without waiting for a refetch.
   const applyBalance = useCallback(
-    (newBalance: number) => {
+    (newBalance: number, opts?: { invalidate?: boolean }) => {
       if (!user) return;
       queryClient.setQueryData<MeData | null>(["me", user.id], (prev) =>
         prev ? { ...prev, balance: newBalance } : prev,
       );
-      // Refetch en background para sincronizar `bonus_balance`
-      // (el servidor sólo devuelve el saldo real tras `adjust_balance`).
-      queryClient.invalidateQueries({ queryKey: ["me"] });
+      // Solo invalidamos al principio y al final de la mano; los hits/insurance
+      // intermedios reciben el balance autoritativo dentro de la misma
+      // respuesta y no necesitan un GET extra a `/me`.
+      if (opts?.invalidate) {
+        queryClient.invalidateQueries({ queryKey: ["me"] });
+      }
     },
     [queryClient, user],
   );
