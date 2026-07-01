@@ -26,7 +26,7 @@ import { Switch } from "@/components/ui/switch";
 import { useTheme } from "@/hooks/useTheme";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import arenaHero from "@/assets/home-hero-arena.png.asset.json";
-import blackjackVipPromo from "@/assets/promo-blackjack-vip.jpg";
+import blackjackVipPromo from "@/assets/promo-blackjack-vip.webp";
 import { getPublicDrawerSettings } from "@/lib/admin/drawer-content.functions";
 
 type Item = {
