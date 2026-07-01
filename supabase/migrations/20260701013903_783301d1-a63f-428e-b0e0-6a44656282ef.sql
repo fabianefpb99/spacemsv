@@ -1,0 +1,10 @@
+GRANT EXECUTE ON FUNCTION public.admin_set_block(uuid, boolean) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.admin_adjust_xp(uuid, bigint, text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.admin_update_rtp(text, numeric, boolean) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.admin_approve_withdrawal(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.admin_reject_withdrawal(uuid, text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.admin_approve_deposit(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.admin_reject_deposit(uuid, text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.admin_start_boost(uuid, numeric) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.admin_stop_boost(boolean) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.admin_upsert_vip_reward(vip_rank, vip_sub, text, numeric, text, text, text, boolean) TO authenticated;
