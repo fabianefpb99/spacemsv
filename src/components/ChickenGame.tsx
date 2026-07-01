@@ -45,6 +45,7 @@ import chickenJumpAsset from "@/assets/chicken/chicken-jump.png.asset.json";
 import chickenFailAsset from "@/assets/chicken/chicken-fail.png.asset.json";
 import asteroidAsset from "@/assets/chicken/asteroid.webp.asset.json";
 import asteroidBrokenAsset from "@/assets/chicken/asteroid-broken.webp.asset.json";
+import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 
 const BG = bgAsset.url;
 const IMG_IDLE = chickenIdleAsset.url;
@@ -425,9 +426,7 @@ export function ChickenGame() {
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <div className="flex items-center gap-1">
-            <Link to="/home" className="rounded-md p-2 text-white hover:bg-white/10">
-              <Menu className="h-7 w-7" strokeWidth={3} />
-            </Link>
+            <GameMenuDrawer />
             <Link to="/home">
               <img
                 src={betspaceLogo}

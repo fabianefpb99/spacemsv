@@ -16,6 +16,7 @@ import { clampBetToStep } from "@/lib/games/bet-helpers";
 import mafiaJazzUrl from "@/assets/mafia-jazz.mp3";
 import congratulationsAudio from "@/assets/audio/roulette-win/congratulations.mp3.asset.json";
 import {
+import { GameMenuDrawer } from "@/components/GameMenuDrawer";
   setBackgroundTrack,
   clearBackgroundTrack,
   getBackgroundTrack,
@@ -609,9 +610,7 @@ export function RouletteGame() {
         style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
       >
         <div className="flex items-center gap-1">
-          <button className="rounded-md p-2 text-white hover:bg-white/10" aria-label="Menú">
-            <Menu className="h-7 w-7" strokeWidth={3} />
-          </button>
+          <GameMenuDrawer />
           <Link to="/">
             <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7 translate-y-px cursor-pointer" />
           </Link>

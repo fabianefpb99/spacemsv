@@ -16,6 +16,7 @@ import { toFriendlyError } from "@/lib/friendly-error";
 import { diceRoll } from "@/lib/games/dice.functions";
 import { clampBetToStep } from "@/lib/games/bet-helpers";
 import {
+import { GameMenuDrawer } from "@/components/GameMenuDrawer";
   DICE_BET_STEP,
   DICE_MAX_BET,
   DICE_MIN_BET,
@@ -306,9 +307,7 @@ export function DiceGame() {
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <div className="flex items-center gap-1">
-            <button className="rounded-md p-2 text-white hover:bg-white/10">
-              <Menu className="h-7 w-7" strokeWidth={3} />
-            </button>
+            <GameMenuDrawer />
             <Link to="/home">
               <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7 translate-y-px" />
             </Link>

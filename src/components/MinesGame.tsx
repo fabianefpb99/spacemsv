@@ -20,6 +20,7 @@ import { withTimeout } from "@/lib/async/with-timeout";
 import { minesDeal, minesReveal, minesCashout, minesResume, type MinesSessionView } from "@/lib/games/mines.functions";
 import { clampBetToStep } from "@/lib/games/bet-helpers";
 import {
+import { GameMenuDrawer } from "@/components/GameMenuDrawer";
   MINES_TILES,
   MINES_MIN, MINES_MAX,
   MINES_MIN_BET, MINES_MAX_BET, MINES_BET_STEP,
@@ -585,9 +586,7 @@ export function MinesGame() {
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <div className="flex items-center gap-1">
-            <Link to="/home" className="rounded-md p-2 text-white hover:bg-white/10">
-              <Menu className="h-7 w-7" strokeWidth={3} />
-            </Link>
+            <GameMenuDrawer />
             <Link to="/home">
               <img
                 src={betspaceLogo}

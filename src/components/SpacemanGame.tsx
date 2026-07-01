@@ -17,6 +17,7 @@ import { useMe } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
 import { clampBetToStep } from "@/lib/games/bet-helpers";
+import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 
 type Phase = "betting" | "running" | "crashed";
 type HistoryItem = { id: number; value: number };
@@ -918,9 +919,7 @@ export function SpacemanGame() {
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <div className="flex items-center gap-1">
-            <button className="rounded-md p-2 text-white hover:bg-white/10">
-              <Menu className="h-7 w-7" strokeWidth={3} />
-            </button>
+            <GameMenuDrawer />
             <Link to="/">
               <img
                 src={betspaceLogo}

@@ -30,6 +30,7 @@ import {
   type BJSessionView,
 } from "@/lib/games/blackjack.functions";
 import {
+import { GameMenuDrawer } from "@/components/GameMenuDrawer";
   BJ_VARIANTS,
   type BJVariantKey,
   type BJOutcome,
@@ -735,9 +736,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <div className="flex items-center gap-1">
-            <Link to="/home" className="rounded-md p-2 text-white hover:bg-white/10">
-              <Menu className="h-7 w-7" strokeWidth={3} />
-            </Link>
+            <GameMenuDrawer />
             <Link to="/home">
               <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7 translate-y-px" />
             </Link>
