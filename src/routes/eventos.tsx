@@ -370,6 +370,14 @@ function EventosPage() {
         () => {
           userMissionsQ.refetch();
           me.refetch?.();
+          avatarUnlocksQ.refetch();
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "user_avatar_unlocks", filter: `user_id=eq.${user.id}` },
+        () => {
+          avatarUnlocksQ.refetch();
         },
       )
       .subscribe();
