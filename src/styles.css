@@ -3299,7 +3299,7 @@ html.light .profile-page .profile-quickbar-tab.is-active {
 }
 
 /* Sombra ovalada bajo las patas — simula contacto con la roca.
-   Anclada al borde inferior de las patas (≈ 92% de la altura del sprite)
+   Anclada al borde inferior de las patas (≈ 90% de la altura del sprite)
    para que la parte superior de la sombra toque el contacto y se extienda
    ligeramente hacia abajo, sin dejar un espacio flotante. */
 .chicken-foot-shadow {
