@@ -3305,7 +3305,7 @@ html.light .profile-page .profile-quickbar-tab.is-active {
 .chicken-foot-shadow {
   position: absolute;
   left: 58%;
-  top: 92%;
+  top: 90%;
   width: 68%;
   height: 8px;
   transform: translateX(-50%) scale(1);
