@@ -5,7 +5,6 @@ import { Loader2, Mail, User as UserIcon, Lock, Ticket, Eye, EyeOff, X, Rocket, 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { PersonalDataForm } from "@/components/profile/PersonalDataForm";
-import novaIdle from "@/assets/arena/nova-idle.png.asset.json";
 
 type Mode = "signin" | "signup";
 
