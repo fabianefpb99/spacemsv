@@ -103,8 +103,8 @@ function AuthDialogContent({ onOpenChange }: { onOpenChange: (v: boolean) => voi
           {/* Header */}
           <div className="flex flex-col items-center text-center">
             <div className="flex flex-col items-center">
-              <span className="auth-welcome text-[11px] font-semibold uppercase tracking-[0.18em]">
-                Bienvenido a
+              <span className="auth-welcome text-[11px] font-semibold tracking-[0.18em]">
+                BIENVENIDO a
               </span>
               <div className="auth-wordmark font-display text-[26px] font-black tracking-[0.18em] leading-none">
                 BET<span className="auth-wordmark-accent">SPACE</span>
