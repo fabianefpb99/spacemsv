@@ -53,19 +53,12 @@ export function DepositsSection() {
   });
 
   useEffect(() => {
-    const ch = supabase
-      .channel("admin-deposits-rt")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "deposit_requests" },
-        () => {
-          qc.invalidateQueries({ queryKey: ["admin-deposits"] });
-        },
-      )
-      .subscribe();
-    return () => {
-      void supabase.removeChannel(ch);
-    };
+    // Realtime on deposit_requests is disabled to avoid broadcasting PII.
+    // Poll for updates instead — payload was never consumed anyway.
+    const t = setInterval(() => {
+      qc.invalidateQueries({ queryKey: ["admin-deposits"] });
+    }, 15000);
+    return () => clearInterval(t);
   }, [qc]);
 
   const totalPages = q.data ? Math.max(1, Math.ceil(q.data.total / q.data.pageSize)) : 1;
