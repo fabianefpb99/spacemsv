@@ -607,6 +607,24 @@ export type Database = {
         }
         Relationships: []
       }
+      jackpot_state: {
+        Row: {
+          amount: number
+          id: boolean
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          id?: boolean
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          id?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       missions: {
         Row: {
           accent: string
@@ -1961,6 +1979,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_jackpot: { Args: { p_delta?: number }; Returns: number }
       is_boost_target: {
         Args: { p_game?: string; p_user_id: string }
         Returns: boolean
