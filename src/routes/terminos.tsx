@@ -150,21 +150,21 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
 
 function TerminosPage() {
   return (
-    <div className="min-h-screen bg-[#060210] text-white">
+    <div className="terminos-scope min-h-screen bg-[#060210] text-white">
       <div className="mx-auto flex min-h-screen max-w-2xl flex-col px-4 pb-10 pt-4">
-        <header className="-mx-4 flex items-center gap-3 border-b border-purple-500/20 bg-[#060210] px-4 pb-3">
-          <Link to="/home" aria-label="Atrás" className="rounded-md p-2 text-purple-100 hover:bg-white/5">
+        <header className="terminos-header -mx-4 flex items-center gap-3 border-b border-purple-500/20 bg-[#060210] px-4 pb-3">
+          <Link to="/home" aria-label="Atrás" className="terminos-back rounded-md p-2 text-purple-100 hover:bg-white/5">
             <ArrowLeft className="h-6 w-6" strokeWidth={2.5} />
           </Link>
-          <h1 className="font-display text-base font-bold uppercase tracking-widest">
+          <h1 className="terminos-title font-display text-base font-bold uppercase tracking-widest">
             Términos y Condiciones
           </h1>
         </header>
 
-        <p className="mt-4 text-xs uppercase tracking-widest text-purple-300/60">
+        <p className="terminos-updated mt-4 text-xs uppercase tracking-widest text-purple-300/60">
           Última actualización: 28 de junio de 2026
         </p>
-        <p className="mt-3 text-sm leading-relaxed text-purple-100/85">
+        <p className="terminos-intro mt-3 text-sm leading-relaxed text-purple-100/85">
           Lee con atención cada sección. Al usar BETSPACE aceptas íntegramente estos términos.
         </p>
 
@@ -177,19 +177,19 @@ function TerminosPage() {
             <AccordionItem
               key={s.id}
               value={s.id}
-              className="rounded-lg border border-purple-500/25 bg-[#0c0620] px-3"
+              className="terminos-item rounded-lg border border-purple-500/25 bg-[#0c0620] px-3"
             >
-              <AccordionTrigger className="text-left text-sm font-semibold text-white hover:no-underline">
+              <AccordionTrigger className="terminos-trigger text-left text-sm font-semibold text-white hover:no-underline">
                 {s.title}
               </AccordionTrigger>
-              <AccordionContent className="text-sm leading-relaxed text-purple-100/85 [&_p]:mb-2 [&_ul]:ml-5 [&_ul]:list-disc [&_ul]:space-y-1 [&_strong]:text-white">
+              <AccordionContent className="terminos-content text-sm leading-relaxed text-purple-100/85 [&_p]:mb-2 [&_ul]:ml-5 [&_ul]:list-disc [&_ul]:space-y-1 [&_strong]:text-white">
                 {s.body}
               </AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>
 
-        <p className="mt-6 text-[11px] text-purple-300/50">
+        <p className="terminos-footer mt-6 text-[11px] text-purple-300/50">
           Si tienes dudas sobre estos términos, contáctanos desde la sección de Soporte.
         </p>
       </div>
