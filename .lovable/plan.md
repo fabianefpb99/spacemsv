@@ -1,85 +1,62 @@
-## Objetivo
-Darle más ventaja a la casa en la ruleta aumentando la probabilidad de que caiga el verde (0), pero sin afectar el resto del código. El ajuste será configurable desde el panel de administración y se aplicará en el sorteo del servidor.
 
-## Situación actual
-- La ruleta es europea: 37 números (0 verde, 18 rojos, 18 negros).
-- El sorteo se hace en la función SQL `spin_roulette_v1` con distribución uniforme (cada número 1/37 ≈ 2.7%).
-- El verde paga 14×; rojo/negro paga 2×.
-- No existe ningún peso configurable para el verde.
-- El usuario quiere un aumento "bastante notable" (4/5) y que sea configurable y funcional, a diferencia de la sección de RTP que no funciona.
+# Nuevo diseño del flotante Login / Registro
 
-## Propuesta de implementación
+Modal moderno inspirado en la referencia enviada: **avatar NOVA** (de Arena) arriba, wordmark BETSPACE, mensaje motivador, tabs segmented "Iniciar sesión / Registrarse", campos con icono, CTA morado con glow y enlace inferior para cambiar de modo. Sin login social. Funciona en modo oscuro y claro respetando los tokens semánticos del proyecto.
 
-### 1. Base de datos: nueva tabla `roulette_config`
-Crear una tabla pequeña y única para guardar el peso del verde:
+## Cambios
 
-```sql
-CREATE TABLE public.roulette_config (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  green_weight numeric NOT NULL DEFAULT 1.0 CHECK (green_weight >= 1.0 AND green_weight <= 5.0),
-  updated_at timestamptz NOT NULL DEFAULT now(),
-  updated_by uuid REFERENCES auth.users(id) ON DELETE SET NULL
-);
+### 1. Header del modal
+- **NOVA** (`src/assets/arena/nova-idle.png`) a ~88px en un contenedor circular con halo morado suave.
+- Wordmark **BETSPACE** debajo con la tipografía display actual.
+- Copy que cambia según la pestaña:
+  - **Iniciar sesión** — "Tu misión te espera" · "Entra y sigue ganando desde donde lo dejaste."
+  - **Registrarse** — "Empieza a ganar hoy" · "Crea tu cuenta en 30 segundos y activa tu bono de bienvenida."
 
-GRANT SELECT, INSERT, UPDATE, DELETE ON public.roulette_config TO authenticated;
-GRANT ALL ON public.roulette_config TO service_role;
-ALTER TABLE public.roulette_config ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Admins can manage roulette config" ON public.roulette_config
-  FOR ALL TO authenticated USING (public.has_role(auth.uid(), 'admin'));
-```
+### 2. Tabs segmented
+Píldora con dos opciones. El activo lleva superficie clara con leve sombra sobre morado; el inactivo queda transparente y atenuado. Transición suave.
 
-Insertar fila inicial: `green_weight = 1.0` (comportamiento actual).
+### 3. Campos
+- Label pequeña por encima.
+- Input con icono a la izquierda (`Mail`, `User`, `Lock`, `Ticket`), padding cómodo.
+- Contraseña con toggle `Eye/EyeOff`.
+- Foco: anillo `ring-primary/40`.
+- Errores en línea con color destructivo.
 
-### 2. Actualizar la función SQL `spin_roulette_v1`
-En lugar de sortear uniforme entre 37 segmentos, se usará un sorteo ponderado:
-- Rojo: peso 18
-- Negro: peso 18
-- Verde: peso configurable (`green_weight`)
+### 4. CTA principal
+- Full width, alto 48px, radio 12px, gradiente `--primary → --primary-glow`, glow morado al hover, `active:scale-[.98]`.
+- Texto: "Iniciar sesión" / "Crear cuenta y ganar".
+- Loading con spinner.
 
-La función leerá el peso de `roulette_config`, calculará el total de pesos y hará rejection sampling sobre ese rango. Así se mantiene la misma técnica criptográfica (`gen_random_bytes`) y solo cambia la distribución.
+### 5. Pie
+- "¿No tienes cuenta? **Regístrate gratis**" ↔ "¿Ya juegas con nosotros? **Inicia sesión**".
+- Mini-legal: "Al continuar aceptas los Términos" (link a `/terminos`).
+- Se elimina completamente el bloque de Google del diálogo.
 
-Ejemplo de efectos del peso:
-- Peso 1.0 (actual): verde ≈ 2.7%
-- Peso 2.0: verde ≈ 5.3%
-- Peso 3.0: verde ≈ 7.7%
-- Peso 5.0: verde ≈ 12.2%
+### 6. Contenedor
+- `max-w-[420px]`, padding 28px, radio 20px.
+- **Dark**: `bg-[hsl(var(--background))]` con borde `border-primary/25` y glow morado en el top.
+- **Light**: fondo blanco con borde suave y sombra elegante.
+- Backdrop `bg-black/70 backdrop-blur-md`.
+- Botón × discreto arriba a la derecha.
 
-Con peso 5.0 la casa sigue teniendo ventaja en rojo/negro (pagan 2× sobre 48.6% real), pero en verde el retorno esperado sube a ~171% (paga 14×). Por eso se propone un tope de 5.0 para no invertir la ventaja de la casa en verde. Si el usuario quiere mantener ventaja estricta en verde, se puede reducir el payout del verde de 14× a un valor que compense (por ejemplo, con peso 2.0 el payout debería ser ~9× para mantener house edge similar). Esto se discutirá antes de implementar si el usuario lo desea.
+### 7. Motion
+- Entrada: fade + scale 0.96→1 (150ms).
+- Cambio de tab: crossfade (100ms).
 
-### 3. Server functions en `src/lib/admin/admin.functions.ts`
-Crear dos funciones:
-- `adminGetRouletteConfig`: devuelve `green_weight`, `updated_at`, `updated_by_label`.
-- `adminUpdateRouletteConfig`: recibe `green_weight`, valida rango 1.0–5.0, actualiza fila y registra el admin.
+## Detalles técnicos
 
-Ambas usan `requireSupabaseAuth` y `assertAdmin`.
+- Se reescribe **solo** `src/components/auth/AuthDialog.tsx`. Se importa `novaIdle from "@/assets/arena/nova-idle.png.asset.json"` y se usa `<img src={novaIdle.url} />`.
+- Se elimina `GoogleButton` y el import de `lovable`. Verifico que no se use fuera del diálogo antes de borrarlo del archivo.
+- Se **conservan** intactos: `signUpSchema`, `signInSchema`, submit handlers, referral RPC, paso 2 con `PersonalDataForm`, `refreshSession`, control de scroll/Escape/portal.
+- Estilos con **tokens semánticos** (`bg-background`, `text-foreground`, `bg-primary`, `text-primary-foreground`, `border-border`, `ring-ring`, `text-muted-foreground`) — nada hardcodeado (`text-white`, `bg-black`, `bg-[#...]`) → el modo claro funciona automáticamente.
+- El diálogo **no** se marca como `theme-dark-fixed`; sigue el tema global (la regla de memoria sobre overrides `html.light` no aplica porque no hay override específico).
+- Se limpian las clases `.auth-dialog-*` viejas de `src/styles.css` que ya no se usan, para no dejar CSS que pise el nuevo look.
+- Se añaden como `@utility` en `styles.css` (Tailwind v4) solo lo estrictamente necesario: `auth-cta-gradient` y `auth-panel-glow`, ambos derivados de `var(--primary)` para que respondan al tema.
 
-### 4. Componente admin `src/components/admin/RouletteConfigSection.tsx`
-Nueva sección con:
-- Slider o input numérico para `green_weight` (1.0 a 5.0, paso 0.1).
-- Indicador en vivo de la probabilidad resultante del verde.
-- Botón "Guardar" con estado de carga.
-- Mensaje de éxito/error.
-- Diseño consistente con el resto del panel (colores oscuros, púrpura).
+## Verificación
 
-### 5. Integrar en `src/routes/adminpanel.tsx`
-- Agregar `roulette` a `AdminSection` en `src/components/admin/shared.tsx`.
-- Agregar entrada en `SECTIONS` del panel con icono `Settings` o similar.
-- Agregar caso en `renderSection` para mostrar `RouletteConfigSection`.
-
-### 6. Verificación funcional
-Después de implementar:
-- Invocar `adminUpdateRouletteConfig` desde el sandbox para cambiar el peso a 2.0.
-- Invocar `spin_roulette_v1` (o `spin_roulette_v2`) múltiples veces y contar frecuencia de verde para comprobar que sube.
-- Restaurar el peso a 1.0 si es necesario después de las pruebas.
-- Revisar el error de hydration que aparece en el preview; si persiste después de los cambios, se tratará como issue separado.
-
-## Archivos a modificar/crear
-- `supabase/migrations/` (nueva migración para tabla y función SQL)
-- `src/lib/admin/admin.functions.ts` (server functions)
-- `src/components/admin/RouletteConfigSection.tsx` (nuevo)
-- `src/components/admin/shared.tsx` (añadir tipo `AdminSection`)
-- `src/routes/adminpanel.tsx` (integrar sección)
-
-## Notas de seguridad
-- Solo admins con rol `admin` en `user_roles` podrán ver/modificar la configuración.
-- La función SQL se ejecuta con el usuario autenticado (RLS); la función leerá `roulette_config` con una política `USING` que requiere rol admin, pero el sorteo de ruleta es llamado por un usuario normal. Por eso la tabla necesitará una política `SELECT` pública para la función de sorteo, o la función usará `SECURITY DEFINER` para leer la configuración. Se optará por `SECURITY DEFINER` en la función SQL para que el sorteo siempre pueda leer el peso actual sin exponer el historial de ediciones al usuario.
+1. Abrir modal en `/home` invitado — modo oscuro OK, NOVA visible.
+2. Toggle a modo claro — contraste, botón y foco correctos.
+3. Signin con credenciales inválidas → error visible.
+4. Signup completo con referral → paso 2 con `PersonalDataForm`.
+5. Escape, click backdrop, botón ×, scroll interno en móvil (390px).
