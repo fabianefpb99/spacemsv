@@ -786,7 +786,14 @@ export function SpacemanGame() {
       return { label: `RETIRAR  +${formatCOP(profit)}`, cls: "btn-primary-red", disabled: false, key: "cashout" };
     }
     if (phase === "betting") {
-      return { label: activeBet ? "APUESTA REGISTRADA" : "APOSTAR", cls: "btn-primary-green", disabled: !!activeBet || !balanceReady || bet < MIN_BET || bet > balance, key: activeBet ? "registered" : "bet" };
+      // Cutoff visible: bloquear el botón 200ms antes del despegue
+      const cutoff = countdown <= 0.2;
+      return {
+        label: activeBet ? "APUESTA REGISTRADA" : "APOSTAR",
+        cls: "btn-primary-green",
+        disabled: !!activeBet || !balanceReady || bet < MIN_BET || bet > balance || cutoff,
+        key: activeBet ? "registered" : "bet",
+      };
     }
     return { label: "ESPERANDO RONDA", cls: "btn-primary-green opacity-50 brightness-75", disabled: true, key: "waiting" };
   })();
