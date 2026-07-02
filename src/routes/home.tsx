@@ -319,6 +319,25 @@ function HomePage() {
   const realActive = activeCountQ.data?.count ?? 0;
   const online = onlineBase + realActive;
 
+  // Jackpot acumulado (Supabase). Se incrementa +$125 cada hora vía pg_cron.
+  const jackpotQ = useQuery({
+    queryKey: ["jackpot-amount"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("jackpot_state")
+        .select("amount")
+        .eq("id", true)
+        .maybeSingle();
+      if (error) throw error;
+      return Number(data?.amount ?? 63500);
+    },
+    staleTime: 60_000,
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: false,
+  });
+  const jackpotAmount = jackpotQ.data ?? 63500;
+  const [jackpotPulse, setJackpotPulse] = useState(false);
+
   // Admin-only: clic en el contador para ver la lista de jugadores reales activos.
   const isAdminQ = useIsAdmin();
   const isAdmin = !!isAdminQ.data;
