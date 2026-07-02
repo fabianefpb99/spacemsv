@@ -15,6 +15,7 @@ import {
   Coins,
   Users,
   Gift,
+  Check,
 } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import eventosHero from "@/assets/eventos-hero.jpg";
@@ -796,12 +797,8 @@ function MissionCard({ mission }: { mission: Mission }) {
       </div>
       </div>
       {done && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/90 shadow-[0_0_24px_rgba(16,185,129,0.7)] ring-2 ring-emerald-300/70">
-            <svg viewBox="0 0 24 24" className="h-10 w-10 text-white" fill="none" stroke="currentColor" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round">
-              <path d="M5 12.5l4.5 4.5L19 7.5" />
-            </svg>
-          </div>
+        <div className="pointer-events-none absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.55)] ring-1 ring-emerald-300/70">
+          <Check className="h-4 w-4 text-white" strokeWidth={3} />
         </div>
       )}
     </div>
