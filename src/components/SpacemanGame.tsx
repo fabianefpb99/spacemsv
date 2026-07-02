@@ -520,8 +520,6 @@ export function SpacemanGame() {
   const rafRef = useRef<number | null>(null);
   const phaseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sceneRef = useRef<HTMLDivElement | null>(null);
-  const bettingBarRafRef = useRef<number | null>(null);
-
   const updateSceneVisuals = useCallback((currentMultiplier: number) => {
     const scene = sceneRef.current;
     if (!scene) return;
@@ -652,11 +650,6 @@ export function SpacemanGame() {
         setPhase("betting");
         setMultiplier(1);
         setCountdown(remaining / 1000);
-        // Barra: porcentaje consumido
-        const totalMs = BETTING_MS;
-        const consumed = Math.max(0, Math.min(100, ((totalMs - remaining) / totalMs) * 100));
-        setBettingBarFill(consumed);
-        setBettingBarDuration(120);
         // Beeps 3-2-1
         const fired = countdownFiredRef.current;
         const remSec = remaining / 1000;
@@ -680,7 +673,6 @@ export function SpacemanGame() {
           }
         }
         setMultiplier(shown);
-        setBettingBarFill(100);
         updateSceneVisuals(exact);
       } else if (r.status === "crashed" && r.crash_multiplier != null) {
         if (phase !== "crashed") {
