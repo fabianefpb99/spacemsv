@@ -36,6 +36,46 @@ function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
 }
 
+type FlagCode = "AR" | "FR" | "BR" | "DE";
+
+function Flag({ code }: { code: FlagCode }) {
+  const base = "block h-full w-full";
+  switch (code) {
+    case "AR":
+      return (
+        <svg viewBox="0 0 60 40" className={base} aria-hidden="true" preserveAspectRatio="none">
+          <rect width="60" height="40" fill="#75AADB" />
+          <rect y="13.33" width="60" height="13.33" fill="#FFFFFF" />
+          <circle cx="30" cy="20" r="3.2" fill="#FCBF49" />
+        </svg>
+      );
+    case "FR":
+      return (
+        <svg viewBox="0 0 60 40" className={base} aria-hidden="true" preserveAspectRatio="none">
+          <rect width="20" height="40" fill="#0055A4" />
+          <rect x="20" width="20" height="40" fill="#FFFFFF" />
+          <rect x="40" width="20" height="40" fill="#EF4135" />
+        </svg>
+      );
+    case "BR":
+      return (
+        <svg viewBox="0 0 60 40" className={base} aria-hidden="true" preserveAspectRatio="none">
+          <rect width="60" height="40" fill="#009C3B" />
+          <polygon points="30,5 55,20 30,35 5,20" fill="#FFDF00" />
+          <circle cx="30" cy="20" r="7" fill="#002776" />
+        </svg>
+      );
+    case "DE":
+      return (
+        <svg viewBox="0 0 60 40" className={base} aria-hidden="true" preserveAspectRatio="none">
+          <rect width="60" height="13.33" fill="#000000" />
+          <rect y="13.33" width="60" height="13.33" fill="#DD0000" />
+          <rect y="26.66" width="60" height="13.34" fill="#FFCE00" />
+        </svg>
+      );
+  }
+}
+
 type Match = {
   id: string;
   competition: string;
