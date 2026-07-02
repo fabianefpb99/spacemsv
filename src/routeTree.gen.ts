@@ -16,6 +16,7 @@ import { Route as SpacemanRouteImport } from './routes/spaceman'
 import { Route as SoporteRouteImport } from './routes/soporte'
 import { Route as SlotpruebasRouteImport } from './routes/slotpruebas'
 import { Route as SlotRouteImport } from './routes/slot'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RuletaRouteImport } from './routes/ruleta'
 import { Route as RetirosRouteImport } from './routes/retiros'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -72,6 +73,11 @@ const SlotpruebasRoute = SlotpruebasRouteImport.update({
 const SlotRoute = SlotRouteImport.update({
   id: '/slot',
   path: '/slot',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RuletaRoute = RuletaRouteImport.update({
@@ -204,6 +210,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/retiros': typeof RetirosRoute
   '/ruleta': typeof RuletaRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/slot': typeof SlotRoute
   '/slotpruebas': typeof SlotpruebasRoute
   '/soporte': typeof SoporteRoute
@@ -235,6 +242,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/retiros': typeof RetirosRoute
   '/ruleta': typeof RuletaRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/slot': typeof SlotRoute
   '/slotpruebas': typeof SlotpruebasRoute
   '/soporte': typeof SoporteRoute
@@ -267,6 +275,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/retiros': typeof RetirosRoute
   '/ruleta': typeof RuletaRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/slot': typeof SlotRoute
   '/slotpruebas': typeof SlotpruebasRoute
   '/soporte': typeof SoporteRoute
@@ -300,6 +309,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/retiros'
     | '/ruleta'
+    | '/sitemap.xml'
     | '/slot'
     | '/slotpruebas'
     | '/soporte'
@@ -331,6 +341,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/retiros'
     | '/ruleta'
+    | '/sitemap.xml'
     | '/slot'
     | '/slotpruebas'
     | '/soporte'
@@ -362,6 +373,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/retiros'
     | '/ruleta'
+    | '/sitemap.xml'
     | '/slot'
     | '/slotpruebas'
     | '/soporte'
@@ -394,6 +406,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   RetirosRoute: typeof RetirosRoute
   RuletaRoute: typeof RuletaRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SlotRoute: typeof SlotRoute
   SlotpruebasRoute: typeof SlotpruebasRoute
   SoporteRoute: typeof SoporteRoute
@@ -457,6 +470,13 @@ declare module '@tanstack/react-router' {
       path: '/slot'
       fullPath: '/slot'
       preLoaderRoute: typeof SlotRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ruleta': {
@@ -634,6 +654,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   RetirosRoute: RetirosRoute,
   RuletaRoute: RuletaRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   SlotRoute: SlotRoute,
   SlotpruebasRoute: SlotpruebasRoute,
   SoporteRoute: SoporteRoute,
