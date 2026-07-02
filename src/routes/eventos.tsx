@@ -102,6 +102,7 @@ type Mission = {
   accent: "purple" | "emerald" | "amber" | "rose" | "blue";
   icon: React.ReactNode;
   rewardImage?: string;
+  completed?: boolean;
 };
 
 const MISSIONS: Mission[] = [
@@ -339,6 +340,25 @@ function EventosPage() {
     },
   });
 
+  // Avatares ya desbloqueados por el usuario (persistente, no se reinicia por período).
+  const avatarUnlocksQ = useQuery({
+    queryKey: ["user-avatar-unlocks", user?.id ?? null],
+    enabled: !!user,
+    staleTime: 30_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("user_avatar_unlocks")
+        .select("mission_id")
+        .eq("user_id", user!.id);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+  const unlockedAvatarMissionIds = useMemo(
+    () => new Set((avatarUnlocksQ.data ?? []).map((r: any) => r.mission_id)),
+    [avatarUnlocksQ.data],
+  );
+
   // Realtime: refrescar al insertarse/actualizarse progreso del usuario
   useEffect(() => {
     if (!user) return;
@@ -350,6 +370,14 @@ function EventosPage() {
         () => {
           userMissionsQ.refetch();
           me.refetch?.();
+          avatarUnlocksQ.refetch();
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "user_avatar_unlocks", filter: `user_id=eq.${user.id}` },
+        () => {
+          avatarUnlocksQ.refetch();
         },
       )
       .subscribe();
@@ -413,8 +441,15 @@ function EventosPage() {
     type: r.type,
     title: r.title,
     subtitle: r.subtitle ?? undefined,
-    progress: progressForMission(r, userMissionsQ.data ?? []),
+    progress:
+      r.reward_kind === "avatar" && unlockedAvatarMissionIds.has(r.id)
+        ? Number(r.goal) || 1
+        : progressForMission(r, userMissionsQ.data ?? []),
     goal: Number(r.goal) || 1,
+    completed:
+      r.reward_kind === "avatar" && unlockedAvatarMissionIds.has(r.id)
+        ? true
+        : progressForMission(r, userMissionsQ.data ?? []) >= (Number(r.goal) || 1),
     reward: {
       kind: (r.reward_kind === "xp" ? "bonus" : r.reward_kind) as RewardKind,
       value: r.reward_kind === "avatar" ? (r.reward_label || "Avatar") : Number(r.reward_value) || 0,
@@ -698,9 +733,11 @@ function MissionCard({ mission }: { mission: Mission }) {
   const progressLabel = isMoneyGoal
     ? `${formatCOP(mission.progress)} / ${formatCOP(mission.goal)}`
     : `${mission.progress} / ${mission.goal}`;
+  const done = !!mission.completed;
 
   return (
-    <div className={`relative overflow-hidden rounded-xl border border-purple-500/30 bg-[#0c0620]/85 p-3 ring-1 ${a.ring}`}>
+    <div className={`relative overflow-hidden rounded-xl border border-purple-500/30 bg-[#0c0620]/85 p-3 ring-1 ${done ? "ring-emerald-400/60 border-emerald-400/40" : a.ring}`}>
+      <div className={done ? "pointer-events-none opacity-40" : ""}>
       <div className="flex items-center gap-3">
         <div className="flex h-14 w-14 shrink-0 items-center justify-center">
           {mission.icon}
@@ -746,7 +783,7 @@ function MissionCard({ mission }: { mission: Mission }) {
       <div className="mt-3 flex items-center gap-3">
         <div className="min-w-0 flex-1">
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/5">
-            <div className={`h-full ${a.bar}`} style={{ width: `${pct}%` }} />
+            <div className={`h-full ${done ? "bg-emerald-400" : a.bar}`} style={{ width: `${pct}%` }} />
           </div>
           <div className="mt-1 text-[10px] text-purple-300/70">{progressLabel}</div>
         </div>
@@ -757,6 +794,16 @@ function MissionCard({ mission }: { mission: Mission }) {
           {mission.cta.label}
         </Link>
       </div>
+      </div>
+      {done && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/90 shadow-[0_0_24px_rgba(16,185,129,0.7)] ring-2 ring-emerald-300/70">
+            <svg viewBox="0 0 24 24" className="h-10 w-10 text-white" fill="none" stroke="currentColor" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12.5l4.5 4.5L19 7.5" />
+            </svg>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
