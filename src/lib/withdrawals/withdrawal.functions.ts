@@ -82,6 +82,36 @@ export const listMyWithdrawalAccounts = createServerFn({ method: "GET" })
     return data ?? [];
   });
 
+export const upsertMyWithdrawalAccount = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((i: unknown) => z.object({
+    method: z.enum(["nequi", "breb"]),
+    identifier: z.string().trim().min(4).max(80),
+    bank_label: z.string().trim().max(80).optional().nullable(),
+  }).parse(i))
+  .handler(async ({ data, context }) => {
+    const token = bearer();
+    if (!token) throw new Error("missing_auth_token");
+    const supa = userClient(token);
+    // Upsert on (user_id, method) — RLS scopes to auth.uid().
+    const { data: row, error } = await supa
+      .from("withdrawal_accounts")
+      .upsert(
+        {
+          user_id: context.userId,
+          method: data.method,
+          identifier: data.identifier,
+          bank_label: data.bank_label ?? null,
+          is_default: true,
+        },
+        { onConflict: "user_id,method" },
+      )
+      .select()
+      .maybeSingle();
+    if (error) throw safeRpcError(error);
+    return row;
+  });
+
 /* ---------- Admin ---------- */
 
 const adminListInput = z.object({
