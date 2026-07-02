@@ -358,9 +358,10 @@ function RetirosPage() {
                 (pendingAccount?.method === "nequi" ? pendingAccount : undefined) ??
                 accounts.find((x) => x.method === "nequi");
               if (a) setSelectedMethod("nequi");
-              else setOpenAdd("nequi");
+              else setOpenAdd({ method: "nequi" });
             }}
-            onAdd={() => setOpenAdd("nequi")}
+            onAdd={() => setOpenAdd({ method: "nequi" })}
+            onEdit={(acc) => setOpenAdd({ method: "nequi", initial: acc })}
           />
           <MethodTile
             selected={selectedMethod === "breb"}
@@ -375,9 +376,10 @@ function RetirosPage() {
                 (pendingAccount?.method === "breb" ? pendingAccount : undefined) ??
                 accounts.find((x) => x.method === "breb");
               if (a) setSelectedMethod("breb");
-              else setOpenAdd("breb");
+              else setOpenAdd({ method: "breb" });
             }}
-            onAdd={() => setOpenAdd("breb")}
+            onAdd={() => setOpenAdd({ method: "breb" })}
+            onEdit={(acc) => setOpenAdd({ method: "breb", initial: acc })}
           />
         </div>
 
