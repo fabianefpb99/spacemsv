@@ -1594,6 +1594,16 @@ html, body {
   animation: bounce-slow 2.2s ease-in-out infinite;
 }
 
+/* Jackpot banner click pulse */
+@keyframes jackpot-pulse {
+  0%   { box-shadow: 0 0 12px rgba(251,191,36,0.35), 0 0 0 0 rgba(251,191,36,0.55); transform: scale(1); }
+  40%  { box-shadow: 0 0 34px rgba(251,191,36,0.95), 0 0 0 10px rgba(251,191,36,0); transform: scale(1.015); }
+  100% { box-shadow: 0 0 12px rgba(251,191,36,0.35), 0 0 0 0 rgba(251,191,36,0); transform: scale(1); }
+}
+.jackpot-pulse {
+  animation: jackpot-pulse 1.1s ease-out;
+}
+
 /* === Mines Game === */
 @keyframes mines-shard {
   0%   { opacity: 1; transform: translate(0,0) rotate(0deg) scale(1); }
