@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Menu, Home, Star, Wallet, User, Trophy, Calendar, Clock, ChevronRight } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import mundialHeroAsset from "@/assets/mundial-hero.webp.asset.json";
-import { SkeletonImage } from "@/components/SkeletonImage";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { NotificationBell } from "@/components/admin/NotificationBell";
 import { AuthDialog } from "@/components/auth/AuthDialog";
@@ -37,14 +36,55 @@ function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
 }
 
+type FlagCode = "AR" | "FR" | "BR" | "DE";
+
+function Flag({ code }: { code: FlagCode }) {
+  const base = "block h-full w-full";
+  switch (code) {
+    case "AR":
+      return (
+        <svg viewBox="0 0 60 40" className={base} aria-hidden="true" preserveAspectRatio="none">
+          <rect width="60" height="40" fill="#75AADB" />
+          <rect y="13.33" width="60" height="13.33" fill="#FFFFFF" />
+          <circle cx="30" cy="20" r="3.2" fill="#FCBF49" />
+        </svg>
+      );
+    case "FR":
+      return (
+        <svg viewBox="0 0 60 40" className={base} aria-hidden="true" preserveAspectRatio="none">
+          <rect width="20" height="40" fill="#0055A4" />
+          <rect x="20" width="20" height="40" fill="#FFFFFF" />
+          <rect x="40" width="20" height="40" fill="#EF4135" />
+        </svg>
+      );
+    case "BR":
+      return (
+        <svg viewBox="0 0 60 40" className={base} aria-hidden="true" preserveAspectRatio="none">
+          <rect width="60" height="40" fill="#009C3B" />
+          <polygon points="30,5 55,20 30,35 5,20" fill="#FFDF00" />
+          <circle cx="30" cy="20" r="7" fill="#002776" />
+        </svg>
+      );
+    case "DE":
+      return (
+        <svg viewBox="0 0 60 40" className={base} aria-hidden="true" preserveAspectRatio="none">
+          <rect width="60" height="13.33" fill="#000000" />
+          <rect y="13.33" width="60" height="13.33" fill="#DD0000" />
+          <rect y="26.66" width="60" height="13.34" fill="#FFCE00" />
+        </svg>
+      );
+  }
+}
+
 type Match = {
   id: string;
   competition: string;
   date: string;
   time: string;
   live: boolean;
-  home: { name: string; flag: string };
-  away: { name: string; flag: string };
+  group: string;
+  home: { name: string; code: FlagCode };
+  away: { name: string; code: FlagCode };
   odds: { home: string; draw: string; away: string };
 };
 
@@ -55,8 +95,9 @@ const MATCHES: Match[] = [
     date: "Hoy, 20 Jun",
     time: "15:00",
     live: true,
-    home: { name: "Argentina", flag: "🇦🇷" },
-    away: { name: "Francia", flag: "🇫🇷" },
+    group: "GRUPO C",
+    home: { name: "Argentina", code: "AR" },
+    away: { name: "Francia", code: "FR" },
     odds: { home: "2.10", draw: "3.25", away: "3.40" },
   },
   {
@@ -64,9 +105,10 @@ const MATCHES: Match[] = [
     competition: "MUNDIAL 2026",
     date: "Hoy, 20 Jun",
     time: "19:00",
-    live: false,
-    home: { name: "Brasil", flag: "🇧🇷" },
-    away: { name: "Alemania", flag: "🇩🇪" },
+    live: true,
+    group: "GRUPO E",
+    home: { name: "Brasil", code: "BR" },
+    away: { name: "Alemania", code: "DE" },
     odds: { home: "1.85", draw: "3.60", away: "4.20" },
   },
 ];
@@ -161,29 +203,29 @@ function DeportesPage() {
         </div>
 
         {/* Hero banner Mundial 2026 */}
-        <section className="relative mt-4 overflow-hidden rounded-2xl border border-purple-500/40 shadow-[0_0_22px_rgba(168,85,247,0.3)]">
-          <div className="relative h-40 w-full sm:h-48">
-            <SkeletonImage
+        <section className="relative mt-4 overflow-hidden rounded-2xl border border-purple-500/40 bg-[#0c0620] shadow-[0_0_22px_rgba(168,85,247,0.3)]">
+          <div className="relative h-44 w-full sm:h-52">
+            <img
               src={mundialHeroAsset.url}
               alt="Mundial 2026 — Apuestas deportivas BETSPACE"
               width={1600}
               height={640}
-              wrapperClassName="absolute inset-0 h-full w-full"
-              className="h-full w-full object-cover"
+              fetchPriority="high"
+              className="absolute inset-0 h-full w-full object-cover"
             />
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#060210]/90 via-[#060210]/55 to-transparent"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#060210]/85 via-[#060210]/45 to-transparent"
             />
             <div className="absolute inset-0 flex flex-col justify-center px-4 sm:px-5">
-              <span className="inline-flex w-max items-center rounded-full border border-purple-400/60 bg-purple-500/15 px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-widest text-purple-100 backdrop-blur">
+              <span className="inline-flex w-max items-center whitespace-nowrap rounded-full border border-purple-400/60 bg-purple-500/15 px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-widest text-purple-100 backdrop-blur">
                 Zona deportiva
               </span>
-              <h1 className="mt-2 font-display text-2xl font-black tracking-[0.14em] text-white drop-shadow-[0_0_10px_rgba(168,85,247,0.55)] sm:text-3xl">
+              <h1 className="mt-2 font-display text-2xl font-black tracking-[0.14em] text-white drop-shadow-[0_0_10px_rgba(0,0,0,0.7)] sm:text-3xl">
                 MUNDIAL 2026
               </h1>
               <div className="mt-1 h-[3px] w-14 rounded-full bg-gradient-to-r from-fuchsia-400 to-purple-500" />
-              <p className="mt-2 max-w-[62%] text-[11px] font-medium leading-snug text-purple-100/85 sm:text-xs">
+              <p className="mt-2 max-w-[62%] text-[11px] font-medium leading-snug text-white/90 drop-shadow-[0_1px_4px_rgba(0,0,0,0.7)] sm:text-xs">
                 Los mejores partidos del mundo, en un solo lugar.
               </p>
             </div>
@@ -244,58 +286,66 @@ function MatchCard({ match }: { match: Match }) {
       role="button"
       tabIndex={0}
       aria-label={`${match.home.name} vs ${match.away.name} — ${match.competition}`}
-      className="group relative overflow-hidden rounded-2xl border border-purple-500/30 bg-[#0c0620]/90 p-3.5 shadow-[0_0_16px_rgba(76,29,149,0.25)] transition hover:border-fuchsia-400/60 hover:shadow-[0_0_18px_rgba(217,70,239,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-400/70 sm:p-4"
+      className="group relative overflow-hidden rounded-2xl border border-purple-500/30 bg-[#0c0620]/90 p-3 shadow-[0_0_16px_rgba(76,29,149,0.25)] transition hover:border-fuchsia-400/60 hover:shadow-[0_0_18px_rgba(217,70,239,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-400/70 sm:p-4"
     >
-      {/* Fila superior: competición + fecha/hora + live + fav */}
-      <div className="flex items-center gap-2">
-        <span className="rounded-full border border-purple-400/50 bg-purple-500/15 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-widest text-purple-100">
+      {/* Fila superior: todo en una línea */}
+      <div className="flex items-center gap-1.5 whitespace-nowrap">
+        <span className="shrink-0 rounded-full border border-purple-400/50 bg-purple-500/15 px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wider text-purple-100">
           {match.competition}
         </span>
-        <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-purple-100/80">
+        <span className="inline-flex shrink-0 items-center gap-1 text-[9px] font-semibold text-purple-100/80">
           <Calendar className="h-3 w-3 text-purple-300/80" />
           {match.date}
         </span>
-        <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-purple-100/80">
+        <span className="inline-flex shrink-0 items-center gap-1 text-[9px] font-semibold text-purple-100/80">
           <Clock className="h-3 w-3 text-purple-300/80" />
           {match.time}
         </span>
-        {match.live && (
-          <span className="ml-auto inline-flex items-center gap-1 rounded-full border border-fuchsia-400/60 bg-fuchsia-500/15 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-widest text-fuchsia-100">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-fuchsia-300 shadow-[0_0_6px_rgba(240,171,252,0.9)]" />
-            En vivo
-          </span>
-        )}
-        <button
-          type="button"
-          aria-label="Favorito"
-          onClick={(e) => e.stopPropagation()}
-          className={`shrink-0 rounded-full p-1 text-purple-300/60 hover:text-fuchsia-200 ${match.live ? "" : "ml-auto"}`}
-        >
-          <Star className="h-4 w-4" />
-        </button>
+        <div className="ml-auto flex shrink-0 items-center gap-1">
+          {match.live && (
+            <span className="inline-flex items-center gap-1 rounded-full border border-fuchsia-400/60 bg-fuchsia-500/15 px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wider text-fuchsia-100">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-fuchsia-300 shadow-[0_0_6px_rgba(240,171,252,0.9)]" />
+              En vivo
+            </span>
+          )}
+          <button
+            type="button"
+            aria-label="Favorito"
+            onClick={(e) => e.stopPropagation()}
+            className="rounded-full p-0.5 text-purple-300/60 hover:text-fuchsia-200"
+          >
+            <Star className="h-4 w-4" />
+          </button>
+        </div>
       </div>
+
+      <div className="mt-2 h-px w-full bg-purple-500/20" />
 
       {/* Equipos */}
       <div className="mt-3 grid grid-cols-3 items-center gap-2">
         <div className="flex flex-col items-center gap-1.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-md bg-white/5 text-xl leading-none shadow-inner">
-            {match.home.flag}
+          <span className="flex h-9 w-[52px] items-center justify-center overflow-hidden rounded-md ring-1 ring-white/10 shadow-inner">
+            <Flag code={match.home.code} />
           </span>
-          <span className="text-center text-[11px] font-bold text-white sm:text-xs">{match.home.name}</span>
+          <span className="whitespace-nowrap text-center text-xs font-bold text-white">
+            {match.home.name}
+          </span>
         </div>
         <div className="flex flex-col items-center gap-0.5">
-          <span className="font-display text-lg font-black tracking-wider text-fuchsia-300 drop-shadow-[0_0_8px_rgba(217,70,239,0.55)]">
+          <span className="font-display text-xl font-black tracking-wider text-fuchsia-300 drop-shadow-[0_0_8px_rgba(217,70,239,0.55)]">
             VS
           </span>
-          <span className="text-[9px] font-semibold uppercase tracking-widest text-purple-200/70">
-            Grupo C
+          <span className="whitespace-nowrap text-[9px] font-semibold uppercase tracking-widest text-purple-200/70">
+            {match.group}
           </span>
         </div>
         <div className="flex flex-col items-center gap-1.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-md bg-white/5 text-xl leading-none shadow-inner">
-            {match.away.flag}
+          <span className="flex h-9 w-[52px] items-center justify-center overflow-hidden rounded-md ring-1 ring-white/10 shadow-inner">
+            <Flag code={match.away.code} />
           </span>
-          <span className="text-center text-[11px] font-bold text-white sm:text-xs">{match.away.name}</span>
+          <span className="whitespace-nowrap text-center text-xs font-bold text-white">
+            {match.away.name}
+          </span>
         </div>
       </div>
 
