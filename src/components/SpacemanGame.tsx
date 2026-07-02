@@ -260,8 +260,6 @@ export function SpacemanGame() {
   const [phase, setPhase] = useState<Phase>("betting");
   const [multiplier, setMultiplier] = useState(1);
   const [countdown, setCountdown] = useState(BETTING_MS / 1000);
-  const [bettingBarFill, setBettingBarFill] = useState(0);
-  const [bettingBarDuration, setBettingBarDuration] = useState(0);
   // El crash real solo se conoce cuando el servidor lo revela
   const crashPointRef = useRef<number>(0);
 
@@ -522,8 +520,6 @@ export function SpacemanGame() {
   const rafRef = useRef<number | null>(null);
   const phaseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sceneRef = useRef<HTMLDivElement | null>(null);
-  const bettingBarRafRef = useRef<number | null>(null);
-
   const updateSceneVisuals = useCallback((currentMultiplier: number) => {
     const scene = sceneRef.current;
     if (!scene) return;
@@ -654,11 +650,6 @@ export function SpacemanGame() {
         setPhase("betting");
         setMultiplier(1);
         setCountdown(remaining / 1000);
-        // Barra: porcentaje consumido
-        const totalMs = BETTING_MS;
-        const consumed = Math.max(0, Math.min(100, ((totalMs - remaining) / totalMs) * 100));
-        setBettingBarFill(consumed);
-        setBettingBarDuration(120);
         // Beeps 3-2-1
         const fired = countdownFiredRef.current;
         const remSec = remaining / 1000;
@@ -682,7 +673,6 @@ export function SpacemanGame() {
           }
         }
         setMultiplier(shown);
-        setBettingBarFill(100);
         updateSceneVisuals(exact);
       } else if (r.status === "crashed" && r.crash_multiplier != null) {
         if (phase !== "crashed") {
@@ -796,7 +786,14 @@ export function SpacemanGame() {
       return { label: `RETIRAR  +${formatCOP(profit)}`, cls: "btn-primary-red", disabled: false, key: "cashout" };
     }
     if (phase === "betting") {
-      return { label: activeBet ? "APUESTA REGISTRADA" : "APOSTAR", cls: "btn-primary-green", disabled: !!activeBet || !balanceReady || bet < MIN_BET || bet > balance, key: activeBet ? "registered" : "bet" };
+      // Cutoff visible: bloquear el botón 200ms antes del despegue
+      const cutoff = countdown <= 0.2;
+      return {
+        label: activeBet ? "APUESTA REGISTRADA" : "APOSTAR",
+        cls: "btn-primary-green",
+        disabled: !!activeBet || !balanceReady || bet < MIN_BET || bet > balance || cutoff,
+        key: activeBet ? "registered" : "bet",
+      };
     }
     return { label: "ESPERANDO RONDA", cls: "btn-primary-green opacity-50 brightness-75", disabled: true, key: "waiting" };
   })();
@@ -1170,18 +1167,6 @@ export function SpacemanGame() {
             <span className="neon-red font-display text-base font-bold shrink-0 tabular-nums w-12 text-right brightness-125">
               {phase === "betting" ? `${countdownLabel}s` : ""}
             </span>
-          </div>
-          <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-purple-950/60">
-            <div
-              className="h-full rounded-full transition-[width] ease-linear"
-              style={{
-                width: `${bettingBarFill}%`,
-                background:
-                  "repeating-linear-gradient(45deg,#ff4d4d,#ff4d4d 10px,#c91f1f 10px,#c91f1f 20px)",
-                boxShadow: "0 0 10px rgba(255,80,80,0.40)",
-                transitionDuration: `${bettingBarDuration}ms`,
-              }}
-            />
           </div>
         </div>
 
