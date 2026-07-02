@@ -36,6 +36,25 @@ function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
 }
 
+function SoccerBallIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      strokeLinejoin="round"
+      strokeLinecap="round"
+    >
+      <circle cx="12" cy="12" r="9.25" />
+      <polygon points="12,7.2 15.6,9.9 14.25,14.1 9.75,14.1 8.4,9.9" fill="currentColor" stroke="none" />
+      <path d="M12 2.75 12 7.2 M21.25 12 15.6 9.9 M18.5 19 14.25 14.1 M5.5 19 9.75 14.1 M2.75 12 8.4 9.9" />
+    </svg>
+  );
+}
+
 type FlagCode = "AR" | "FR" | "BR" | "DE";
 
 function Flag({ code }: { code: FlagCode }) {
@@ -122,10 +141,10 @@ function DeportesPage() {
 
   return (
     <div className="min-h-screen bg-[#060210] text-white">
-      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-28 pt-4 sm:max-w-lg sm:px-4">
+      <div className="relative mx-auto flex min-h-screen max-w-md flex-col pt-4 sm:max-w-lg">
         {/* Header (idéntico al de Home/Eventos) */}
         <header
-          className="flex flex-col items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
+          className="flex flex-col items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 -mt-4"
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <div className="flex items-center justify-between w-full">
@@ -174,37 +193,9 @@ function DeportesPage() {
         </header>
         <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
 
-        {/* Selector Fútbol / Mundial 2026 */}
-        <div className="mt-4 grid grid-cols-2 gap-1.5 rounded-2xl border border-purple-500/25 bg-[#0c0620]/80 p-1.5">
-          <button
-            type="button"
-            onClick={() => setSelector("futbol")}
-            className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[11px] font-extrabold uppercase tracking-wider transition ${
-              selector === "futbol"
-                ? "bg-gradient-to-b from-purple-600 to-fuchsia-700 text-white shadow-[0_0_14px_rgba(168,85,247,0.55)]"
-                : "text-purple-200/80 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            <span className="text-base leading-none">⚽</span>
-            <span>Fútbol</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setSelector("mundial")}
-            className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[11px] font-extrabold uppercase tracking-wider transition ${
-              selector === "mundial"
-                ? "bg-gradient-to-b from-purple-600 to-fuchsia-700 text-white shadow-[0_0_14px_rgba(168,85,247,0.55)]"
-                : "text-purple-200/80 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            <Trophy className="h-4 w-4" />
-            <span>Mundial 2026</span>
-          </button>
-        </div>
-
-        {/* Hero banner Mundial 2026 */}
-        <section className="relative mt-4 overflow-hidden rounded-2xl border border-purple-500/40 bg-[#0c0620] shadow-[0_0_22px_rgba(168,85,247,0.3)]">
-          <div className="relative h-44 w-full sm:h-52">
+        {/* Hero banner Mundial 2026 (ancho completo del contenedor, como el slider del Home) */}
+        <section className="relative w-full overflow-hidden bg-[#0c0620]">
+          <div className="relative h-52 w-full sm:h-60">
             <img
               src={mundialHeroAsset.url}
               alt="Mundial 2026 — Apuestas deportivas BETSPACE"
@@ -232,8 +223,38 @@ function DeportesPage() {
           </div>
         </section>
 
-        {/* Partidos destacados */}
-        <section className="mt-6">
+        {/* Contenido con padding lateral */}
+        <div className="px-3 pb-28 sm:px-4">
+          {/* Selector flotante Fútbol / Mundial 2026 (superpuesto ~50% al banner) */}
+          <div className="relative z-10 -mt-10 grid grid-cols-2 gap-1.5 rounded-2xl border border-purple-500/30 bg-[#0c0620]/95 p-1.5 shadow-[0_14px_36px_-12px_rgba(168,85,247,0.6)] backdrop-blur">
+            <button
+              type="button"
+              onClick={() => setSelector("futbol")}
+              className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[11px] font-extrabold uppercase tracking-wider transition ${
+                selector === "futbol"
+                  ? "bg-gradient-to-b from-purple-600 to-fuchsia-700 text-white shadow-[0_0_14px_rgba(168,85,247,0.55)]"
+                  : "text-purple-200/80 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              <SoccerBallIcon className="h-4 w-4" />
+              <span>Fútbol</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelector("mundial")}
+              className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[11px] font-extrabold uppercase tracking-wider transition ${
+                selector === "mundial"
+                  ? "bg-gradient-to-b from-purple-600 to-fuchsia-700 text-white shadow-[0_0_14px_rgba(168,85,247,0.55)]"
+                  : "text-purple-200/80 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              <Trophy className="h-4 w-4" />
+              <span>Mundial 2026</span>
+            </button>
+          </div>
+
+          {/* Partidos destacados */}
+          <section className="mt-6">
           <h2 className="font-display text-sm font-black uppercase tracking-[0.14em] text-white">
             Partidos destacados
           </h2>
@@ -243,10 +264,10 @@ function DeportesPage() {
               <MatchCard key={m.id} match={m} />
             ))}
           </div>
-        </section>
+          </section>
 
-        {/* Aviso responsable */}
-        <section className="mt-5">
+          {/* Aviso responsable */}
+          <section className="mt-5">
           <div className="flex items-center gap-3 rounded-2xl border border-purple-500/25 bg-[#0c0620]/80 px-3 py-3">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-600 to-fuchsia-700 shadow-[0_0_10px_rgba(168,85,247,0.55)]">
               <Trophy className="h-4 w-4 text-white" />
@@ -256,9 +277,10 @@ function DeportesPage() {
             </p>
             <ChevronRight className="h-4 w-4 shrink-0 text-purple-300/70" />
           </div>
-        </section>
+          </section>
 
-        <div className="h-16" />
+          <div className="h-16" />
+        </div>
       </div>
 
       {/* Bottom nav (idéntico al del resto de la app) */}
