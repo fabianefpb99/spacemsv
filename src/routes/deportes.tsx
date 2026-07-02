@@ -203,29 +203,29 @@ function DeportesPage() {
         </div>
 
         {/* Hero banner Mundial 2026 */}
-        <section className="relative mt-4 overflow-hidden rounded-2xl border border-purple-500/40 shadow-[0_0_22px_rgba(168,85,247,0.3)]">
-          <div className="relative h-40 w-full sm:h-48">
-            <SkeletonImage
+        <section className="relative mt-4 overflow-hidden rounded-2xl border border-purple-500/40 bg-[#0c0620] shadow-[0_0_22px_rgba(168,85,247,0.3)]">
+          <div className="relative h-44 w-full sm:h-52">
+            <img
               src={mundialHeroAsset.url}
               alt="Mundial 2026 — Apuestas deportivas BETSPACE"
               width={1600}
               height={640}
-              wrapperClassName="absolute inset-0 h-full w-full"
-              className="h-full w-full object-cover"
+              fetchPriority="high"
+              className="absolute inset-0 h-full w-full object-cover"
             />
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#060210]/90 via-[#060210]/55 to-transparent"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#060210]/85 via-[#060210]/45 to-transparent"
             />
             <div className="absolute inset-0 flex flex-col justify-center px-4 sm:px-5">
-              <span className="inline-flex w-max items-center rounded-full border border-purple-400/60 bg-purple-500/15 px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-widest text-purple-100 backdrop-blur">
+              <span className="inline-flex w-max items-center whitespace-nowrap rounded-full border border-purple-400/60 bg-purple-500/15 px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-widest text-purple-100 backdrop-blur">
                 Zona deportiva
               </span>
-              <h1 className="mt-2 font-display text-2xl font-black tracking-[0.14em] text-white drop-shadow-[0_0_10px_rgba(168,85,247,0.55)] sm:text-3xl">
+              <h1 className="mt-2 font-display text-2xl font-black tracking-[0.14em] text-white drop-shadow-[0_0_10px_rgba(0,0,0,0.7)] sm:text-3xl">
                 MUNDIAL 2026
               </h1>
               <div className="mt-1 h-[3px] w-14 rounded-full bg-gradient-to-r from-fuchsia-400 to-purple-500" />
-              <p className="mt-2 max-w-[62%] text-[11px] font-medium leading-snug text-purple-100/85 sm:text-xs">
+              <p className="mt-2 max-w-[62%] text-[11px] font-medium leading-snug text-white/90 drop-shadow-[0_1px_4px_rgba(0,0,0,0.7)] sm:text-xs">
                 Los mejores partidos del mundo, en un solo lugar.
               </p>
             </div>
