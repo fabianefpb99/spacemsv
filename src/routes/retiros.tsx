@@ -431,15 +431,15 @@ function RetirosPage() {
             label="Recibirás"
             value={
               <span className="text-emerald-300">
-                ${formatCOP(amount - Math.round(amount * 0.01))} <span className="text-[10px] font-bold text-emerald-300/80">COP</span>
+                ${formatCOP(amount - Math.round(amount * 0.02))} <span className="text-[10px] font-bold text-emerald-300/80">COP</span>
               </span>
             }
           />
           <SummaryCell
-            label="Comisión (1%)"
+            label="Comisión (2%)"
             value={
               <span className="text-white">
-                ${formatCOP(Math.round(amount * 0.01))} <span className="text-[10px] font-bold text-purple-200/70">COP</span>
+                ${formatCOP(Math.round(amount * 0.02))} <span className="text-[10px] font-bold text-purple-200/70">COP</span>
               </span>
             }
           />
@@ -512,12 +512,12 @@ function RetirosPage() {
       {/* Add-account modal */}
       {openAdd && (
         <AddAccountModal
-          method={openAdd}
+          method={openAdd.method}
+          initial={openAdd.initial ?? null}
           onClose={() => setOpenAdd(null)}
           onSave={(acc) => {
-            // Saved permanently when the withdrawal request is submitted.
-            setPendingAccount({ ...acc, isDefault: true });
-            setSelectedMethod(acc.method);
+            // Persistimos de una vez en la base para permitir edición futura.
+            upsertMut.mutate({ ...acc, isDefault: true });
             setOpenAdd(null);
           }}
         />
