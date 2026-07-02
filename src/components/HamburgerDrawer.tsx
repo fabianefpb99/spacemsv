@@ -266,11 +266,11 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
                     hidden={!promoActive}
                   >
                     <img
-                      key={currentSlide.image}
                       src={currentSlide.image}
                       alt=""
                       aria-hidden
-                      className="pointer-events-none absolute inset-0 h-full w-full object-cover object-right animate-in fade-in duration-500"
+                      decoding="async"
+                      className="pointer-events-none absolute inset-0 h-full w-full object-cover object-right"
                     />
                     <div
                       aria-hidden
