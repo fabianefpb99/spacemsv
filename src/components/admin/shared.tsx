@@ -7,6 +7,7 @@ export type AdminSection =
   | "dashboard"
   | "usuarios"
   | "rtp"
+  | "roulette"
   | "vip_rewards"
   | "beneficios"
   | "ganancias"

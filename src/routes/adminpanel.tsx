@@ -18,6 +18,7 @@ import {
   Settings as SettingsIcon,
   Sparkles,
   Star,
+  Target,
   TrendingUp,
   Users,
   Wallet as WalletIcon,
@@ -35,6 +36,7 @@ import {
 import { DashboardSection } from "@/components/admin/DashboardSection";
 import { UsersSection } from "@/components/admin/UsersSection";
 import { RtpSection } from "@/components/admin/RtpSection";
+import { RouletteConfigSection } from "@/components/admin/RouletteConfigSection";
 import { EarningsSection } from "@/components/admin/EarningsSection";
 import { DepositsSection } from "@/components/admin/DepositsSection";
 import { WithdrawalsSection } from "@/components/admin/WithdrawalsSection";
@@ -63,6 +65,7 @@ const SECTIONS: { id: AdminSection; label: string; icon: typeof Home; ready: boo
   { id: "dashboard", label: "Dashboard", icon: Home, ready: true },
   { id: "usuarios", label: "Usuarios", icon: Users, ready: true },
   { id: "rtp", label: "RTP de Juegos", icon: Percent, ready: true },
+  { id: "roulette", label: "Ruleta", icon: Target, ready: true },
   { id: "vip_rewards", label: "Premios VIP", icon: Star, ready: true },
   { id: "beneficios", label: "Beneficios", icon: Gift, ready: true },
   { id: "ganancias", label: "Ganancias del Casino", icon: TrendingUp, ready: true },
@@ -147,6 +150,8 @@ function AdminPanelPage() {
         return <UsersSection />;
       case "rtp":
         return <RtpSection />;
+      case "roulette":
+        return <RouletteConfigSection />;
       case "vip_rewards":
         return <VipRewardsSection />;
       case "beneficios":

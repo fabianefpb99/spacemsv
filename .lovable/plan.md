@@ -1,27 +1,85 @@
 ## Objetivo
-En `/eventos`:
-1. Las misiones cuya recompensa es un **avatar** no deben reiniciarse: una vez el usuario la desbloquea, queda marcada como completada para siempre (independiente del período diario/semanal). Las misiones de saldo/spins siguen reiniciándose como hoy.
-2. Cuando una misión esté completada, la tarjeta debe mostrarse claramente como "hecha": toda la tarjeta con opacidad reducida y un **check SVG grande superpuesto en el centro**.
+Darle más ventaja a la casa en la ruleta aumentando la probabilidad de que caiga el verde (0), pero sin afectar el resto del código. El ajuste será configurable desde el panel de administración y se aplicará en el sorteo del servidor.
 
-## Cambios (solo frontend, `src/routes/eventos.tsx`)
+## Situación actual
+- La ruleta es europea: 37 números (0 verde, 18 rojos, 18 negros).
+- El sorteo se hace en la función SQL `spin_roulette_v1` con distribución uniforme (cada número 1/37 ≈ 2.7%).
+- El verde paga 14×; rojo/negro paga 2×.
+- No existe ningún peso configurable para el verde.
+- El usuario quiere un aumento "bastante notable" (4/5) y que sea configurable y funcional, a diferencia de la sección de RTP que no funciona.
 
-### 1. Persistencia visual de misiones de avatar
-- Añadir una query paralela a `user_avatar_unlocks` (columna `mission_id`) filtrada por el usuario. Ya existe la tabla y RLS.
-- En el mapeo `dbMissions`, para cada misión con `reward_kind === "avatar"`:
-  - Si `unlockedMissionIds.has(mission.id)` → forzar `progress = goal` (100%) y marcar `completed = true`, sin importar el `period_start` actual.
-- Para el resto de misiones (`bonus`, `spins`, `xp`) se mantiene el cálculo actual con `progressForMission` (siguen reiniciándose por período).
-- Añadir `completed: boolean` al tipo `Mission` (derivado: `progress >= goal`, o el flag persistente para avatares).
+## Propuesta de implementación
 
-### 2. Estado visual "completada" en `MissionCard`
-- Cuando `mission.completed`:
-  - Envolver el contenido en un contenedor con `opacity-40` y `pointer-events-none` (evita que se pueda pulsar el CTA).
-  - Superponer un check en el centro: círculo verde con un `<Check />` de `lucide-react` (o SVG inline) grande (~64px), con glow verde suave (`drop-shadow`), centrado con `absolute inset-0 flex items-center justify-center`.
-  - La barra de progreso llena al 100% en verde.
-  - Sustituir el botón CTA por una etiqueta "Completada" deshabilitada (o dejarla oculta bajo la opacidad).
+### 1. Base de datos: nueva tabla `roulette_config`
+Crear una tabla pequeña y única para guardar el peso del verde:
 
-### 3. Notas
-- No se toca la lógica del backend ni de reseteo por período. Los avatares ya se guardan permanentemente en `user_avatar_unlocks` gracias al trigger existente; solo estamos reflejando ese hecho en la UI de eventos.
-- El floater de "misión completada" no cambia.
+```sql
+CREATE TABLE public.roulette_config (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  green_weight numeric NOT NULL DEFAULT 1.0 CHECK (green_weight >= 1.0 AND green_weight <= 5.0),
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  updated_by uuid REFERENCES auth.users(id) ON DELETE SET NULL
+);
 
-## Archivos afectados
-- `src/routes/eventos.tsx` (query extra, mapeo, y `MissionCard` con overlay de check + opacidad).
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.roulette_config TO authenticated;
+GRANT ALL ON public.roulette_config TO service_role;
+ALTER TABLE public.roulette_config ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Admins can manage roulette config" ON public.roulette_config
+  FOR ALL TO authenticated USING (public.has_role(auth.uid(), 'admin'));
+```
+
+Insertar fila inicial: `green_weight = 1.0` (comportamiento actual).
+
+### 2. Actualizar la función SQL `spin_roulette_v1`
+En lugar de sortear uniforme entre 37 segmentos, se usará un sorteo ponderado:
+- Rojo: peso 18
+- Negro: peso 18
+- Verde: peso configurable (`green_weight`)
+
+La función leerá el peso de `roulette_config`, calculará el total de pesos y hará rejection sampling sobre ese rango. Así se mantiene la misma técnica criptográfica (`gen_random_bytes`) y solo cambia la distribución.
+
+Ejemplo de efectos del peso:
+- Peso 1.0 (actual): verde ≈ 2.7%
+- Peso 2.0: verde ≈ 5.3%
+- Peso 3.0: verde ≈ 7.7%
+- Peso 5.0: verde ≈ 12.2%
+
+Con peso 5.0 la casa sigue teniendo ventaja en rojo/negro (pagan 2× sobre 48.6% real), pero en verde el retorno esperado sube a ~171% (paga 14×). Por eso se propone un tope de 5.0 para no invertir la ventaja de la casa en verde. Si el usuario quiere mantener ventaja estricta en verde, se puede reducir el payout del verde de 14× a un valor que compense (por ejemplo, con peso 2.0 el payout debería ser ~9× para mantener house edge similar). Esto se discutirá antes de implementar si el usuario lo desea.
+
+### 3. Server functions en `src/lib/admin/admin.functions.ts`
+Crear dos funciones:
+- `adminGetRouletteConfig`: devuelve `green_weight`, `updated_at`, `updated_by_label`.
+- `adminUpdateRouletteConfig`: recibe `green_weight`, valida rango 1.0–5.0, actualiza fila y registra el admin.
+
+Ambas usan `requireSupabaseAuth` y `assertAdmin`.
+
+### 4. Componente admin `src/components/admin/RouletteConfigSection.tsx`
+Nueva sección con:
+- Slider o input numérico para `green_weight` (1.0 a 5.0, paso 0.1).
+- Indicador en vivo de la probabilidad resultante del verde.
+- Botón "Guardar" con estado de carga.
+- Mensaje de éxito/error.
+- Diseño consistente con el resto del panel (colores oscuros, púrpura).
+
+### 5. Integrar en `src/routes/adminpanel.tsx`
+- Agregar `roulette` a `AdminSection` en `src/components/admin/shared.tsx`.
+- Agregar entrada en `SECTIONS` del panel con icono `Settings` o similar.
+- Agregar caso en `renderSection` para mostrar `RouletteConfigSection`.
+
+### 6. Verificación funcional
+Después de implementar:
+- Invocar `adminUpdateRouletteConfig` desde el sandbox para cambiar el peso a 2.0.
+- Invocar `spin_roulette_v1` (o `spin_roulette_v2`) múltiples veces y contar frecuencia de verde para comprobar que sube.
+- Restaurar el peso a 1.0 si es necesario después de las pruebas.
+- Revisar el error de hydration que aparece en el preview; si persiste después de los cambios, se tratará como issue separado.
+
+## Archivos a modificar/crear
+- `supabase/migrations/` (nueva migración para tabla y función SQL)
+- `src/lib/admin/admin.functions.ts` (server functions)
+- `src/components/admin/RouletteConfigSection.tsx` (nuevo)
+- `src/components/admin/shared.tsx` (añadir tipo `AdminSection`)
+- `src/routes/adminpanel.tsx` (integrar sección)
+
+## Notas de seguridad
+- Solo admins con rol `admin` en `user_roles` podrán ver/modificar la configuración.
+- La función SQL se ejecuta con el usuario autenticado (RLS); la función leerá `roulette_config` con una política `USING` que requiere rol admin, pero el sorteo de ruleta es llamado por un usuario normal. Por eso la tabla necesitará una política `SELECT` pública para la función de sorteo, o la función usará `SECURITY DEFINER` para leer la configuración. Se optará por `SECURITY DEFINER` en la función SQL para que el sorteo siempre pueda leer el peso actual sin exponer el historial de ediciones al usuario.

@@ -778,6 +778,27 @@ export type Database = {
           },
         ]
       }
+      roulette_config: {
+        Row: {
+          green_weight: number
+          id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          green_weight?: number
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          green_weight?: number
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       site_settings: {
         Row: {
           key: string
