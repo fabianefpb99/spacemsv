@@ -1,62 +1,84 @@
+## Home de Deportes — /deportes
 
-# Nuevo diseño del flotante Login / Registro
+Nueva ruta `src/routes/deportes.tsx` con el mismo Header (logo, balance, settings, campana, hamburguesa) y menú inferior de BETSPACE que ya usan `home.tsx` / `eventos.tsx`. Solo se diseña el contenido central; header y bottom nav se reutilizan sin modificarlos.
 
-Modal moderno inspirado en la referencia enviada: **avatar NOVA** (de Arena) arriba, wordmark BETSPACE, mensaje motivador, tabs segmented "Iniciar sesión / Registrarse", campos con icono, CTA morado con glow y enlace inferior para cambiar de modo. Sin login social. Funciona en modo oscuro y claro respetando los tokens semánticos del proyecto.
+### Estructura visual (mobile-first, identidad BETSPACE)
 
-## Cambios
+```text
+[ Header BETSPACE existente ]
 
-### 1. Header del modal
-- **NOVA** (`src/assets/arena/nova-idle.png`) a ~88px en un contenedor circular con halo morado suave.
-- Wordmark **BETSPACE** debajo con la tipografía display actual.
-- Copy que cambia según la pestaña:
-  - **Iniciar sesión** — "Tu misión te espera" · "Entra y sigue ganando desde donde lo dejaste."
-  - **Registrarse** — "Empieza a ganar hoy" · "Crea tu cuenta en 30 segundos y activa tu bono de bienvenida."
+[ Selector blanco redondeado ]
+  ⚽ FÚTBOL   |   🏆 MUNDIAL 2026
+  (dos chips/tabs, ambos activos visualmente, sin lógica real todavía)
 
-### 2. Tabs segmented
-Píldora con dos opciones. El activo lleva superficie clara con leve sombra sobre morado; el inactivo queda transparente y atenuado. Transición suave.
+[ Banner Mundial 2026 ]
+  - Imagen hero (estadio + trofeo) generada con el mismo lenguaje que eventos-hero
+  - Badge morado "ZONA DEPORTIVA"
+  - H1: "MUNDIAL 2026"
+  - Línea acento morada
+  - Subtítulo: "Los mejores partidos del mundo, en un solo lugar."
 
-### 3. Campos
-- Label pequeña por encima.
-- Input con icono a la izquierda (`Mail`, `User`, `Lock`, `Ticket`), padding cómodo.
-- Contraseña con toggle `Eye/EyeOff`.
-- Foco: anillo `ring-primary/40`.
-- Errores en línea con color destructivo.
+[ Sección "PARTIDOS DESTACADOS" ]
+  - Título en la tipografía display de BETSPACE
+  - SIN "Ver todos" (siguiendo la regla ya aplicada en Juegos Destacados)
 
-### 4. CTA principal
-- Full width, alto 48px, radio 12px, gradiente `--primary → --primary-glow`, glow morado al hover, `active:scale-[.98]`.
-- Texto: "Iniciar sesión" / "Crear cuenta y ganar".
-- Loading con spinner.
+[ 2 tarjetas de partido, clickeables completas ]
+  Cada tarjeta:
+    - Chip "MUNDIAL 2026"
+    - Fecha (📅 Hoy, 20 Jun) + hora (🕒 15:00) + chip "EN VIVO" cuando aplique
+    - Estrella favorito (solo visual, sin lógica)
+    - Fila equipos:  [Bandera] Nombre   VS   Nombre [Bandera]
+    - Bloque "1X2 - RESULTADO FINAL" con tres botones de cuota (1 / X / 2)
+  Partidos hardcodeados por ahora:
+    1) Argentina vs Francia — 15:00 — 2.10 / 3.25 / 3.40
+    2) Brasil vs Alemania   — 19:00 — 1.85 / 3.60 / 4.20
 
-### 5. Pie
-- "¿No tienes cuenta? **Regístrate gratis**" ↔ "¿Ya juegas con nosotros? **Inicia sesión**".
-- Mini-legal: "Al continuar aceptas los Términos" (link a `/terminos`).
-- Se elimina completamente el bloque de Google del diálogo.
+[ Aviso inferior ]
+  Icono trofeo + "Las cuotas pueden cambiar en cualquier momento. Apuesta responsablemente."
 
-### 6. Contenedor
-- `max-w-[420px]`, padding 28px, radio 20px.
-- **Dark**: `bg-[hsl(var(--background))]` con borde `border-primary/25` y glow morado en el top.
-- **Light**: fondo blanco con borde suave y sombra elegante.
-- Backdrop `bg-black/70 backdrop-blur-md`.
-- Botón × discreto arriba a la derecha.
+[ Bottom nav BETSPACE existente ] (Inicio activo, no se cambia)
+```
 
-### 7. Motion
-- Entrada: fade + scale 0.96→1 (150ms).
-- Cambio de tab: crossfade (100ms).
+### Navegación
 
-## Detalles técnicos
+- Cada tarjeta es un `<Link>` a `/deportes/$matchId` (aún no se crea la ruta de detalle — se hará en un siguiente turno). Por ahora el link puede apuntar a `/deportes` con `#` o dejar el href listo pero deshabilitado visualmente hasta que se construya la vista de detalle. Confirmar preferencia si aplica.
+- Añadir entrada "Deportes" donde corresponda (drawer hamburguesa) solo si ya existen otras secciones ahí; no tocar el bottom nav.
 
-- Se reescribe **solo** `src/components/auth/AuthDialog.tsx`. Se importa `novaIdle from "@/assets/arena/nova-idle.png.asset.json"` y se usa `<img src={novaIdle.url} />`.
-- Se elimina `GoogleButton` y el import de `lovable`. Verifico que no se use fuera del diálogo antes de borrarlo del archivo.
-- Se **conservan** intactos: `signUpSchema`, `signInSchema`, submit handlers, referral RPC, paso 2 con `PersonalDataForm`, `refreshSession`, control de scroll/Escape/portal.
-- Estilos con **tokens semánticos** (`bg-background`, `text-foreground`, `bg-primary`, `text-primary-foreground`, `border-border`, `ring-ring`, `text-muted-foreground`) — nada hardcodeado (`text-white`, `bg-black`, `bg-[#...]`) → el modo claro funciona automáticamente.
-- El diálogo **no** se marca como `theme-dark-fixed`; sigue el tema global (la regla de memoria sobre overrides `html.light` no aplica porque no hay override específico).
-- Se limpian las clases `.auth-dialog-*` viejas de `src/styles.css` que ya no se usan, para no dejar CSS que pise el nuevo look.
-- Se añaden como `@utility` en `styles.css` (Tailwind v4) solo lo estrictamente necesario: `auth-cta-gradient` y `auth-panel-glow`, ambos derivados de `var(--primary)` para que respondan al tema.
+### SEO / head
 
-## Verificación
+- `title`: "Apuestas Deportivas Mundial 2026 — BETSPACE"
+- `description`: "Apuesta en los partidos del Mundial 2026 desde BETSPACE. Cuotas claras, experiencia simple."
+- `og:title`, `og:description` equivalentes. Sin `og:image` (no leaf con hero cover propio verificado).
+- H1 único: "Apuestas Deportivas — Mundial 2026" (visualmente el banner cumple; se puede usar `sr-only` si el banner ya muestra "MUNDIAL 2026" como H1 visible, evitando dos H1).
 
-1. Abrir modal en `/home` invitado — modo oscuro OK, NOVA visible.
-2. Toggle a modo claro — contraste, botón y foco correctos.
-3. Signin con credenciales inválidas → error visible.
-4. Signup completo con referral → paso 2 con `PersonalDataForm`.
-5. Escape, click backdrop, botón ×, scroll interno en móvil (390px).
+### Assets
+
+- Generar 1 imagen hero del Mundial 2026 (estadio + trofeo, paleta morada/negra BETSPACE) vía imagegen y guardarla como asset CDN.
+- Banderas: usar emojis 🇦🇷 🇫🇷 🇧🇷 🇩🇪 o SVGs simples ya presentes; sin dependencias nuevas.
+
+### Estilos
+
+- Reutilizar tokens semánticos existentes (`--primary`, gradientes morados, sombras "elegant") y clases de `src/styles.css`.
+- Respetar reglas de tema: no romper subárboles fijos oscuros; esta pantalla sigue el tema global (claro/oscuro) igual que `/home`.
+
+### Seguridad (prevención proactiva)
+
+Este primer paso es 100% frontend/presentacional con datos hardcodeados: no se crean tablas, RLS, edge functions ni server functions, así que no hay superficie nueva que proteger. Reglas que dejamos ya listas para cuando lleguen datos reales de apuestas en pasos siguientes:
+
+- Cualquier tabla futura (`sports_events`, `sports_markets`, `sports_bets`, etc.) se creará con `GRANT` explícitos + `ENABLE ROW LEVEL SECURITY` + políticas por `auth.uid()` en la misma migración.
+- Lecturas públicas (catálogo de partidos/cuotas) sólo con policy `TO anon` de `SELECT`; escrituras (apostar) sólo desde server functions con `requireSupabaseAuth` que además validen saldo del lado servidor — nunca confiar en el cliente.
+- Cuotas y validación de resultado se resolverán server-side; el cliente sólo mostrará precios y no calculará pagos.
+- Roles (admin de deportes, si aplica) siempre en tabla `user_roles` + `has_role()` (regla ya establecida en el proyecto), nunca en `profiles`.
+- Rutas de administración de partidos irían bajo `_authenticated/` + gate de rol, y no expuestas en el menú público.
+
+### Archivos a crear/editar
+
+- Crear `src/routes/deportes.tsx` (ruta + componente, head, layout completo).
+- Crear asset hero del Mundial 2026 en `src/assets/` (+ `.asset.json`).
+- Actualizar `src/routes/sitemap[.]xml.ts` para incluir `/deportes`.
+- No se toca `home.tsx`, header, bottom nav ni estilos globales existentes (solo se añaden clases scoped si son necesarias).
+
+### Fuera de alcance (siguiente turno)
+
+- Vista de detalle del partido (`/deportes/$matchId`) con mercados completos, boleta y confirmación de apuesta.
+- Backend de deportes (tablas, cuotas dinámicas, liquidación, saldo).
