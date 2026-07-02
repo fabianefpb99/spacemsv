@@ -260,8 +260,6 @@ export function SpacemanGame() {
   const [phase, setPhase] = useState<Phase>("betting");
   const [multiplier, setMultiplier] = useState(1);
   const [countdown, setCountdown] = useState(BETTING_MS / 1000);
-  const [bettingBarFill, setBettingBarFill] = useState(0);
-  const [bettingBarDuration, setBettingBarDuration] = useState(0);
   // El crash real solo se conoce cuando el servidor lo revela
   const crashPointRef = useRef<number>(0);
 
