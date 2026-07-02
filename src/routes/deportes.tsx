@@ -286,58 +286,66 @@ function MatchCard({ match }: { match: Match }) {
       role="button"
       tabIndex={0}
       aria-label={`${match.home.name} vs ${match.away.name} — ${match.competition}`}
-      className="group relative overflow-hidden rounded-2xl border border-purple-500/30 bg-[#0c0620]/90 p-3.5 shadow-[0_0_16px_rgba(76,29,149,0.25)] transition hover:border-fuchsia-400/60 hover:shadow-[0_0_18px_rgba(217,70,239,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-400/70 sm:p-4"
+      className="group relative overflow-hidden rounded-2xl border border-purple-500/30 bg-[#0c0620]/90 p-3 shadow-[0_0_16px_rgba(76,29,149,0.25)] transition hover:border-fuchsia-400/60 hover:shadow-[0_0_18px_rgba(217,70,239,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-400/70 sm:p-4"
     >
-      {/* Fila superior: competición + fecha/hora + live + fav */}
-      <div className="flex items-center gap-2">
-        <span className="rounded-full border border-purple-400/50 bg-purple-500/15 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-widest text-purple-100">
+      {/* Fila superior: todo en una línea */}
+      <div className="flex items-center gap-1.5 whitespace-nowrap">
+        <span className="shrink-0 rounded-full border border-purple-400/50 bg-purple-500/15 px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wider text-purple-100">
           {match.competition}
         </span>
-        <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-purple-100/80">
+        <span className="inline-flex shrink-0 items-center gap-1 text-[9px] font-semibold text-purple-100/80">
           <Calendar className="h-3 w-3 text-purple-300/80" />
           {match.date}
         </span>
-        <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-purple-100/80">
+        <span className="inline-flex shrink-0 items-center gap-1 text-[9px] font-semibold text-purple-100/80">
           <Clock className="h-3 w-3 text-purple-300/80" />
           {match.time}
         </span>
-        {match.live && (
-          <span className="ml-auto inline-flex items-center gap-1 rounded-full border border-fuchsia-400/60 bg-fuchsia-500/15 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-widest text-fuchsia-100">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-fuchsia-300 shadow-[0_0_6px_rgba(240,171,252,0.9)]" />
-            En vivo
-          </span>
-        )}
-        <button
-          type="button"
-          aria-label="Favorito"
-          onClick={(e) => e.stopPropagation()}
-          className={`shrink-0 rounded-full p-1 text-purple-300/60 hover:text-fuchsia-200 ${match.live ? "" : "ml-auto"}`}
-        >
-          <Star className="h-4 w-4" />
-        </button>
+        <div className="ml-auto flex shrink-0 items-center gap-1">
+          {match.live && (
+            <span className="inline-flex items-center gap-1 rounded-full border border-fuchsia-400/60 bg-fuchsia-500/15 px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wider text-fuchsia-100">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-fuchsia-300 shadow-[0_0_6px_rgba(240,171,252,0.9)]" />
+              En vivo
+            </span>
+          )}
+          <button
+            type="button"
+            aria-label="Favorito"
+            onClick={(e) => e.stopPropagation()}
+            className="rounded-full p-0.5 text-purple-300/60 hover:text-fuchsia-200"
+          >
+            <Star className="h-4 w-4" />
+          </button>
+        </div>
       </div>
+
+      <div className="mt-2 h-px w-full bg-purple-500/20" />
 
       {/* Equipos */}
       <div className="mt-3 grid grid-cols-3 items-center gap-2">
         <div className="flex flex-col items-center gap-1.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-md bg-white/5 text-xl leading-none shadow-inner">
-            {match.home.flag}
+          <span className="flex h-9 w-[52px] items-center justify-center overflow-hidden rounded-md ring-1 ring-white/10 shadow-inner">
+            <Flag code={match.home.code} />
           </span>
-          <span className="text-center text-[11px] font-bold text-white sm:text-xs">{match.home.name}</span>
+          <span className="whitespace-nowrap text-center text-xs font-bold text-white">
+            {match.home.name}
+          </span>
         </div>
         <div className="flex flex-col items-center gap-0.5">
-          <span className="font-display text-lg font-black tracking-wider text-fuchsia-300 drop-shadow-[0_0_8px_rgba(217,70,239,0.55)]">
+          <span className="font-display text-xl font-black tracking-wider text-fuchsia-300 drop-shadow-[0_0_8px_rgba(217,70,239,0.55)]">
             VS
           </span>
-          <span className="text-[9px] font-semibold uppercase tracking-widest text-purple-200/70">
-            Grupo C
+          <span className="whitespace-nowrap text-[9px] font-semibold uppercase tracking-widest text-purple-200/70">
+            {match.group}
           </span>
         </div>
         <div className="flex flex-col items-center gap-1.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-md bg-white/5 text-xl leading-none shadow-inner">
-            {match.away.flag}
+          <span className="flex h-9 w-[52px] items-center justify-center overflow-hidden rounded-md ring-1 ring-white/10 shadow-inner">
+            <Flag code={match.away.code} />
           </span>
-          <span className="text-center text-[11px] font-bold text-white sm:text-xs">{match.away.name}</span>
+          <span className="whitespace-nowrap text-center text-xs font-bold text-white">
+            {match.away.name}
+          </span>
         </div>
       </div>
 
