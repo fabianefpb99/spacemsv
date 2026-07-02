@@ -972,9 +972,6 @@ function HomePage() {
             <h3 className="font-display text-sm font-bold uppercase tracking-widest text-white light-text-dark">
               Juegos destacados
             </h3>
-            <button className="text-xs font-semibold text-purple-300 hover:text-purple-200 light-text-purple">
-              Ver todos
-            </button>
           </div>
           <div className="relative">
             <button
