@@ -92,13 +92,44 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
   ];
 
   const [slideIdx, setSlideIdx] = useState(0);
+  // Precarga: no rotamos ni mostramos el slide siguiente hasta que su imagen esté decodificada.
+  const [readyImages, setReadyImages] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    let cancelled = false;
+    promoSlides.forEach((s) => {
+      if (!s.image) return;
+      const img = new Image();
+      img.src = s.image;
+      const done = () => {
+        if (cancelled) return;
+        setReadyImages((prev) => (prev.has(s.image) ? prev : new Set(prev).add(s.image)));
+      };
+      if (img.decode) {
+        img.decode().then(done).catch(done);
+      } else if (img.complete) {
+        done();
+      } else {
+        img.onload = done;
+        img.onerror = done;
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [promoSlides.map((s) => s.image).join("|")]);
   useEffect(() => {
     if (!open) return;
     const t = setInterval(() => {
-      setSlideIdx((i) => (i + 1) % promoSlides.length);
+      setSlideIdx((i) => {
+        const next = (i + 1) % promoSlides.length;
+        // Si la siguiente imagen aún no está decodificada, mantenemos la actual.
+        return readyImages.has(promoSlides[next].image) ? next : i;
+      });
     }, 4200);
     return () => clearInterval(t);
-  }, [open, promoSlides.length]);
+  }, [open, promoSlides.length, readyImages]);
   const currentSlide = promoSlides[slideIdx];
   const isGold = currentSlide.accent === "gold";
 
@@ -235,11 +266,11 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
                     hidden={!promoActive}
                   >
                     <img
-                      key={currentSlide.image}
                       src={currentSlide.image}
                       alt=""
                       aria-hidden
-                      className="pointer-events-none absolute inset-0 h-full w-full object-cover object-right animate-in fade-in duration-500"
+                      decoding="async"
+                      className="pointer-events-none absolute inset-0 h-full w-full object-cover object-right"
                     />
                     <div
                       aria-hidden
