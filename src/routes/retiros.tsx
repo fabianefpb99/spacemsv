@@ -665,9 +665,9 @@ function MethodTile({
           {account!.bankLabel && (
             <div className="text-[10px] text-purple-200/60">{account!.bankLabel}</div>
           )}
-          <div className="mt-1 flex items-center justify-between gap-2">
+          <div className="mt-1 flex min-w-0 flex-wrap items-center justify-between gap-1.5">
             {account!.isDefault ? (
-              <span className="inline-flex w-fit rounded-md bg-fuchsia-500/20 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-fuchsia-200">
+              <span className="inline-flex min-w-0 max-w-full shrink rounded-md bg-fuchsia-500/20 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-fuchsia-200">
                 Predeterminado
               </span>
             ) : <span />}
@@ -675,7 +675,7 @@ function MethodTile({
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); onEdit(account!); }}
-                className="rounded-md border border-purple-400/50 bg-purple-500/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-purple-100 hover:bg-purple-500/20"
+                className="shrink-0 rounded-md border border-purple-400/50 bg-purple-500/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-purple-100 hover:bg-purple-500/20"
               >
                 Editar
               </button>
