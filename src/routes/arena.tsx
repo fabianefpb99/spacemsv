@@ -28,6 +28,7 @@ function Page() {
   return (
     <RequireAuth>
       <LoadingScreen variant="arena">
+        <h1 className="sr-only">Arena Galáctica — BETSPACE Casino</h1>
         <ArenaGame />
       </LoadingScreen>
     </RequireAuth>

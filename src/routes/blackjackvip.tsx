@@ -21,6 +21,7 @@ function Page() {
   return (
     <RequireAuth>
       <LoadingScreen variant="blackjack_vip">
+        <h1 className="sr-only">Blackjack VIP — BETSPACE Casino</h1>
         <BlackjackGame variant="blackjack_vip" theme="vip" />
       </LoadingScreen>
     </RequireAuth>
