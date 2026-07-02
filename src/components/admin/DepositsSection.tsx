@@ -4,7 +4,6 @@ import { useServerFn } from "@tanstack/react-start";
 import { ArrowLeft, Check, Loader2, RefreshCw, Search, X } from "lucide-react";
 import astronaut from "@/assets/astronaut.svg";
 import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
-import { supabase } from "@/integrations/supabase/client";
 import {
   adminApproveDeposit,
   adminGetDeposit,
