@@ -340,6 +340,25 @@ function EventosPage() {
     },
   });
 
+  // Avatares ya desbloqueados por el usuario (persistente, no se reinicia por período).
+  const avatarUnlocksQ = useQuery({
+    queryKey: ["user-avatar-unlocks", user?.id ?? null],
+    enabled: !!user,
+    staleTime: 30_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("user_avatar_unlocks")
+        .select("mission_id")
+        .eq("user_id", user!.id);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+  const unlockedAvatarMissionIds = useMemo(
+    () => new Set((avatarUnlocksQ.data ?? []).map((r: any) => r.mission_id)),
+    [avatarUnlocksQ.data],
+  );
+
   // Realtime: refrescar al insertarse/actualizarse progreso del usuario
   useEffect(() => {
     if (!user) return;
@@ -414,8 +433,15 @@ function EventosPage() {
     type: r.type,
     title: r.title,
     subtitle: r.subtitle ?? undefined,
-    progress: progressForMission(r, userMissionsQ.data ?? []),
+    progress:
+      r.reward_kind === "avatar" && unlockedAvatarMissionIds.has(r.id)
+        ? Number(r.goal) || 1
+        : progressForMission(r, userMissionsQ.data ?? []),
     goal: Number(r.goal) || 1,
+    completed:
+      r.reward_kind === "avatar" && unlockedAvatarMissionIds.has(r.id)
+        ? true
+        : progressForMission(r, userMissionsQ.data ?? []) >= (Number(r.goal) || 1),
     reward: {
       kind: (r.reward_kind === "xp" ? "bonus" : r.reward_kind) as RewardKind,
       value: r.reward_kind === "avatar" ? (r.reward_label || "Avatar") : Number(r.reward_value) || 0,
