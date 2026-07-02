@@ -344,6 +344,90 @@ export const adminUpdateRtp = createServerFn({ method: "POST" })
     return row;
   });
 
+/* ----------------------------- Roulette config ----------------------------- */
+
+export const adminGetRouletteConfig = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
+    await assertAdmin(context.userId);
+    const { data: row, error } = await supabaseAdmin
+      .from("roulette_config")
+      .select("id, green_weight, updated_at, updated_by")
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) throw safeRpcError(error);
+
+    let updated_by_label: string | null = null;
+    if (row?.updated_by) {
+      const { data: prof } = await supabaseAdmin
+        .from("profiles")
+        .select("username, email")
+        .eq("id", row.updated_by)
+        .maybeSingle();
+      updated_by_label = prof?.username ?? prof?.email ?? row.updated_by.slice(0, 6);
+    }
+
+    return {
+      id: row?.id ?? null,
+      green_weight: Number(row?.green_weight ?? 1.0),
+      updated_at: row?.updated_at ?? null,
+      updated_by_label,
+    };
+  });
+
+export const adminUpdateRouletteConfig = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        green_weight: z.number().min(1).max(5).step(0.1),
+      })
+      .parse(input)
+  )
+  .handler(async ({ data, context }) => {
+    const supabaseAdmin = await getSupabaseAdmin();
+    await assertAdmin(context.userId);
+
+    const { data: existing } = await supabaseAdmin
+      .from("roulette_config")
+      .select("id")
+      .limit(1)
+      .maybeSingle();
+
+    const upsert = {
+      id: existing?.id ?? undefined,
+      green_weight: data.green_weight,
+      updated_at: new Date().toISOString(),
+      updated_by: context.userId,
+    };
+
+    const { data: row, error } = await supabaseAdmin
+      .from("roulette_config")
+      .upsert(upsert)
+      .select("id, green_weight, updated_at, updated_by")
+      .single();
+    if (error) throw safeRpcError(error);
+
+    let updated_by_label: string | null = null;
+    if (row?.updated_by) {
+      const { data: prof } = await supabaseAdmin
+        .from("profiles")
+        .select("username, email")
+        .eq("id", row.updated_by)
+        .maybeSingle();
+      updated_by_label = prof?.username ?? prof?.email ?? row.updated_by.slice(0, 6);
+    }
+
+    return {
+      id: row.id,
+      green_weight: Number(row.green_weight),
+      updated_at: row.updated_at,
+      updated_by_label,
+    };
+  });
+
 /* ----------------------------- Casino stats ----------------------------- */
 
 const rangeInput = z.object({
