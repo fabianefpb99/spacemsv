@@ -15,6 +15,7 @@ import {
   Coins,
   Users,
   Gift,
+  Check,
 } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import eventosHero from "@/assets/eventos-hero.jpg";
