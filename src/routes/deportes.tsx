@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Menu, Home, Star, Wallet, User, Trophy, Calendar, Clock, ChevronRight } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import mundialHeroAsset from "@/assets/mundial-hero.webp.asset.json";
-import { SkeletonImage } from "@/components/SkeletonImage";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { NotificationBell } from "@/components/admin/NotificationBell";
 import { AuthDialog } from "@/components/auth/AuthDialog";
@@ -43,8 +42,9 @@ type Match = {
   date: string;
   time: string;
   live: boolean;
-  home: { name: string; flag: string };
-  away: { name: string; flag: string };
+  group: string;
+  home: { name: string; code: FlagCode };
+  away: { name: string; code: FlagCode };
   odds: { home: string; draw: string; away: string };
 };
 
@@ -55,8 +55,9 @@ const MATCHES: Match[] = [
     date: "Hoy, 20 Jun",
     time: "15:00",
     live: true,
-    home: { name: "Argentina", flag: "🇦🇷" },
-    away: { name: "Francia", flag: "🇫🇷" },
+    group: "GRUPO C",
+    home: { name: "Argentina", code: "AR" },
+    away: { name: "Francia", code: "FR" },
     odds: { home: "2.10", draw: "3.25", away: "3.40" },
   },
   {
@@ -64,9 +65,10 @@ const MATCHES: Match[] = [
     competition: "MUNDIAL 2026",
     date: "Hoy, 20 Jun",
     time: "19:00",
-    live: false,
-    home: { name: "Brasil", flag: "🇧🇷" },
-    away: { name: "Alemania", flag: "🇩🇪" },
+    live: true,
+    group: "GRUPO E",
+    home: { name: "Brasil", code: "BR" },
+    away: { name: "Alemania", code: "DE" },
     odds: { home: "1.85", draw: "3.60", away: "4.20" },
   },
 ];
