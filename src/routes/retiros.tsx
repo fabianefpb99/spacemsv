@@ -787,17 +787,48 @@ function HistoryRow({
   );
 }
 
+const COLOMBIA_BANKS = [
+  "Bancolombia",
+  "Davivienda",
+  "Banco de Bogotá",
+  "BBVA Colombia",
+  "Banco Popular",
+  "Banco AV Villas",
+  "Banco Caja Social",
+  "Banco Agrario",
+  "Banco Falabella",
+  "Banco Pichincha",
+  "Banco GNB Sudameris",
+  "Banco Serfinanza",
+  "Banco Cooperativo Coopcentral",
+  "Banco Itaú",
+  "Banco Finandina",
+  "Banco W",
+  "Bancoomeva",
+  "Citibank Colombia",
+  "Scotiabank Colpatria",
+  "Nequi",
+  "Daviplata",
+  "Movii",
+  "Lulo Bank",
+  "RappiPay",
+  "Tpaga",
+  "Nu Colombia",
+];
+
 function AddAccountModal({
-  method, onClose, onSave,
+  method, initial, onClose, onSave,
 }: {
   method: MethodId;
+  initial?: Account | null;
   onClose: () => void;
   onSave: (acc: Account) => void;
 }) {
   const isNequi = method === "nequi";
-  const [id, setId] = useState("");
-  const [bank, setBank] = useState("");
-  const [confirm, setConfirm] = useState(false);
+  const [id, setId] = useState(initial?.identifier ?? "");
+  const [bank, setBank] = useState(initial?.bankLabel ?? "");
+  const [confirm, setConfirm] = useState(!!initial);
+  const isEdit = !!initial;
 
   const idDigits = id.replace(/\D/g, "");
   const valid = isNequi
@@ -812,7 +843,7 @@ function AddAccountModal({
           <div className="flex items-center gap-2">
             <img src={isNequi ? nequiLogo : brebLogo} alt="" className="h-5 w-auto" />
             <h3 className="font-display text-base font-black uppercase tracking-widest text-white">
-              Cuenta {isNequi ? "Nequi" : "BRE-B"}
+              {isEdit ? "Editar" : "Cuenta"} {isNequi ? "Nequi" : "BRE-B"}
             </h3>
           </div>
           <button onClick={onClose} className="rounded-md p-1 text-purple-200 hover:bg-white/5">
@@ -844,13 +875,17 @@ function AddAccountModal({
           </label>
           {!isNequi && (
             <label className="block text-[10px] uppercase tracking-widest text-purple-200/70">
-              Banco (opcional)
-              <input
+              Banco
+              <select
                 value={bank}
-                onChange={(e) => setBank(e.target.value.slice(0, 60))}
-                placeholder="Bancolombia · Ahorros"
-                className="mt-1 w-full rounded-md border border-purple-500/30 bg-[#150830] px-3 py-2 text-sm text-white placeholder:text-purple-300/30 focus:border-fuchsia-400 focus:outline-none"
-              />
+                onChange={(e) => setBank(e.target.value)}
+                className="mt-1 w-full rounded-md border border-purple-500/30 bg-[#150830] px-3 py-2 text-sm text-white focus:border-fuchsia-400 focus:outline-none"
+              >
+                <option value="">Selecciona tu banco</option>
+                {COLOMBIA_BANKS.map((b) => (
+                  <option key={b} value={b}>{b}</option>
+                ))}
+              </select>
             </label>
           )}
 
