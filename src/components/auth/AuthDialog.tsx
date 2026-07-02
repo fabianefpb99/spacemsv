@@ -5,7 +5,6 @@ import { Loader2, Mail, User as UserIcon, Lock, Ticket, Eye, EyeOff, X, Rocket, 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { PersonalDataForm } from "@/components/profile/PersonalDataForm";
-import novaIdle from "@/assets/arena/nova-idle.png.asset.json";
 
 type Mode = "signin" | "signup";
 
@@ -103,18 +102,15 @@ function AuthDialogContent({ onOpenChange }: { onOpenChange: (v: boolean) => voi
 
           {/* Header */}
           <div className="flex flex-col items-center text-center">
-            <div className="auth-avatar-halo relative grid h-[88px] w-[88px] place-items-center rounded-full">
-              <img
-                src={novaIdle.url}
-                alt="Nova"
-                className="h-[72px] w-[72px] object-contain drop-shadow-[0_6px_14px_rgba(147,51,234,0.55)]"
-                draggable={false}
-              />
+            <div className="flex flex-col items-center">
+              <span className="auth-welcome text-[11px] font-semibold tracking-[0.18em]">
+                BIENVENIDO a
+              </span>
+              <div className="auth-wordmark font-display text-[26px] font-black tracking-[0.18em] leading-none">
+                BET<span className="auth-wordmark-accent">SPACE</span>
+              </div>
             </div>
-            <div className="auth-wordmark mt-3 font-display text-xl font-black tracking-[0.22em]">
-              BET<span className="auth-wordmark-accent">SPACE</span>
-            </div>
-            <h2 className="auth-headline mt-3 font-display text-[22px] font-extrabold leading-tight sm:text-2xl">
+            <h2 className="auth-headline mt-4 font-display text-[22px] font-extrabold leading-tight sm:text-2xl">
               {headline}
             </h2>
             <p className="auth-sub mt-1.5 text-[13px] leading-snug">{sub}</p>
