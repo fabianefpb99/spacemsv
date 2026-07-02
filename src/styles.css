@@ -3911,3 +3911,48 @@ html.light .auth-scope .auth-switch-link { color: #7c3aed; }
 html.light .auth-scope .auth-switch-link:hover { color: #4c1d95; }
 html.light .auth-scope .auth-legal { color: #8b6fbf; }
 html.light .auth-scope .auth-legal a { color: #7c3aed; }
+
+/* ------------------------------------------------------------------
+ * Términos y Condiciones — light mode overrides.
+ * Scoped under `.terminos-scope` so it never affects dark subtrees.
+ * ------------------------------------------------------------------ */
+html.light .terminos-scope {
+  background-color: #faf9f6 !important;
+  color: #1f1530 !important;
+}
+html.light .terminos-scope .terminos-header {
+  background-color: #faf9f6 !important;
+  border-bottom-color: rgba(124, 58, 237, 0.25) !important;
+}
+html.light .terminos-scope .terminos-back {
+  color: #4c1d95 !important;
+}
+html.light .terminos-scope .terminos-back:hover {
+  background-color: rgba(124, 58, 237, 0.08) !important;
+}
+html.light .terminos-scope .terminos-title {
+  color: #1f1530 !important;
+}
+html.light .terminos-scope .terminos-updated {
+  color: #7c3aed !important;
+}
+html.light .terminos-scope .terminos-intro {
+  color: #3d2a5c !important;
+}
+html.light .terminos-scope .terminos-item {
+  background-color: #ffffff !important;
+  border-color: rgba(124, 58, 237, 0.28) !important;
+  box-shadow: 0 1px 2px rgba(31, 21, 48, 0.04);
+}
+html.light .terminos-scope .terminos-trigger {
+  color: #1f1530 !important;
+}
+html.light .terminos-scope .terminos-content {
+  color: #3d2a5c !important;
+}
+html.light .terminos-scope .terminos-content strong {
+  color: #1f1530 !important;
+}
+html.light .terminos-scope .terminos-footer {
+  color: #6b4d99 !important;
+}
