@@ -1154,11 +1154,11 @@ export function SpacemanGame() {
         </section>
 
         {/* Round status (fixed height to prevent layout shifts) */}
-        <div className="-mt-2 px-1 h-[30px]">
+        <div className="-mt-3 px-1 h-5">
           <div className="flex h-5 items-center justify-between gap-3 text-xs sm:text-sm whitespace-nowrap">
             <div className="flex items-center gap-2 font-semibold min-w-0">
               <span
-                className={`h-2 w-2 shrink-0 rounded-full ${phase === "running" ? "bg-emerald-400" : "bg-rose-500"}`}
+                className={`h-2 w-2 shrink-0 rounded-full ${phase === "crashed" ? "bg-rose-500" : "bg-emerald-400"}`}
               />
               <span className="truncate uppercase tracking-wider text-purple-100/80 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
                 {phase === "betting" ? "¡Apuestas abiertas!" : phase === "running" ? "En vuelo" : "Crash"}
