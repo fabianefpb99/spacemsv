@@ -734,7 +734,7 @@ function MissionCard({ mission }: { mission: Mission }) {
   const progressLabel = isMoneyGoal
     ? `${formatCOP(mission.progress)} / ${formatCOP(mission.goal)}`
     : `${mission.progress} / ${mission.goal}`;
-  const done = true;
+  const done = !!mission.completed;
 
   return (
     <div className={`relative overflow-hidden rounded-xl border border-purple-500/30 bg-[#0c0620]/85 p-3 ring-1 ${done ? "ring-emerald-400/60 border-emerald-400/40" : a.ring}`}>
