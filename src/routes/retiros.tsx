@@ -30,6 +30,7 @@ import {
   createWithdrawal,
   listMyWithdrawalAccounts,
   listMyWithdrawals,
+  upsertMyWithdrawalAccount,
 } from "@/lib/withdrawals/withdrawal.functions";
 
 const MIN_WITHDRAW = 20_000;
@@ -122,6 +123,7 @@ function RetirosPage() {
   const listWdFn = useServerFn(listMyWithdrawals);
   const createWdFn = useServerFn(createWithdrawal);
   const cancelWdFn = useServerFn(cancelMyWithdrawal);
+  const upsertAccountFn = useServerFn(upsertMyWithdrawalAccount);
 
   // Saved accounts from backend
   const accountsQ = useQuery({
@@ -154,7 +156,7 @@ function RetirosPage() {
   function setMax() { setAmount(balance); }
 
   // Pending add-account form (only saved when the request is submitted)
-  const [openAdd, setOpenAdd] = useState<MethodId | null>(null);
+  const [openAdd, setOpenAdd] = useState<{ method: MethodId; initial?: Account | null } | null>(null);
   const [pendingAccount, setPendingAccount] = useState<Account | null>(null);
 
   // After saving the form locally, ensure the chosen method is selected
@@ -235,6 +237,24 @@ function RetirosPage() {
       setToast({ kind: "ok", text: "Solicitud cancelada. Tu saldo fue devuelto." });
     },
     onError: () => setToast({ kind: "err", text: "No se pudo cancelar." }),
+  });
+
+  const upsertMut = useMutation({
+    mutationFn: (acc: Account) =>
+      upsertAccountFn({
+        data: {
+          method: acc.method,
+          identifier: acc.identifier,
+          bank_label: acc.bankLabel ?? null,
+        },
+      }),
+    onSuccess: (_row, acc) => {
+      setPendingAccount(null);
+      setSelectedMethod(acc.method);
+      qc.invalidateQueries({ queryKey: ["my-withdrawal-accounts"] });
+      setToast({ kind: "ok", text: "Cuenta guardada." });
+    },
+    onError: () => setToast({ kind: "err", text: "No se pudo guardar la cuenta." }),
   });
 
   const canSubmit =
