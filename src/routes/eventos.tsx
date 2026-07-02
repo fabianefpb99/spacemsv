@@ -797,8 +797,8 @@ function MissionCard({ mission }: { mission: Mission }) {
       </div>
       </div>
       {done && (
-        <div className="pointer-events-none absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.55)] ring-1 ring-emerald-300/70">
-          <Check className="h-4 w-4 text-white" strokeWidth={3} />
+        <div className="pointer-events-none absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-transparent shadow-[0_0_10px_rgba(168,85,247,0.55)] ring-1 ring-purple-500">
+          <Check className="h-4 w-4 text-purple-500" strokeWidth={3} />
         </div>
       )}
     </div>
