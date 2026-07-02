@@ -21,6 +21,7 @@ function Page() {
   return (
     <RequireAuth>
       <LoadingScreen variant="slot">
+        <h1 className="sr-only">Mafia Slots — BETSPACE Casino</h1>
         <SlotGame />
       </LoadingScreen>
     </RequireAuth>

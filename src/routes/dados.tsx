@@ -21,6 +21,7 @@ function Page() {
   return (
     <RequireAuth>
       <LoadingScreen variant="dice">
+        <h1 className="sr-only">Dice — BETSPACE Casino</h1>
         <DiceGame />
       </LoadingScreen>
     </RequireAuth>

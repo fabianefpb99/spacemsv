@@ -28,6 +28,7 @@ function Page() {
   return (
     <RequireAuth>
       <LoadingScreen variant="chicken">
+        <h1 className="sr-only">Chicken Road — BETSPACE Casino</h1>
         <ChickenGame />
       </LoadingScreen>
     </RequireAuth>

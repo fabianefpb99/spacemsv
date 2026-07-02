@@ -828,9 +828,12 @@ function HomePage() {
             </div>
           </div>
         </header>
-        <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
+      <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
+      <h1 className="sr-only">
+        BETSPACE — Casino Online y Apuestas en Colombia
+      </h1>
 
-        {/* Online indicator / rotating tagline */}
+      {/* Online indicator / rotating tagline */}
         <OnlineRotator
           online={online}
           clickable={isAdmin}
