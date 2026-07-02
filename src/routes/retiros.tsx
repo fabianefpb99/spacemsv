@@ -30,6 +30,7 @@ import {
   createWithdrawal,
   listMyWithdrawalAccounts,
   listMyWithdrawals,
+  upsertMyWithdrawalAccount,
 } from "@/lib/withdrawals/withdrawal.functions";
 
 const MIN_WITHDRAW = 20_000;
@@ -122,6 +123,7 @@ function RetirosPage() {
   const listWdFn = useServerFn(listMyWithdrawals);
   const createWdFn = useServerFn(createWithdrawal);
   const cancelWdFn = useServerFn(cancelMyWithdrawal);
+  const upsertAccountFn = useServerFn(upsertMyWithdrawalAccount);
 
   // Saved accounts from backend
   const accountsQ = useQuery({
@@ -154,7 +156,7 @@ function RetirosPage() {
   function setMax() { setAmount(balance); }
 
   // Pending add-account form (only saved when the request is submitted)
-  const [openAdd, setOpenAdd] = useState<MethodId | null>(null);
+  const [openAdd, setOpenAdd] = useState<{ method: MethodId; initial?: Account | null } | null>(null);
   const [pendingAccount, setPendingAccount] = useState<Account | null>(null);
 
   // After saving the form locally, ensure the chosen method is selected
@@ -235,6 +237,24 @@ function RetirosPage() {
       setToast({ kind: "ok", text: "Solicitud cancelada. Tu saldo fue devuelto." });
     },
     onError: () => setToast({ kind: "err", text: "No se pudo cancelar." }),
+  });
+
+  const upsertMut = useMutation({
+    mutationFn: (acc: Account) =>
+      upsertAccountFn({
+        data: {
+          method: acc.method,
+          identifier: acc.identifier,
+          bank_label: acc.bankLabel ?? null,
+        },
+      }),
+    onSuccess: (_row, acc) => {
+      setPendingAccount(null);
+      setSelectedMethod(acc.method);
+      qc.invalidateQueries({ queryKey: ["my-withdrawal-accounts"] });
+      setToast({ kind: "ok", text: "Cuenta guardada." });
+    },
+    onError: () => setToast({ kind: "err", text: "No se pudo guardar la cuenta." }),
   });
 
   const canSubmit =
@@ -338,9 +358,10 @@ function RetirosPage() {
                 (pendingAccount?.method === "nequi" ? pendingAccount : undefined) ??
                 accounts.find((x) => x.method === "nequi");
               if (a) setSelectedMethod("nequi");
-              else setOpenAdd("nequi");
+              else setOpenAdd({ method: "nequi" });
             }}
-            onAdd={() => setOpenAdd("nequi")}
+            onAdd={() => setOpenAdd({ method: "nequi" })}
+            onEdit={(acc) => setOpenAdd({ method: "nequi", initial: acc })}
           />
           <MethodTile
             selected={selectedMethod === "breb"}
@@ -355,9 +376,10 @@ function RetirosPage() {
                 (pendingAccount?.method === "breb" ? pendingAccount : undefined) ??
                 accounts.find((x) => x.method === "breb");
               if (a) setSelectedMethod("breb");
-              else setOpenAdd("breb");
+              else setOpenAdd({ method: "breb" });
             }}
-            onAdd={() => setOpenAdd("breb")}
+            onAdd={() => setOpenAdd({ method: "breb" })}
+            onEdit={(acc) => setOpenAdd({ method: "breb", initial: acc })}
           />
         </div>
 
@@ -409,15 +431,15 @@ function RetirosPage() {
             label="Recibirás"
             value={
               <span className="text-emerald-300">
-                ${formatCOP(amount - Math.round(amount * 0.01))} <span className="text-[10px] font-bold text-emerald-300/80">COP</span>
+                ${formatCOP(amount - Math.round(amount * 0.02))} <span className="text-[10px] font-bold text-emerald-300/80">COP</span>
               </span>
             }
           />
           <SummaryCell
-            label="Comisión (1%)"
+            label="Comisión (2%)"
             value={
               <span className="text-white">
-                ${formatCOP(Math.round(amount * 0.01))} <span className="text-[10px] font-bold text-purple-200/70">COP</span>
+                ${formatCOP(Math.round(amount * 0.02))} <span className="text-[10px] font-bold text-purple-200/70">COP</span>
               </span>
             }
           />
@@ -490,12 +512,12 @@ function RetirosPage() {
       {/* Add-account modal */}
       {openAdd && (
         <AddAccountModal
-          method={openAdd}
+          method={openAdd.method}
+          initial={openAdd.initial ?? null}
           onClose={() => setOpenAdd(null)}
           onSave={(acc) => {
-            // Saved permanently when the withdrawal request is submitted.
-            setPendingAccount({ ...acc, isDefault: true });
-            setSelectedMethod(acc.method);
+            // Persistimos de una vez en la base para permitir edición futura.
+            upsertMut.mutate({ ...acc, isDefault: true });
             setOpenAdd(null);
           }}
         />
@@ -597,7 +619,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 }
 
 function MethodTile({
-  selected, logo, title, account, onSelect, onAdd,
+  selected, logo, title, account, onSelect, onAdd, onEdit,
 }: {
   selected: boolean;
   logo: React.ReactNode;
@@ -605,6 +627,7 @@ function MethodTile({
   account?: Account;
   onSelect: () => void;
   onAdd: () => void;
+  onEdit?: (acc: Account) => void;
 }) {
   const hasAccount = !!account;
   return (
@@ -642,11 +665,22 @@ function MethodTile({
           {account!.bankLabel && (
             <div className="text-[10px] text-purple-200/60">{account!.bankLabel}</div>
           )}
-          {account!.isDefault && (
-            <span className="mt-0.5 inline-flex w-fit rounded-md bg-fuchsia-500/20 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-fuchsia-200">
-              Predeterminado
-            </span>
-          )}
+          <div className="mt-1 flex items-center justify-between gap-2">
+            {account!.isDefault ? (
+              <span className="inline-flex w-fit rounded-md bg-fuchsia-500/20 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-fuchsia-200">
+                Predeterminado
+              </span>
+            ) : <span />}
+            {onEdit && (
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onEdit(account!); }}
+                className="rounded-md border border-purple-400/50 bg-purple-500/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-purple-100 hover:bg-purple-500/20"
+              >
+                Editar
+              </button>
+            )}
+          </div>
         </>
       ) : (
         <button
@@ -753,17 +787,48 @@ function HistoryRow({
   );
 }
 
+const COLOMBIA_BANKS = [
+  "Bancolombia",
+  "Davivienda",
+  "Banco de Bogotá",
+  "BBVA Colombia",
+  "Banco Popular",
+  "Banco AV Villas",
+  "Banco Caja Social",
+  "Banco Agrario",
+  "Banco Falabella",
+  "Banco Pichincha",
+  "Banco GNB Sudameris",
+  "Banco Serfinanza",
+  "Banco Cooperativo Coopcentral",
+  "Banco Itaú",
+  "Banco Finandina",
+  "Banco W",
+  "Bancoomeva",
+  "Citibank Colombia",
+  "Scotiabank Colpatria",
+  "Nequi",
+  "Daviplata",
+  "Movii",
+  "Lulo Bank",
+  "RappiPay",
+  "Tpaga",
+  "Nu Colombia",
+];
+
 function AddAccountModal({
-  method, onClose, onSave,
+  method, initial, onClose, onSave,
 }: {
   method: MethodId;
+  initial?: Account | null;
   onClose: () => void;
   onSave: (acc: Account) => void;
 }) {
   const isNequi = method === "nequi";
-  const [id, setId] = useState("");
-  const [bank, setBank] = useState("");
-  const [confirm, setConfirm] = useState(false);
+  const [id, setId] = useState(initial?.identifier ?? "");
+  const [bank, setBank] = useState(initial?.bankLabel ?? "");
+  const [confirm, setConfirm] = useState(!!initial);
+  const isEdit = !!initial;
 
   const idDigits = id.replace(/\D/g, "");
   const valid = isNequi
@@ -778,7 +843,7 @@ function AddAccountModal({
           <div className="flex items-center gap-2">
             <img src={isNequi ? nequiLogo : brebLogo} alt="" className="h-5 w-auto" />
             <h3 className="font-display text-base font-black uppercase tracking-widest text-white">
-              Cuenta {isNequi ? "Nequi" : "BRE-B"}
+              {isEdit ? "Editar" : "Cuenta"} {isNequi ? "Nequi" : "BRE-B"}
             </h3>
           </div>
           <button onClick={onClose} className="rounded-md p-1 text-purple-200 hover:bg-white/5">
@@ -810,13 +875,17 @@ function AddAccountModal({
           </label>
           {!isNequi && (
             <label className="block text-[10px] uppercase tracking-widest text-purple-200/70">
-              Banco (opcional)
-              <input
+              Banco
+              <select
                 value={bank}
-                onChange={(e) => setBank(e.target.value.slice(0, 60))}
-                placeholder="Bancolombia · Ahorros"
-                className="mt-1 w-full rounded-md border border-purple-500/30 bg-[#150830] px-3 py-2 text-sm text-white placeholder:text-purple-300/30 focus:border-fuchsia-400 focus:outline-none"
-              />
+                onChange={(e) => setBank(e.target.value)}
+                className="mt-1 w-full rounded-md border border-purple-500/30 bg-[#150830] px-3 py-2 text-sm text-white focus:border-fuchsia-400 focus:outline-none"
+              >
+                <option value="">Selecciona tu banco</option>
+                {COLOMBIA_BANKS.map((b) => (
+                  <option key={b} value={b}>{b}</option>
+                ))}
+              </select>
             </label>
           )}
 
