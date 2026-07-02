@@ -1139,7 +1139,15 @@ function HomePage() {
         </Link>
 
         {/* Jackpot — banner estilo BlackJack */}
-        <div className="promo-banner promo-banner--jackpot relative mt-3 block h-24 overflow-hidden rounded-xl border border-amber-400/70 shadow-[0_0_12px_rgba(251,191,36,0.3)] transition hover:shadow-[0_0_22px_rgba(251,191,36,0.6)] sm:h-28">
+        <button
+          type="button"
+          onClick={() => {
+            setJackpotPulse(false);
+            requestAnimationFrame(() => setJackpotPulse(true));
+            window.setTimeout(() => setJackpotPulse(false), 1200);
+          }}
+          className={`promo-banner promo-banner--jackpot relative mt-3 block h-24 w-full overflow-hidden rounded-xl border border-amber-400/70 text-left shadow-[0_0_12px_rgba(251,191,36,0.3)] transition hover:shadow-[0_0_22px_rgba(251,191,36,0.6)] sm:h-28${jackpotPulse ? " jackpot-pulse" : ""}`}
+        >
           <SkeletonImage
             src={jackpotBanner}
             alt="Jackpot"
@@ -1151,18 +1159,18 @@ function HomePage() {
           <div className="relative z-10 flex h-full items-center justify-between gap-3 px-4 sm:px-5">
             <div className="min-w-0 flex-1">
               <div className="promo-banner__eyebrow text-[10px] font-semibold uppercase tracking-widest text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
-                Jackpot activo
+                Jackpot activo hoy
               </div>
               <div className="promo-banner__title mt-0.5 font-display text-lg font-black leading-none tracking-wide text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] sm:text-xl">
                 <span className="neon-green mr-1">$</span>
-                {formatCOP(25000000)} COP
+                {formatCOP(jackpotAmount)}
               </div>
               <div className="promo-banner__tag promo-banner__tag--amber mt-1 inline-block rounded-sm bg-amber-500/80 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-black shadow-[0_0_8px_rgba(251,191,36,0.6)]">
                 Premio acumulado
               </div>
             </div>
           </div>
-        </div>
+        </button>
 
         {/* Últimas ganancias */}
         <section className="home-wins-panel mt-5 rounded-xl border border-purple-500/30 bg-[#0c0620] p-3 sm:p-4">
