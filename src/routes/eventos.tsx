@@ -102,6 +102,7 @@ type Mission = {
   accent: "purple" | "emerald" | "amber" | "rose" | "blue";
   icon: React.ReactNode;
   rewardImage?: string;
+  completed?: boolean;
 };
 
 const MISSIONS: Mission[] = [
