@@ -393,13 +393,14 @@ function MatchDetailPage() {
             <h2 className="md-eyebrow px-1 text-[11px] font-black uppercase tracking-[0.18em] text-purple-200/80">
               Resultado final
             </h2>
-            <div className="mt-3 grid grid-cols-3 gap-2.5">
+            <div className={`mt-3 grid grid-cols-3 gap-2.5 ${match.started ? "pointer-events-none opacity-60" : ""}`}>
               <OutcomeCard
                 title="Gana"
                 subtitle={match.home.name}
                 odd={match.odds.home}
                 selected={selection === "home"}
                 onSelect={() => setSelection("home")}
+                disabled={match.started}
               />
               <OutcomeCard
                 title=""
@@ -413,6 +414,7 @@ function MatchDetailPage() {
                   </div>
                 }
                 emphasizeSubtitle
+                disabled={match.started}
               />
               <OutcomeCard
                 title="Gana"
@@ -420,8 +422,14 @@ function MatchDetailPage() {
                 odd={match.odds.away}
                 selected={selection === "away"}
                 onSelect={() => setSelection("away")}
+                disabled={match.started}
               />
             </div>
+            {match.started && (
+              <p className="mt-3 text-center text-[11px] font-semibold text-fuchsia-200/90">
+                Apuestas cerradas para este partido.
+              </p>
+            )}
           </section>
 
           <section className="relative mt-6">
