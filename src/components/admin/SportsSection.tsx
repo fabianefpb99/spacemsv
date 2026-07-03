@@ -979,6 +979,168 @@ function TimezoneModal({ current, onClose }: { current: string; onClose: () => v
  * Small primitives
  * ========================================================== */
 
+function HouseEdgePanel({
+  oddsHome,
+  oddsDraw,
+  oddsAway,
+  onApply,
+}: {
+  oddsHome: string;
+  oddsDraw: string;
+  oddsAway: string;
+  onApply: (h: string, d: string, a: string) => void;
+}) {
+  const [target, setTarget] = useState<string>("8");
+
+  const h = Number(oddsHome);
+  const d = Number(oddsDraw);
+  const a = Number(oddsAway);
+  const valid =
+    Number.isFinite(h) && h >= 1.01 &&
+    Number.isFinite(d) && d >= 1.01 &&
+    Number.isFinite(a) && a >= 1.01;
+
+  const currentSum = valid ? 1 / h + 1 / d + 1 / a : 0;
+  const currentEdgePct = valid ? (currentSum - 1) * 100 : 0;
+
+  const targetNum = Number(target);
+  const targetValid = Number.isFinite(targetNum) && targetNum >= -10 && targetNum <= 50;
+
+  const preview = useMemo(() => {
+    if (!valid || !targetValid) return null;
+    const targetSum = 1 + targetNum / 100;
+    if (targetSum <= 0) return null;
+    const factor = currentSum / targetSum;
+    const nh = h * factor;
+    const nd = d * factor;
+    const na = a * factor;
+    if (nh < 1.01 || nd < 1.01 || na < 1.01) return null;
+    return { nh, nd, na };
+  }, [valid, targetValid, targetNum, currentSum, h, d, a]);
+
+  const apply = () => {
+    if (!preview) {
+      toast.error("No se puede aplicar: revisa las cuotas y el margen objetivo.");
+      return;
+    }
+    const nh = preview.nh.toFixed(2);
+    const nd = preview.nd.toFixed(2);
+    const na = preview.na.toFixed(2);
+    onApply(nh, nd, na);
+    const dH = (preview.nh - h).toFixed(2);
+    const dD = (preview.nd - d).toFixed(2);
+    const dA = (preview.na - a).toFixed(2);
+    const sgn = (x: string) => (x.startsWith("-") ? x : `+${x}`);
+    toast.success(
+      `Ventaja aplicada: ${targetNum.toFixed(2)}%. Local ${sgn(dH)} · Empate ${sgn(dD)} · Visitante ${sgn(dA)}`,
+      { duration: 5000 },
+    );
+  };
+
+  const presets = [3, 5, 8, 10, 12];
+  const edgeColor =
+    currentEdgePct >= 8
+      ? "text-emerald-300"
+      : currentEdgePct >= 3
+      ? "text-amber-300"
+      : currentEdgePct >= 0
+      ? "text-purple-200"
+      : "text-rose-300";
+
+  return (
+    <div className="rounded-lg border border-fuchsia-500/30 bg-gradient-to-br from-fuchsia-500/5 to-purple-500/5 p-2.5">
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5">
+          <Wand2 className="h-3.5 w-3.5 text-fuchsia-300" />
+          <span className="text-[10px] font-bold uppercase tracking-widest text-fuchsia-100">
+            Ventaja de la casa
+          </span>
+        </div>
+        <div className="text-[10px] uppercase tracking-widest text-purple-200/80">
+          Actual:{" "}
+          <span className={`font-mono font-bold ${edgeColor}`}>
+            {valid ? `${currentEdgePct.toFixed(2)}%` : "—"}
+          </span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-[1fr_auto] gap-2">
+        <div className="flex items-center gap-1.5">
+          <div className="relative flex-1">
+            <input
+              value={target}
+              onChange={(e) => setTarget(e.target.value)}
+              inputMode="decimal"
+              placeholder="8"
+              className={`${inputCls} pr-7 text-center font-mono`}
+            />
+            <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs font-bold text-purple-300">
+              %
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={apply}
+            disabled={!preview}
+            className="inline-flex items-center gap-1 rounded-md bg-fuchsia-600 px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white hover:bg-fuchsia-500 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <Wand2 className="h-3 w-3" />
+            Aplicar
+          </button>
+        </div>
+        <div className="flex flex-wrap items-center gap-1">
+          {presets.map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => setTarget(String(p))}
+              className={`rounded-md border px-1.5 py-1 text-[10px] font-bold ${
+                Number(target) === p
+                  ? "border-fuchsia-400/60 bg-fuchsia-500/20 text-fuchsia-100"
+                  : "border-purple-500/30 bg-[#0c0620] text-purple-200 hover:bg-purple-500/10"
+              }`}
+            >
+              {p}%
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {preview && (
+        <div className="mt-2 grid grid-cols-3 gap-1.5 text-center">
+          <PreviewChip label="1" from={h} to={preview.nh} />
+          <PreviewChip label="X" from={d} to={preview.nd} />
+          <PreviewChip label="2" from={a} to={preview.na} />
+        </div>
+      )}
+
+      <p className="mt-2 text-[9.5px] leading-tight text-purple-200/60">
+        Ingresa las cuotas y elige el margen objetivo. Al aplicar, se reescalan
+        las 3 cuotas manteniendo su proporción para que la ventaja quede exacta.
+      </p>
+    </div>
+  );
+}
+
+function PreviewChip({ label, from, to }: { label: string; from: number; to: number }) {
+  const diff = to - from;
+  const up = diff > 0.005;
+  const down = diff < -0.005;
+  const cls = up ? "text-emerald-300" : down ? "text-rose-300" : "text-purple-200";
+  const arrow = up ? "▲" : down ? "▼" : "→";
+  return (
+    <div className="rounded-md border border-purple-500/25 bg-[#0c0620] px-1.5 py-1">
+      <div className="text-[9px] uppercase tracking-widest text-purple-300/70">{label}</div>
+      <div className="font-mono text-[11px] text-purple-200/60 line-through">
+        {from.toFixed(2)}
+      </div>
+      <div className={`font-mono text-xs font-bold ${cls}`}>
+        {arrow} {to.toFixed(2)}
+      </div>
+    </div>
+  );
+}
+
 const inputCls =
   "w-full rounded-md border border-purple-500/30 bg-[#0c0620] px-2 py-1.5 text-sm text-white placeholder:text-purple-300/40 focus:border-fuchsia-400/60 focus:outline-none";
 
