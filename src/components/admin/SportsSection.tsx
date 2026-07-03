@@ -20,6 +20,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { Panel, KpiCard } from "./shared";
+import { TeamFlag, FlagPickerButton } from "./FlagPicker";
+import { teamName } from "@/lib/sports/world-cup-2026-teams";
 import {
   adminListCompetitions,
   adminUpsertCompetition,
