@@ -339,7 +339,7 @@ function MatchDetailPage() {
             </div>
           </section>
 
-          <div className="h-6" />
+          <div className="h-3" />
         </div>
 
         <div
