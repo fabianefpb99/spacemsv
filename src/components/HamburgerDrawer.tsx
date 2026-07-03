@@ -17,9 +17,32 @@ import {
   Music2,
   Hash,
   Gamepad2,
-  Volleyball,
   type LucideIcon,
 } from "lucide-react";
+
+function FootballIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 6.5 15 9.5 14 14 10 14 9 9.5Z" />
+      <path d="m12 14-5 1.5" />
+      <path d="m12 14 5 1.5" />
+      <path d="m9.5 9.5-3.5-1.5" />
+      <path d="m14.5 9.5 3.5-1.5" />
+      <path d="m9 14-2.5 3.5" />
+      <path d="m15 14 2.5 3.5" />
+    </svg>
+  );
+}
 import { cloneElement, isValidElement, useEffect, useState, type MouseEvent, type ReactElement, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useQuery } from "@tanstack/react-query";
