@@ -236,7 +236,7 @@ function BellInner({ userId }: { userId: string }) {
                         </p>
                       )}
                       <span className="mt-1 block text-[10px] text-purple-300/60">
-                        {relativeTime(n.created_at)}
+                        {useRelativeTime(n.created_at)}
                       </span>
                     </div>
                   </Link>
