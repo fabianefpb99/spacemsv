@@ -16,6 +16,8 @@ import {
   MessageCircle,
   Music2,
   Hash,
+  Gamepad2,
+  Volleyball,
   type LucideIcon,
 } from "lucide-react";
 import { cloneElement, isValidElement, useEffect, useState, type MouseEvent, type ReactElement, type ReactNode } from "react";
@@ -41,6 +43,11 @@ const ITEMS: Item[] = [
   { label: "Depósito", icon: Wallet, to: "/pay" },
   { label: "Ranking", icon: Trophy, to: "/ranking" },
   { label: "Soporte", icon: Headphones, to: "/soporte" },
+];
+
+const PRIMARY_ITEMS: { label: string; icon: LucideIcon; to: string; accent: "fuchsia" | "cyan" }[] = [
+  { label: "Juegos", icon: Gamepad2, to: "/home", accent: "fuchsia" },
+  { label: "Deportes", icon: Volleyball, to: "/deportes", accent: "cyan" },
 ];
 
 const SOCIAL_ICONS: Record<string, LucideIcon> = {
