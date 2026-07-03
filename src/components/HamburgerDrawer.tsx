@@ -16,6 +16,8 @@ import {
   MessageCircle,
   Music2,
   Hash,
+  Gamepad2,
+  Volleyball,
   type LucideIcon,
 } from "lucide-react";
 import { cloneElement, isValidElement, useEffect, useState, type MouseEvent, type ReactElement, type ReactNode } from "react";
@@ -41,6 +43,11 @@ const ITEMS: Item[] = [
   { label: "Depósito", icon: Wallet, to: "/pay" },
   { label: "Ranking", icon: Trophy, to: "/ranking" },
   { label: "Soporte", icon: Headphones, to: "/soporte" },
+];
+
+const PRIMARY_ITEMS: { label: string; icon: LucideIcon; to: string; accent: "fuchsia" | "cyan" }[] = [
+  { label: "Juegos", icon: Gamepad2, to: "/home", accent: "fuchsia" },
+  { label: "Deportes", icon: Volleyball, to: "/deportes", accent: "cyan" },
 ];
 
 const SOCIAL_ICONS: Record<string, LucideIcon> = {
@@ -226,6 +233,40 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
                 <div className="mx-4 h-px bg-purple-500/15" />
 
                 <nav className="mt-2 flex-1 overflow-y-auto px-2">
+                  <div className="mb-3 grid grid-cols-2 gap-2 px-1">
+                    {PRIMARY_ITEMS.map((it) => {
+                      const isFuchsia = it.accent === "fuchsia";
+                      return (
+                        <button
+                          key={it.label}
+                          type="button"
+                          onClick={() => {
+                            setOpen(false);
+                            navigate({ to: it.to });
+                          }}
+                          className={`group relative flex flex-col items-center justify-center gap-1.5 overflow-hidden rounded-xl border px-2 py-3 text-center transition ${
+                            isFuchsia
+                              ? "border-fuchsia-400/40 bg-gradient-to-br from-fuchsia-600/30 via-purple-700/25 to-[#1a0a3a] shadow-[0_0_20px_rgba(217,70,239,0.25)] hover:shadow-[0_0_28px_rgba(217,70,239,0.55)] hover:border-fuchsia-300/70"
+                              : "border-cyan-400/40 bg-gradient-to-br from-cyan-500/25 via-sky-700/25 to-[#04162a] shadow-[0_0_20px_rgba(34,211,238,0.22)] hover:shadow-[0_0_28px_rgba(34,211,238,0.5)] hover:border-cyan-300/70"
+                          }`}
+                        >
+                          <span
+                            className={`flex h-9 w-9 items-center justify-center rounded-full ${
+                              isFuchsia
+                                ? "bg-fuchsia-500/20 text-fuchsia-200"
+                                : "bg-cyan-500/20 text-cyan-200"
+                            }`}
+                          >
+                            <it.icon className="h-5 w-5" strokeWidth={2.4} />
+                          </span>
+                          <span className="text-[12px] font-black uppercase tracking-wider text-white">
+                            {it.label}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
                   <ul className="flex flex-col gap-0.5">
                     {ITEMS.map((it) => (
                       <li key={it.label}>

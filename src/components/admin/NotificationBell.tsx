@@ -47,14 +47,16 @@ function relativeTime(iso: string) {
   return `hace ${d} d`;
 }
 
-function useRelativeTime(iso: string) {
-  const [text, setText] = useState(() => relativeTime(iso));
+function RelativeTime({ iso }: { iso: string }) {
+  // Render empty on SSR / first client render to avoid hydration mismatch,
+  // then compute relative time on the client.
+  const [text, setText] = useState<string>("");
   useEffect(() => {
     setText(relativeTime(iso));
     const id = setInterval(() => setText(relativeTime(iso)), 60000);
     return () => clearInterval(id);
   }, [iso]);
-  return text;
+  return <>{text}</>;
 }
 
 function typeIcon(t: string) {
@@ -236,7 +238,7 @@ function BellInner({ userId }: { userId: string }) {
                         </p>
                       )}
                       <span className="mt-1 block text-[10px] text-purple-300/60">
-                        {useRelativeTime(n.created_at)}
+                        <RelativeTime iso={n.created_at} />
                       </span>
                     </div>
                   </Link>
