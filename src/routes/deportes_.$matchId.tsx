@@ -16,8 +16,10 @@ import { AuthDialog } from "@/components/auth/AuthDialog";
 import { HamburgerDrawer } from "@/components/HamburgerDrawer";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
+import { getPublicMatch } from "@/lib/sports/public.functions";
+import { flagSvgUrl, teamName } from "@/lib/sports/world-cup-2026-teams";
 
-type FlagCode = "AR" | "FR" | "BR" | "DE";
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 type MatchDetail = {
   id: string;
@@ -25,38 +27,65 @@ type MatchDetail = {
   date: string;
   time: string;
   live: boolean;
-  home: { name: string; code: FlagCode; jersey: string; jerseyAccent: string };
-  away: { name: string; code: FlagCode; jersey: string; jerseyAccent: string };
+  home: { name: string; code: string };
+  away: { name: string; code: string };
   odds: { home: string; draw: string; away: string };
 };
 
-const MATCHES: Record<string, MatchDetail> = {
-  "arg-fra": {
-    id: "arg-fra",
-    competition: "MUNDIAL 2026",
-    date: "Hoy, 20 Jun",
-    time: "15:00",
-    live: true,
-    home: { name: "Argentina", code: "AR", jersey: "#7CB9E8", jerseyAccent: "#FFFFFF" },
-    away: { name: "Francia", code: "FR", jersey: "#1E3A8A", jerseyAccent: "#FFFFFF" },
-    odds: { home: "2.10", draw: "3.25", away: "3.40" },
-  },
-  "bra-ale": {
-    id: "bra-ale",
-    competition: "MUNDIAL 2026",
-    date: "Hoy, 20 Jun",
-    time: "19:00",
-    live: true,
-    home: { name: "Brasil", code: "BR", jersey: "#FDE047", jerseyAccent: "#009C3B" },
-    away: { name: "Alemania", code: "DE", jersey: "#FFFFFF", jerseyAccent: "#111111" },
-    odds: { home: "1.85", draw: "3.60", away: "4.20" },
-  },
-};
+const TZ = "America/Bogota";
+
+function formatMatchDate(iso: string): { date: string; time: string } {
+  const d = new Date(iso);
+  const now = new Date();
+  const dayFmt = new Intl.DateTimeFormat("es-CO", {
+    timeZone: TZ,
+    day: "2-digit",
+    month: "short",
+  });
+  const timeFmt = new Intl.DateTimeFormat("es-CO", {
+    timeZone: TZ,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+  const dayKey = (x: Date) =>
+    new Intl.DateTimeFormat("en-CA", {
+      timeZone: TZ,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(x);
+  const todayKey = dayKey(now);
+  const tomorrowKey = dayKey(new Date(now.getTime() + 86400000));
+  const matchKey = dayKey(d);
+  let label: string;
+  if (matchKey === todayKey) label = "Hoy";
+  else if (matchKey === tomorrowKey) label = "Mañana";
+  else label = dayFmt.format(d);
+  return { date: label, time: timeFmt.format(d) };
+}
 
 export const Route = createFileRoute("/deportes_/$matchId")({
-  loader: ({ params }) => {
-    const match = MATCHES[params.matchId];
-    if (!match) throw notFound();
+  loader: async ({ params }) => {
+    if (!UUID_RE.test(params.matchId)) throw notFound();
+    const res = await getPublicMatch({ data: { id: params.matchId } });
+    if (!res?.match) throw notFound();
+    const r = res.match;
+    const { date, time } = formatMatchDate(r.start_at);
+    const match: MatchDetail = {
+      id: r.id,
+      competition: (r.competition_name ?? "DEPORTES").toUpperCase(),
+      date,
+      time,
+      live: r.status === "live",
+      home: { name: r.home_name || teamName(r.home_flag_code), code: r.home_flag_code },
+      away: { name: r.away_name || teamName(r.away_flag_code), code: r.away_flag_code },
+      odds: {
+        home: Number(r.odds_home).toFixed(2),
+        draw: Number(r.odds_draw).toFixed(2),
+        away: Number(r.odds_away).toFixed(2),
+      },
+    };
     return { match };
   },
   head: ({ loaderData }) => {
@@ -98,62 +127,14 @@ function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
 }
 
-function Flag({ code }: { code: FlagCode }) {
-  const base = "block h-full w-full";
-  switch (code) {
-    case "AR":
-      return (
-        <svg viewBox="0 0 60 40" className={base} aria-hidden="true" preserveAspectRatio="none">
-          <rect width="60" height="40" fill="#75AADB" />
-          <rect y="13.33" width="60" height="13.33" fill="#FFFFFF" />
-          <circle cx="30" cy="20" r="3.4" fill="#FCBF49" />
-        </svg>
-      );
-    case "FR":
-      return (
-        <svg viewBox="0 0 60 40" className={base} aria-hidden="true" preserveAspectRatio="none">
-          <rect width="20" height="40" fill="#0055A4" />
-          <rect x="20" width="20" height="40" fill="#FFFFFF" />
-          <rect x="40" width="20" height="40" fill="#EF4135" />
-        </svg>
-      );
-    case "BR":
-      return (
-        <svg viewBox="0 0 60 40" className={base} aria-hidden="true" preserveAspectRatio="none">
-          <rect width="60" height="40" fill="#009C3B" />
-          <polygon points="30,5 55,20 30,35 5,20" fill="#FFDF00" />
-          <circle cx="30" cy="20" r="7" fill="#002776" />
-        </svg>
-      );
-    case "DE":
-      return (
-        <svg viewBox="0 0 60 40" className={base} aria-hidden="true" preserveAspectRatio="none">
-          <rect width="60" height="13.33" fill="#000000" />
-          <rect y="13.33" width="60" height="13.33" fill="#DD0000" />
-          <rect y="26.66" width="60" height="13.34" fill="#FFCE00" />
-        </svg>
-      );
-  }
-}
-
-function JerseyIcon({ color, accent }: { color: string; accent: string }) {
+function Flag({ code, name }: { code: string; name: string }) {
   return (
-    <svg viewBox="0 0 64 64" className="h-full w-full" aria-hidden="true">
-      <path
-        d="M20 10 L28 6 Q32 10 36 6 L44 10 L56 16 L52 26 L46 24 L46 56 Q46 58 44 58 L20 58 Q18 58 18 56 L18 24 L12 26 L8 16 Z"
-        fill={color}
-        stroke={accent}
-        strokeWidth="1.4"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M28 6 Q32 12 36 6"
-        fill="none"
-        stroke={accent}
-        strokeWidth="1.4"
-        strokeLinejoin="round"
-      />
-    </svg>
+    <img
+      src={flagSvgUrl(code)}
+      alt={`Bandera de ${name}`}
+      loading="lazy"
+      className="block h-full w-full object-cover"
+    />
   );
 }
 
@@ -179,7 +160,6 @@ function MatchDetailPage() {
   return (
     <div className="min-h-screen bg-[#060210] text-white">
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col pt-4 sm:max-w-lg">
-        {/* Header idéntico */}
         <header
           className="flex flex-col items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 -mt-4"
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
@@ -230,9 +210,7 @@ function MatchDetailPage() {
         </header>
         <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
 
-        {/* Cuerpo: theme-dark-fixed para look premium consistente en claro y oscuro */}
         <div className="theme-dark-fixed flex-1 bg-[#060210] px-4 pb-72 pt-4 sm:px-5">
-          {/* Top row: back arrow + competencia */}
           <div className="flex items-center gap-3">
             <Link
               to="/deportes"
@@ -242,7 +220,7 @@ function MatchDetailPage() {
               <ArrowLeft className="h-4 w-4" />
             </Link>
             <div className="flex flex-1 justify-center">
-            <span className="md-strong inline-flex items-center gap-1.5 rounded-full border border-purple-400/60 bg-purple-500/15 px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest text-purple-100">
+              <span className="md-strong inline-flex items-center gap-1.5 rounded-full border border-purple-400/60 bg-purple-500/15 px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest text-purple-100">
                 <Trophy className="h-3 w-3 text-fuchsia-300" />
                 {match.competition}
               </span>
@@ -250,7 +228,6 @@ function MatchDetailPage() {
             <div className="h-9 w-9 shrink-0" aria-hidden="true" />
           </div>
 
-          {/* Fecha + Hora + En vivo */}
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
             <span className="md-strong inline-flex items-center gap-1.5 rounded-full border border-purple-500/25 bg-[#0b0522] px-2.5 py-1 text-[10px] font-semibold text-purple-100">
               <Calendar className="h-3 w-3 text-purple-300/80" />
@@ -268,11 +245,10 @@ function MatchDetailPage() {
             )}
           </div>
 
-          {/* Equipos protagonistas */}
           <section className="mt-8 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
             <div className="flex flex-col items-center gap-3">
               <span className="flex h-16 w-24 items-center justify-center overflow-hidden rounded-lg ring-1 ring-white/15 shadow-[0_6px_20px_-6px_rgba(0,0,0,0.7)]">
-                <Flag code={match.home.code} />
+                <Flag code={match.home.code} name={match.home.name} />
               </span>
               <span className="text-center font-display text-base font-black tracking-wide text-white">
                 {match.home.name}
@@ -283,7 +259,7 @@ function MatchDetailPage() {
             </span>
             <div className="flex flex-col items-center gap-3">
               <span className="flex h-16 w-24 items-center justify-center overflow-hidden rounded-lg ring-1 ring-white/15 shadow-[0_6px_20px_-6px_rgba(0,0,0,0.7)]">
-                <Flag code={match.away.code} />
+                <Flag code={match.away.code} name={match.away.name} />
               </span>
               <span className="text-center font-display text-base font-black tracking-wide text-white">
                 {match.away.name}
@@ -291,7 +267,6 @@ function MatchDetailPage() {
             </div>
           </section>
 
-          {/* Info: apuesta simple */}
           <section className="mt-8">
             <div className="flex items-center gap-3 rounded-2xl border border-purple-500/25 bg-[#0b0522] px-3 py-3">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-600 to-fuchsia-700 shadow-[0_0_10px_rgba(168,85,247,0.55)]">
@@ -306,7 +281,6 @@ function MatchDetailPage() {
             </div>
           </section>
 
-          {/* Mercado: RESULTADO FINAL */}
           <section className="mt-6">
             <h2 className="md-eyebrow px-1 text-[11px] font-black uppercase tracking-[0.18em] text-purple-200/80">
               Resultado final
@@ -342,7 +316,6 @@ function MatchDetailPage() {
             </div>
           </section>
 
-          {/* Aviso */}
           <section className="mt-6">
             <div className="flex items-center gap-3 rounded-2xl border border-purple-500/25 bg-[#0b0522] px-3 py-3">
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-purple-400/40 bg-purple-500/10">
@@ -354,17 +327,14 @@ function MatchDetailPage() {
             </div>
           </section>
 
-          {/* Ficha usada por el ticket inferior (spacer visual) */}
           <div className="h-6" />
         </div>
 
-        {/* Ticket flotante anclado al fondo — SIEMPRE claro (blanco) para destacar */}
         <div
           className="md-ticket-light fixed inset-x-0 bottom-0 z-30 border-t border-neutral-200 bg-white shadow-[0_-10px_30px_-10px_rgba(0,0,0,0.35)]"
           style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
         >
           <div className="mx-auto max-w-md px-4 py-3.5 sm:max-w-lg sm:px-5">
-            {/* Selección y cuota */}
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
                 <div className="text-[9px] font-bold uppercase tracking-widest text-neutral-500">
@@ -381,7 +351,6 @@ function MatchDetailPage() {
 
             <div className="my-3 h-px bg-neutral-200" />
 
-            {/* Apuesta */}
             <div>
               <label
                 htmlFor="stake"
@@ -404,7 +373,6 @@ function MatchDetailPage() {
               </div>
             </div>
 
-            {/* Pago posible + Apostar en la misma fila */}
             <div className="mt-3 grid grid-cols-[2fr_3fr] items-end gap-3">
               <div>
                 <div className="text-[9px] font-bold uppercase tracking-widest text-neutral-500">
@@ -478,6 +446,3 @@ function OutcomeCard({
     </button>
   );
 }
-
-// Silence unused helper warnings.
-void JerseyIcon;
