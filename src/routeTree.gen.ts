@@ -36,7 +36,7 @@ import { Route as ArenaRouteImport } from './routes/arena'
 import { Route as AdminpanelRouteImport } from './routes/adminpanel'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PayBrebRouteImport } from './routes/pay_.breb'
-import { Route as DeportesMatchIdRouteImport } from './routes/deportes.$matchId'
+import { Route as DeportesMatchIdRouteImport } from './routes/deportes_.$matchId'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -178,9 +178,9 @@ const PayBrebRoute = PayBrebRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const DeportesMatchIdRoute = DeportesMatchIdRouteImport.update({
-  id: '/$matchId',
-  path: '/$matchId',
-  getParentRoute: () => DeportesRoute,
+  id: '/deportes_/$matchId',
+  path: '/deportes/$matchId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
@@ -212,7 +212,7 @@ export interface FileRoutesByFullPath {
   '/blackjackvip': typeof BlackjackvipRoute
   '/chicken': typeof ChickenRoute
   '/dados': typeof DadosRoute
-  '/deportes': typeof DeportesRouteWithChildren
+  '/deportes': typeof DeportesRoute
   '/eventos': typeof EventosRoute
   '/home': typeof HomeRoute
   '/mines': typeof MinesRoute
@@ -246,7 +246,7 @@ export interface FileRoutesByTo {
   '/blackjackvip': typeof BlackjackvipRoute
   '/chicken': typeof ChickenRoute
   '/dados': typeof DadosRoute
-  '/deportes': typeof DeportesRouteWithChildren
+  '/deportes': typeof DeportesRoute
   '/eventos': typeof EventosRoute
   '/home': typeof HomeRoute
   '/mines': typeof MinesRoute
@@ -281,7 +281,7 @@ export interface FileRoutesById {
   '/blackjackvip': typeof BlackjackvipRoute
   '/chicken': typeof ChickenRoute
   '/dados': typeof DadosRoute
-  '/deportes': typeof DeportesRouteWithChildren
+  '/deportes': typeof DeportesRoute
   '/eventos': typeof EventosRoute
   '/home': typeof HomeRoute
   '/mines': typeof MinesRoute
@@ -300,7 +300,7 @@ export interface FileRoutesById {
   '/terminos': typeof TerminosRoute
   '/transacciones': typeof TransaccionesRoute
   '/vip': typeof VipRoute
-  '/deportes/$matchId': typeof DeportesMatchIdRoute
+  '/deportes_/$matchId': typeof DeportesMatchIdRoute
   '/pay_/breb': typeof PayBrebRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -404,7 +404,7 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/transacciones'
     | '/vip'
-    | '/deportes/$matchId'
+    | '/deportes_/$matchId'
     | '/pay_/breb'
     | '/api/public/img/$'
     | '/lovable/email/auth/preview'
@@ -420,7 +420,7 @@ export interface RootRouteChildren {
   BlackjackvipRoute: typeof BlackjackvipRoute
   ChickenRoute: typeof ChickenRoute
   DadosRoute: typeof DadosRoute
-  DeportesRoute: typeof DeportesRouteWithChildren
+  DeportesRoute: typeof DeportesRoute
   EventosRoute: typeof EventosRoute
   HomeRoute: typeof HomeRoute
   MinesRoute: typeof MinesRoute
@@ -439,6 +439,7 @@ export interface RootRouteChildren {
   TerminosRoute: typeof TerminosRoute
   TransaccionesRoute: typeof TransaccionesRoute
   VipRoute: typeof VipRoute
+  DeportesMatchIdRoute: typeof DeportesMatchIdRoute
   PayBrebRoute: typeof PayBrebRoute
   ApiPublicImgSplatRoute: typeof ApiPublicImgSplatRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -637,12 +638,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PayBrebRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/deportes/$matchId': {
-      id: '/deportes/$matchId'
-      path: '/$matchId'
+    '/deportes_/$matchId': {
+      id: '/deportes_/$matchId'
+      path: '/deportes/$matchId'
       fullPath: '/deportes/$matchId'
       preLoaderRoute: typeof DeportesMatchIdRouteImport
-      parentRoute: typeof DeportesRoute
+      parentRoute: typeof rootRouteImport
     }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
@@ -675,18 +676,6 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface DeportesRouteChildren {
-  DeportesMatchIdRoute: typeof DeportesMatchIdRoute
-}
-
-const DeportesRouteChildren: DeportesRouteChildren = {
-  DeportesMatchIdRoute: DeportesMatchIdRoute,
-}
-
-const DeportesRouteWithChildren = DeportesRoute._addFileChildren(
-  DeportesRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminpanelRoute: AdminpanelRoute,
@@ -695,7 +684,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlackjackvipRoute: BlackjackvipRoute,
   ChickenRoute: ChickenRoute,
   DadosRoute: DadosRoute,
-  DeportesRoute: DeportesRouteWithChildren,
+  DeportesRoute: DeportesRoute,
   EventosRoute: EventosRoute,
   HomeRoute: HomeRoute,
   MinesRoute: MinesRoute,
@@ -714,6 +703,7 @@ const rootRouteChildren: RootRouteChildren = {
   TerminosRoute: TerminosRoute,
   TransaccionesRoute: TransaccionesRoute,
   VipRoute: VipRoute,
+  DeportesMatchIdRoute: DeportesMatchIdRoute,
   PayBrebRoute: PayBrebRoute,
   ApiPublicImgSplatRoute: ApiPublicImgSplatRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
@@ -723,13 +713,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

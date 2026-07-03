@@ -58,7 +58,7 @@ const MATCHES: Record<string, MatchDetail> = {
   },
 };
 
-export const Route = createFileRoute("/deportes/$matchId")({
+export const Route = createFileRoute("/deportes_/$matchId")({
   loader: ({ params }) => {
     const match = MATCHES[params.matchId];
     if (!match) throw notFound();
