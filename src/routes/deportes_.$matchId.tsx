@@ -14,6 +14,7 @@ import {
   CheckCircle2,
   Ticket,
   RotateCcw,
+  Ban,
 } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import stadiumBg from "@/assets/stadium-bg.jpg";
@@ -36,6 +37,7 @@ type MatchDetail = {
   date: string;
   time: string;
   live: boolean;
+  started: boolean;
   home: { name: string; code: string };
   away: { name: string; code: string };
   odds: { home: string; draw: string; away: string };
@@ -81,12 +83,14 @@ export const Route = createFileRoute("/deportes_/$matchId")({
     if (!res?.match) throw notFound();
     const r = res.match;
     const { date, time } = formatMatchDate(r.start_at);
+    const started = r.status !== "scheduled" || new Date() >= new Date(r.start_at);
     const match: MatchDetail = {
       id: r.id,
       competition: (r.competition_name ?? "DEPORTES").toUpperCase(),
       date,
       time,
       live: r.status === "live",
+      started,
       home: { name: r.home_name || teamName(r.home_flag_code), code: r.home_flag_code },
       away: { name: r.away_name || teamName(r.away_flag_code), code: r.away_flag_code },
       odds: {
@@ -389,13 +393,14 @@ function MatchDetailPage() {
             <h2 className="md-eyebrow px-1 text-[11px] font-black uppercase tracking-[0.18em] text-purple-200/80">
               Resultado final
             </h2>
-            <div className="mt-3 grid grid-cols-3 gap-2.5">
+            <div className={`mt-3 grid grid-cols-3 gap-2.5 ${match.started ? "pointer-events-none opacity-60" : ""}`}>
               <OutcomeCard
                 title="Gana"
                 subtitle={match.home.name}
                 odd={match.odds.home}
                 selected={selection === "home"}
                 onSelect={() => setSelection("home")}
+                disabled={match.started}
               />
               <OutcomeCard
                 title=""
@@ -409,6 +414,7 @@ function MatchDetailPage() {
                   </div>
                 }
                 emphasizeSubtitle
+                disabled={match.started}
               />
               <OutcomeCard
                 title="Gana"
@@ -416,8 +422,14 @@ function MatchDetailPage() {
                 odd={match.odds.away}
                 selected={selection === "away"}
                 onSelect={() => setSelection("away")}
+                disabled={match.started}
               />
             </div>
+            {match.started && (
+              <p className="mt-3 text-center text-[11px] font-semibold text-fuchsia-200/90">
+                Apuestas cerradas para este partido.
+              </p>
+            )}
           </section>
 
           <section className="relative mt-6">
@@ -492,76 +504,96 @@ function MatchDetailPage() {
                 </button>
               </div>
             </div>
+          ) : match.started ? (
+            <div className="mx-auto max-w-md px-6 py-5 sm:max-w-lg sm:px-8" role="status" aria-live="polite">
+              <div className="flex flex-col items-center text-center">
+                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-neutral-100 text-neutral-500 ring-4 ring-neutral-50">
+                  <Ban className="h-7 w-7" strokeWidth={2.2} />
+                </span>
+                <div className="mt-4 font-display text-[17px] font-black text-neutral-900">
+                  Este partido ya empezó
+                </div>
+                <div className="mt-1 text-[12px] font-medium text-neutral-500">
+                  Apuestas cerradas para este encuentro.
+                </div>
+                <Link
+                  to="/deportes"
+                  className="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-b from-fuchsia-500 to-purple-700 px-5 py-2.5 font-display text-[12px] font-black uppercase tracking-widest text-white shadow-[0_6px_18px_-6px_rgba(168,85,247,0.75)] transition hover:from-fuchsia-400 hover:to-purple-600 active:scale-[0.98]"
+                >
+                  Ver próximos partidos
+                </Link>
+              </div>
+            </div>
           ) : (
-          <div className="mx-auto max-w-md px-4 py-3.5 sm:max-w-lg sm:px-5">
-            <div className="flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <div className="text-[9px] font-bold uppercase tracking-widest text-neutral-500">
-                  Tu selección
+            <div className="mx-auto max-w-md px-4 py-3.5 sm:max-w-lg sm:px-5">
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="text-[9px] font-bold uppercase tracking-widest text-neutral-500">
+                    Tu selección
+                  </div>
+                  <div className="truncate font-display text-sm font-black text-neutral-900">
+                    {selected.label}
+                  </div>
                 </div>
-                <div className="truncate font-display text-sm font-black text-neutral-900">
-                  {selected.label}
+                <div className="font-display text-2xl font-black text-fuchsia-600">
+                  {selected.odd.toFixed(2)}
                 </div>
               </div>
-              <div className="font-display text-2xl font-black text-fuchsia-600">
-                {selected.odd.toFixed(2)}
-              </div>
-            </div>
 
-            <div className="my-3 h-px bg-neutral-200" />
+              <div className="my-3 h-px bg-neutral-200" />
 
-            <div>
-              <label
-                htmlFor="stake"
-                className="block text-[9px] font-bold uppercase tracking-widest text-neutral-500"
-              >
-                Apuesta
-              </label>
-              <div className="mt-1.5 flex items-center gap-2 rounded-xl border border-neutral-300 bg-neutral-50 px-3 py-2">
-                <span className="text-sm font-bold text-neutral-500">$</span>
-                <input
-                  id="stake"
-                  type="number"
-                  inputMode="numeric"
-                  min={0}
-                  value={stake}
-                  onChange={(e) => setStake(Math.max(0, Number(e.target.value) || 0))}
-                  className="w-full min-w-0 bg-transparent font-display text-sm font-black text-neutral-900 outline-none"
-                />
-                <span className="text-[10px] font-bold text-neutral-500">COP</span>
-              </div>
-            </div>
-
-            <div className="mt-3 grid grid-cols-[2fr_3fr] items-end gap-3">
               <div>
-                <div className="text-[9px] font-bold uppercase tracking-widest text-neutral-500">
-                  Pago posible
-                </div>
-                <div className="mt-1.5 flex items-center justify-between rounded-xl border border-fuchsia-300 bg-fuchsia-50 px-2.5 py-2">
-                  <span className="font-display text-sm font-black text-fuchsia-700">
-                    {formatCOP(potentialPayout)}
-                  </span>
-                  <span className="text-[9px] font-bold text-fuchsia-500">COP</span>
+                <label
+                  htmlFor="stake"
+                  className="block text-[9px] font-bold uppercase tracking-widest text-neutral-500"
+                >
+                  Apuesta
+                </label>
+                <div className="mt-1.5 flex items-center gap-2 rounded-xl border border-neutral-300 bg-neutral-50 px-3 py-2">
+                  <span className="text-sm font-bold text-neutral-500">$</span>
+                  <input
+                    id="stake"
+                    type="number"
+                    inputMode="numeric"
+                    min={0}
+                    value={stake}
+                    onChange={(e) => setStake(Math.max(0, Number(e.target.value) || 0))}
+                    className="w-full min-w-0 bg-transparent font-display text-sm font-black text-neutral-900 outline-none"
+                  />
+                  <span className="text-[10px] font-bold text-neutral-500">COP</span>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={handlePlaceBet}
-                disabled={!canBet}
-                className="w-full rounded-xl bg-gradient-to-b from-fuchsia-500 to-purple-700 py-3 font-display text-sm font-black uppercase tracking-widest text-white shadow-[0_6px_18px_-6px_rgba(168,85,247,0.75)] transition hover:from-fuchsia-400 hover:to-purple-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
-              >
-                {mutation.isPending
-                  ? "Enviando…"
-                  : !user
-                    ? "Iniciar sesión"
-                    : insufficientFunds
-                      ? "Saldo insuficiente"
-                      : belowMin
-                        ? `Mín ${formatCOP(minStake)}`
-                        : "Apostar"}
-              </button>
+
+              <div className="mt-3 grid grid-cols-[2fr_3fr] items-end gap-3">
+                <div>
+                  <div className="text-[9px] font-bold uppercase tracking-widest text-neutral-500">
+                    Pago posible
+                  </div>
+                  <div className="mt-1.5 flex items-center justify-between rounded-xl border border-fuchsia-300 bg-fuchsia-50 px-2.5 py-2">
+                    <span className="font-display text-sm font-black text-fuchsia-700">
+                      {formatCOP(potentialPayout)}
+                    </span>
+                    <span className="text-[9px] font-bold text-fuchsia-500">COP</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handlePlaceBet}
+                  disabled={!canBet}
+                  className="w-full rounded-xl bg-gradient-to-b from-fuchsia-500 to-purple-700 py-3 font-display text-sm font-black uppercase tracking-widest text-white shadow-[0_6px_18px_-6px_rgba(168,85,247,0.75)] transition hover:from-fuchsia-400 hover:to-purple-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
+                >
+                  {mutation.isPending
+                    ? "Enviando…"
+                    : !user
+                      ? "Iniciar sesión"
+                      : insufficientFunds
+                        ? "Saldo insuficiente"
+                        : belowMin
+                          ? `Mín ${formatCOP(minStake)}`
+                          : "Apostar"}
+                </button>
+              </div>
             </div>
-          </div>
           )}
         </div>
       </div>
@@ -577,6 +609,7 @@ function OutcomeCard({
   onSelect,
   icon,
   emphasizeSubtitle,
+  disabled,
 }: {
   title: string;
   subtitle: string;
@@ -585,13 +618,15 @@ function OutcomeCard({
   onSelect: () => void;
   icon?: React.ReactNode;
   emphasizeSubtitle?: boolean;
+  disabled?: boolean;
 }) {
   return (
     <button
       type="button"
       onClick={onSelect}
       aria-pressed={selected}
-      className={`md-outcome-card ${selected ? "md-outcome-card--selected" : ""} relative flex flex-col items-center gap-1.5 rounded-2xl border px-2 py-2.5 transition ${
+      disabled={disabled}
+      className={`md-outcome-card ${selected ? "md-outcome-card--selected" : ""} relative flex flex-col items-center gap-1.5 rounded-2xl border px-2 py-2.5 transition disabled:cursor-not-allowed disabled:opacity-50 ${
         selected
           ? "border-fuchsia-400/80 bg-[#170a36] shadow-[0_0_0_1px_rgba(240,171,252,0.35),0_0_22px_-4px_rgba(217,70,239,0.75)]"
           : "border-purple-500/25 bg-[#0b0522] hover:border-fuchsia-400/50"
