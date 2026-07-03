@@ -247,7 +247,7 @@ function MatchDetailPage() {
               <ArrowLeft className="h-4 w-4" />
             </Link>
             <div className="flex flex-1 justify-center">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-400/60 bg-purple-500/15 px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest text-purple-100">
+            <span className="md-strong inline-flex items-center gap-1.5 rounded-full border border-purple-400/60 bg-purple-500/15 px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest text-purple-100">
                 <Trophy className="h-3 w-3 text-fuchsia-300" />
                 {match.competition}
               </span>
@@ -257,16 +257,16 @@ function MatchDetailPage() {
 
           {/* Fecha + Hora + En vivo */}
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-500/25 bg-[#0c0620]/80 px-2.5 py-1 text-[10px] font-semibold text-purple-100">
+            <span className="md-strong inline-flex items-center gap-1.5 rounded-full border border-purple-500/25 bg-[#0c0620]/80 px-2.5 py-1 text-[10px] font-semibold text-purple-100">
               <Calendar className="h-3 w-3 text-purple-300/80" />
               {match.date}
             </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-500/25 bg-[#0c0620]/80 px-2.5 py-1 text-[10px] font-semibold text-purple-100">
+            <span className="md-strong inline-flex items-center gap-1.5 rounded-full border border-purple-500/25 bg-[#0c0620]/80 px-2.5 py-1 text-[10px] font-semibold text-purple-100">
               <Clock className="h-3 w-3 text-purple-300/80" />
               {match.time}
             </span>
             {match.live && (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-fuchsia-400/60 bg-fuchsia-500/15 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-widest text-fuchsia-100">
+              <span className="md-strong inline-flex items-center gap-1.5 rounded-full border border-fuchsia-400/60 bg-fuchsia-500/15 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-widest text-fuchsia-100">
                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-fuchsia-300 shadow-[0_0_6px_rgba(240,171,252,0.9)]" />
                 En vivo
               </span>
@@ -303,8 +303,8 @@ function MatchDetailPage() {
                 <Trophy className="h-4 w-4 text-white" />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-[12px] font-bold text-white">Apuesta simple</p>
-                <p className="text-[11px] leading-snug text-purple-100/80">
+                <p className="md-strong text-[12px] font-bold text-white">Apuesta simple</p>
+                <p className="md-muted text-[11px] leading-snug text-purple-100/80">
                   Elige el resultado del partido
                 </p>
               </div>
@@ -313,7 +313,7 @@ function MatchDetailPage() {
 
           {/* Mercado: RESULTADO FINAL */}
           <section className="mt-6">
-            <h2 className="px-1 text-[11px] font-black uppercase tracking-[0.18em] text-purple-200/80">
+            <h2 className="md-eyebrow px-1 text-[11px] font-black uppercase tracking-[0.18em] text-purple-200/80">
               Resultado final
             </h2>
             <div className="mt-3 grid grid-cols-3 gap-2.5">
@@ -363,7 +363,7 @@ function MatchDetailPage() {
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-purple-400/40 bg-purple-500/10">
                 <Info className="h-4 w-4 text-purple-200" />
               </span>
-              <p className="min-w-0 flex-1 text-[11px] leading-snug text-purple-100/80">
+              <p className="md-muted min-w-0 flex-1 text-[11px] leading-snug text-purple-100/80">
                 Las cuotas pueden cambiar en cualquier momento. Apuesta responsablemente.
               </p>
             </div>
@@ -375,16 +375,16 @@ function MatchDetailPage() {
 
         {/* Ticket inferior (fijado sobre bottom nav) */}
         <div
-          className="theme-dark-fixed fixed inset-x-0 z-20 border-t border-purple-500/25 bg-[#0c0620]/95 backdrop-blur"
+          className="theme-dark-fixed md-ticket fixed inset-x-0 z-20 border-t border-purple-500/25 bg-[#0c0620]/95 backdrop-blur"
           style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 62px)" }}
         >
           <div className="mx-auto max-w-md px-4 py-3 sm:max-w-lg sm:px-5">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <div className="text-[9px] font-bold uppercase tracking-widest text-purple-200/70">
+                <div className="md-eyebrow text-[9px] font-bold uppercase tracking-widest text-purple-200/70">
                   Tu selección
                 </div>
-                <div className="truncate font-display text-sm font-black text-white">
+                <div className="md-strong truncate font-display text-sm font-black text-white">
                   {selected.label}
                 </div>
               </div>
@@ -394,23 +394,23 @@ function MatchDetailPage() {
             </div>
             <div className="mt-2 grid grid-cols-[1fr_1fr_auto] items-end gap-2">
               <label className="block">
-                <span className="block text-[9px] font-bold uppercase tracking-widest text-purple-200/70">
+                <span className="md-eyebrow block text-[9px] font-bold uppercase tracking-widest text-purple-200/70">
                   Apuesta
                 </span>
-                <div className="mt-1 flex items-center gap-1 rounded-lg border border-purple-500/30 bg-[#150830]/70 px-2 py-1.5">
+                <div className="md-stake-field mt-1 flex items-center gap-1 rounded-lg border border-purple-500/30 bg-[#150830]/70 px-2 py-1.5">
                   <input
                     type="number"
                     inputMode="numeric"
                     min={0}
                     value={stake}
                     onChange={(e) => setStake(Math.max(0, Number(e.target.value) || 0))}
-                    className="w-full bg-transparent font-display text-sm font-black text-white outline-none"
+                    className="md-strong w-full bg-transparent font-display text-sm font-black text-white outline-none"
                   />
-                  <span className="text-[9px] font-bold text-purple-200/70">COP</span>
+                  <span className="md-eyebrow text-[9px] font-bold text-purple-200/70">COP</span>
                 </div>
               </label>
               <div>
-                <span className="block text-[9px] font-bold uppercase tracking-widest text-purple-200/70">
+                <span className="md-eyebrow block text-[9px] font-bold uppercase tracking-widest text-purple-200/70">
                   Pago posible
                 </span>
                 <div className="mt-1 rounded-lg border border-fuchsia-400/30 bg-fuchsia-500/10 px-2 py-1.5 font-display text-sm font-black text-fuchsia-100">
