@@ -9,6 +9,9 @@ import { AuthDialog } from "@/components/auth/AuthDialog";
 import { HamburgerDrawer } from "@/components/HamburgerDrawer";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { flagSvgUrl } from "@/lib/sports/world-cup-2026-teams";
 
 export const Route = createFileRoute("/deportes")({
   head: () => ({
@@ -55,79 +58,82 @@ function SoccerBallIcon({ className }: { className?: string }) {
   );
 }
 
-type FlagCode = "AR" | "FR" | "BR" | "DE";
-
-function Flag({ code }: { code: FlagCode }) {
-  const base = "block h-full w-full";
-  switch (code) {
-    case "AR":
-      return (
-        <svg viewBox="0 0 60 40" className={base} aria-hidden="true" preserveAspectRatio="none">
-          <rect width="60" height="40" fill="#75AADB" />
-          <rect y="13.33" width="60" height="13.33" fill="#FFFFFF" />
-          <circle cx="30" cy="20" r="3.2" fill="#FCBF49" />
-        </svg>
-      );
-    case "FR":
-      return (
-        <svg viewBox="0 0 60 40" className={base} aria-hidden="true" preserveAspectRatio="none">
-          <rect width="20" height="40" fill="#0055A4" />
-          <rect x="20" width="20" height="40" fill="#FFFFFF" />
-          <rect x="40" width="20" height="40" fill="#EF4135" />
-        </svg>
-      );
-    case "BR":
-      return (
-        <svg viewBox="0 0 60 40" className={base} aria-hidden="true" preserveAspectRatio="none">
-          <rect width="60" height="40" fill="#009C3B" />
-          <polygon points="30,5 55,20 30,35 5,20" fill="#FFDF00" />
-          <circle cx="30" cy="20" r="7" fill="#002776" />
-        </svg>
-      );
-    case "DE":
-      return (
-        <svg viewBox="0 0 60 40" className={base} aria-hidden="true" preserveAspectRatio="none">
-          <rect width="60" height="13.33" fill="#000000" />
-          <rect y="13.33" width="60" height="13.33" fill="#DD0000" />
-          <rect y="26.66" width="60" height="13.34" fill="#FFCE00" />
-        </svg>
-      );
-  }
+function Flag({ code, name }: { code: string; name: string }) {
+  return (
+    <img
+      src={flagSvgUrl(code)}
+      alt={`Bandera de ${name}`}
+      loading="lazy"
+      className="block h-full w-full object-cover"
+    />
+  );
 }
 
-type Match = {
+type PublicMatch = {
   id: string;
   competition: string;
   date: string;
   time: string;
   live: boolean;
-  home: { name: string; code: FlagCode };
-  away: { name: string; code: FlagCode };
+  home: { name: string; code: string };
+  away: { name: string; code: string };
   odds: { home: string; draw: string; away: string };
 };
 
-const MATCHES: Match[] = [
-  {
-    id: "arg-fra",
-    competition: "MUNDIAL 2026",
-    date: "Hoy, 20 Jun",
-    time: "15:00",
-    live: true,
-    home: { name: "Argentina", code: "AR" },
-    away: { name: "Francia", code: "FR" },
-    odds: { home: "2.10", draw: "3.25", away: "3.40" },
-  },
-  {
-    id: "bra-ale",
-    competition: "MUNDIAL 2026",
-    date: "Hoy, 20 Jun",
-    time: "19:00",
-    live: true,
-    home: { name: "Brasil", code: "BR" },
-    away: { name: "Alemania", code: "DE" },
-    odds: { home: "1.85", draw: "3.60", away: "4.20" },
-  },
-];
+const TZ = "America/Bogota";
+
+function formatMatchDate(iso: string): { date: string; time: string } {
+  const d = new Date(iso);
+  const now = new Date();
+  const dayFmt = new Intl.DateTimeFormat("es-CO", { timeZone: TZ, day: "2-digit", month: "short" });
+  const timeFmt = new Intl.DateTimeFormat("es-CO", { timeZone: TZ, hour: "2-digit", minute: "2-digit", hour12: false });
+  const dayKey = (x: Date) =>
+    new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).format(x);
+  const todayKey = dayKey(now);
+  const tomorrow = new Date(now.getTime() + 86400000);
+  const tomorrowKey = dayKey(tomorrow);
+  const matchKey = dayKey(d);
+  let label: string;
+  if (matchKey === todayKey) label = "Hoy";
+  else if (matchKey === tomorrowKey) label = "Mañana";
+  else label = dayFmt.format(d);
+  return { date: label, time: timeFmt.format(d) };
+}
+
+function usePublishedMatches() {
+  return useQuery({
+    queryKey: ["public-sports-matches"],
+    queryFn: async (): Promise<PublicMatch[]> => {
+      const { data, error } = await supabase
+        .from("sports_matches")
+        .select(
+          "id, home_name, home_flag_code, away_name, away_flag_code, start_at, status, odds_home, odds_draw, odds_away, competition:sports_competitions(name)"
+        )
+        .eq("is_published", true)
+        .in("status", ["scheduled", "live"])
+        .order("start_at", { ascending: true });
+      if (error) throw error;
+      return (data ?? []).map((r: any) => {
+        const { date, time } = formatMatchDate(r.start_at);
+        return {
+          id: r.id,
+          competition: (r.competition?.name ?? "").toUpperCase() || "DEPORTES",
+          date,
+          time,
+          live: r.status === "live",
+          home: { name: r.home_name, code: r.home_flag_code },
+          away: { name: r.away_name, code: r.away_flag_code },
+          odds: {
+            home: Number(r.odds_home).toFixed(2),
+            draw: Number(r.odds_draw).toFixed(2),
+            away: Number(r.odds_away).toFixed(2),
+          },
+        };
+      });
+    },
+    staleTime: 30_000,
+  });
+}
 
 function DeportesPage() {
   const { user, loading: authLoading } = useAuth();
@@ -135,6 +141,8 @@ function DeportesPage() {
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [selector, setSelector] = useState<"futbol" | "mundial">("mundial");
   const balanceText = me.data ? formatCOP(me.data.balance) : "—";
+  const matchesQuery = usePublishedMatches();
+  const matches = matchesQuery.data ?? [];
 
   return (
     <div className="min-h-screen bg-[#060210] text-white">
@@ -258,9 +266,17 @@ function DeportesPage() {
           </h2>
 
           <div className="mt-3 flex flex-col gap-3">
-            {MATCHES.map((m) => (
-              <MatchCard key={m.id} match={m} />
-            ))}
+            {matchesQuery.isLoading ? (
+              <div className="rounded-2xl border border-purple-500/20 bg-[#0c0620]/60 p-4 text-center text-[11px] text-purple-200/70">
+                Cargando partidos…
+              </div>
+            ) : matches.length === 0 ? (
+              <div className="rounded-2xl border border-purple-500/20 bg-[#0c0620]/60 p-4 text-center text-[11px] text-purple-200/70">
+                No hay partidos programados por ahora. Vuelve pronto.
+              </div>
+            ) : (
+              matches.map((m) => <MatchCard key={m.id} match={m} />)
+            )}
           </div>
           </section>
 
@@ -298,7 +314,7 @@ function DeportesPage() {
   );
 }
 
-function MatchCard({ match }: { match: Match }) {
+function MatchCard({ match }: { match: PublicMatch }) {
   return (
     <Link
       to="/deportes/$matchId"
@@ -335,7 +351,7 @@ function MatchCard({ match }: { match: Match }) {
       <div className="mt-3 grid grid-cols-3 items-center gap-2">
         <div className="flex flex-col items-center gap-1.5">
           <span className="flex h-9 w-[52px] items-center justify-center overflow-hidden rounded-md ring-1 ring-white/10 shadow-inner">
-            <Flag code={match.home.code} />
+            <Flag code={match.home.code} name={match.home.name} />
           </span>
           <span className="whitespace-nowrap text-center text-xs font-bold text-white">
             {match.home.name}
@@ -348,7 +364,7 @@ function MatchCard({ match }: { match: Match }) {
         </div>
         <div className="flex flex-col items-center gap-1.5">
           <span className="flex h-9 w-[52px] items-center justify-center overflow-hidden rounded-md ring-1 ring-white/10 shadow-inner">
-            <Flag code={match.away.code} />
+            <Flag code={match.away.code} name={match.away.name} />
           </span>
           <span className="whitespace-nowrap text-center text-xs font-bold text-white">
             {match.away.name}
