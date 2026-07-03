@@ -1000,27 +1000,23 @@ function HouseEdgePanel({
     Number.isFinite(d) && d >= 1.01 &&
     Number.isFinite(a) && a >= 1.01;
 
-  const currentSum = valid ? 1 / h + 1 / d + 1 / a : 0;
-  const currentEdgePct = valid ? (currentSum - 1) * 100 : 0;
-
   const targetNum = Number(target);
-  const targetValid = Number.isFinite(targetNum) && targetNum >= -10 && targetNum <= 50;
+  const targetValid = Number.isFinite(targetNum) && targetNum >= 0 && targetNum <= 50;
 
   const preview = useMemo(() => {
     if (!valid || !targetValid) return null;
-    const targetSum = 1 + targetNum / 100;
-    if (targetSum <= 0) return null;
-    const factor = currentSum / targetSum;
+    const factor = 1 - targetNum / 100;
+    if (factor <= 0) return null;
     const nh = h * factor;
     const nd = d * factor;
     const na = a * factor;
     if (nh < 1.01 || nd < 1.01 || na < 1.01) return null;
     return { nh, nd, na };
-  }, [valid, targetValid, targetNum, currentSum, h, d, a]);
+  }, [valid, targetValid, targetNum, h, d, a]);
 
   const apply = () => {
     if (!preview) {
-      toast.error("No se puede aplicar: revisa las cuotas y el margen objetivo.");
+      toast.error("No se puede aplicar: alguna cuota quedaría por debajo de 1.01.");
       return;
     }
     const nh = preview.nh.toFixed(2);
@@ -1032,20 +1028,12 @@ function HouseEdgePanel({
     const dA = (preview.na - a).toFixed(2);
     const sgn = (x: string) => (x.startsWith("-") ? x : `+${x}`);
     toast.success(
-      `Ventaja aplicada: ${targetNum.toFixed(2)}%. Local ${sgn(dH)} · Empate ${sgn(dD)} · Visitante ${sgn(dA)}`,
+      `Ventaja casa −${targetNum.toFixed(2)}%. Local ${sgn(dH)} · Empate ${sgn(dD)} · Visitante ${sgn(dA)}`,
       { duration: 5000 },
     );
   };
 
   const presets = [3, 5, 8, 10, 12];
-  const edgeColor =
-    currentEdgePct >= 8
-      ? "text-emerald-300"
-      : currentEdgePct >= 3
-      ? "text-amber-300"
-      : currentEdgePct >= 0
-      ? "text-purple-200"
-      : "text-rose-300";
 
   return (
     <div className="rounded-lg border border-fuchsia-500/30 bg-gradient-to-br from-fuchsia-500/5 to-purple-500/5 p-2.5">
@@ -1057,10 +1045,7 @@ function HouseEdgePanel({
           </span>
         </div>
         <div className="text-[10px] uppercase tracking-widest text-purple-200/80">
-          Actual:{" "}
-          <span className={`font-mono font-bold ${edgeColor}`}>
-            {valid ? `${currentEdgePct.toFixed(2)}%` : "—"}
-          </span>
+          Reduce cada cuota
         </div>
       </div>
 
@@ -1115,8 +1100,8 @@ function HouseEdgePanel({
       )}
 
       <p className="mt-2 text-[9.5px] leading-tight text-purple-200/60">
-        Ingresa las cuotas y elige el margen objetivo. Al aplicar, se reescalan
-        las 3 cuotas manteniendo su proporción para que la ventaja quede exacta.
+        Ingresa las cuotas base y elige el % de ventaja. Al aplicar, se resta
+        ese porcentaje a cada cuota (paga menos, favorece a la casa).
       </p>
     </div>
   );
