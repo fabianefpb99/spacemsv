@@ -20,6 +20,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { Panel, KpiCard } from "./shared";
+import { TeamFlag, FlagPickerButton } from "./FlagPicker";
+import { teamName } from "@/lib/sports/world-cup-2026-teams";
 import {
   adminListCompetitions,
   adminUpsertCompetition,
@@ -485,11 +487,7 @@ function OddChip({ label, value }: { label: string; value: number }) {
 }
 
 function MiniFlag({ code }: { code: string }) {
-  return (
-    <div className="flex h-5 w-7 items-center justify-center overflow-hidden rounded border border-purple-500/30 bg-[#0c0620] text-[9px] font-bold uppercase tracking-widest text-purple-100">
-      {code}
-    </div>
-  );
+  return <TeamFlag code={code} className="h-5 w-7" title={teamName(code)} />;
 }
 
 /* ============================================================
@@ -593,32 +591,41 @@ function MatchModal({
           </select>
         </Field>
 
-        <div className="grid grid-cols-[1fr_auto_1fr] gap-2">
-          <Field label="Local">
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-2 rounded-lg border border-purple-500/25 bg-[#150830]/40 p-2">
+            <div className="text-[9px] font-bold uppercase tracking-widest text-purple-200/80">Local</div>
+            <FlagPickerButton
+              value={homeFlag}
+              label="Bandera local"
+              onChange={(t) => {
+                setHomeFlag(t.code);
+                if (!homeName.trim()) setHomeName(t.name);
+              }}
+            />
             <input
               value={homeName}
               onChange={(e) => setHomeName(e.target.value)}
-              placeholder="Argentina"
+              placeholder="Nombre del equipo"
               className={inputCls}
             />
-          </Field>
-          <Field label="Bandera">
-            <input
-              value={homeFlag}
-              onChange={(e) => setHomeFlag(e.target.value.toUpperCase())}
-              placeholder="AR"
-              maxLength={3}
-              className={`${inputCls} w-16 text-center font-mono uppercase`}
+          </div>
+          <div className="space-y-2 rounded-lg border border-purple-500/25 bg-[#150830]/40 p-2">
+            <div className="text-[9px] font-bold uppercase tracking-widest text-purple-200/80">Visitante</div>
+            <FlagPickerButton
+              value={awayFlag}
+              label="Bandera visitante"
+              onChange={(t) => {
+                setAwayFlag(t.code);
+                if (!awayName.trim()) setAwayName(t.name);
+              }}
             />
-          </Field>
-          <Field label="Visitante">
             <input
               value={awayName}
               onChange={(e) => setAwayName(e.target.value)}
-              placeholder="Francia"
+              placeholder="Nombre del equipo"
               className={inputCls}
             />
-          </Field>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-2">
@@ -1055,6 +1062,7 @@ function friendly(msg: string) {
     competition_has_matches: "No se puede eliminar: tiene partidos asociados.",
     slug_invalid: "El identificador solo admite minúsculas, números y guiones.",
     invalid_timezone: "Zona horaria no reconocida.",
+    invalid_flag_code: "La bandera seleccionada no está en la lista oficial de Mundial 2026.",
   };
   const raw = msg.replace(/^Error:\s*/, "").trim();
   return map[raw] ?? raw;
