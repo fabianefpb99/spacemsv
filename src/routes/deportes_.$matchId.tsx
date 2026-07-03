@@ -211,7 +211,7 @@ function MatchDetailPage() {
         </header>
         <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
 
-        <div className="theme-dark-fixed relative flex-1 overflow-hidden bg-[#060210] px-4 pb-72 pt-4 sm:px-5">
+        <div className="theme-dark-fixed relative flex-1 overflow-hidden bg-[#060210] px-4 pb-36 pt-4 sm:px-5">
           <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[380px] sm:h-[420px]">
             <img
               src={stadiumBg}
@@ -339,7 +339,7 @@ function MatchDetailPage() {
             </div>
           </section>
 
-          <div className="h-6" />
+          <div className="h-3" />
         </div>
 
         <div
