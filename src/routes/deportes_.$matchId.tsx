@@ -37,6 +37,7 @@ type MatchDetail = {
   date: string;
   time: string;
   live: boolean;
+  started: boolean;
   home: { name: string; code: string };
   away: { name: string; code: string };
   odds: { home: string; draw: string; away: string };
