@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Menu, Home, Star, Wallet, User, Trophy, Calendar, Clock, ChevronRight } from "lucide-react";
+import { Menu, Home, Star, Wallet, User, Trophy, Calendar, Clock, ChevronRight, Ticket } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import mundialHeroAsset from "@/assets/mundial-hero.webp.asset.json";
 import { AuthControl } from "@/components/auth/AuthControl";
@@ -11,6 +11,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { getMySportsBets, type MyBetRow } from "@/lib/sports/bet.functions";
 import { flagSvgUrl } from "@/lib/sports/world-cup-2026-teams";
 
 export const Route = createFileRoute("/deportes")({
@@ -139,7 +141,7 @@ function DeportesPage() {
   const { user, loading: authLoading } = useAuth();
   const me = useMe();
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
-  const [selector, setSelector] = useState<"futbol" | "mundial">("mundial");
+  const [selector, setSelector] = useState<"futbol" | "mundial" | "mias">("mundial");
   const balanceText = me.data ? formatCOP(me.data.balance) : "—";
   const matchesQuery = usePublishedMatches();
   const matches = matchesQuery.data ?? [];
@@ -230,8 +232,8 @@ function DeportesPage() {
 
         {/* Contenido con padding lateral */}
         <div className="px-3 pb-28 sm:px-4">
-          {/* Selector flotante Fútbol / Mundial 2026 (superpuesto ~50% al banner) */}
-          <div className="relative z-10 -mt-10 grid grid-cols-2 gap-1.5 rounded-2xl border border-purple-500/30 bg-[#0c0620]/95 p-1.5 shadow-[0_14px_36px_-12px_rgba(168,85,247,0.6)] backdrop-blur">
+          {/* Selector flotante Fútbol / Mundial 2026 / Mis apuestas (superpuesto ~50% al banner) */}
+          <div className="relative z-10 -mt-10 grid grid-cols-[2fr_2fr_1fr] gap-1.5 rounded-2xl border border-purple-500/30 bg-[#0c0620]/95 p-1.5 shadow-[0_14px_36px_-12px_rgba(168,85,247,0.6)] backdrop-blur">
             {/* Selector: en modo oscuro fondo navy; en modo claro fondo blanco (ver styles.css) */}
             <button
               type="button"
@@ -257,28 +259,44 @@ function DeportesPage() {
               <Trophy className="h-4 w-4" />
               <span>Mundial 2026</span>
             </button>
+            <button
+              type="button"
+              onClick={() => setSelector("mias")}
+              aria-label="Mis apuestas"
+              title="Mis apuestas"
+              className={`sports-selector-btn flex items-center justify-center rounded-xl px-2 py-2.5 transition ${
+                selector === "mias"
+                  ? "sports-selector-btn--active bg-gradient-to-b from-purple-600 to-fuchsia-700 text-white shadow-[0_0_14px_rgba(168,85,247,0.55)]"
+                  : "text-purple-200/80 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              <Ticket className="h-5 w-5" strokeWidth={2.2} />
+            </button>
           </div>
 
-          {/* Partidos destacados */}
-          <section className="mt-6">
-          <h2 className="font-display text-sm font-black uppercase tracking-[0.14em] text-white">
-            Partidos destacados
-          </h2>
+          {selector === "mias" ? (
+            <MyBetsSection onOpenAuth={() => setAuthDialogOpen(true)} />
+          ) : (
+            <section className="mt-6">
+              <h2 className="font-display text-sm font-black uppercase tracking-[0.14em] text-white">
+                Partidos destacados
+              </h2>
 
-          <div className="mt-3 flex flex-col gap-3">
-            {matchesQuery.isLoading ? (
-              <div className="rounded-2xl border border-purple-500/20 bg-[#0c0620]/60 p-4 text-center text-[11px] text-purple-200/70">
-                Cargando partidos…
+              <div className="mt-3 flex flex-col gap-3">
+                {matchesQuery.isLoading ? (
+                  <div className="rounded-2xl border border-purple-500/20 bg-[#0c0620]/60 p-4 text-center text-[11px] text-purple-200/70">
+                    Cargando partidos…
+                  </div>
+                ) : matches.length === 0 ? (
+                  <div className="rounded-2xl border border-purple-500/20 bg-[#0c0620]/60 p-4 text-center text-[11px] text-purple-200/70">
+                    No hay partidos programados por ahora. Vuelve pronto.
+                  </div>
+                ) : (
+                  matches.map((m) => <MatchCard key={m.id} match={m} />)
+                )}
               </div>
-            ) : matches.length === 0 ? (
-              <div className="rounded-2xl border border-purple-500/20 bg-[#0c0620]/60 p-4 text-center text-[11px] text-purple-200/70">
-                No hay partidos programados por ahora. Vuelve pronto.
-              </div>
-            ) : (
-              matches.map((m) => <MatchCard key={m.id} match={m} />)
-            )}
-          </div>
-          </section>
+            </section>
+          )}
 
           {/* Aviso responsable */}
           <section className="mt-5">
