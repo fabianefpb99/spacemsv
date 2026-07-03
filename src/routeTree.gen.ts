@@ -36,6 +36,7 @@ import { Route as ArenaRouteImport } from './routes/arena'
 import { Route as AdminpanelRouteImport } from './routes/adminpanel'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PayBrebRouteImport } from './routes/pay_.breb'
+import { Route as DeportesMatchIdRouteImport } from './routes/deportes.$matchId'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -176,6 +177,11 @@ const PayBrebRoute = PayBrebRouteImport.update({
   path: '/pay/breb',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DeportesMatchIdRoute = DeportesMatchIdRouteImport.update({
+  id: '/$matchId',
+  path: '/$matchId',
+  getParentRoute: () => DeportesRoute,
+} as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -206,7 +212,7 @@ export interface FileRoutesByFullPath {
   '/blackjackvip': typeof BlackjackvipRoute
   '/chicken': typeof ChickenRoute
   '/dados': typeof DadosRoute
-  '/deportes': typeof DeportesRoute
+  '/deportes': typeof DeportesRouteWithChildren
   '/eventos': typeof EventosRoute
   '/home': typeof HomeRoute
   '/mines': typeof MinesRoute
@@ -225,6 +231,7 @@ export interface FileRoutesByFullPath {
   '/terminos': typeof TerminosRoute
   '/transacciones': typeof TransaccionesRoute
   '/vip': typeof VipRoute
+  '/deportes/$matchId': typeof DeportesMatchIdRoute
   '/pay/breb': typeof PayBrebRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -239,7 +246,7 @@ export interface FileRoutesByTo {
   '/blackjackvip': typeof BlackjackvipRoute
   '/chicken': typeof ChickenRoute
   '/dados': typeof DadosRoute
-  '/deportes': typeof DeportesRoute
+  '/deportes': typeof DeportesRouteWithChildren
   '/eventos': typeof EventosRoute
   '/home': typeof HomeRoute
   '/mines': typeof MinesRoute
@@ -258,6 +265,7 @@ export interface FileRoutesByTo {
   '/terminos': typeof TerminosRoute
   '/transacciones': typeof TransaccionesRoute
   '/vip': typeof VipRoute
+  '/deportes/$matchId': typeof DeportesMatchIdRoute
   '/pay/breb': typeof PayBrebRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -273,7 +281,7 @@ export interface FileRoutesById {
   '/blackjackvip': typeof BlackjackvipRoute
   '/chicken': typeof ChickenRoute
   '/dados': typeof DadosRoute
-  '/deportes': typeof DeportesRoute
+  '/deportes': typeof DeportesRouteWithChildren
   '/eventos': typeof EventosRoute
   '/home': typeof HomeRoute
   '/mines': typeof MinesRoute
@@ -292,6 +300,7 @@ export interface FileRoutesById {
   '/terminos': typeof TerminosRoute
   '/transacciones': typeof TransaccionesRoute
   '/vip': typeof VipRoute
+  '/deportes/$matchId': typeof DeportesMatchIdRoute
   '/pay_/breb': typeof PayBrebRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -327,6 +336,7 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/transacciones'
     | '/vip'
+    | '/deportes/$matchId'
     | '/pay/breb'
     | '/api/public/img/$'
     | '/lovable/email/auth/preview'
@@ -360,6 +370,7 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/transacciones'
     | '/vip'
+    | '/deportes/$matchId'
     | '/pay/breb'
     | '/api/public/img/$'
     | '/lovable/email/auth/preview'
@@ -393,6 +404,7 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/transacciones'
     | '/vip'
+    | '/deportes/$matchId'
     | '/pay_/breb'
     | '/api/public/img/$'
     | '/lovable/email/auth/preview'
@@ -408,7 +420,7 @@ export interface RootRouteChildren {
   BlackjackvipRoute: typeof BlackjackvipRoute
   ChickenRoute: typeof ChickenRoute
   DadosRoute: typeof DadosRoute
-  DeportesRoute: typeof DeportesRoute
+  DeportesRoute: typeof DeportesRouteWithChildren
   EventosRoute: typeof EventosRoute
   HomeRoute: typeof HomeRoute
   MinesRoute: typeof MinesRoute
@@ -625,6 +637,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PayBrebRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/deportes/$matchId': {
+      id: '/deportes/$matchId'
+      path: '/$matchId'
+      fullPath: '/deportes/$matchId'
+      preLoaderRoute: typeof DeportesMatchIdRouteImport
+      parentRoute: typeof DeportesRoute
+    }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
@@ -656,6 +675,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface DeportesRouteChildren {
+  DeportesMatchIdRoute: typeof DeportesMatchIdRoute
+}
+
+const DeportesRouteChildren: DeportesRouteChildren = {
+  DeportesMatchIdRoute: DeportesMatchIdRoute,
+}
+
+const DeportesRouteWithChildren = DeportesRoute._addFileChildren(
+  DeportesRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminpanelRoute: AdminpanelRoute,
@@ -664,7 +695,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlackjackvipRoute: BlackjackvipRoute,
   ChickenRoute: ChickenRoute,
   DadosRoute: DadosRoute,
-  DeportesRoute: DeportesRoute,
+  DeportesRoute: DeportesRouteWithChildren,
   EventosRoute: EventosRoute,
   HomeRoute: HomeRoute,
   MinesRoute: MinesRoute,
