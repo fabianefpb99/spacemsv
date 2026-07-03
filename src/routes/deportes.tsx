@@ -299,14 +299,12 @@ function DeportesPage() {
 }
 
 function MatchCard({ match }: { match: Match }) {
-  // La vista de detalle todavía no existe; la tarjeta es visualmente
-  // clickeable pero no navega hasta que se construya /deportes/$matchId.
   return (
-    <div
-      role="button"
-      tabIndex={0}
+    <Link
+      to="/deportes/$matchId"
+      params={{ matchId: match.id }}
       aria-label={`${match.home.name} vs ${match.away.name} — ${match.competition}`}
-      className="theme-dark-fixed group relative overflow-hidden rounded-2xl border border-purple-500/30 bg-[#0c0620]/90 p-3 shadow-[0_0_16px_rgba(76,29,149,0.25)] transition hover:border-fuchsia-400/60 hover:shadow-[0_0_18px_rgba(217,70,239,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-400/70 sm:p-4"
+      className="theme-dark-fixed group relative block overflow-hidden rounded-2xl border border-purple-500/30 bg-[#0c0620]/90 p-3 shadow-[0_0_16px_rgba(76,29,149,0.25)] transition hover:border-fuchsia-400/60 hover:shadow-[0_0_18px_rgba(217,70,239,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-400/70 sm:p-4"
     >
       {/* Fila superior: todo en una línea */}
       <div className="flex items-center gap-1.5 whitespace-nowrap">
@@ -369,7 +367,7 @@ function MatchCard({ match }: { match: Match }) {
           <OddChip label="2" value={match.odds.away} />
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 

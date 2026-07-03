@@ -36,6 +36,7 @@ import { Route as ArenaRouteImport } from './routes/arena'
 import { Route as AdminpanelRouteImport } from './routes/adminpanel'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PayBrebRouteImport } from './routes/pay_.breb'
+import { Route as DeportesMatchIdRouteImport } from './routes/deportes_.$matchId'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -176,6 +177,11 @@ const PayBrebRoute = PayBrebRouteImport.update({
   path: '/pay/breb',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DeportesMatchIdRoute = DeportesMatchIdRouteImport.update({
+  id: '/deportes_/$matchId',
+  path: '/deportes/$matchId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -225,6 +231,7 @@ export interface FileRoutesByFullPath {
   '/terminos': typeof TerminosRoute
   '/transacciones': typeof TransaccionesRoute
   '/vip': typeof VipRoute
+  '/deportes/$matchId': typeof DeportesMatchIdRoute
   '/pay/breb': typeof PayBrebRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -258,6 +265,7 @@ export interface FileRoutesByTo {
   '/terminos': typeof TerminosRoute
   '/transacciones': typeof TransaccionesRoute
   '/vip': typeof VipRoute
+  '/deportes/$matchId': typeof DeportesMatchIdRoute
   '/pay/breb': typeof PayBrebRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -292,6 +300,7 @@ export interface FileRoutesById {
   '/terminos': typeof TerminosRoute
   '/transacciones': typeof TransaccionesRoute
   '/vip': typeof VipRoute
+  '/deportes_/$matchId': typeof DeportesMatchIdRoute
   '/pay_/breb': typeof PayBrebRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -327,6 +336,7 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/transacciones'
     | '/vip'
+    | '/deportes/$matchId'
     | '/pay/breb'
     | '/api/public/img/$'
     | '/lovable/email/auth/preview'
@@ -360,6 +370,7 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/transacciones'
     | '/vip'
+    | '/deportes/$matchId'
     | '/pay/breb'
     | '/api/public/img/$'
     | '/lovable/email/auth/preview'
@@ -393,6 +404,7 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/transacciones'
     | '/vip'
+    | '/deportes_/$matchId'
     | '/pay_/breb'
     | '/api/public/img/$'
     | '/lovable/email/auth/preview'
@@ -427,6 +439,7 @@ export interface RootRouteChildren {
   TerminosRoute: typeof TerminosRoute
   TransaccionesRoute: typeof TransaccionesRoute
   VipRoute: typeof VipRoute
+  DeportesMatchIdRoute: typeof DeportesMatchIdRoute
   PayBrebRoute: typeof PayBrebRoute
   ApiPublicImgSplatRoute: typeof ApiPublicImgSplatRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -625,6 +638,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PayBrebRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/deportes_/$matchId': {
+      id: '/deportes_/$matchId'
+      path: '/deportes/$matchId'
+      fullPath: '/deportes/$matchId'
+      preLoaderRoute: typeof DeportesMatchIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
@@ -683,6 +703,7 @@ const rootRouteChildren: RootRouteChildren = {
   TerminosRoute: TerminosRoute,
   TransaccionesRoute: TransaccionesRoute,
   VipRoute: VipRoute,
+  DeportesMatchIdRoute: DeportesMatchIdRoute,
   PayBrebRoute: PayBrebRoute,
   ApiPublicImgSplatRoute: ApiPublicImgSplatRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
@@ -692,3 +713,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

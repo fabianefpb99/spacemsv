@@ -423,6 +423,39 @@ html.light .theme-dark-fixed .sports-odd-chip:hover {
 }
 
 /* ------------------------------------------------------------------
+ * Deportes — Detalle del partido (/deportes/$matchId).
+ * Toda la vista vive dentro de .theme-dark-fixed para conservar el look
+ * premium oscuro en ambos temas. Definimos tokens explícitos para los
+ * textos secundarios porque los overrides globales colapsan a `color: inherit`
+ * y algunas utilidades (text-purple-100, text-purple-200/70) quedan fuera
+ * del whitelist, apareciendo pálidas en modo claro.
+ * ------------------------------------------------------------------ */
+html.light .theme-dark-fixed .md-eyebrow,
+html.light .theme-dark-fixed .md-muted {
+  color: rgba(233, 213, 255, 0.85) !important;
+}
+html.light .theme-dark-fixed .md-strong {
+  color: #ffffff !important;
+}
+html.light .theme-dark-fixed .md-outcome-card {
+  background-color: #0c0620 !important;
+  border-color: rgba(217, 70, 239, 0.28) !important;
+}
+html.light .theme-dark-fixed .md-outcome-card--selected {
+  background-color: #170a36 !important;
+  border-color: rgba(240, 171, 252, 0.8) !important;
+  box-shadow: 0 0 0 1px rgba(240, 171, 252, 0.35), 0 0 22px -4px rgba(217, 70, 239, 0.75) !important;
+}
+html.light .theme-dark-fixed .md-ticket {
+  background-color: #0c0620 !important;
+  border-top-color: rgba(217, 70, 239, 0.3) !important;
+}
+html.light .theme-dark-fixed .md-stake-field {
+  background-color: #150830 !important;
+  border-color: rgba(217, 70, 239, 0.35) !important;
+}
+
+/* ------------------------------------------------------------------
  * Light mode — HEADER fine-tuning per user feedback:
  *   - dollar sign ($) must be dark, not neon green
  *   - gear / bell icons must be dark, not pastel
