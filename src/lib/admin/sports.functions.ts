@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { safeRpcError } from "@/lib/server-safe-error";
+import { WORLD_CUP_2026_TEAM_CODES } from "@/lib/sports/world-cup-2026-teams";
 
 async function getSupabaseAdmin() {
   return (await import("@/integrations/supabase/client.server")).supabaseAdmin;
@@ -273,9 +274,17 @@ const matchUpsertInput = z.object({
     .max(64)
     .regex(/^[a-z0-9-]+$/, "slug_invalid"),
   home_name: z.string().trim().min(1).max(60),
-  home_flag_code: z.string().trim().min(2).max(3).transform((v) => v.toUpperCase()),
+  home_flag_code: z
+    .string()
+    .trim()
+    .transform((v) => v.toUpperCase())
+    .refine((v) => WORLD_CUP_2026_TEAM_CODES.has(v), "invalid_flag_code"),
   away_name: z.string().trim().min(1).max(60),
-  away_flag_code: z.string().trim().min(2).max(3).transform((v) => v.toUpperCase()),
+  away_flag_code: z
+    .string()
+    .trim()
+    .transform((v) => v.toUpperCase())
+    .refine((v) => WORLD_CUP_2026_TEAM_CODES.has(v), "invalid_flag_code"),
   // ISO string with timezone info
   start_at: z.string().datetime({ offset: true }),
   odds_home: z.number().min(1.01).max(999.99),
