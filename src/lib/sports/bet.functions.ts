@@ -33,8 +33,14 @@ export const placeSportsBet = createServerFn({ method: "POST" })
       _selection: data.selection,
       _stake: data.stake,
     });
-    if (error) throw safeRpcError(error);
-    return { betId: betId as string };
+    if (error) {
+      // Return known business errors as data so the server-fn RPC does not
+      // throw across the boundary (which would surface as a dev overlay /
+      // runtime-error blank screen). Client maps `.error` via toFriendlyError.
+      const safe = safeRpcError(error);
+      return { ok: false as const, error: safe.message };
+    }
+    return { ok: true as const, betId: betId as string };
   });
 
 export type MyBetRow = {
