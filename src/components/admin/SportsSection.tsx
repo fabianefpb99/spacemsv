@@ -487,11 +487,7 @@ function OddChip({ label, value }: { label: string; value: number }) {
 }
 
 function MiniFlag({ code }: { code: string }) {
-  return (
-    <div className="flex h-5 w-7 items-center justify-center overflow-hidden rounded border border-purple-500/30 bg-[#0c0620] text-[9px] font-bold uppercase tracking-widest text-purple-100">
-      {code}
-    </div>
-  );
+  return <TeamFlag code={code} className="h-5 w-7" title={teamName(code)} />;
 }
 
 /* ============================================================
