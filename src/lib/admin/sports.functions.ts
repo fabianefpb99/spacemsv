@@ -347,7 +347,7 @@ export const adminPatchMatchFlags = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
     const supabaseAdmin = await getSupabaseAdmin();
-    const patch: Record<string, boolean> = {};
+    const patch: { is_featured?: boolean; is_published?: boolean } = {};
     if (typeof data.is_featured === "boolean") patch.is_featured = data.is_featured;
     if (typeof data.is_published === "boolean") patch.is_published = data.is_published;
     if (Object.keys(patch).length === 0) return { ok: true };
