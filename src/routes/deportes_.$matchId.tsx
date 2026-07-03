@@ -231,7 +231,7 @@ function MatchDetailPage() {
         <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
 
         {/* Cuerpo: theme-dark-fixed para look premium consistente en claro y oscuro */}
-        <div className="theme-dark-fixed flex-1 bg-[#060210] px-4 pb-80 pt-4 sm:px-5">
+        <div className="theme-dark-fixed flex-1 bg-[#060210] px-4 pb-96 pt-4 sm:px-5">
           {/* Top row: back arrow + competencia */}
           <div className="flex items-center gap-3">
             <Link
