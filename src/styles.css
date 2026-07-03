@@ -4040,3 +4040,117 @@ html.light .terminos-scope .terminos-content strong {
 html.light .terminos-scope .terminos-footer {
   color: #6b4d99 !important;
 }
+
+/* ------------------------------------------------------------------
+ * Deportes — tarjetas de "Mis apuestas" (/deportes → tab Mis apuestas).
+ * Tokens dedicados con contraste explícito para ambos temas. Se usan
+ * clases propias (`.my-bet-*`) para NO depender de overrides globales
+ * `bg-[#0c0620]/85`, que perdían el pulso frente a otras reglas de
+ * modo claro.
+ * ------------------------------------------------------------------ */
+.my-bet-card {
+  background-color: #0c0620;
+  border: 1px solid rgba(168, 85, 247, 0.28);
+  box-shadow: 0 8px 22px -14px rgba(76, 29, 149, 0.55);
+}
+.my-bet-card:hover {
+  border-color: rgba(217, 70, 239, 0.55);
+}
+.my-bet-odds { color: #f5d0fe; }
+.my-bet-selection { color: #ffffff; }
+.my-bet-teams { color: rgba(233, 213, 255, 0.72); }
+.my-bet-stake {
+  background-color: #150830;
+  border: 1px solid rgba(168, 85, 247, 0.22);
+}
+.my-bet-payout {
+  background-color: rgba(217, 70, 239, 0.10);
+  border: 1px solid rgba(217, 70, 239, 0.30);
+}
+.my-bet-box-label { color: rgba(233, 213, 255, 0.72); }
+.my-bet-box-value { color: #ffffff; }
+.my-bet-payout .my-bet-box-label { color: rgba(240, 171, 252, 0.85); }
+.my-bet-payout .my-bet-box-value { color: #fae8ff; }
+
+/* Status pill — modo oscuro */
+.my-bet-status--pending {
+  color: #fae8ff;
+  background-color: rgba(217, 70, 239, 0.18);
+  border-color: rgba(240, 171, 252, 0.55);
+}
+.my-bet-status--won {
+  color: #d1fae5;
+  background-color: rgba(16, 185, 129, 0.18);
+  border-color: rgba(52, 211, 153, 0.55);
+}
+.my-bet-status--lost {
+  color: #fecaca;
+  background-color: rgba(244, 63, 94, 0.18);
+  border-color: rgba(251, 113, 133, 0.55);
+}
+.my-bet-status--refunded {
+  color: #ede9fe;
+  background-color: rgba(139, 92, 246, 0.18);
+  border-color: rgba(167, 139, 250, 0.55);
+}
+
+/* Modo claro — superficie clara con contraste sólido.
+ * Se excluye subárbol .theme-dark-fixed por si en el futuro se anida. */
+html.light .my-bet-card:not(.theme-dark-fixed):not(.theme-dark-fixed *) {
+  background-color: #ffffff !important;
+  border-color: rgba(76, 29, 149, 0.16) !important;
+  box-shadow: 0 6px 18px -12px rgba(76, 29, 149, 0.22) !important;
+}
+html.light .my-bet-card:not(.theme-dark-fixed):not(.theme-dark-fixed *):hover {
+  border-color: rgba(124, 58, 237, 0.55) !important;
+}
+html.light .my-bet-card:not(.theme-dark-fixed):not(.theme-dark-fixed *) .my-bet-odds {
+  color: #6b21a8 !important;
+}
+html.light .my-bet-card:not(.theme-dark-fixed):not(.theme-dark-fixed *) .my-bet-selection {
+  color: #1f1035 !important;
+}
+html.light .my-bet-card:not(.theme-dark-fixed):not(.theme-dark-fixed *) .my-bet-teams {
+  color: #6b4d99 !important;
+}
+html.light .my-bet-card:not(.theme-dark-fixed):not(.theme-dark-fixed *) .my-bet-stake {
+  background-color: #f4efff !important;
+  border-color: rgba(76, 29, 149, 0.18) !important;
+}
+html.light .my-bet-card:not(.theme-dark-fixed):not(.theme-dark-fixed *) .my-bet-payout {
+  background-color: #fdf2ff !important;
+  border-color: rgba(217, 70, 239, 0.35) !important;
+}
+html.light .my-bet-card:not(.theme-dark-fixed):not(.theme-dark-fixed *) .my-bet-box-label {
+  color: #6b4d99 !important;
+}
+html.light .my-bet-card:not(.theme-dark-fixed):not(.theme-dark-fixed *) .my-bet-box-value {
+  color: #1f1035 !important;
+}
+html.light .my-bet-card:not(.theme-dark-fixed):not(.theme-dark-fixed *) .my-bet-payout .my-bet-box-label {
+  color: #86198f !important;
+}
+html.light .my-bet-card:not(.theme-dark-fixed):not(.theme-dark-fixed *) .my-bet-payout .my-bet-box-value {
+  color: #86198f !important;
+}
+/* Pills en modo claro — fondo sólido más saturado */
+html.light .my-bet-status--pending:not(.theme-dark-fixed):not(.theme-dark-fixed *) {
+  color: #ffffff !important;
+  background-color: #a21caf !important;
+  border-color: #86198f !important;
+}
+html.light .my-bet-status--won:not(.theme-dark-fixed):not(.theme-dark-fixed *) {
+  color: #ffffff !important;
+  background-color: #059669 !important;
+  border-color: #047857 !important;
+}
+html.light .my-bet-status--lost:not(.theme-dark-fixed):not(.theme-dark-fixed *) {
+  color: #ffffff !important;
+  background-color: #dc2626 !important;
+  border-color: #b91c1c !important;
+}
+html.light .my-bet-status--refunded:not(.theme-dark-fixed):not(.theme-dark-fixed *) {
+  color: #ffffff !important;
+  background-color: #7c3aed !important;
+  border-color: #6d28d9 !important;
+}
