@@ -835,6 +835,166 @@ export type Database = {
         }
         Relationships: []
       }
+      sports_bets: {
+        Row: {
+          created_at: string
+          id: string
+          match_id: string
+          odds: number
+          payout: number | null
+          potential_payout: number
+          selection: Database["public"]["Enums"]["sports_bet_selection"]
+          settled_at: string | null
+          stake: number
+          status: Database["public"]["Enums"]["sports_bet_status"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          match_id: string
+          odds: number
+          payout?: number | null
+          potential_payout: number
+          selection: Database["public"]["Enums"]["sports_bet_selection"]
+          settled_at?: string | null
+          stake: number
+          status?: Database["public"]["Enums"]["sports_bet_status"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          match_id?: string
+          odds?: number
+          payout?: number | null
+          potential_payout?: number
+          selection?: Database["public"]["Enums"]["sports_bet_selection"]
+          settled_at?: string | null
+          stake?: number
+          status?: Database["public"]["Enums"]["sports_bet_status"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sports_bets_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "sports_matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sports_competitions: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      sports_matches: {
+        Row: {
+          away_flag_code: string
+          away_name: string
+          away_score: number | null
+          bets_closed_at: string | null
+          cancelled_at: string | null
+          competition_id: string
+          created_at: string
+          home_flag_code: string
+          home_name: string
+          home_score: number | null
+          id: string
+          is_featured: boolean
+          is_published: boolean
+          odds_away: number
+          odds_draw: number
+          odds_home: number
+          settled_at: string | null
+          slug: string
+          start_at: string
+          status: Database["public"]["Enums"]["sports_match_status"]
+          updated_at: string
+        }
+        Insert: {
+          away_flag_code: string
+          away_name: string
+          away_score?: number | null
+          bets_closed_at?: string | null
+          cancelled_at?: string | null
+          competition_id: string
+          created_at?: string
+          home_flag_code: string
+          home_name: string
+          home_score?: number | null
+          id?: string
+          is_featured?: boolean
+          is_published?: boolean
+          odds_away: number
+          odds_draw: number
+          odds_home: number
+          settled_at?: string | null
+          slug: string
+          start_at: string
+          status?: Database["public"]["Enums"]["sports_match_status"]
+          updated_at?: string
+        }
+        Update: {
+          away_flag_code?: string
+          away_name?: string
+          away_score?: number | null
+          bets_closed_at?: string | null
+          cancelled_at?: string | null
+          competition_id?: string
+          created_at?: string
+          home_flag_code?: string
+          home_name?: string
+          home_score?: number | null
+          id?: string
+          is_featured?: boolean
+          is_published?: boolean
+          odds_away?: number
+          odds_draw?: number
+          odds_home?: number
+          settled_at?: string | null
+          slug?: string
+          start_at?: string
+          status?: Database["public"]["Enums"]["sports_match_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sports_matches_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "sports_competitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suppressed_emails: {
         Row: {
           created_at: string
@@ -2071,6 +2231,20 @@ export type Database = {
         }
         Returns: Json
       }
+      sports_auto_transition: { Args: never; Returns: number }
+      sports_cancel_match: { Args: { _match_id: string }; Returns: undefined }
+      sports_place_bet: {
+        Args: {
+          _match_id: string
+          _selection: Database["public"]["Enums"]["sports_bet_selection"]
+          _stake: number
+        }
+        Returns: string
+      }
+      sports_settle_match: {
+        Args: { _away_score: number; _home_score: number; _match_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       admin_notification_type:
@@ -2094,6 +2268,9 @@ export type Database = {
         | "cashed_out"
         | "aborted"
         | "closed"
+      sports_bet_selection: "home" | "draw" | "away"
+      sports_bet_status: "pending" | "won" | "lost" | "refunded"
+      sports_match_status: "scheduled" | "live" | "finished" | "cancelled"
       transaction_type:
         | "deposit"
         | "withdrawal"
@@ -2262,6 +2439,9 @@ export const Constants = {
         "aborted",
         "closed",
       ],
+      sports_bet_selection: ["home", "draw", "away"],
+      sports_bet_status: ["pending", "won", "lost", "refunded"],
+      sports_match_status: ["scheduled", "live", "finished", "cancelled"],
       transaction_type: [
         "deposit",
         "withdrawal",
