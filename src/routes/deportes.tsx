@@ -101,7 +101,6 @@ type Match = {
   date: string;
   time: string;
   live: boolean;
-  group: string;
   home: { name: string; code: FlagCode };
   away: { name: string; code: FlagCode };
   odds: { home: string; draw: string; away: string };
@@ -114,7 +113,6 @@ const MATCHES: Match[] = [
     date: "Hoy, 20 Jun",
     time: "15:00",
     live: true,
-    group: "GRUPO C",
     home: { name: "Argentina", code: "AR" },
     away: { name: "Francia", code: "FR" },
     odds: { home: "2.10", draw: "3.25", away: "3.40" },
@@ -125,7 +123,6 @@ const MATCHES: Match[] = [
     date: "Hoy, 20 Jun",
     time: "19:00",
     live: true,
-    group: "GRUPO E",
     home: { name: "Brasil", code: "BR" },
     away: { name: "Alemania", code: "DE" },
     odds: { home: "1.85", draw: "3.60", away: "4.20" },
@@ -324,21 +321,13 @@ function MatchCard({ match }: { match: Match }) {
           <Clock className="h-3 w-3 text-purple-300/80" />
           {match.time}
         </span>
-        <div className="ml-auto flex shrink-0 items-center gap-1">
+        <div className="ml-auto flex shrink-0 items-center">
           {match.live && (
             <span className="inline-flex items-center gap-1 rounded-full border border-fuchsia-400/60 bg-fuchsia-500/15 px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wider text-fuchsia-100">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-fuchsia-300 shadow-[0_0_6px_rgba(240,171,252,0.9)]" />
               En vivo
             </span>
           )}
-          <button
-            type="button"
-            aria-label="Favorito"
-            onClick={(e) => e.stopPropagation()}
-            className="rounded-full p-0.5 text-purple-300/60 hover:text-fuchsia-200"
-          >
-            <Star className="h-4 w-4" />
-          </button>
         </div>
       </div>
 
@@ -357,9 +346,6 @@ function MatchCard({ match }: { match: Match }) {
         <div className="flex flex-col items-center gap-0.5">
           <span className="font-display text-xl font-black tracking-wider text-fuchsia-300 drop-shadow-[0_0_8px_rgba(217,70,239,0.55)]">
             VS
-          </span>
-          <span className="whitespace-nowrap text-[9px] font-semibold uppercase tracking-widest text-purple-200/70">
-            {match.group}
           </span>
         </div>
         <div className="flex flex-col items-center gap-1.5">
