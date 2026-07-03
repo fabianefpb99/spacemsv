@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useNavigate, useRouter } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -11,6 +11,9 @@ import {
   ArrowLeft,
   Info,
   Handshake,
+  CheckCircle2,
+  Ticket,
+  RotateCcw,
 } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import stadiumBg from "@/assets/stadium-bg.jpg";
@@ -150,17 +153,42 @@ function MatchDetailPage() {
   const me = useMe();
   const queryClient = useQueryClient();
   const router = useRouter();
+  const navigate = useNavigate();
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [selection, setSelection] = useState<"home" | "draw" | "away">("draw");
   const [stake, setStake] = useState<number>(10000);
+  const [placed, setPlaced] = useState<
+    | null
+    | {
+        label: string;
+        odd: number;
+        stake: number;
+        payout: number;
+      }
+  >(null);
   const balanceText = me.data ? formatCOP(me.data.balance) : "—";
   const placeBetFn = useServerFn(placeSportsBet);
   const mutation = useMutation({
     mutationFn: (vars: { matchId: string; selection: "home" | "draw" | "away"; stake: number }) =>
       placeBetFn({ data: vars }),
-    onSuccess: () => {
-      toast.success("¡Apuesta registrada!", {
-        description: "Puedes verla en 'Mis apuestas'.",
+    onSuccess: (_res, vars) => {
+      const odd =
+        vars.selection === "home"
+          ? parseFloat(match.odds.home)
+          : vars.selection === "away"
+            ? parseFloat(match.odds.away)
+            : parseFloat(match.odds.draw);
+      const label =
+        vars.selection === "home"
+          ? `GANA ${match.home.name.toUpperCase()}`
+          : vars.selection === "away"
+            ? `GANA ${match.away.name.toUpperCase()}`
+            : "EMPATE";
+      setPlaced({
+        label,
+        odd,
+        stake: vars.stake,
+        payout: Math.floor(vars.stake * odd),
       });
       queryClient.invalidateQueries({ queryKey: ["me"] });
       queryClient.invalidateQueries({ queryKey: ["my-sports-bets"] });
@@ -170,6 +198,21 @@ function MatchDetailPage() {
       toast.error(toFriendlyError(err, "No pudimos registrar la apuesta."));
     },
   });
+
+  function goToMyBets() {
+    try {
+      if (typeof window !== "undefined") {
+        window.sessionStorage.setItem("sports.openMias", "1");
+      }
+    } catch {
+      /* ignore */
+    }
+    navigate({ to: "/deportes" });
+  }
+
+  function newBet() {
+    setPlaced(null);
+  }
 
   const selected = useMemo(() => {
     if (selection === "home")
