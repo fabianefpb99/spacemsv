@@ -17,9 +17,32 @@ import {
   Music2,
   Hash,
   Gamepad2,
-  Volleyball,
   type LucideIcon,
 } from "lucide-react";
+
+function FootballIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 6.5 15 9.5 14 14 10 14 9 9.5Z" />
+      <path d="m12 14-5 1.5" />
+      <path d="m12 14 5 1.5" />
+      <path d="m9.5 9.5-3.5-1.5" />
+      <path d="m14.5 9.5 3.5-1.5" />
+      <path d="m9 14-2.5 3.5" />
+      <path d="m15 14 2.5 3.5" />
+    </svg>
+  );
+}
 import { cloneElement, isValidElement, useEffect, useState, type MouseEvent, type ReactElement, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -45,9 +68,9 @@ const ITEMS: Item[] = [
   { label: "Soporte", icon: Headphones, to: "/soporte" },
 ];
 
-const PRIMARY_ITEMS: { label: string; icon: LucideIcon; to: string; accent: "fuchsia" | "cyan" }[] = [
+const PRIMARY_ITEMS: { label: string; icon: React.ComponentType<{ className?: string; strokeWidth?: number }>; to: string; accent: "fuchsia" | "cyan" }[] = [
   { label: "Juegos", icon: Gamepad2, to: "/home", accent: "fuchsia" },
-  { label: "Deportes", icon: Volleyball, to: "/deportes", accent: "cyan" },
+  { label: "Deportes", icon: FootballIcon, to: "/deportes", accent: "cyan" },
 ];
 
 const SOCIAL_ICONS: Record<string, LucideIcon> = {
@@ -233,7 +256,7 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
                 <div className="mx-4 h-px bg-purple-500/15" />
 
                 <nav className="mt-2 flex-1 overflow-y-auto px-2">
-                  <div className="mb-2 flex flex-col gap-1.5 px-1">
+                  <div className="mb-2 flex flex-col gap-1 px-1">
                     {PRIMARY_ITEMS.map((it) => {
                       const isFuchsia = it.accent === "fuchsia";
                       return (
@@ -244,20 +267,20 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
                             setOpen(false);
                             navigate({ to: it.to });
                           }}
-                          className={`group relative flex w-full items-center gap-3 overflow-hidden rounded-xl border px-3 py-2.5 text-left transition ${
+                          className={`group relative flex w-full items-center gap-3 overflow-hidden rounded-xl border px-3 py-1.5 text-left transition ${
                             isFuchsia
                               ? "border-fuchsia-500/40 bg-gradient-to-r from-fuchsia-600/20 via-purple-900/20 to-transparent shadow-[0_0_16px_rgba(217,70,239,0.18)] hover:from-fuchsia-600/30 hover:shadow-[0_0_22px_rgba(217,70,239,0.35)]"
                               : "border-cyan-500/40 bg-gradient-to-r from-cyan-500/20 via-sky-900/20 to-transparent shadow-[0_0_16px_rgba(34,211,238,0.16)] hover:from-cyan-500/30 hover:shadow-[0_0_22px_rgba(34,211,238,0.32)]"
                           }`}
                         >
                           <span
-                            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+                            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${
                               isFuchsia
                                 ? "bg-fuchsia-500/25 text-fuchsia-200 shadow-[0_0_12px_rgba(217,70,239,0.25)]"
                                 : "bg-cyan-500/25 text-cyan-200 shadow-[0_0_12px_rgba(34,211,238,0.22)]"
                             }`}
                           >
-                            <it.icon className="h-4 w-4" strokeWidth={2.4} />
+                            <it.icon className="h-3.5 w-3.5" strokeWidth={2.4} />
                           </span>
                           <span className="flex-1 text-[13px] font-black uppercase tracking-wider text-white">
                             {it.label}
