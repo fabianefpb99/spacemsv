@@ -17,6 +17,7 @@ export type AdminSection =
   | "drawer"
   | "eventos"
   | "boost"
+  | "deportes"
   | "bonos"
   | "transacciones"
   | "reportes"
