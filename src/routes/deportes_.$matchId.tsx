@@ -279,7 +279,7 @@ function MatchDetailPage() {
             </div>
           </section>
 
-          <section className="mt-8">
+          <section className="relative mt-8">
             <div className="flex items-center gap-3 rounded-2xl border border-purple-500/25 bg-[#0b0522] px-3 py-3">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-600 to-fuchsia-700 shadow-[0_0_10px_rgba(168,85,247,0.55)]">
                 <Trophy className="h-4 w-4 text-white" />
@@ -293,7 +293,7 @@ function MatchDetailPage() {
             </div>
           </section>
 
-          <section className="mt-6">
+          <section className="relative mt-6">
             <h2 className="md-eyebrow px-1 text-[11px] font-black uppercase tracking-[0.18em] text-purple-200/80">
               Resultado final
             </h2>
@@ -328,7 +328,7 @@ function MatchDetailPage() {
             </div>
           </section>
 
-          <section className="mt-6">
+          <section className="relative mt-6">
             <div className="flex items-center gap-3 rounded-2xl border border-purple-500/25 bg-[#0b0522] px-3 py-3">
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-purple-400/40 bg-purple-500/10">
                 <Info className="h-4 w-4 text-purple-200" />
