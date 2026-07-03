@@ -17,6 +17,7 @@ import {
   Clock,
   Pencil,
   CheckCircle2,
+  Wand2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Panel, KpiCard } from "./shared";
@@ -661,6 +662,17 @@ function MatchModal({
             <input value={oddsAway} onChange={(e) => setOddsAway(e.target.value)} inputMode="decimal" className={inputCls} />
           </Field>
         </div>
+
+        <HouseEdgePanel
+          oddsHome={oddsHome}
+          oddsDraw={oddsDraw}
+          oddsAway={oddsAway}
+          onApply={(h, d, a) => {
+            setOddsHome(h);
+            setOddsDraw(d);
+            setOddsAway(a);
+          }}
+        />
 
         <div className="flex flex-wrap gap-2">
           <ToggleChip active={isPublished} onClick={() => setIsPublished((v) => !v)} label="Publicado" icon={Eye} />
