@@ -1,5 +1,8 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import {
   Menu,
   Trophy,
@@ -18,6 +21,8 @@ import { HamburgerDrawer } from "@/components/HamburgerDrawer";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
 import { getPublicMatch } from "@/lib/sports/public.functions";
+import { placeSportsBet } from "@/lib/sports/bet.functions";
+import { toFriendlyError } from "@/lib/friendly-error";
 import { flagSvgUrl, teamName } from "@/lib/sports/world-cup-2026-teams";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -143,10 +148,28 @@ function MatchDetailPage() {
   const { match } = Route.useLoaderData();
   const { user, loading: authLoading } = useAuth();
   const me = useMe();
+  const queryClient = useQueryClient();
+  const router = useRouter();
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [selection, setSelection] = useState<"home" | "draw" | "away">("draw");
   const [stake, setStake] = useState<number>(10000);
   const balanceText = me.data ? formatCOP(me.data.balance) : "—";
+  const placeBetFn = useServerFn(placeSportsBet);
+  const mutation = useMutation({
+    mutationFn: (vars: { matchId: string; selection: "home" | "draw" | "away"; stake: number }) =>
+      placeBetFn({ data: vars }),
+    onSuccess: () => {
+      toast.success("¡Apuesta registrada!", {
+        description: "Puedes verla en 'Mis apuestas'.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["me"] });
+      queryClient.invalidateQueries({ queryKey: ["my-sports-bets"] });
+      router.invalidate();
+    },
+    onError: (err) => {
+      toast.error(toFriendlyError(err, "No pudimos registrar la apuesta."));
+    },
+  });
 
   const selected = useMemo(() => {
     if (selection === "home")
@@ -157,6 +180,28 @@ function MatchDetailPage() {
   }, [selection, match]);
 
   const potentialPayout = Math.floor(stake * selected.odd);
+  const balance = me.data?.balance ?? 0;
+  const minStake = 1000;
+  const insufficientFunds = user != null && stake > balance;
+  const belowMin = stake < minStake;
+  const canBet =
+    !!user && !mutation.isPending && !insufficientFunds && !belowMin && stake > 0;
+
+  function handlePlaceBet() {
+    if (!user) {
+      setAuthDialogOpen(true);
+      return;
+    }
+    if (belowMin) {
+      toast.error(`Apuesta mínima: ${formatCOP(minStake)} COP`);
+      return;
+    }
+    if (insufficientFunds) {
+      toast.error("Saldo insuficiente.");
+      return;
+    }
+    mutation.mutate({ matchId: match.id, selection, stake });
+  }
 
   return (
     <div className="min-h-screen bg-[#060210] text-white">
@@ -399,9 +444,19 @@ function MatchDetailPage() {
               </div>
               <button
                 type="button"
-                className="w-full rounded-xl bg-gradient-to-b from-fuchsia-500 to-purple-700 py-3 font-display text-sm font-black uppercase tracking-widest text-white shadow-[0_6px_18px_-6px_rgba(168,85,247,0.75)] transition hover:from-fuchsia-400 hover:to-purple-600 active:scale-[0.98]"
+                onClick={handlePlaceBet}
+                disabled={!canBet}
+                className="w-full rounded-xl bg-gradient-to-b from-fuchsia-500 to-purple-700 py-3 font-display text-sm font-black uppercase tracking-widest text-white shadow-[0_6px_18px_-6px_rgba(168,85,247,0.75)] transition hover:from-fuchsia-400 hover:to-purple-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
               >
-                Apostar
+                {mutation.isPending
+                  ? "Enviando…"
+                  : !user
+                    ? "Iniciar sesión"
+                    : insufficientFunds
+                      ? "Saldo insuficiente"
+                      : belowMin
+                        ? `Mín ${formatCOP(minStake)}`
+                        : "Apostar"}
               </button>
             </div>
           </div>

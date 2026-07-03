@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Menu, Home, Star, Wallet, User, Trophy, Calendar, Clock, ChevronRight } from "lucide-react";
+import { Menu, Home, Star, Wallet, User, Trophy, Calendar, Clock, ChevronRight, Ticket } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import mundialHeroAsset from "@/assets/mundial-hero.webp.asset.json";
 import { AuthControl } from "@/components/auth/AuthControl";
@@ -11,6 +11,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { getMySportsBets, type MyBetRow } from "@/lib/sports/bet.functions";
 import { flagSvgUrl } from "@/lib/sports/world-cup-2026-teams";
 
 export const Route = createFileRoute("/deportes")({
@@ -139,7 +141,7 @@ function DeportesPage() {
   const { user, loading: authLoading } = useAuth();
   const me = useMe();
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
-  const [selector, setSelector] = useState<"futbol" | "mundial">("mundial");
+  const [selector, setSelector] = useState<"futbol" | "mundial" | "mias">("mundial");
   const balanceText = me.data ? formatCOP(me.data.balance) : "—";
   const matchesQuery = usePublishedMatches();
   const matches = matchesQuery.data ?? [];
@@ -230,8 +232,8 @@ function DeportesPage() {
 
         {/* Contenido con padding lateral */}
         <div className="px-3 pb-28 sm:px-4">
-          {/* Selector flotante Fútbol / Mundial 2026 (superpuesto ~50% al banner) */}
-          <div className="relative z-10 -mt-10 grid grid-cols-2 gap-1.5 rounded-2xl border border-purple-500/30 bg-[#0c0620]/95 p-1.5 shadow-[0_14px_36px_-12px_rgba(168,85,247,0.6)] backdrop-blur">
+          {/* Selector flotante Fútbol / Mundial 2026 / Mis apuestas (superpuesto ~50% al banner) */}
+          <div className="relative z-10 -mt-10 grid grid-cols-[2fr_2fr_1fr] gap-1.5 rounded-2xl border border-purple-500/30 bg-[#0c0620]/95 p-1.5 shadow-[0_14px_36px_-12px_rgba(168,85,247,0.6)] backdrop-blur">
             {/* Selector: en modo oscuro fondo navy; en modo claro fondo blanco (ver styles.css) */}
             <button
               type="button"
@@ -257,28 +259,44 @@ function DeportesPage() {
               <Trophy className="h-4 w-4" />
               <span>Mundial 2026</span>
             </button>
+            <button
+              type="button"
+              onClick={() => setSelector("mias")}
+              aria-label="Mis apuestas"
+              title="Mis apuestas"
+              className={`sports-selector-btn flex items-center justify-center rounded-xl px-2 py-2.5 transition ${
+                selector === "mias"
+                  ? "sports-selector-btn--active bg-gradient-to-b from-purple-600 to-fuchsia-700 text-white shadow-[0_0_14px_rgba(168,85,247,0.55)]"
+                  : "text-purple-200/80 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              <Ticket className="h-5 w-5" strokeWidth={2.2} />
+            </button>
           </div>
 
-          {/* Partidos destacados */}
-          <section className="mt-6">
-          <h2 className="font-display text-sm font-black uppercase tracking-[0.14em] text-white">
-            Partidos destacados
-          </h2>
+          {selector === "mias" ? (
+            <MyBetsSection onOpenAuth={() => setAuthDialogOpen(true)} />
+          ) : (
+            <section className="mt-6">
+              <h2 className="font-display text-sm font-black uppercase tracking-[0.14em] text-white">
+                Partidos destacados
+              </h2>
 
-          <div className="mt-3 flex flex-col gap-3">
-            {matchesQuery.isLoading ? (
-              <div className="rounded-2xl border border-purple-500/20 bg-[#0c0620]/60 p-4 text-center text-[11px] text-purple-200/70">
-                Cargando partidos…
+              <div className="mt-3 flex flex-col gap-3">
+                {matchesQuery.isLoading ? (
+                  <div className="rounded-2xl border border-purple-500/20 bg-[#0c0620]/60 p-4 text-center text-[11px] text-purple-200/70">
+                    Cargando partidos…
+                  </div>
+                ) : matches.length === 0 ? (
+                  <div className="rounded-2xl border border-purple-500/20 bg-[#0c0620]/60 p-4 text-center text-[11px] text-purple-200/70">
+                    No hay partidos programados por ahora. Vuelve pronto.
+                  </div>
+                ) : (
+                  matches.map((m) => <MatchCard key={m.id} match={m} />)
+                )}
               </div>
-            ) : matches.length === 0 ? (
-              <div className="rounded-2xl border border-purple-500/20 bg-[#0c0620]/60 p-4 text-center text-[11px] text-purple-200/70">
-                No hay partidos programados por ahora. Vuelve pronto.
-              </div>
-            ) : (
-              matches.map((m) => <MatchCard key={m.id} match={m} />)
-            )}
-          </div>
-          </section>
+            </section>
+          )}
 
           {/* Aviso responsable */}
           <section className="mt-5">
@@ -442,6 +460,126 @@ function BottomCenter() {
         <Trophy className="h-7 w-7 text-purple-300/70" strokeWidth={2.2} />
       </span>
       <span className="home-bottom-center-label text-[9px] font-bold tracking-wider text-purple-200">RANKING</span>
+    </Link>
+  );
+}
+
+function MyBetsSection({ onOpenAuth }: { onOpenAuth: () => void }) {
+  const { user, loading } = useAuth();
+  const getMyBets = useServerFn(getMySportsBets);
+  const q = useQuery({
+    queryKey: ["my-sports-bets", user?.id ?? null],
+    enabled: !loading && !!user,
+    staleTime: 15_000,
+    queryFn: async () => (await getMyBets()).bets,
+  });
+
+  if (!user) {
+    return (
+      <section className="mt-6">
+        <h2 className="font-display text-sm font-black uppercase tracking-[0.14em] text-white">
+          Mis apuestas
+        </h2>
+        <div className="mt-3 rounded-2xl border border-purple-500/25 bg-[#0c0620]/70 p-4 text-center">
+          <Ticket className="mx-auto h-6 w-6 text-fuchsia-300" />
+          <p className="mt-2 text-[11px] text-purple-100/85">
+            Inicia sesión para ver tus apuestas.
+          </p>
+          <button
+            type="button"
+            onClick={onOpenAuth}
+            className="mt-3 inline-flex rounded-lg bg-gradient-to-b from-fuchsia-500 to-purple-700 px-4 py-1.5 text-[10px] font-extrabold uppercase tracking-widest text-white shadow-[0_6px_18px_-6px_rgba(168,85,247,0.75)]"
+          >
+            Iniciar sesión
+          </button>
+        </div>
+      </section>
+    );
+  }
+
+  const bets = q.data ?? [];
+
+  return (
+    <section className="mt-6">
+      <h2 className="font-display text-sm font-black uppercase tracking-[0.14em] text-white">
+        Mis apuestas
+      </h2>
+      <div className="mt-3 flex flex-col gap-2">
+        {q.isLoading ? (
+          <div className="rounded-2xl border border-purple-500/20 bg-[#0c0620]/60 p-4 text-center text-[11px] text-purple-200/70">
+            Cargando…
+          </div>
+        ) : bets.length === 0 ? (
+          <div className="rounded-2xl border border-purple-500/20 bg-[#0c0620]/60 p-4 text-center text-[11px] text-purple-200/70">
+            Aún no tienes apuestas. Elige un partido y prueba tu suerte.
+          </div>
+        ) : (
+          bets.map((b) => <MyBetRowCard key={b.id} bet={b} />)
+        )}
+      </div>
+    </section>
+  );
+}
+
+function selectionLabel(sel: "home" | "draw" | "away", homeName: string, awayName: string) {
+  if (sel === "home") return `Gana ${homeName}`;
+  if (sel === "away") return `Gana ${awayName}`;
+  return "Empate";
+}
+
+function statusMeta(status: MyBetRow["status"]) {
+  switch (status) {
+    case "won":
+      return { text: "Ganada", cls: "border-emerald-400/60 bg-emerald-500/15 text-emerald-100" };
+    case "lost":
+      return { text: "Perdida", cls: "border-red-400/50 bg-red-500/15 text-red-100" };
+    case "refunded":
+      return { text: "Reembolso", cls: "border-purple-400/60 bg-purple-500/15 text-purple-100" };
+    default:
+      return { text: "Pendiente", cls: "border-fuchsia-400/60 bg-fuchsia-500/15 text-fuchsia-100" };
+  }
+}
+
+function MyBetRowCard({ bet }: { bet: MyBetRow }) {
+  const meta = statusMeta(bet.status);
+  const payout =
+    bet.status === "won"
+      ? bet.payout ?? bet.potential_payout
+      : bet.status === "refunded"
+        ? bet.payout ?? bet.stake
+        : bet.potential_payout;
+  return (
+    <Link
+      to="/deportes/$matchId"
+      params={{ matchId: bet.match_id }}
+      className="theme-dark-fixed block rounded-2xl border border-purple-500/25 bg-[#0c0620]/85 p-3 transition hover:border-fuchsia-400/60"
+    >
+      <div className="flex items-center gap-2">
+        <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-widest ${meta.cls}`}>
+          {meta.text}
+        </span>
+        <span className="ml-auto font-display text-[11px] font-black text-fuchsia-200">
+          @ {bet.odds.toFixed(2)}
+        </span>
+      </div>
+      <div className="mt-1.5 truncate font-display text-[12px] font-black text-white">
+        {selectionLabel(bet.selection, bet.home_name, bet.away_name)}
+      </div>
+      <div className="mt-0.5 truncate text-[10px] text-purple-200/70">
+        {bet.home_name} vs {bet.away_name}
+      </div>
+      <div className="mt-2 grid grid-cols-2 gap-2">
+        <div className="rounded-lg border border-purple-500/20 bg-[#150830]/70 px-2 py-1.5">
+          <div className="text-[8px] font-bold uppercase tracking-widest text-purple-200/70">Apuesta</div>
+          <div className="font-display text-[11px] font-black text-white">{formatCOP(bet.stake)} COP</div>
+        </div>
+        <div className="rounded-lg border border-fuchsia-400/30 bg-fuchsia-500/10 px-2 py-1.5">
+          <div className="text-[8px] font-bold uppercase tracking-widest text-fuchsia-200/80">
+            {bet.status === "won" ? "Ganancia" : bet.status === "refunded" ? "Reembolso" : bet.status === "lost" ? "Habría pagado" : "Pago posible"}
+          </div>
+          <div className="font-display text-[11px] font-black text-fuchsia-100">{formatCOP(payout)} COP</div>
+        </div>
+      </div>
     </Link>
   );
 }
