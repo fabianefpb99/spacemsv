@@ -81,14 +81,15 @@ export const Route = createFileRoute("/deportes_/$matchId")({
     if (!UUID_RE.test(params.matchId)) throw notFound();
     const res = await getPublicMatch({ data: { id: params.matchId } });
     if (!res?.match) throw notFound();
-    const r = res.match;
     const { date, time } = formatMatchDate(r.start_at);
+    const started = r.status !== "scheduled" || new Date() >= new Date(r.start_at);
     const match: MatchDetail = {
       id: r.id,
       competition: (r.competition_name ?? "DEPORTES").toUpperCase(),
       date,
       time,
       live: r.status === "live",
+      started,
       home: { name: r.home_name || teamName(r.home_flag_code), code: r.home_flag_code },
       away: { name: r.away_name || teamName(r.away_flag_code), code: r.away_flag_code },
       odds: {
