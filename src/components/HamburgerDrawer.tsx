@@ -68,9 +68,9 @@ const ITEMS: Item[] = [
   { label: "Soporte", icon: Headphones, to: "/soporte" },
 ];
 
-const PRIMARY_ITEMS: { label: string; icon: LucideIcon; to: string; accent: "fuchsia" | "cyan" }[] = [
+const PRIMARY_ITEMS: { label: string; icon: React.FC<{ className?: string }> | LucideIcon; to: string; accent: "fuchsia" | "cyan" }[] = [
   { label: "Juegos", icon: Gamepad2, to: "/home", accent: "fuchsia" },
-  { label: "Deportes", icon: Volleyball, to: "/deportes", accent: "cyan" },
+  { label: "Deportes", icon: FootballIcon, to: "/deportes", accent: "cyan" },
 ];
 
 const SOCIAL_ICONS: Record<string, LucideIcon> = {
