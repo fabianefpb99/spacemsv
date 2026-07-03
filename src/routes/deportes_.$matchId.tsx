@@ -467,19 +467,19 @@ function OutcomeCard({
       type="button"
       onClick={onSelect}
       aria-pressed={selected}
-      className={`relative flex flex-col items-center gap-2 rounded-2xl border px-2 py-4 transition ${
+      className={`md-outcome-card ${selected ? "md-outcome-card--selected" : ""} relative flex flex-col items-center gap-2 rounded-2xl border px-2 py-4 transition ${
         selected
           ? "border-fuchsia-400/80 bg-[#170a36] shadow-[0_0_0_1px_rgba(240,171,252,0.35),0_0_22px_-4px_rgba(217,70,239,0.75)]"
           : "border-purple-500/25 bg-[#0c0620]/80 hover:border-fuchsia-400/50"
       }`}
     >
       {title && (
-        <span className="text-[9px] font-bold uppercase tracking-widest text-purple-200/70">
+        <span className="md-eyebrow text-[9px] font-bold uppercase tracking-widest text-purple-200/70">
           {title}
         </span>
       )}
       <span
-        className={`text-center font-display text-[11px] font-black uppercase tracking-wider ${
+        className={`md-strong text-center font-display text-[11px] font-black uppercase tracking-wider ${
           emphasizeSubtitle ? "text-white" : "text-white"
         }`}
       >
