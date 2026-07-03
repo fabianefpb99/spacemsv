@@ -208,7 +208,7 @@ function DeportesPage() {
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#060210]/85 via-[#060210]/45 to-transparent"
             />
-            <div className="absolute inset-0 flex flex-col justify-center px-4 sm:px-5">
+            <div className="absolute inset-0 flex flex-col justify-center pl-6 pr-4 sm:pl-8 sm:pr-5">
               <span className="inline-flex w-max items-center whitespace-nowrap rounded-full border border-purple-400/60 bg-purple-500/15 px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-widest text-purple-100 backdrop-blur">
                 Zona deportiva
               </span>
