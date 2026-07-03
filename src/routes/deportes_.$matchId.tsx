@@ -14,6 +14,7 @@ import {
   CheckCircle2,
   Ticket,
   RotateCcw,
+  Ban,
 } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import stadiumBg from "@/assets/stadium-bg.jpg";
