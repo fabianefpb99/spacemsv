@@ -28,6 +28,26 @@ export function toFriendlyError(err: unknown, fallback = "Algo salió mal. Inten
     return "Saldo insuficiente.";
   }
 
+  // Deportes
+  if (msg.includes("bets_closed")) {
+    return "Las apuestas para este partido ya están cerradas.";
+  }
+  if (msg.includes("match_not_available")) {
+    return "Este partido ya no está disponible para apostar.";
+  }
+  if (msg.includes("match_not_found")) {
+    return "No encontramos este partido. Vuelve a la lista.";
+  }
+  if (msg.includes("invalid_stake")) {
+    return "El monto de la apuesta no es válido.";
+  }
+  if (msg.includes("not_authenticated")) {
+    return "Tu sesión expiró. Vuelve a iniciar sesión.";
+  }
+  if (msg.includes("balance_not_found")) {
+    return "No pudimos leer tu saldo. Intenta de nuevo.";
+  }
+
   // Blackjack
   if (msg.includes("bj_insert_failed") && msg.includes("duplicate")) {
     return "Detectamos una acción duplicada. Tu saldo está a salvo, intenta de nuevo.";
