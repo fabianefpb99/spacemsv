@@ -242,7 +242,7 @@ function MatchDetailPage() {
             <Link
               to="/deportes"
               aria-label="Volver a Deportes"
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-purple-500/30 bg-[#0c0620]/80 text-purple-100 transition hover:border-fuchsia-400/60 hover:text-white"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-purple-500/30 bg-[#0b0522] text-purple-100 transition hover:border-fuchsia-400/60 hover:text-white"
             >
               <ArrowLeft className="h-4 w-4" />
             </Link>
@@ -257,11 +257,11 @@ function MatchDetailPage() {
 
           {/* Fecha + Hora + En vivo */}
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-            <span className="md-strong inline-flex items-center gap-1.5 rounded-full border border-purple-500/25 bg-[#0c0620]/80 px-2.5 py-1 text-[10px] font-semibold text-purple-100">
+            <span className="md-strong inline-flex items-center gap-1.5 rounded-full border border-purple-500/25 bg-[#0b0522] px-2.5 py-1 text-[10px] font-semibold text-purple-100">
               <Calendar className="h-3 w-3 text-purple-300/80" />
               {match.date}
             </span>
-            <span className="md-strong inline-flex items-center gap-1.5 rounded-full border border-purple-500/25 bg-[#0c0620]/80 px-2.5 py-1 text-[10px] font-semibold text-purple-100">
+            <span className="md-strong inline-flex items-center gap-1.5 rounded-full border border-purple-500/25 bg-[#0b0522] px-2.5 py-1 text-[10px] font-semibold text-purple-100">
               <Clock className="h-3 w-3 text-purple-300/80" />
               {match.time}
             </span>
@@ -298,7 +298,7 @@ function MatchDetailPage() {
 
           {/* Info: apuesta simple */}
           <section className="mt-8">
-            <div className="flex items-center gap-3 rounded-2xl border border-purple-500/25 bg-[#0c0620]/80 px-3 py-3">
+            <div className="flex items-center gap-3 rounded-2xl border border-purple-500/25 bg-[#0b0522] px-3 py-3">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-600 to-fuchsia-700 shadow-[0_0_10px_rgba(168,85,247,0.55)]">
                 <Trophy className="h-4 w-4 text-white" />
               </span>
@@ -359,7 +359,7 @@ function MatchDetailPage() {
 
           {/* Aviso */}
           <section className="mt-6">
-            <div className="flex items-center gap-3 rounded-2xl border border-purple-500/25 bg-[#0c0620]/80 px-3 py-3">
+            <div className="flex items-center gap-3 rounded-2xl border border-purple-500/25 bg-[#0b0522] px-3 py-3">
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-purple-400/40 bg-purple-500/10">
                 <Info className="h-4 w-4 text-purple-200" />
               </span>
@@ -375,7 +375,7 @@ function MatchDetailPage() {
 
         {/* Ticket inferior (fijado sobre bottom nav) */}
         <div
-          className="theme-dark-fixed md-ticket fixed inset-x-0 z-20 border-t border-purple-500/25 bg-[#0c0620]/95 backdrop-blur"
+          className="theme-dark-fixed md-ticket fixed inset-x-0 z-20 border-t border-purple-500/25 bg-[#0b0522]/95 backdrop-blur"
           style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 62px)" }}
         >
           <div className="mx-auto max-w-md px-4 py-3 sm:max-w-lg sm:px-5">
@@ -470,7 +470,7 @@ function OutcomeCard({
       className={`md-outcome-card ${selected ? "md-outcome-card--selected" : ""} relative flex flex-col items-center gap-2 rounded-2xl border px-2 py-4 transition ${
         selected
           ? "border-fuchsia-400/80 bg-[#170a36] shadow-[0_0_0_1px_rgba(240,171,252,0.35),0_0_22px_-4px_rgba(217,70,239,0.75)]"
-          : "border-purple-500/25 bg-[#0c0620]/80 hover:border-fuchsia-400/50"
+          : "border-purple-500/25 bg-[#0b0522] hover:border-fuchsia-400/50"
       }`}
     >
       {title && (
