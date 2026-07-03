@@ -2,17 +2,12 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
   Menu,
-  Home,
-  Star,
-  Wallet,
-  User,
   Trophy,
   Calendar,
   Clock,
   ArrowLeft,
   Info,
   Handshake,
-  Shirt,
 } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { AuthControl } from "@/components/auth/AuthControl";
@@ -236,7 +231,7 @@ function MatchDetailPage() {
         <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
 
         {/* Cuerpo: theme-dark-fixed para look premium consistente en claro y oscuro */}
-        <div className="theme-dark-fixed flex-1 bg-[#060210] px-4 pb-40 pt-4 sm:px-5">
+        <div className="theme-dark-fixed flex-1 bg-[#060210] px-4 pb-44 pt-4 sm:px-5">
           {/* Top row: back arrow + competencia */}
           <div className="flex items-center gap-3">
             <Link
@@ -323,11 +318,6 @@ function MatchDetailPage() {
                 odd={match.odds.home}
                 selected={selection === "home"}
                 onSelect={() => setSelection("home")}
-                icon={
-                  <div className="h-10 w-10">
-                    <JerseyIcon color={match.home.jersey} accent={match.home.jerseyAccent} />
-                  </div>
-                }
               />
               <OutcomeCard
                 title=""
@@ -336,8 +326,8 @@ function MatchDetailPage() {
                 selected={selection === "draw"}
                 onSelect={() => setSelection("draw")}
                 icon={
-                  <div className="flex h-10 w-10 items-center justify-center">
-                    <Handshake className="h-8 w-8 text-fuchsia-200" strokeWidth={1.6} />
+                  <div className="flex h-7 w-7 items-center justify-center">
+                    <Handshake className="h-6 w-6 text-fuchsia-200" strokeWidth={1.7} />
                   </div>
                 }
                 emphasizeSubtitle
@@ -348,11 +338,6 @@ function MatchDetailPage() {
                 odd={match.odds.away}
                 selected={selection === "away"}
                 onSelect={() => setSelection("away")}
-                icon={
-                  <div className="h-10 w-10">
-                    <JerseyIcon color={match.away.jersey} accent={match.away.jerseyAccent} />
-                  </div>
-                }
               />
             </div>
           </section>
@@ -373,73 +358,59 @@ function MatchDetailPage() {
           <div className="h-6" />
         </div>
 
-        {/* Ticket inferior (fijado sobre bottom nav) */}
+        {/* Ticket flotante anclado al fondo — SIEMPRE claro (blanco) para destacar */}
         <div
-          className="theme-dark-fixed md-ticket fixed inset-x-0 z-20 border-t border-purple-500/25 bg-[#0b0522]/95 backdrop-blur"
-          style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 62px)" }}
+          className="md-ticket-light fixed inset-x-0 bottom-0 z-30 border-t border-neutral-200 bg-white shadow-[0_-10px_30px_-10px_rgba(0,0,0,0.35)]"
+          style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
         >
-          <div className="mx-auto max-w-md px-4 py-3 sm:max-w-lg sm:px-5">
+          <div className="mx-auto max-w-md px-4 pt-2.5 pb-2.5 sm:max-w-lg sm:px-5">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <div className="md-eyebrow text-[9px] font-bold uppercase tracking-widest text-purple-200/70">
+                <div className="text-[9px] font-bold uppercase tracking-widest text-neutral-500">
                   Tu selección
                 </div>
-                <div className="md-strong truncate font-display text-sm font-black text-white">
+                <div className="truncate font-display text-sm font-black text-neutral-900">
                   {selected.label}
                 </div>
               </div>
-              <div className="font-display text-xl font-black text-fuchsia-300 drop-shadow-[0_0_8px_rgba(217,70,239,0.5)]">
+              <div className="font-display text-xl font-black text-fuchsia-600">
                 {selected.odd.toFixed(2)}
               </div>
             </div>
             <div className="mt-2 grid grid-cols-[1fr_1fr_auto] items-end gap-2">
               <label className="block">
-                <span className="md-eyebrow block text-[9px] font-bold uppercase tracking-widest text-purple-200/70">
+                <span className="block text-[9px] font-bold uppercase tracking-widest text-neutral-500">
                   Apuesta
                 </span>
-                <div className="md-stake-field mt-1 flex items-center gap-1 rounded-lg border border-purple-500/30 bg-[#150830]/70 px-2 py-1.5">
+                <div className="mt-1 flex items-center gap-1 rounded-lg border border-neutral-300 bg-neutral-50 px-2 py-1">
                   <input
                     type="number"
                     inputMode="numeric"
                     min={0}
                     value={stake}
                     onChange={(e) => setStake(Math.max(0, Number(e.target.value) || 0))}
-                    className="md-strong w-full bg-transparent font-display text-sm font-black text-white outline-none"
+                    className="w-full min-w-0 bg-transparent font-display text-[11px] font-black text-neutral-900 outline-none"
                   />
-                  <span className="md-eyebrow text-[9px] font-bold text-purple-200/70">COP</span>
+                  <span className="text-[9px] font-bold text-neutral-500">COP</span>
                 </div>
               </label>
               <div>
-                <span className="md-eyebrow block text-[9px] font-bold uppercase tracking-widest text-purple-200/70">
+                <span className="block text-[9px] font-bold uppercase tracking-widest text-neutral-500">
                   Pago posible
                 </span>
-                <div className="mt-1 rounded-lg border border-fuchsia-400/30 bg-fuchsia-500/10 px-2 py-1.5 font-display text-sm font-black text-fuchsia-100">
-                  {formatCOP(potentialPayout)} <span className="text-[9px] font-bold text-fuchsia-200/70">COP</span>
+                <div className="mt-1 rounded-lg border border-fuchsia-300 bg-fuchsia-50 px-2 py-1 font-display text-[11px] font-black text-fuchsia-700">
+                  {formatCOP(potentialPayout)} <span className="text-[9px] font-bold text-fuchsia-500">COP</span>
                 </div>
               </div>
               <button
                 type="button"
-                className="h-full rounded-lg bg-gradient-to-b from-fuchsia-500 to-purple-700 px-4 py-2 font-display text-xs font-black uppercase tracking-widest text-white shadow-[0_0_14px_rgba(168,85,247,0.55)] transition hover:from-fuchsia-400 hover:to-purple-600"
+                className="h-full rounded-lg bg-gradient-to-b from-fuchsia-500 to-purple-700 px-4 py-2 font-display text-xs font-black uppercase tracking-widest text-white shadow-[0_6px_18px_-6px_rgba(168,85,247,0.75)] transition hover:from-fuchsia-400 hover:to-purple-600"
               >
                 Apostar
               </button>
             </div>
           </div>
         </div>
-
-        {/* Bottom nav */}
-        <nav
-          className="home-bottom-nav fixed inset-x-0 bottom-0 z-30 border-t border-purple-500/20 bg-[#060210]/95 backdrop-blur"
-          style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
-        >
-          <div className="mx-auto flex max-w-md items-end justify-between px-4 pt-2 pb-2 sm:max-w-lg">
-            <BottomItem icon={<Home className="h-5 w-5" />} label="INICIO" to="/home" />
-            <BottomItem icon={<Star className="h-5 w-5" />} label="EVENTOS" to="/eventos" />
-            <BottomCenter />
-            <BottomItem icon={<Wallet className="h-5 w-5" />} label="DEPÓSITO" to="/pay" />
-            <BottomItem icon={<User className="h-5 w-5" />} label="PERFIL" to="/perfil" />
-          </div>
-        </nav>
       </div>
     </div>
   );
@@ -459,7 +430,7 @@ function OutcomeCard({
   odd: string;
   selected: boolean;
   onSelect: () => void;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   emphasizeSubtitle?: boolean;
 }) {
   return (
@@ -467,7 +438,7 @@ function OutcomeCard({
       type="button"
       onClick={onSelect}
       aria-pressed={selected}
-      className={`md-outcome-card ${selected ? "md-outcome-card--selected" : ""} relative flex flex-col items-center gap-2 rounded-2xl border px-2 py-4 transition ${
+      className={`md-outcome-card ${selected ? "md-outcome-card--selected" : ""} relative flex flex-col items-center gap-1.5 rounded-2xl border px-2 py-2.5 transition ${
         selected
           ? "border-fuchsia-400/80 bg-[#170a36] shadow-[0_0_0_1px_rgba(240,171,252,0.35),0_0_22px_-4px_rgba(217,70,239,0.75)]"
           : "border-purple-500/25 bg-[#0b0522] hover:border-fuchsia-400/50"
@@ -485,55 +456,13 @@ function OutcomeCard({
       >
         {subtitle}
       </span>
-      <span className="my-1 flex items-center justify-center">{icon}</span>
-      <span className="font-display text-xl font-black text-fuchsia-200 drop-shadow-[0_0_8px_rgba(217,70,239,0.5)]">
+      {icon && <span className="flex items-center justify-center">{icon}</span>}
+      <span className="font-display text-lg font-black text-fuchsia-200 drop-shadow-[0_0_8px_rgba(217,70,239,0.5)]">
         {odd}
       </span>
     </button>
   );
 }
 
-function BottomItem({
-  icon,
-  label,
-  to,
-  active,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  to?: string;
-  active?: boolean;
-}) {
-  const className = `flex w-14 flex-col items-center gap-1 ${
-    active ? "text-emerald-400" : "text-purple-300/70 hover:text-purple-200"
-  }`;
-  const cls = `home-bottom-item ${active ? "home-bottom-item--active" : ""} ${className}`;
-  if (to) {
-    return (
-      <Link to={to} className={cls}>
-        {icon}
-        <span className="text-[9px] font-bold tracking-wider">{label}</span>
-      </Link>
-    );
-  }
-  return (
-    <button className={cls}>
-      {icon}
-      <span className="text-[9px] font-bold tracking-wider">{label}</span>
-    </button>
-  );
-}
-
-function BottomCenter() {
-  return (
-    <Link to="/ranking" className="home-bottom-center -mt-7 flex w-16 flex-col items-center gap-1">
-      <span className="home-bottom-center-circle theme-dark-fixed flex h-14 w-14 items-center justify-center rounded-full border-2 border-purple-500/20 bg-[#060210] shadow-lg shadow-purple-900/60">
-        <Trophy className="h-7 w-7 text-purple-300/70" strokeWidth={2.2} />
-      </span>
-      <span className="home-bottom-center-label text-[9px] font-bold tracking-wider text-purple-200">RANKING</span>
-    </Link>
-  );
-}
-
-// Silence unused import warnings for icons kept for future variants.
-void Shirt;
+// Silence unused helper warnings.
+void JerseyIcon;
