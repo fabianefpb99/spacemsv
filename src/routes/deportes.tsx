@@ -392,7 +392,7 @@ function OddChip({ label, value }: { label: string; value: string }) {
     <button
       type="button"
       onClick={(e) => e.stopPropagation()}
-      className="flex flex-col items-center justify-center gap-0.5 rounded-lg border border-purple-500/25 bg-[#0c0620]/80 py-1.5 transition hover:border-fuchsia-400/60 hover:bg-[#1a0a3a]/80"
+      className="sports-odd-chip flex flex-col items-center justify-center gap-0.5 rounded-lg border border-purple-500/25 bg-[#0c0620]/80 py-1.5 transition hover:border-fuchsia-400/60 hover:bg-[#1a0a3a]/80"
     >
       <span className="text-[10px] font-semibold uppercase tracking-widest text-purple-200/70">
         {label}
