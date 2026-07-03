@@ -589,6 +589,7 @@ function OutcomeCard({
   onSelect,
   icon,
   emphasizeSubtitle,
+  disabled,
 }: {
   title: string;
   subtitle: string;
@@ -597,13 +598,15 @@ function OutcomeCard({
   onSelect: () => void;
   icon?: React.ReactNode;
   emphasizeSubtitle?: boolean;
+  disabled?: boolean;
 }) {
   return (
     <button
       type="button"
       onClick={onSelect}
       aria-pressed={selected}
-      className={`md-outcome-card ${selected ? "md-outcome-card--selected" : ""} relative flex flex-col items-center gap-1.5 rounded-2xl border px-2 py-2.5 transition ${
+      disabled={disabled}
+      className={`md-outcome-card ${selected ? "md-outcome-card--selected" : ""} relative flex flex-col items-center gap-1.5 rounded-2xl border px-2 py-2.5 transition disabled:cursor-not-allowed disabled:opacity-50 ${
         selected
           ? "border-fuchsia-400/80 bg-[#170a36] shadow-[0_0_0_1px_rgba(240,171,252,0.35),0_0_22px_-4px_rgba(217,70,239,0.75)]"
           : "border-purple-500/25 bg-[#0b0522] hover:border-fuchsia-400/50"
