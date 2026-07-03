@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useNavigate, useRouter } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -11,6 +11,9 @@ import {
   ArrowLeft,
   Info,
   Handshake,
+  CheckCircle2,
+  Ticket,
+  RotateCcw,
 } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import stadiumBg from "@/assets/stadium-bg.jpg";
@@ -150,17 +153,42 @@ function MatchDetailPage() {
   const me = useMe();
   const queryClient = useQueryClient();
   const router = useRouter();
+  const navigate = useNavigate();
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [selection, setSelection] = useState<"home" | "draw" | "away">("draw");
   const [stake, setStake] = useState<number>(10000);
+  const [placed, setPlaced] = useState<
+    | null
+    | {
+        label: string;
+        odd: number;
+        stake: number;
+        payout: number;
+      }
+  >(null);
   const balanceText = me.data ? formatCOP(me.data.balance) : "—";
   const placeBetFn = useServerFn(placeSportsBet);
   const mutation = useMutation({
     mutationFn: (vars: { matchId: string; selection: "home" | "draw" | "away"; stake: number }) =>
       placeBetFn({ data: vars }),
-    onSuccess: () => {
-      toast.success("¡Apuesta registrada!", {
-        description: "Puedes verla en 'Mis apuestas'.",
+    onSuccess: (_res, vars) => {
+      const odd =
+        vars.selection === "home"
+          ? parseFloat(match.odds.home)
+          : vars.selection === "away"
+            ? parseFloat(match.odds.away)
+            : parseFloat(match.odds.draw);
+      const label =
+        vars.selection === "home"
+          ? `GANA ${match.home.name.toUpperCase()}`
+          : vars.selection === "away"
+            ? `GANA ${match.away.name.toUpperCase()}`
+            : "EMPATE";
+      setPlaced({
+        label,
+        odd,
+        stake: vars.stake,
+        payout: Math.floor(vars.stake * odd),
       });
       queryClient.invalidateQueries({ queryKey: ["me"] });
       queryClient.invalidateQueries({ queryKey: ["my-sports-bets"] });
@@ -170,6 +198,21 @@ function MatchDetailPage() {
       toast.error(toFriendlyError(err, "No pudimos registrar la apuesta."));
     },
   });
+
+  function goToMyBets() {
+    try {
+      if (typeof window !== "undefined") {
+        window.sessionStorage.setItem("sports.openMias", "1");
+      }
+    } catch {
+      /* ignore */
+    }
+    navigate({ to: "/deportes" });
+  }
+
+  function newBet() {
+    setPlaced(null);
+  }
 
   const selected = useMemo(() => {
     if (selection === "home")
@@ -391,6 +434,61 @@ function MatchDetailPage() {
           className="md-ticket-light fixed inset-x-0 bottom-0 z-30 border-t border-neutral-200 bg-white shadow-[0_-10px_30px_-10px_rgba(0,0,0,0.35)]"
           style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
         >
+          {placed ? (
+            <div className="mx-auto max-w-md px-4 py-4 sm:max-w-lg sm:px-5" role="status" aria-live="polite">
+              <div className="flex items-center gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 ring-4 ring-emerald-50">
+                  <CheckCircle2 className="h-6 w-6" strokeWidth={2.4} />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="font-display text-[15px] font-black text-neutral-900">
+                    ¡Tu apuesta ha sido realizada!
+                  </div>
+                  <div className="mt-0.5 truncate text-[11px] font-medium text-neutral-500">
+                    {placed.label} · Cuota {placed.odd.toFixed(2)}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <div className="rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2">
+                  <div className="text-[9px] font-bold uppercase tracking-widest text-neutral-500">
+                    Apostaste
+                  </div>
+                  <div className="mt-0.5 font-display text-sm font-black text-neutral-900">
+                    ${formatCOP(placed.stake)} <span className="text-[9px] font-bold text-neutral-500">COP</span>
+                  </div>
+                </div>
+                <div className="rounded-xl border border-fuchsia-200 bg-fuchsia-50 px-3 py-2">
+                  <div className="text-[9px] font-bold uppercase tracking-widest text-fuchsia-500">
+                    Pago posible
+                  </div>
+                  <div className="mt-0.5 font-display text-sm font-black text-fuchsia-700">
+                    ${formatCOP(placed.payout)} <span className="text-[9px] font-bold text-fuchsia-500">COP</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-3 grid grid-cols-[3fr_2fr] gap-2">
+                <button
+                  type="button"
+                  onClick={goToMyBets}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-b from-fuchsia-500 to-purple-700 py-3 font-display text-[12px] font-black uppercase tracking-widest text-white shadow-[0_6px_18px_-6px_rgba(168,85,247,0.75)] transition hover:from-fuchsia-400 hover:to-purple-600 active:scale-[0.98]"
+                >
+                  <Ticket className="h-4 w-4" strokeWidth={2.4} />
+                  Ver mis apuestas
+                </button>
+                <button
+                  type="button"
+                  onClick={newBet}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-neutral-300 bg-white py-3 font-display text-[11px] font-black uppercase tracking-widest text-neutral-800 transition hover:bg-neutral-50 active:scale-[0.98]"
+                >
+                  <RotateCcw className="h-4 w-4" strokeWidth={2.4} />
+                  Nueva apuesta
+                </button>
+              </div>
+            </div>
+          ) : (
           <div className="mx-auto max-w-md px-4 py-3.5 sm:max-w-lg sm:px-5">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
@@ -460,6 +558,7 @@ function MatchDetailPage() {
               </button>
             </div>
           </div>
+          )}
         </div>
       </div>
     </div>
