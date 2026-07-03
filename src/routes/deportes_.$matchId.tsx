@@ -171,7 +171,11 @@ function MatchDetailPage() {
   const mutation = useMutation({
     mutationFn: (vars: { matchId: string; selection: "home" | "draw" | "away"; stake: number }) =>
       placeBetFn({ data: vars }),
-    onSuccess: (_res, vars) => {
+    onSuccess: (res, vars) => {
+      if (!res.ok) {
+        toast.error(toFriendlyError(new Error(res.error), "No pudimos registrar la apuesta."));
+        return;
+      }
       const odd =
         vars.selection === "home"
           ? parseFloat(match.odds.home)
