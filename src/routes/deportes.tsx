@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, Home, Star, Wallet, User, Trophy, Calendar, Clock, ChevronRight, Ticket } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import mundialHeroAsset from "@/assets/mundial-hero.webp.asset.json";
@@ -142,6 +142,17 @@ function DeportesPage() {
   const me = useMe();
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [selector, setSelector] = useState<"futbol" | "mundial" | "mias">("mundial");
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      if (window.sessionStorage.getItem("sports.openMias") === "1") {
+        window.sessionStorage.removeItem("sports.openMias");
+        setSelector("mias");
+      }
+    } catch {
+      /* ignore */
+    }
+  }, []);
   const balanceText = me.data ? formatCOP(me.data.balance) : "—";
   const matchesQuery = usePublishedMatches();
   const matches = matchesQuery.data ?? [];
