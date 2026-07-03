@@ -407,6 +407,21 @@ html.light .sports-selector-btn.sports-selector-btn--active * {
   color: #ffffff !important;
 }
 
+/* Deportes — OddChip (1 / X / 2) dentro de la tarjeta de partido.
+ * La tarjeta es .theme-dark-fixed (siempre oscura), pero en modo claro
+ * los chips se pierden sobre el fondo navy. Les damos un fondo un pelín
+ * más claro y un borde fucsia sutil para que resalten sin tocar el modo
+ * oscuro. */
+html.light .theme-dark-fixed .sports-odd-chip {
+  background-color: #1a0f3d !important;
+  border-color: rgba(217, 70, 239, 0.42) !important;
+  box-shadow: 0 0 0 1px rgba(217, 70, 239, 0.08), 0 4px 12px -6px rgba(217, 70, 239, 0.35) !important;
+}
+html.light .theme-dark-fixed .sports-odd-chip:hover {
+  background-color: #241452 !important;
+  border-color: rgba(240, 171, 252, 0.7) !important;
+}
+
 /* ------------------------------------------------------------------
  * Light mode — HEADER fine-tuning per user feedback:
  *   - dollar sign ($) must be dark, not neon green
