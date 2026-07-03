@@ -81,6 +81,7 @@ export const Route = createFileRoute("/deportes_/$matchId")({
     if (!UUID_RE.test(params.matchId)) throw notFound();
     const res = await getPublicMatch({ data: { id: params.matchId } });
     if (!res?.match) throw notFound();
+    const r = res.match;
     const { date, time } = formatMatchDate(r.start_at);
     const started = r.status !== "scheduled" || new Date() >= new Date(r.start_at);
     const match: MatchDetail = {
