@@ -530,13 +530,13 @@ function selectionLabel(sel: "home" | "draw" | "away", homeName: string, awayNam
 function statusMeta(status: MyBetRow["status"]) {
   switch (status) {
     case "won":
-      return { text: "Ganada", cls: "border-emerald-400/60 bg-emerald-500/15 text-emerald-100" };
+      return { text: "Ganada", key: "won" as const };
     case "lost":
-      return { text: "Perdida", cls: "border-red-400/50 bg-red-500/15 text-red-100" };
+      return { text: "Perdida", key: "lost" as const };
     case "refunded":
-      return { text: "Reembolso", cls: "border-purple-400/60 bg-purple-500/15 text-purple-100" };
+      return { text: "Reembolso", key: "refunded" as const };
     default:
-      return { text: "Pendiente", cls: "border-fuchsia-400/60 bg-fuchsia-500/15 text-fuchsia-100" };
+      return { text: "Pendiente", key: "pending" as const };
   }
 }
 
@@ -552,32 +552,34 @@ function MyBetRowCard({ bet }: { bet: MyBetRow }) {
     <Link
       to="/deportes/$matchId"
       params={{ matchId: bet.match_id }}
-      className="theme-dark-fixed block rounded-2xl border border-purple-500/25 bg-[#0c0620]/85 p-3 transition hover:border-fuchsia-400/60"
+      className="my-bet-card block rounded-2xl p-3 transition"
     >
       <div className="flex items-center gap-2">
-        <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-widest ${meta.cls}`}>
+        <span
+          className={`my-bet-status my-bet-status--${meta.key} inline-flex items-center rounded-full border px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-widest`}
+        >
           {meta.text}
         </span>
-        <span className="ml-auto font-display text-[11px] font-black text-fuchsia-200">
+        <span className="my-bet-odds ml-auto font-display text-[11px] font-black">
           @ {bet.odds.toFixed(2)}
         </span>
       </div>
-      <div className="mt-1.5 truncate font-display text-[12px] font-black text-white">
+      <div className="my-bet-selection mt-1.5 truncate font-display text-[12px] font-black">
         {selectionLabel(bet.selection, bet.home_name, bet.away_name)}
       </div>
-      <div className="mt-0.5 truncate text-[10px] text-purple-200/70">
+      <div className="my-bet-teams mt-0.5 truncate text-[10px]">
         {bet.home_name} vs {bet.away_name}
       </div>
       <div className="mt-2 grid grid-cols-2 gap-2">
-        <div className="rounded-lg border border-purple-500/20 bg-[#150830]/70 px-2 py-1.5">
-          <div className="text-[8px] font-bold uppercase tracking-widest text-purple-200/70">Apuesta</div>
-          <div className="font-display text-[11px] font-black text-white">{formatCOP(bet.stake)} COP</div>
+        <div className="my-bet-stake rounded-lg px-2 py-1.5">
+          <div className="my-bet-box-label text-[8px] font-bold uppercase tracking-widest">Apuesta</div>
+          <div className="my-bet-box-value font-display text-[11px] font-black">{formatCOP(bet.stake)} COP</div>
         </div>
-        <div className="rounded-lg border border-fuchsia-400/30 bg-fuchsia-500/10 px-2 py-1.5">
-          <div className="text-[8px] font-bold uppercase tracking-widest text-fuchsia-200/80">
+        <div className="my-bet-payout rounded-lg px-2 py-1.5">
+          <div className="my-bet-box-label text-[8px] font-bold uppercase tracking-widest">
             {bet.status === "won" ? "Ganancia" : bet.status === "refunded" ? "Reembolso" : bet.status === "lost" ? "Habría pagado" : "Pago posible"}
           </div>
-          <div className="font-display text-[11px] font-black text-fuchsia-100">{formatCOP(payout)} COP</div>
+          <div className="my-bet-box-value font-display text-[11px] font-black">{formatCOP(payout)} COP</div>
         </div>
       </div>
     </Link>
