@@ -10,6 +10,7 @@ import {
   Handshake,
 } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
+import stadiumBg from "@/assets/stadium-bg.jpg";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { NotificationBell } from "@/components/admin/NotificationBell";
 import { AuthDialog } from "@/components/auth/AuthDialog";
@@ -210,8 +211,19 @@ function MatchDetailPage() {
         </header>
         <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
 
-        <div className="theme-dark-fixed flex-1 bg-[#060210] px-4 pb-72 pt-4 sm:px-5">
-          <div className="flex items-center gap-3">
+        <div className="theme-dark-fixed relative flex-1 overflow-hidden bg-[#060210] px-4 pb-72 pt-4 sm:px-5">
+          <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[380px] sm:h-[420px]">
+            <img
+              src={stadiumBg}
+              alt=""
+              width={1280}
+              height={768}
+              className="absolute inset-0 h-full w-full object-cover opacity-60"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#060210]/55 via-[#060210]/75 to-[#060210]" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(168,85,247,0.28),transparent_65%)]" />
+          </div>
+          <div className="relative flex items-center gap-3">
             <Link
               to="/deportes"
               aria-label="Volver a Deportes"
@@ -228,7 +240,7 @@ function MatchDetailPage() {
             <div className="h-9 w-9 shrink-0" aria-hidden="true" />
           </div>
 
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+          <div className="relative mt-4 flex flex-wrap items-center justify-center gap-2">
             <span className="md-strong inline-flex items-center gap-1.5 rounded-full border border-purple-500/25 bg-[#0b0522] px-2.5 py-1 text-[10px] font-semibold text-purple-100">
               <Calendar className="h-3 w-3 text-purple-300/80" />
               {match.date}
@@ -245,7 +257,7 @@ function MatchDetailPage() {
             )}
           </div>
 
-          <section className="mt-8 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+          <section className="relative mt-8 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
             <div className="flex flex-col items-center gap-3">
               <span className="flex h-16 w-24 items-center justify-center overflow-hidden rounded-lg ring-1 ring-white/15 shadow-[0_6px_20px_-6px_rgba(0,0,0,0.7)]">
                 <Flag code={match.home.code} name={match.home.name} />
