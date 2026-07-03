@@ -233,7 +233,7 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
                 <div className="mx-4 h-px bg-purple-500/15" />
 
                 <nav className="mt-2 flex-1 overflow-y-auto px-2">
-                  <div className="mb-3 grid grid-cols-2 gap-2 px-1">
+                  <div className="mb-2 flex flex-col gap-1.5 px-1">
                     {PRIMARY_ITEMS.map((it) => {
                       const isFuchsia = it.accent === "fuchsia";
                       return (
@@ -244,23 +244,30 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
                             setOpen(false);
                             navigate({ to: it.to });
                           }}
-                          className={`group relative flex flex-col items-center justify-center gap-1.5 overflow-hidden rounded-xl border px-2 py-3 text-center transition ${
+                          className={`group relative flex w-full items-center gap-3 overflow-hidden rounded-xl border px-3 py-2.5 text-left transition ${
                             isFuchsia
-                              ? "border-fuchsia-400/40 bg-gradient-to-br from-fuchsia-600/30 via-purple-700/25 to-[#1a0a3a] shadow-[0_0_20px_rgba(217,70,239,0.25)] hover:shadow-[0_0_28px_rgba(217,70,239,0.55)] hover:border-fuchsia-300/70"
-                              : "border-cyan-400/40 bg-gradient-to-br from-cyan-500/25 via-sky-700/25 to-[#04162a] shadow-[0_0_20px_rgba(34,211,238,0.22)] hover:shadow-[0_0_28px_rgba(34,211,238,0.5)] hover:border-cyan-300/70"
+                              ? "border-fuchsia-500/40 bg-gradient-to-r from-fuchsia-600/20 via-purple-900/20 to-transparent shadow-[0_0_16px_rgba(217,70,239,0.18)] hover:from-fuchsia-600/30 hover:shadow-[0_0_22px_rgba(217,70,239,0.35)]"
+                              : "border-cyan-500/40 bg-gradient-to-r from-cyan-500/20 via-sky-900/20 to-transparent shadow-[0_0_16px_rgba(34,211,238,0.16)] hover:from-cyan-500/30 hover:shadow-[0_0_22px_rgba(34,211,238,0.32)]"
                           }`}
                         >
                           <span
-                            className={`flex h-9 w-9 items-center justify-center rounded-full ${
+                            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
                               isFuchsia
-                                ? "bg-fuchsia-500/20 text-fuchsia-200"
-                                : "bg-cyan-500/20 text-cyan-200"
+                                ? "bg-fuchsia-500/25 text-fuchsia-200 shadow-[0_0_12px_rgba(217,70,239,0.25)]"
+                                : "bg-cyan-500/25 text-cyan-200 shadow-[0_0_12px_rgba(34,211,238,0.22)]"
                             }`}
                           >
-                            <it.icon className="h-5 w-5" strokeWidth={2.4} />
+                            <it.icon className="h-4 w-4" strokeWidth={2.4} />
                           </span>
-                          <span className="text-[12px] font-black uppercase tracking-wider text-white">
+                          <span className="flex-1 text-[13px] font-black uppercase tracking-wider text-white">
                             {it.label}
+                          </span>
+                          <span
+                            className={`text-sm font-bold transition group-hover:translate-x-0.5 ${
+                              isFuchsia ? "text-fuchsia-300" : "text-cyan-300"
+                            }`}
+                          >
+                            ›
                           </span>
                         </button>
                       );
