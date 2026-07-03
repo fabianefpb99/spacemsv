@@ -380,7 +380,8 @@ html.light .bg-black\/30:not(:is(header, nav) *) {
  * texto morado, y pestaña activa como pill morado sólido sin gradiente
  * ruidoso.
  * ------------------------------------------------------------------ */
-html.light .grid.grid-cols-2.bg-\[\#0c0620\]\/95 {
+html.light .grid.grid-cols-2.bg-\[\#0c0620\]\/95,
+html.light .grid.grid-cols-\[2fr_2fr_1fr\].bg-\[\#0c0620\]\/95 {
   background-color: #ffffff !important;
   border-color: rgba(30, 18, 60, 0.10) !important;
   box-shadow: 0 6px 20px -10px rgba(30, 18, 60, 0.18) !important;
