@@ -363,7 +363,8 @@ function MatchDetailPage() {
           className="md-ticket-light fixed inset-x-0 bottom-0 z-30 border-t border-neutral-200 bg-white shadow-[0_-10px_30px_-10px_rgba(0,0,0,0.35)]"
           style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
         >
-          <div className="mx-auto max-w-md px-4 pt-2.5 pb-2.5 sm:max-w-lg sm:px-5">
+          <div className="mx-auto max-w-md px-4 py-3.5 sm:max-w-lg sm:px-5">
+            {/* Selección y cuota */}
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
                 <div className="text-[9px] font-bold uppercase tracking-widest text-neutral-500">
@@ -373,42 +374,56 @@ function MatchDetailPage() {
                   {selected.label}
                 </div>
               </div>
-              <div className="font-display text-xl font-black text-fuchsia-600">
+              <div className="font-display text-2xl font-black text-fuchsia-600">
                 {selected.odd.toFixed(2)}
               </div>
             </div>
-            <div className="mt-2 grid grid-cols-[1fr_1fr_auto] items-end gap-2">
-              <label className="block">
-                <span className="block text-[9px] font-bold uppercase tracking-widest text-neutral-500">
-                  Apuesta
-                </span>
-                <div className="mt-1 flex items-center gap-1 rounded-lg border border-neutral-300 bg-neutral-50 px-2 py-1">
-                  <input
-                    type="number"
-                    inputMode="numeric"
-                    min={0}
-                    value={stake}
-                    onChange={(e) => setStake(Math.max(0, Number(e.target.value) || 0))}
-                    className="w-full min-w-0 bg-transparent font-display text-[11px] font-black text-neutral-900 outline-none"
-                  />
-                  <span className="text-[9px] font-bold text-neutral-500">COP</span>
-                </div>
-              </label>
-              <div>
-                <span className="block text-[9px] font-bold uppercase tracking-widest text-neutral-500">
-                  Pago posible
-                </span>
-                <div className="mt-1 rounded-lg border border-fuchsia-300 bg-fuchsia-50 px-2 py-1 font-display text-[11px] font-black text-fuchsia-700">
-                  {formatCOP(potentialPayout)} <span className="text-[9px] font-bold text-fuchsia-500">COP</span>
-                </div>
-              </div>
-              <button
-                type="button"
-                className="h-full rounded-lg bg-gradient-to-b from-fuchsia-500 to-purple-700 px-4 py-2 font-display text-xs font-black uppercase tracking-widest text-white shadow-[0_6px_18px_-6px_rgba(168,85,247,0.75)] transition hover:from-fuchsia-400 hover:to-purple-600"
+
+            <div className="my-3 h-px bg-neutral-200" />
+
+            {/* Apuesta */}
+            <div>
+              <label
+                htmlFor="stake"
+                className="block text-[9px] font-bold uppercase tracking-widest text-neutral-500"
               >
-                Apostar
-              </button>
+                Apuesta
+              </label>
+              <div className="mt-1.5 flex items-center gap-2 rounded-xl border border-neutral-300 bg-neutral-50 px-3 py-2">
+                <span className="text-sm font-bold text-neutral-500">$</span>
+                <input
+                  id="stake"
+                  type="number"
+                  inputMode="numeric"
+                  min={0}
+                  value={stake}
+                  onChange={(e) => setStake(Math.max(0, Number(e.target.value) || 0))}
+                  className="w-full min-w-0 bg-transparent font-display text-sm font-black text-neutral-900 outline-none"
+                />
+                <span className="text-[10px] font-bold text-neutral-500">COP</span>
+              </div>
             </div>
+
+            {/* Pago posible */}
+            <div className="mt-3">
+              <div className="text-[9px] font-bold uppercase tracking-widest text-neutral-500">
+                Pago posible
+              </div>
+              <div className="mt-1.5 flex items-center justify-between rounded-xl border border-fuchsia-300 bg-fuchsia-50 px-3 py-2">
+                <span className="font-display text-base font-black text-fuchsia-700">
+                  {formatCOP(potentialPayout)}
+                </span>
+                <span className="text-[10px] font-bold text-fuchsia-500">COP</span>
+              </div>
+            </div>
+
+            {/* Botón Apostar */}
+            <button
+              type="button"
+              className="mt-4 w-full rounded-xl bg-gradient-to-b from-fuchsia-500 to-purple-700 py-3.5 font-display text-sm font-black uppercase tracking-widest text-white shadow-[0_6px_18px_-6px_rgba(168,85,247,0.75)] transition hover:from-fuchsia-400 hover:to-purple-600 active:scale-[0.98]"
+            >
+              Apostar
+            </button>
           </div>
         </div>
       </div>
