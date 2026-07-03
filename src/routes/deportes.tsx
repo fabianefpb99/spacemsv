@@ -194,7 +194,7 @@ function DeportesPage() {
         <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
 
         {/* Hero banner Mundial 2026 (ancho completo del contenedor, como el slider del Home) */}
-        <section className="relative w-full overflow-hidden bg-[#0c0620]">
+        <section className="theme-dark-fixed relative w-full overflow-hidden bg-[#0c0620]">
           <div className="relative h-52 w-full sm:h-60">
             <img
               src={mundialHeroAsset.url}
