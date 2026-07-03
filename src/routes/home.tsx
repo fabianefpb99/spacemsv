@@ -1226,6 +1226,37 @@ function HomePage() {
           `}</style>
         </section>
 
+        {/* Deportes — banner promocional */}
+        <Link
+          to="/deportes"
+          className="promo-banner promo-banner--deportes relative mt-5 block h-24 overflow-hidden rounded-xl border border-purple-400/70 shadow-[0_0_12px_rgba(168,85,247,0.3)] transition hover:shadow-[0_0_22px_rgba(168,85,247,0.6)] sm:h-28"
+        >
+          <SkeletonImage
+            src={mundialHeroAsset.url}
+            alt="Deportes"
+            loading="lazy"
+            wrapperClassName="absolute inset-0 h-full w-full"
+            className="h-full w-full object-cover"
+          />
+          <div className="promo-banner__scrim pointer-events-none absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent" />
+          <div className="relative z-10 flex h-full items-center justify-between gap-3 px-4 sm:px-5">
+            <div className="min-w-0 flex-1">
+              <div className="promo-banner__eyebrow text-[10px] font-semibold uppercase tracking-widest text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+                Apuesta y gana
+              </div>
+              <div className="promo-banner__title mt-0.5 font-display text-2xl font-black leading-none tracking-wide text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] sm:text-3xl">
+                Deportes
+              </div>
+              <div className="promo-banner__tag mt-1 inline-block rounded-sm bg-purple-600/80 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white shadow-[0_0_8px_rgba(168,85,247,0.6)]">
+                Mundial 2026
+              </div>
+            </div>
+            <span className="home-promo-arrow promo-banner__chev promo-banner__chev--glass flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
+              <ChevronRight className="h-4 w-4" />
+            </span>
+          </div>
+        </Link>
+
         {/* Tus favoritos */}
         {favoriteCards.length === 4 && (
           <section className="mt-5">
