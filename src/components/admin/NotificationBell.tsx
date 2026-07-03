@@ -47,6 +47,16 @@ function relativeTime(iso: string) {
   return `hace ${d} d`;
 }
 
+function useRelativeTime(iso: string) {
+  const [text, setText] = useState(() => relativeTime(iso));
+  useEffect(() => {
+    setText(relativeTime(iso));
+    const id = setInterval(() => setText(relativeTime(iso)), 60000);
+    return () => clearInterval(id);
+  }, [iso]);
+  return text;
+}
+
 function typeIcon(t: string) {
   switch (t) {
     case "recharge_request":
@@ -226,7 +236,7 @@ function BellInner({ userId }: { userId: string }) {
                         </p>
                       )}
                       <span className="mt-1 block text-[10px] text-purple-300/60">
-                        {relativeTime(n.created_at)}
+                        {useRelativeTime(n.created_at)}
                       </span>
                     </div>
                   </Link>

@@ -231,7 +231,7 @@ function MatchDetailPage() {
         <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
 
         {/* Cuerpo: theme-dark-fixed para look premium consistente en claro y oscuro */}
-        <div className="theme-dark-fixed flex-1 bg-[#060210] px-4 pb-96 pt-4 sm:px-5">
+        <div className="theme-dark-fixed flex-1 bg-[#060210] px-4 pb-72 pt-4 sm:px-5">
           {/* Top row: back arrow + competencia */}
           <div className="flex items-center gap-3">
             <Link
@@ -404,26 +404,26 @@ function MatchDetailPage() {
               </div>
             </div>
 
-            {/* Pago posible */}
-            <div className="mt-3">
-              <div className="text-[9px] font-bold uppercase tracking-widest text-neutral-500">
-                Pago posible
+            {/* Pago posible + Apostar en la misma fila */}
+            <div className="mt-3 grid grid-cols-[2fr_3fr] items-end gap-3">
+              <div>
+                <div className="text-[9px] font-bold uppercase tracking-widest text-neutral-500">
+                  Pago posible
+                </div>
+                <div className="mt-1.5 flex items-center justify-between rounded-xl border border-fuchsia-300 bg-fuchsia-50 px-2.5 py-2">
+                  <span className="font-display text-sm font-black text-fuchsia-700">
+                    {formatCOP(potentialPayout)}
+                  </span>
+                  <span className="text-[9px] font-bold text-fuchsia-500">COP</span>
+                </div>
               </div>
-              <div className="mt-1.5 flex items-center justify-between rounded-xl border border-fuchsia-300 bg-fuchsia-50 px-3 py-2">
-                <span className="font-display text-base font-black text-fuchsia-700">
-                  {formatCOP(potentialPayout)}
-                </span>
-                <span className="text-[10px] font-bold text-fuchsia-500">COP</span>
-              </div>
+              <button
+                type="button"
+                className="w-full rounded-xl bg-gradient-to-b from-fuchsia-500 to-purple-700 py-3 font-display text-sm font-black uppercase tracking-widest text-white shadow-[0_6px_18px_-6px_rgba(168,85,247,0.75)] transition hover:from-fuchsia-400 hover:to-purple-600 active:scale-[0.98]"
+              >
+                Apostar
+              </button>
             </div>
-
-            {/* Botón Apostar */}
-            <button
-              type="button"
-              className="mt-4 w-full rounded-xl bg-gradient-to-b from-fuchsia-500 to-purple-700 py-3.5 font-display text-sm font-black uppercase tracking-widest text-white shadow-[0_6px_18px_-6px_rgba(168,85,247,0.75)] transition hover:from-fuchsia-400 hover:to-purple-600 active:scale-[0.98]"
-            >
-              Apostar
-            </button>
           </div>
         </div>
       </div>
