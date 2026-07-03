@@ -374,6 +374,40 @@ html.light .bg-black\/30:not(:is(header, nav) *) {
 }
 
 /* ------------------------------------------------------------------
+ * Deportes (/deportes) — selector Fútbol / Mundial 2026 en modo claro.
+ * En oscuro es un card navy con pestaña activa en gradiente fucsia.
+ * En claro replicamos el boceto: card blanco con divisor central,
+ * texto morado, y pestaña activa como pill morado sólido sin gradiente
+ * ruidoso.
+ * ------------------------------------------------------------------ */
+html.light .grid.grid-cols-2.bg-\[\#0c0620\]\/95 {
+  background-color: #ffffff !important;
+  border-color: rgba(30, 18, 60, 0.10) !important;
+  box-shadow: 0 6px 20px -10px rgba(30, 18, 60, 0.18) !important;
+}
+html.light .sports-selector-btn {
+  color: #6b21a8 !important;
+}
+html.light .sports-selector-btn:not(.sports-selector-btn--active) {
+  background: transparent !important;
+  filter: none !important;
+}
+html.light .sports-selector-btn:not(.sports-selector-btn--active):hover {
+  background-color: rgba(30, 18, 60, 0.04) !important;
+  color: #4c1d95 !important;
+}
+html.light .sports-selector-btn.sports-selector-btn--active {
+  background: #7c3aed !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  filter: none !important;
+  box-shadow: 0 6px 16px -6px rgba(124, 58, 237, 0.55) !important;
+}
+html.light .sports-selector-btn.sports-selector-btn--active * {
+  color: #ffffff !important;
+}
+
+/* ------------------------------------------------------------------
  * Light mode — HEADER fine-tuning per user feedback:
  *   - dollar sign ($) must be dark, not neon green
  *   - gear / bell icons must be dark, not pastel
