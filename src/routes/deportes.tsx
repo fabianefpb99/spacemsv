@@ -227,12 +227,13 @@ function DeportesPage() {
         <div className="px-3 pb-28 sm:px-4">
           {/* Selector flotante Fútbol / Mundial 2026 (superpuesto ~50% al banner) */}
           <div className="relative z-10 -mt-10 grid grid-cols-2 gap-1.5 rounded-2xl border border-purple-500/30 bg-[#0c0620]/95 p-1.5 shadow-[0_14px_36px_-12px_rgba(168,85,247,0.6)] backdrop-blur">
+            {/* Selector: en modo oscuro fondo navy; en modo claro fondo blanco (ver styles.css) */}
             <button
               type="button"
               onClick={() => setSelector("futbol")}
-              className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[11px] font-extrabold uppercase tracking-wider transition ${
+              className={`sports-selector-btn flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[11px] font-extrabold uppercase tracking-wider transition ${
                 selector === "futbol"
-                  ? "bg-gradient-to-b from-purple-600 to-fuchsia-700 text-white shadow-[0_0_14px_rgba(168,85,247,0.55)]"
+                  ? "sports-selector-btn--active bg-gradient-to-b from-purple-600 to-fuchsia-700 text-white shadow-[0_0_14px_rgba(168,85,247,0.55)]"
                   : "text-purple-200/80 hover:text-white hover:bg-white/5"
               }`}
             >
@@ -242,9 +243,9 @@ function DeportesPage() {
             <button
               type="button"
               onClick={() => setSelector("mundial")}
-              className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[11px] font-extrabold uppercase tracking-wider transition ${
+              className={`sports-selector-btn flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[11px] font-extrabold uppercase tracking-wider transition ${
                 selector === "mundial"
-                  ? "bg-gradient-to-b from-purple-600 to-fuchsia-700 text-white shadow-[0_0_14px_rgba(168,85,247,0.55)]"
+                  ? "sports-selector-btn--active bg-gradient-to-b from-purple-600 to-fuchsia-700 text-white shadow-[0_0_14px_rgba(168,85,247,0.55)]"
                   : "text-purple-200/80 hover:text-white hover:bg-white/5"
               }`}
             >
@@ -308,7 +309,7 @@ function MatchCard({ match }: { match: Match }) {
       role="button"
       tabIndex={0}
       aria-label={`${match.home.name} vs ${match.away.name} — ${match.competition}`}
-      className="group relative overflow-hidden rounded-2xl border border-purple-500/30 bg-[#0c0620]/90 p-3 shadow-[0_0_16px_rgba(76,29,149,0.25)] transition hover:border-fuchsia-400/60 hover:shadow-[0_0_18px_rgba(217,70,239,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-400/70 sm:p-4"
+      className="theme-dark-fixed group relative overflow-hidden rounded-2xl border border-purple-500/30 bg-[#0c0620]/90 p-3 shadow-[0_0_16px_rgba(76,29,149,0.25)] transition hover:border-fuchsia-400/60 hover:shadow-[0_0_18px_rgba(217,70,239,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-400/70 sm:p-4"
     >
       {/* Fila superior: todo en una línea */}
       <div className="flex items-center gap-1.5 whitespace-nowrap">
