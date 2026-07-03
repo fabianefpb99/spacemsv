@@ -47,6 +47,16 @@ function relativeTime(iso: string) {
   return `hace ${d} d`;
 }
 
+function useRelativeTime(iso: string) {
+  const [text, setText] = useState(() => relativeTime(iso));
+  useEffect(() => {
+    setText(relativeTime(iso));
+    const id = setInterval(() => setText(relativeTime(iso)), 60000);
+    return () => clearInterval(id);
+  }, [iso]);
+  return text;
+}
+
 function typeIcon(t: string) {
   switch (t) {
     case "recharge_request":
