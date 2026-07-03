@@ -1062,6 +1062,7 @@ function friendly(msg: string) {
     competition_has_matches: "No se puede eliminar: tiene partidos asociados.",
     slug_invalid: "El identificador solo admite minúsculas, números y guiones.",
     invalid_timezone: "Zona horaria no reconocida.",
+    invalid_flag_code: "La bandera seleccionada no está en la lista oficial de Mundial 2026.",
   };
   const raw = msg.replace(/^Error:\s*/, "").trim();
   return map[raw] ?? raw;
