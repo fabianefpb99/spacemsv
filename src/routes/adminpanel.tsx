@@ -117,7 +117,14 @@ function AdminPanelPage() {
     };
   }, []);
 
-  if (!loading && !user) {
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#060210] text-purple-200">
+        <Loader2 className="h-6 w-6 animate-spin" />
+      </div>
+    );
+  }
+  if (!user) {
     return (
       <GateMessage
         title="Inicia sesión"
