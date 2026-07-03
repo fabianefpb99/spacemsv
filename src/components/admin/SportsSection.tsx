@@ -591,32 +591,41 @@ function MatchModal({
           </select>
         </Field>
 
-        <div className="grid grid-cols-[1fr_auto_1fr] gap-2">
-          <Field label="Local">
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-2 rounded-lg border border-purple-500/25 bg-[#150830]/40 p-2">
+            <div className="text-[9px] font-bold uppercase tracking-widest text-purple-200/80">Local</div>
+            <FlagPickerButton
+              value={homeFlag}
+              label="Bandera local"
+              onChange={(t) => {
+                setHomeFlag(t.code);
+                if (!homeName.trim()) setHomeName(t.name);
+              }}
+            />
             <input
               value={homeName}
               onChange={(e) => setHomeName(e.target.value)}
-              placeholder="Argentina"
+              placeholder="Nombre del equipo"
               className={inputCls}
             />
-          </Field>
-          <Field label="Bandera">
-            <input
-              value={homeFlag}
-              onChange={(e) => setHomeFlag(e.target.value.toUpperCase())}
-              placeholder="AR"
-              maxLength={3}
-              className={`${inputCls} w-16 text-center font-mono uppercase`}
+          </div>
+          <div className="space-y-2 rounded-lg border border-purple-500/25 bg-[#150830]/40 p-2">
+            <div className="text-[9px] font-bold uppercase tracking-widest text-purple-200/80">Visitante</div>
+            <FlagPickerButton
+              value={awayFlag}
+              label="Bandera visitante"
+              onChange={(t) => {
+                setAwayFlag(t.code);
+                if (!awayName.trim()) setAwayName(t.name);
+              }}
             />
-          </Field>
-          <Field label="Visitante">
             <input
               value={awayName}
               onChange={(e) => setAwayName(e.target.value)}
-              placeholder="Francia"
+              placeholder="Nombre del equipo"
               className={inputCls}
             />
-          </Field>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-2">
