@@ -18,6 +18,7 @@ import {
   Pencil,
   CheckCircle2,
   Wand2,
+  Undo2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Panel, KpiCard } from "./shared";
@@ -32,6 +33,7 @@ import {
   adminPatchMatchFlags,
   adminSettleMatch,
   adminCancelMatch,
+  adminUnsettleMatch,
   adminDeleteMatch,
   adminGetSportsTimezone,
   adminSetSportsTimezone,
@@ -356,6 +358,7 @@ function MatchRow({
 }) {
   const patchFn = useServerFn(adminPatchMatchFlags);
   const cancelFn = useServerFn(adminCancelMatch);
+  const unsettleFn = useServerFn(adminUnsettleMatch);
   const deleteFn = useServerFn(adminDeleteMatch);
 
   const patchMut = useMutation({
@@ -374,6 +377,14 @@ function MatchRow({
     },
     onError: (e: Error) => toast.error(friendly(e.message)),
   });
+  const unsettleMut = useMutation({
+    mutationFn: () => unsettleFn({ data: { id: match.id } }),
+    onSuccess: () => {
+      toast.success("Liquidación revertida. Los saldos ganados regresaron a la casa.");
+      onAfterMutation();
+    },
+    onError: (e: Error) => toast.error(friendly(e.message)),
+  });
   const deleteMut = useMutation({
     mutationFn: () => deleteFn({ data: { id: match.id } }),
     onSuccess: () => {
@@ -386,6 +397,7 @@ function MatchRow({
   const canEdit = match.status === "scheduled";
   const canSettle = match.status === "live" || match.status === "scheduled" || match.status === "finished";
   const canCancel = match.status === "scheduled" || match.status === "live";
+  const canUnsettle = match.status === "finished" && !!match.settled_at;
 
   return (
     <div className="rounded-xl border border-purple-500/25 bg-[#150830]/60 p-3">
@@ -469,6 +481,22 @@ function MatchRow({
               className="inline-flex items-center gap-1 rounded-md border border-emerald-500/40 bg-emerald-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-200 hover:bg-emerald-500/20"
             >
               <FlagIcon className="h-3 w-3" /> Liquidar
+            </button>
+          )}
+          {canUnsettle && (
+            <button
+              onClick={() => {
+                if (
+                  confirm(
+                    "¿Revertir la liquidación? Los saldos pagados a los ganadores volverán a la casa y las apuestas quedarán pendientes de nuevo.",
+                  )
+                )
+                  unsettleMut.mutate();
+              }}
+              disabled={unsettleMut.isPending}
+              className="inline-flex items-center gap-1 rounded-md border border-amber-500/40 bg-amber-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-200 hover:bg-amber-500/20 disabled:opacity-60"
+            >
+              <Undo2 className="h-3 w-3" /> Revertir
             </button>
           )}
           {canCancel && (
@@ -1232,6 +1260,7 @@ function friendly(msg: string) {
     bets_closed: "Las apuestas ya están cerradas.",
     invalid_score: "Marcador inválido.",
     already_settled: "Este partido ya fue liquidado.",
+    not_settled: "Este partido aún no está liquidado.",
     match_cancelled: "El partido está cancelado.",
     balance_not_found: "Saldo del usuario no encontrado.",
     insufficient_funds: "Saldo insuficiente.",

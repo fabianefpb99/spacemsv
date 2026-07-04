@@ -2245,6 +2245,7 @@ export type Database = {
         Args: { _away_score: number; _home_score: number; _match_id: string }
         Returns: undefined
       }
+      sports_unsettle_match: { Args: { _match_id: string }; Returns: undefined }
     }
     Enums: {
       admin_notification_type:

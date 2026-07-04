@@ -400,6 +400,16 @@ export const adminCancelMatch = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const adminUnsettleMatch = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => idInput.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+    const { error } = await context.supabase.rpc("sports_unsettle_match", { _match_id: data.id });
+    if (error) throw safeRpcError(error);
+    return { ok: true };
+  });
+
 export const adminDeleteMatch = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => idInput.parse(input))
