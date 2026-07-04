@@ -380,12 +380,19 @@ function DeportesPage() {
 }
 
 function MatchCard({ match }: { match: PublicMatch }) {
+  const ready = useFlagsReady([match.home.code, match.away.code]);
   return (
     <Link
       to="/deportes/$matchId"
       params={{ matchId: match.id }}
       aria-label={`${match.home.name} vs ${match.away.name} — ${match.competition}`}
       className="theme-dark-fixed group relative block overflow-hidden rounded-2xl border border-purple-500/30 bg-[#0c0620]/90 p-3 shadow-[0_0_16px_rgba(76,29,149,0.25)] transition hover:border-fuchsia-400/60 hover:shadow-[0_0_18px_rgba(217,70,239,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-400/70 sm:p-4"
+      style={{
+        opacity: ready ? 1 : 0,
+        transform: ready ? "translateY(0)" : "translateY(6px)",
+        transition: "opacity 420ms ease-out, transform 420ms ease-out",
+        pointerEvents: ready ? undefined : "none",
+      }}
     >
       {/* Fila superior: todo en una línea */}
       <div className="flex items-center gap-1.5 whitespace-nowrap">
