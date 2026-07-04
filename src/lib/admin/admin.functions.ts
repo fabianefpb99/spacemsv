@@ -431,7 +431,7 @@ export const adminUpdateRouletteConfig = createServerFn({ method: "POST" })
 /* ----------------------------- Casino stats ----------------------------- */
 
 const rangeInput = z.object({
-  range: z.enum(["today", "week", "month", "custom"]).default("today"),
+  range: z.enum(["today", "week", "month", "3months", "6months", "all", "custom"]).default("today"),
   from: z.string().datetime().optional(),
   to: z.string().datetime().optional(),
 });
@@ -447,6 +447,12 @@ function resolveRange(input: z.infer<typeof rangeInput>) {
     from = new Date(now.getTime() - 7 * 86400 * 1000);
   } else if (input.range === "month") {
     from = new Date(now.getTime() - 30 * 86400 * 1000);
+  } else if (input.range === "3months") {
+    from = new Date(now.getTime() - 90 * 86400 * 1000);
+  } else if (input.range === "6months") {
+    from = new Date(now.getTime() - 180 * 86400 * 1000);
+  } else if (input.range === "all") {
+    from = new Date(0);
   } else {
     from = input.from ? new Date(input.from) : new Date(now.getTime() - 86400 * 1000);
     to = input.to ? new Date(input.to) : now;
