@@ -25,6 +25,7 @@ import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as PayRouteImport } from './routes/pay'
 import { Route as MisRecargasRouteImport } from './routes/mis-recargas'
 import { Route as MinesRouteImport } from './routes/mines'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as EventosRouteImport } from './routes/eventos'
 import { Route as DeportesRouteImport } from './routes/deportes'
@@ -37,6 +38,9 @@ import { Route as AdminpanelRouteImport } from './routes/adminpanel'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PayBrebRouteImport } from './routes/pay_.breb'
 import { Route as DeportesMatchIdRouteImport } from './routes/deportes_.$matchId'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -122,6 +126,11 @@ const MinesRoute = MinesRouteImport.update({
   path: '/mines',
   getParentRoute: () => rootRouteImport,
 } as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HomeRoute = HomeRouteImport.update({
   id: '/home',
   path: '/home',
@@ -182,6 +191,24 @@ const DeportesMatchIdRoute = DeportesMatchIdRouteImport.update({
   path: '/deportes/$matchId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -215,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/deportes': typeof DeportesRoute
   '/eventos': typeof EventosRoute
   '/home': typeof HomeRoute
+  '/mcp': typeof McpRoute
   '/mines': typeof MinesRoute
   '/mis-recargas': typeof MisRecargasRoute
   '/pay': typeof PayRoute
@@ -231,8 +259,11 @@ export interface FileRoutesByFullPath {
   '/terminos': typeof TerminosRoute
   '/transacciones': typeof TransaccionesRoute
   '/vip': typeof VipRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/deportes/$matchId': typeof DeportesMatchIdRoute
   '/pay/breb': typeof PayBrebRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -249,6 +280,7 @@ export interface FileRoutesByTo {
   '/deportes': typeof DeportesRoute
   '/eventos': typeof EventosRoute
   '/home': typeof HomeRoute
+  '/mcp': typeof McpRoute
   '/mines': typeof MinesRoute
   '/mis-recargas': typeof MisRecargasRoute
   '/pay': typeof PayRoute
@@ -265,8 +297,11 @@ export interface FileRoutesByTo {
   '/terminos': typeof TerminosRoute
   '/transacciones': typeof TransaccionesRoute
   '/vip': typeof VipRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/deportes/$matchId': typeof DeportesMatchIdRoute
   '/pay/breb': typeof PayBrebRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -284,6 +319,7 @@ export interface FileRoutesById {
   '/deportes': typeof DeportesRoute
   '/eventos': typeof EventosRoute
   '/home': typeof HomeRoute
+  '/mcp': typeof McpRoute
   '/mines': typeof MinesRoute
   '/mis-recargas': typeof MisRecargasRoute
   '/pay': typeof PayRoute
@@ -300,8 +336,11 @@ export interface FileRoutesById {
   '/terminos': typeof TerminosRoute
   '/transacciones': typeof TransaccionesRoute
   '/vip': typeof VipRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/deportes_/$matchId': typeof DeportesMatchIdRoute
   '/pay_/breb': typeof PayBrebRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -320,6 +359,7 @@ export interface FileRouteTypes {
     | '/deportes'
     | '/eventos'
     | '/home'
+    | '/mcp'
     | '/mines'
     | '/mis-recargas'
     | '/pay'
@@ -336,8 +376,11 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/transacciones'
     | '/vip'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/deportes/$matchId'
     | '/pay/breb'
+    | '/.mcp/invoke-tool/$tool'
     | '/api/public/img/$'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -354,6 +397,7 @@ export interface FileRouteTypes {
     | '/deportes'
     | '/eventos'
     | '/home'
+    | '/mcp'
     | '/mines'
     | '/mis-recargas'
     | '/pay'
@@ -370,8 +414,11 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/transacciones'
     | '/vip'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/deportes/$matchId'
     | '/pay/breb'
+    | '/.mcp/invoke-tool/$tool'
     | '/api/public/img/$'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -388,6 +435,7 @@ export interface FileRouteTypes {
     | '/deportes'
     | '/eventos'
     | '/home'
+    | '/mcp'
     | '/mines'
     | '/mis-recargas'
     | '/pay'
@@ -404,8 +452,11 @@ export interface FileRouteTypes {
     | '/terminos'
     | '/transacciones'
     | '/vip'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/deportes_/$matchId'
     | '/pay_/breb'
+    | '/.mcp/invoke-tool/$tool'
     | '/api/public/img/$'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -423,6 +474,7 @@ export interface RootRouteChildren {
   DeportesRoute: typeof DeportesRoute
   EventosRoute: typeof EventosRoute
   HomeRoute: typeof HomeRoute
+  McpRoute: typeof McpRoute
   MinesRoute: typeof MinesRoute
   MisRecargasRoute: typeof MisRecargasRoute
   PayRoute: typeof PayRoute
@@ -439,8 +491,11 @@ export interface RootRouteChildren {
   TerminosRoute: typeof TerminosRoute
   TransaccionesRoute: typeof TransaccionesRoute
   VipRoute: typeof VipRoute
+  Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   DeportesMatchIdRoute: typeof DeportesMatchIdRoute
   PayBrebRoute: typeof PayBrebRoute
+  Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicImgSplatRoute: typeof ApiPublicImgSplatRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -561,6 +616,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MinesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/home': {
       id: '/home'
       path: '/home'
@@ -645,6 +707,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DeportesMatchIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
@@ -687,6 +770,7 @@ const rootRouteChildren: RootRouteChildren = {
   DeportesRoute: DeportesRoute,
   EventosRoute: EventosRoute,
   HomeRoute: HomeRoute,
+  McpRoute: McpRoute,
   MinesRoute: MinesRoute,
   MisRecargasRoute: MisRecargasRoute,
   PayRoute: PayRoute,
@@ -703,8 +787,12 @@ const rootRouteChildren: RootRouteChildren = {
   TerminosRoute: TerminosRoute,
   TransaccionesRoute: TransaccionesRoute,
   VipRoute: VipRoute,
+  Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   DeportesMatchIdRoute: DeportesMatchIdRoute,
   PayBrebRoute: PayBrebRoute,
+  Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicImgSplatRoute: ApiPublicImgSplatRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
@@ -713,3 +801,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
