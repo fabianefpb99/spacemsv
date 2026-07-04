@@ -1,0 +1,87 @@
+{
+  "version": 1,
+  "sdk_version": "0.20.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "betspace-mcp",
+      "version": "0.1.0",
+      "title": "BetSpace MCP"
+    },
+    "tools": [
+      {
+        "name": "get_online_count",
+        "title": "Get online player count",
+        "description": "Returns the current approximate number of players online on BetSpace, matching the count displayed on the site.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_recent_wins",
+        "title": "Get recent public wins",
+        "description": "Returns the most recent public wins across BetSpace casino games (game, amount in COP, multiplier, timestamp).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "limit": {
+              "description": "Maximum number of wins to return (1-20). Defaults to 10.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_top_winners",
+        "title": "Get today's top winners",
+        "description": "Returns today's top winners on BetSpace. Choose the 'general' casino leaderboard or the 'arena' leaderboard.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "board": {
+              "description": "Which leaderboard to return. Defaults to 'general'.",
+              "type": "string",
+              "enum": [
+                "general",
+                "arena"
+              ]
+            },
+            "limit": {
+              "description": "Maximum number of entries to return (1-10). Defaults to 10.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            }
+          }
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
