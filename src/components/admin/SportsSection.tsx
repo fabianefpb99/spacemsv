@@ -483,6 +483,22 @@ function MatchRow({
               <FlagIcon className="h-3 w-3" /> Liquidar
             </button>
           )}
+          {canUnsettle && (
+            <button
+              onClick={() => {
+                if (
+                  confirm(
+                    "¿Revertir la liquidación? Los saldos pagados a los ganadores volverán a la casa y las apuestas quedarán pendientes de nuevo.",
+                  )
+                )
+                  unsettleMut.mutate();
+              }}
+              disabled={unsettleMut.isPending}
+              className="inline-flex items-center gap-1 rounded-md border border-amber-500/40 bg-amber-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-200 hover:bg-amber-500/20 disabled:opacity-60"
+            >
+              <Undo2 className="h-3 w-3" /> Revertir
+            </button>
+          )}
           {canCancel && (
             <button
               onClick={() => {
