@@ -1260,6 +1260,7 @@ function friendly(msg: string) {
     bets_closed: "Las apuestas ya están cerradas.",
     invalid_score: "Marcador inválido.",
     already_settled: "Este partido ya fue liquidado.",
+    not_settled: "Este partido aún no está liquidado.",
     match_cancelled: "El partido está cancelado.",
     balance_not_found: "Saldo del usuario no encontrado.",
     insufficient_funds: "Saldo insuficiente.",
