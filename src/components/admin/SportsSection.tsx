@@ -138,7 +138,8 @@ export function SportsSection() {
     queryFn: () => listCompetitionsFn(),
   });
 
-  const [statusFilter, setStatusFilter] = useState<"all" | SportsMatchStatus>("all");
+  type StatusFilter = "active" | "archived" | "all" | SportsMatchStatus;
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("active");
   const [compFilter, setCompFilter] = useState<string>("");
 
   const matchesQ = useQuery({
@@ -146,27 +147,43 @@ export function SportsSection() {
     queryFn: () =>
       listMatchesFn({
         data: {
-          status: statusFilter,
+          status:
+            statusFilter === "active" || statusFilter === "archived"
+              ? "all"
+              : statusFilter,
           ...(compFilter ? { competition_id: compFilter } : {}),
         },
       }),
   });
 
-  const matches = matchesQ.data?.matches ?? [];
+  const rawMatches = matchesQ.data?.matches ?? [];
+  const matches = useMemo(() => {
+    if (statusFilter === "active") {
+      return rawMatches.filter(
+        (m) => m.status === "scheduled" || m.status === "live",
+      );
+    }
+    if (statusFilter === "archived") {
+      return rawMatches.filter(
+        (m) => m.status === "finished" || m.status === "cancelled",
+      );
+    }
+    return rawMatches;
+  }, [rawMatches, statusFilter]);
 
   const kpis = useMemo(() => {
     let live = 0,
       scheduled = 0,
       finished = 0,
       totalBets = 0;
-    for (const m of matches) {
+    for (const m of rawMatches) {
       if (m.status === "live") live++;
       else if (m.status === "scheduled") scheduled++;
       else if (m.status === "finished") finished++;
       totalBets += m.bet_count;
     }
-    return { total: matches.length, live, scheduled, finished, totalBets };
-  }, [matches]);
+    return { total: rawMatches.length, live, scheduled, finished, totalBets };
+  }, [rawMatches]);
 
   const [editingMatch, setEditingMatch] = useState<SportsMatch | "new" | null>(null);
   const [settlingMatch, setSettlingMatch] = useState<SportsMatch | null>(null);
@@ -248,14 +265,16 @@ export function SportsSection() {
           <div className="flex items-center gap-2">
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
+              onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
               className="rounded-md border border-purple-500/30 bg-[#150830] px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-purple-100 focus:border-fuchsia-400/60 focus:outline-none"
             >
-              <option value="all">Todos</option>
+              <option value="active">Activos (programados + en vivo)</option>
               <option value="scheduled">Programados</option>
               <option value="live">En vivo</option>
+              <option value="archived">Archivados (finalizados + cancelados)</option>
               <option value="finished">Finalizados</option>
               <option value="cancelled">Cancelados</option>
+              <option value="all">Todos</option>
             </select>
             <button
               onClick={() => setEditingMatch("new")}
