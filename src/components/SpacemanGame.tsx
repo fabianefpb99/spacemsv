@@ -10,7 +10,8 @@ import astronautIdlePng from "@/assets/astronaut-idle.svg";
 import astronautFlyingSrc from "@/assets/astronaut-flying.png";
 import meteorSrc from "@/assets/asteroid.svg";
 import saturnSrc from "@/assets/saturn.svg";
-import { startFlight, stopFlight, setMuted as setAudioMuted, playCrashSound, playCashoutSound, setBackgroundTrack, clearBackgroundTrack, getBackgroundTrack, stopAllGameAudio } from "@/lib/gameAudio";
+import { startFlight, stopFlight, setMuted as setAudioMuted, playCrashSound, playCashoutSound, setBackgroundTrack, clearBackgroundTrack, getBackgroundTrack, stopAllGameAudio, isMuted } from "@/lib/gameAudio";
+import { useOnlineCount } from "@/hooks/useOnlineCount";
 import bgMusicUrl from "@/assets/bg-music.mp3";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe } from "@/hooks/useMe";
@@ -276,9 +277,9 @@ export function SpacemanGame() {
   // Lock para evitar doble-click mientras viaja el RPC
   const inFlightRef = useRef(false);
 
-  const [online, setOnline] = useState(150);
+  const online = useOnlineCount();
   const [messageIdx, setMessageIdx] = useState(0);
-  const [muted, setMuted] = useState(false);
+  const [muted, setMuted] = useState<boolean>(() => (typeof window === "undefined" ? false : isMuted()));
   const [flightTier, setFlightTier] = useState<0 | 1 | 2 | 3 | 4>(0);
   const [flightMessage, setFlightMessage] = useState<string | null>(null);
   const [meteors, setMeteors] = useState<{ id: number; threshold: number; topPct: number }[]>([]);
