@@ -11,6 +11,7 @@ import { setMuted as setAudioMuted, playCashoutSound, playCrashSound, playDiceRo
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMe, type MeData } from "@/hooks/useMe";
+import { useOnlineCount } from "@/hooks/useOnlineCount";
 import { useAuth } from "@/hooks/useAuth";
 import { toFriendlyError } from "@/lib/friendly-error";
 import { diceRoll } from "@/lib/games/dice.functions";
@@ -133,8 +134,8 @@ export function DiceGame() {
   const inFlightRef = useRef(false);
   const landTimerRef = useRef<number | null>(null);
 
-  const [muted, setMuted] = useState(false);
-  const [online] = useState(263);
+  const [muted, setMuted] = useState<boolean>(() => (typeof window === "undefined" ? false : isMuted()));
+  const online = useOnlineCount();
   const [history, setHistory] = useState<HistoryItem[]>(() => seedHistory());
   const historyId = useRef(1000);
 
