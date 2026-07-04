@@ -358,6 +358,7 @@ function MatchRow({
 }) {
   const patchFn = useServerFn(adminPatchMatchFlags);
   const cancelFn = useServerFn(adminCancelMatch);
+  const unsettleFn = useServerFn(adminUnsettleMatch);
   const deleteFn = useServerFn(adminDeleteMatch);
 
   const patchMut = useMutation({
@@ -376,6 +377,14 @@ function MatchRow({
     },
     onError: (e: Error) => toast.error(friendly(e.message)),
   });
+  const unsettleMut = useMutation({
+    mutationFn: () => unsettleFn({ data: { id: match.id } }),
+    onSuccess: () => {
+      toast.success("Liquidación revertida. Los saldos ganados regresaron a la casa.");
+      onAfterMutation();
+    },
+    onError: (e: Error) => toast.error(friendly(e.message)),
+  });
   const deleteMut = useMutation({
     mutationFn: () => deleteFn({ data: { id: match.id } }),
     onSuccess: () => {
@@ -388,6 +397,7 @@ function MatchRow({
   const canEdit = match.status === "scheduled";
   const canSettle = match.status === "live" || match.status === "scheduled" || match.status === "finished";
   const canCancel = match.status === "scheduled" || match.status === "live";
+  const canUnsettle = match.status === "finished" && !!match.settled_at;
 
   return (
     <div className="rounded-xl border border-purple-500/25 bg-[#150830]/60 p-3">
