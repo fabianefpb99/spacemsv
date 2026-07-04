@@ -15,7 +15,7 @@ import { adminGetCasinoStats } from "@/lib/admin/admin.functions";
 import { GAME_LABELS, KpiCard, Panel, formatCOP } from "./shared";
 
 export function EarningsSection() {
-  const [range, setRange] = useState<"today" | "week" | "month" | "custom">("today");
+  const [range, setRange] = useState<"today" | "week" | "month" | "3months" | "6months" | "all" | "custom">("today");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const fn = useServerFn(adminGetCasinoStats);
