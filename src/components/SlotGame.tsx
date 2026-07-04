@@ -9,6 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { spinSlot, type SpinResult } from "@/lib/games/slot.functions";
 import { useMe } from "@/hooks/useMe";
+import { useOnlineCount } from "@/hooks/useOnlineCount";
 import { useAuth } from "@/hooks/useAuth";
 import { toFriendlyError } from "@/lib/friendly-error";
 import { AuthDialog } from "@/components/auth/AuthDialog";
@@ -901,8 +902,8 @@ export function SlotGame() {
   // in-flight (network + reel animation).
   const inFlightRef = useRef(false);
   const [bet, setBet] = useState(2000);
-  const [muted, setMuted] = useState(false);
-  const [online] = useState(263);
+  const [muted, setMuted] = useState<boolean>(() => (typeof window === "undefined" ? false : isMuted()));
+  const online = useOnlineCount();
 
   const [grid, setGrid] = useState<string[][]>(() => generateGrid());
   const [spinning, setSpinning] = useState(false);
