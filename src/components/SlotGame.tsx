@@ -9,6 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { spinSlot, type SpinResult } from "@/lib/games/slot.functions";
 import { useMe } from "@/hooks/useMe";
+import { useOnlineCount } from "@/hooks/useOnlineCount";
 import { useAuth } from "@/hooks/useAuth";
 import { toFriendlyError } from "@/lib/friendly-error";
 import { AuthDialog } from "@/components/auth/AuthDialog";
