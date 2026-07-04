@@ -21,7 +21,10 @@ import {
   getBackgroundTrack,
   stopAllGameAudio,
   AUDIO_STOP_ALL_EVENT,
+  isMuted,
+  setMuted as setAudioMuted,
 } from "@/lib/gameAudio";
+import { useOnlineCount } from "@/hooks/useOnlineCount";
 
 type Choice = "red" | "black" | "green";
 type Phase = "idle" | "spinning" | "revealing";
@@ -211,8 +214,8 @@ export function RouletteGame() {
   const [phase, setPhase] = useState<Phase>("idle");
   const [rotation, setRotation] = useState(0);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
-  const [muted, setMuted] = useState(false);
-  const [online] = useState(150);
+  const [muted, setMuted] = useState<boolean>(() => (typeof window === "undefined" ? false : isMuted()));
+  const online = useOnlineCount();
   const [lastResult, setLastResult] = useState<{ segment: number; color: Choice; won: boolean; payout: number } | null>(null);
 
   const inFlightRef = useRef(false);
