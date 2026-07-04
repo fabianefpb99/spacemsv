@@ -475,12 +475,12 @@ function MatchDetailPage() {
                     ${formatCOP(placed.stake)} <span className="text-[9px] font-bold text-neutral-500">COP</span>
                   </div>
                 </div>
-                <div className="rounded-xl border border-fuchsia-200 bg-fuchsia-50 px-3 py-2">
-                  <div className="text-[9px] font-bold uppercase tracking-widest text-fuchsia-500">
+                <div className="rounded-xl border border-purple-200 bg-purple-50 px-3 py-2">
+                  <div className="text-[9px] font-bold uppercase tracking-widest text-purple-600">
                     Pago posible
                   </div>
-                  <div className="mt-0.5 font-display text-sm font-black text-fuchsia-700">
-                    ${formatCOP(placed.payout)} <span className="text-[9px] font-bold text-fuchsia-500">COP</span>
+                  <div className="mt-0.5 font-display text-sm font-black text-purple-700">
+                    ${formatCOP(placed.payout)} <span className="text-[9px] font-bold text-purple-500">COP</span>
                   </div>
                 </div>
               </div>
@@ -489,7 +489,7 @@ function MatchDetailPage() {
                 <button
                   type="button"
                   onClick={goToMyBets}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-b from-fuchsia-500 to-purple-700 py-3 font-display text-[12px] font-black uppercase tracking-widest text-white shadow-[0_6px_18px_-6px_rgba(168,85,247,0.75)] transition hover:from-fuchsia-400 hover:to-purple-600 active:scale-[0.98]"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-b from-purple-600 to-purple-800 py-3 font-display text-[12px] font-black uppercase tracking-widest text-white shadow-[0_6px_18px_-6px_rgba(109,40,217,0.7)] transition hover:from-purple-500 hover:to-purple-700 active:scale-[0.98]"
                 >
                   <Ticket className="h-4 w-4" strokeWidth={2.4} />
                   Ver mis apuestas
@@ -518,7 +518,7 @@ function MatchDetailPage() {
                 </div>
                 <Link
                   to="/deportes"
-                  className="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-b from-fuchsia-500 to-purple-700 px-5 py-2.5 font-display text-[12px] font-black uppercase tracking-widest text-white shadow-[0_6px_18px_-6px_rgba(168,85,247,0.75)] transition hover:from-fuchsia-400 hover:to-purple-600 active:scale-[0.98]"
+                  className="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-b from-purple-600 to-purple-800 px-5 py-2.5 font-display text-[12px] font-black uppercase tracking-widest text-white shadow-[0_6px_18px_-6px_rgba(109,40,217,0.7)] transition hover:from-purple-500 hover:to-purple-700 active:scale-[0.98]"
                 >
                   Ver próximos partidos
                 </Link>
@@ -535,7 +535,7 @@ function MatchDetailPage() {
                     {selected.label}
                   </div>
                 </div>
-                <div className="font-display text-2xl font-black text-fuchsia-600">
+                <div className="font-display text-2xl font-black text-purple-700">
                   {selected.odd.toFixed(2)}
                 </div>
               </div>
@@ -569,18 +569,18 @@ function MatchDetailPage() {
                   <div className="text-[9px] font-bold uppercase tracking-widest text-neutral-500">
                     Pago posible
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between rounded-xl border border-fuchsia-300 bg-fuchsia-50 px-2.5 py-2">
-                    <span className="font-display text-sm font-black text-fuchsia-700">
+                  <div className="mt-1.5 flex items-center justify-between rounded-xl border border-purple-300 bg-purple-50 px-2.5 py-2">
+                    <span className="font-display text-sm font-black text-purple-700">
                       {formatCOP(potentialPayout)}
                     </span>
-                    <span className="text-[9px] font-bold text-fuchsia-500">COP</span>
+                    <span className="text-[9px] font-bold text-purple-500">COP</span>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={handlePlaceBet}
                   disabled={!canBet}
-                  className="w-full rounded-xl bg-gradient-to-b from-fuchsia-500 to-purple-700 py-3 font-display text-sm font-black uppercase tracking-widest text-white shadow-[0_6px_18px_-6px_rgba(168,85,247,0.75)] transition hover:from-fuchsia-400 hover:to-purple-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
+                  className="w-full rounded-xl bg-gradient-to-b from-purple-600 to-purple-800 py-3 font-display text-sm font-black uppercase tracking-widest text-white shadow-[0_6px_18px_-6px_rgba(109,40,217,0.7)] transition hover:from-purple-500 hover:to-purple-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
                 >
                   {mutation.isPending
                     ? "Enviando…"
