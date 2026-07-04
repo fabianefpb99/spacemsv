@@ -71,6 +71,42 @@ function Flag({ code, name }: { code: string; name: string }) {
   );
 }
 
+/**
+ * Preloads the two flag images and resolves once both are ready (or on error),
+ * so the whole match card can fade in as a single unit instead of drawing in
+ * pieces while flags stream in.
+ */
+function useFlagsReady(codes: string[]): boolean {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    setReady(false);
+    const urls = codes.map(flagSvgUrl);
+    const promises = urls.map(
+      (url) =>
+        new Promise<void>((resolve) => {
+          const img = new Image();
+          const done = () => resolve();
+          img.onload = done;
+          img.onerror = done;
+          img.src = url;
+          if (img.complete) done();
+        }),
+    );
+    // Failsafe: never keep the card hidden longer than 1200ms
+    const cap = setTimeout(() => !cancelled && setReady(true), 1200);
+    Promise.all(promises).then(() => {
+      if (!cancelled) setReady(true);
+      clearTimeout(cap);
+    });
+    return () => {
+      cancelled = true;
+      clearTimeout(cap);
+    };
+  }, [codes.join("|")]);
+  return ready;
+}
+
 type PublicMatch = {
   id: string;
   competition: string;
