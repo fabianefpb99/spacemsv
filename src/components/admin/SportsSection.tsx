@@ -33,6 +33,7 @@ import {
   adminPatchMatchFlags,
   adminSettleMatch,
   adminCancelMatch,
+  adminUnsettleMatch,
   adminDeleteMatch,
   adminGetSportsTimezone,
   adminSetSportsTimezone,
