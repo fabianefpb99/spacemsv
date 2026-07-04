@@ -216,6 +216,7 @@ export function RouletteGame() {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [muted, setMuted] = useState<boolean>(() => (typeof window === "undefined" ? false : isMuted()));
   const online = useOnlineCount();
+  useEffect(() => { setAudioMuted(muted); }, [muted]);
   const [lastResult, setLastResult] = useState<{ segment: number; color: Choice; won: boolean; payout: number } | null>(null);
 
   const inFlightRef = useRef(false);
