@@ -57,7 +57,7 @@ export function EarningsSection() {
     <div className="space-y-4">
       <Panel title="Ganancias del casino" actions={null}>
         <div className="mb-3 flex flex-wrap gap-2">
-          {(["today", "week", "month", "custom"] as const).map((r) => (
+          {(["today", "week", "month", "3months", "6months", "all", "custom"] as const).map((r) => (
             <button
               key={r}
               onClick={() => setRange(r)}
@@ -67,7 +67,19 @@ export function EarningsSection() {
                   : "border-purple-500/30 text-purple-200/70 hover:bg-white/5"
               }`}
             >
-              {r === "today" ? "Hoy" : r === "week" ? "Semana" : r === "month" ? "Mes" : "Rango"}
+              {r === "today"
+                ? "Hoy"
+                : r === "week"
+                ? "Semana"
+                : r === "month"
+                ? "Mes"
+                : r === "3months"
+                ? "3 meses"
+                : r === "6months"
+                ? "6 meses"
+                : r === "all"
+                ? "Todos"
+                : "Rango"}
             </button>
           ))}
           {range === "custom" && (
