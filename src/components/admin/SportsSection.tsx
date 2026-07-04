@@ -18,6 +18,7 @@ import {
   Pencil,
   CheckCircle2,
   Wand2,
+  Undo2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Panel, KpiCard } from "./shared";
