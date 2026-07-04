@@ -379,8 +379,7 @@ export const adminSettleMatch = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => settleInput.parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
-    const supabaseAdmin = await getSupabaseAdmin();
-    const { error } = await supabaseAdmin.rpc("sports_settle_match", {
+    const { error } = await context.supabase.rpc("sports_settle_match", {
       _match_id: data.id,
       _home_score: data.home_score,
       _away_score: data.away_score,
@@ -396,8 +395,7 @@ export const adminCancelMatch = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => idInput.parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
-    const supabaseAdmin = await getSupabaseAdmin();
-    const { error } = await supabaseAdmin.rpc("sports_cancel_match", { _match_id: data.id });
+    const { error } = await context.supabase.rpc("sports_cancel_match", { _match_id: data.id });
     if (error) throw safeRpcError(error);
     return { ok: true };
   });
