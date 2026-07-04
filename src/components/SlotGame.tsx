@@ -901,8 +901,8 @@ export function SlotGame() {
   // in-flight (network + reel animation).
   const inFlightRef = useRef(false);
   const [bet, setBet] = useState(2000);
-  const [muted, setMuted] = useState(false);
-  const [online] = useState(263);
+  const [muted, setMuted] = useState<boolean>(() => (typeof window === "undefined" ? false : isMuted()));
+  const online = useOnlineCount();
 
   const [grid, setGrid] = useState<string[][]>(() => generateGrid());
   const [spinning, setSpinning] = useState(false);
