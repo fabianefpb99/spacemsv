@@ -484,6 +484,8 @@ function MyBetsSection({ onOpenAuth }: { onOpenAuth: () => void }) {
     staleTime: 15_000,
     queryFn: async () => (await getMyBets()).bets,
   });
+  type BetFilter = "all" | "pending" | "won" | "lost" | "refunded";
+  const [filter, setFilter] = useState<BetFilter>("all");
 
   if (!user) {
     return (
@@ -510,11 +512,58 @@ function MyBetsSection({ onOpenAuth }: { onOpenAuth: () => void }) {
 
   const bets = q.data ?? [];
 
+  const counts = bets.reduce(
+    (acc, b) => {
+      acc.all += 1;
+      acc[b.status] += 1;
+      return acc;
+    },
+    { all: 0, pending: 0, won: 0, lost: 0, refunded: 0 } as Record<BetFilter, number>,
+  );
+  const filtered = filter === "all" ? bets : bets.filter((b) => b.status === filter);
+  const FILTERS: { key: BetFilter; label: string }[] = [
+    { key: "all", label: "Todas" },
+    { key: "pending", label: "Activas" },
+    { key: "won", label: "Ganadas" },
+    { key: "lost", label: "Perdidas" },
+    { key: "refunded", label: "Reembolsadas" },
+  ];
+
   return (
     <section className="mt-6">
       <h2 className="font-display text-sm font-black uppercase tracking-[0.14em] text-white">
         Mis apuestas
       </h2>
+      {bets.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {FILTERS.map((f) => {
+            const active = filter === f.key;
+            const n = counts[f.key];
+            return (
+              <button
+                key={f.key}
+                type="button"
+                onClick={() => setFilter(f.key)}
+                disabled={n === 0 && f.key !== "all"}
+                className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-widest transition ${
+                  active
+                    ? "border-fuchsia-400/60 bg-fuchsia-500/20 text-fuchsia-100"
+                    : "border-purple-500/25 bg-[#0c0620]/60 text-purple-200/80 hover:bg-purple-500/10"
+                } disabled:cursor-not-allowed disabled:opacity-40`}
+              >
+                {f.label}
+                <span
+                  className={`rounded-full px-1.5 py-[1px] text-[8px] font-black ${
+                    active ? "bg-fuchsia-100/20 text-fuchsia-100" : "bg-purple-500/15 text-purple-200"
+                  }`}
+                >
+                  {n}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
       <div className="mt-3 flex flex-col gap-2">
         {q.isLoading ? (
           <div className="rounded-2xl border border-purple-500/20 bg-[#0c0620]/60 p-4 text-center text-[11px] text-purple-200/70">
@@ -524,8 +573,12 @@ function MyBetsSection({ onOpenAuth }: { onOpenAuth: () => void }) {
           <div className="rounded-2xl border border-purple-500/20 bg-[#0c0620]/60 p-4 text-center text-[11px] text-purple-200/70">
             Aún no tienes apuestas. Elige un partido y prueba tu suerte.
           </div>
+        ) : filtered.length === 0 ? (
+          <div className="rounded-2xl border border-purple-500/20 bg-[#0c0620]/60 p-4 text-center text-[11px] text-purple-200/70">
+            No tienes apuestas en esta categoría.
+          </div>
         ) : (
-          bets.map((b) => <MyBetRowCard key={b.id} bet={b} />)
+          filtered.map((b) => <MyBetRowCard key={b.id} bet={b} />)
         )}
       </div>
     </section>
