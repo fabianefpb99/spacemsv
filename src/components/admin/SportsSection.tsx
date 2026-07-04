@@ -176,14 +176,14 @@ export function SportsSection() {
       scheduled = 0,
       finished = 0,
       totalBets = 0;
-    for (const m of matches) {
+    for (const m of rawMatches) {
       if (m.status === "live") live++;
       else if (m.status === "scheduled") scheduled++;
       else if (m.status === "finished") finished++;
       totalBets += m.bet_count;
     }
-    return { total: matches.length, live, scheduled, finished, totalBets };
-  }, [matches]);
+    return { total: rawMatches.length, live, scheduled, finished, totalBets };
+  }, [rawMatches]);
 
   const [editingMatch, setEditingMatch] = useState<SportsMatch | "new" | null>(null);
   const [settlingMatch, setSettlingMatch] = useState<SportsMatch | null>(null);
