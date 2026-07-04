@@ -71,6 +71,42 @@ function Flag({ code, name }: { code: string; name: string }) {
   );
 }
 
+/**
+ * Preloads the two flag images and resolves once both are ready (or on error),
+ * so the whole match card can fade in as a single unit instead of drawing in
+ * pieces while flags stream in.
+ */
+function useFlagsReady(codes: string[]): boolean {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    setReady(false);
+    const urls = codes.map(flagSvgUrl);
+    const promises = urls.map(
+      (url) =>
+        new Promise<void>((resolve) => {
+          const img = new Image();
+          const done = () => resolve();
+          img.onload = done;
+          img.onerror = done;
+          img.src = url;
+          if (img.complete) done();
+        }),
+    );
+    // Failsafe: never keep the card hidden longer than 1200ms
+    const cap = setTimeout(() => !cancelled && setReady(true), 1200);
+    Promise.all(promises).then(() => {
+      if (!cancelled) setReady(true);
+      clearTimeout(cap);
+    });
+    return () => {
+      cancelled = true;
+      clearTimeout(cap);
+    };
+  }, [codes.join("|")]);
+  return ready;
+}
+
 type PublicMatch = {
   id: string;
   competition: string;
@@ -344,12 +380,19 @@ function DeportesPage() {
 }
 
 function MatchCard({ match }: { match: PublicMatch }) {
+  const ready = useFlagsReady([match.home.code, match.away.code]);
   return (
     <Link
       to="/deportes/$matchId"
       params={{ matchId: match.id }}
       aria-label={`${match.home.name} vs ${match.away.name} — ${match.competition}`}
       className="theme-dark-fixed group relative block overflow-hidden rounded-2xl border border-purple-500/30 bg-[#0c0620]/90 p-3 shadow-[0_0_16px_rgba(76,29,149,0.25)] transition hover:border-fuchsia-400/60 hover:shadow-[0_0_18px_rgba(217,70,239,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-400/70 sm:p-4"
+      style={{
+        opacity: ready ? 1 : 0,
+        transform: ready ? "translateY(0)" : "translateY(6px)",
+        transition: "opacity 420ms ease-out, transform 420ms ease-out",
+        pointerEvents: ready ? undefined : "none",
+      }}
     >
       {/* Fila superior: todo en una línea */}
       <div className="flex items-center gap-1.5 whitespace-nowrap">
