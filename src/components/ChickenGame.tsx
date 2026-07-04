@@ -20,6 +20,7 @@ import {
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMe, type MeData } from "@/hooks/useMe";
+import { useOnlineCount } from "@/hooks/useOnlineCount";
 import { useAuth } from "@/hooks/useAuth";
 import { toFriendlyError } from "@/lib/friendly-error";
 import { withTimeout } from "@/lib/async/with-timeout";
@@ -125,10 +126,10 @@ export function ChickenGame() {
   const [chickenFx, setChickenFx] = useState<ChickenFx>("idle");
   const [rightFx, setRightFx] = useState<RightFx>("none");
   const [rightVisible, setRightVisible] = useState(false);
-  const [muted, setMuted] = useState(false);
+  const [muted, setMuted] = useState<boolean>(() => (typeof window === "undefined" ? false : isMuted()));
   const [error, setError] = useState<string | null>(null);
   const [isDealing, setIsDealing] = useState(false);
-  const [online] = useState(217);
+  const online = useOnlineCount();
 
   const sessionRef = useRef<{ id: string; nonce: number } | null>(null);
   const dealInFlightRef = useRef(false);
