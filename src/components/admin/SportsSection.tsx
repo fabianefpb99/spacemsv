@@ -264,11 +264,11 @@ export function SportsSection() {
       <Panel
         title="Partidos"
         actions={
-          <div className="flex items-center gap-2">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:flex-nowrap">
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-              className="rounded-md border border-purple-500/30 bg-[#150830] px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-purple-100 focus:border-fuchsia-400/60 focus:outline-none"
+              className="w-full min-w-0 rounded-md border border-purple-500/30 bg-[#150830] px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-purple-100 focus:border-fuchsia-400/60 focus:outline-none"
             >
               <option value="active">Activos (programados + en vivo)</option>
               <option value="scheduled">Programados</option>
@@ -281,7 +281,7 @@ export function SportsSection() {
             <button
               onClick={() => setEditingMatch("new")}
               disabled={(compQ.data?.competitions ?? []).length === 0}
-              className="inline-flex items-center gap-1.5 rounded-md bg-fuchsia-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white hover:bg-fuchsia-500 disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-fuchsia-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white hover:bg-fuchsia-500 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <Plus className="h-3 w-3" /> Nuevo
             </button>
