@@ -405,12 +405,8 @@ export const adminUnsettleMatch = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => idInput.parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
-    // Types are auto-generated; the new RPC is referenced by name.
-    const { error } = await (context.supabase.rpc as (name: string, args: Record<string, unknown>) => Promise<{ error: unknown }>) (
-      "sports_unsettle_match",
-      { _match_id: data.id },
-    );
-    if (error) throw safeRpcError(error as { message?: string });
+    const { error } = await context.supabase.rpc("sports_unsettle_match", { _match_id: data.id });
+    if (error) throw safeRpcError(error);
     return { ok: true };
   });
 
