@@ -33,14 +33,14 @@ const WIN_LOGOS: Record<"win" | "big" | "mega" | "super" | "jackpot", string> = 
   jackpot: winSuperAsset.url,
 };
 
-import bossImg from "@/assets/slot/boss.png";
-import hatImg from "@/assets/slot/hat.png";
-import briefcaseImg from "@/assets/slot/briefcase.png";
-import watchImg from "@/assets/slot/watch.png";
-import goldImg from "@/assets/slot/gold.png";
-import carImg from "@/assets/slot/car.png";
-import chipImg from "@/assets/slot/chip.png";
-import cardImg from "@/assets/slot/card.png";
+import bossAsset from "@/assets/samurai/sym-boss.png.asset.json";
+import carAsset from "@/assets/samurai/sym-car.png.asset.json";
+import briefAsset from "@/assets/samurai/sym-brief.png.asset.json";
+import goldAsset from "@/assets/samurai/sym-gold.png.asset.json";
+import watchAsset from "@/assets/samurai/sym-watch.png.asset.json";
+import chipAsset from "@/assets/samurai/sym-chip.png.asset.json";
+import hatAsset from "@/assets/samurai/sym-hat.png.asset.json";
+import cardAsset from "@/assets/samurai/sym-card.png.asset.json";
 
 import bonusMegaAsset from "@/assets/audio/slot-win/bonus-1.mp3.asset.json";
 import bonusBigAsset from "@/assets/audio/slot-win/bonus-2.mp3.asset.json";
@@ -61,14 +61,14 @@ type SymbolDef = {
 };
 
 const SYMBOLS: SymbolDef[] = [
-  { id: "boss",  img: bossImg,      label: "EL PADRINO", pay: [55, 240, 1100], weight: 2,  glow: "168,85,247"  },
-  { id: "car",   img: carImg,       label: "CADILLAC",   pay: [34, 130, 440],  weight: 3,  glow: "180,180,255" },
-  { id: "brief", img: briefcaseImg, label: "MALETÍN $",  pay: [24, 72, 240],   weight: 4,  glow: "46,255,161"  },
-  { id: "gold",  img: goldImg,      label: "LINGOTE",    pay: [19, 50, 165],   weight: 5,  glow: "255,210,80"  },
-  { id: "watch", img: watchImg,     label: "RELOJ ORO",  pay: [13, 32, 95],    weight: 6,  glow: "255,200,80"  },
-  { id: "chip",  img: chipImg,      label: "FICHA",      pay: [10, 24, 68],    weight: 8,  glow: "168,85,247"  },
-  { id: "hat",   img: hatImg,       label: "SOMBRERO",   pay: [8, 18, 50],     weight: 10, glow: "200,120,255" },
-  { id: "card",  img: cardImg,      label: "AS",         pay: [7, 14, 32],     weight: 12, glow: "255,180,80"  },
+  { id: "boss",  img: bossAsset.url,  label: "KABUTO",       pay: [55, 240, 1100], weight: 2,  glow: "236,72,153"  },
+  { id: "car",   img: carAsset.url,   label: "DRAGÓN",       pay: [34, 130, 440],  weight: 3,  glow: "168,85,247"  },
+  { id: "brief", img: briefAsset.url, label: "GEISHA",       pay: [24, 72, 240],   weight: 4,  glow: "244,63,94"   },
+  { id: "gold",  img: goldAsset.url,  label: "KANJI 侍",      pay: [19, 50, 165],   weight: 5,  glow: "255,180,40"  },
+  { id: "watch", img: watchAsset.url, label: "KATANA",       pay: [13, 32, 95],    weight: 6,  glow: "255,80,80"   },
+  { id: "chip",  img: chipAsset.url,  label: "A",            pay: [10, 24, 68],    weight: 8,  glow: "255,140,60"  },
+  { id: "hat",   img: hatAsset.url,   label: "K",            pay: [8, 18, 50],     weight: 10, glow: "255,120,80"  },
+  { id: "card",  img: cardAsset.url,  label: "Q",            pay: [7, 14, 32],     weight: 12, glow: "200,80,220"  },
 ];
 
 const SYMBOL_INDEX = new Map(SYMBOLS.map((s, i) => [s.id, i]));
