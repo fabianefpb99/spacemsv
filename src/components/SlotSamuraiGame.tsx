@@ -40,7 +40,7 @@ import goldAsset from "@/assets/samurai/sym-gold.png.asset.json";
 import watchAsset from "@/assets/samurai/sym-watch.png.asset.json";
 import chipAsset from "@/assets/samurai/sym-chip.png.asset.json";
 import hatAsset from "@/assets/samurai/sym-hat.png.asset.json";
-import cardAsset from "@/assets/samurai/sym-card.png.asset.json";
+import cardAsset from "@/assets/samurai/sym-card.webp.asset.json";
 
 import bonusMegaAsset from "@/assets/audio/slot-win/bonus-1.mp3.asset.json";
 import bonusBigAsset from "@/assets/audio/slot-win/bonus-2.mp3.asset.json";
