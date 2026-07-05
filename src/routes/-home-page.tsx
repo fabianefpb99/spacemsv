@@ -43,6 +43,7 @@ import heroArenaImg from "@/assets/home-hero-arena.png.asset.json";
 import heroChickenImg from "@/assets/home-hero-chicken.webp.asset.json";
 import gameSpacemanAsset from "@/assets/game-spaceman.png.asset.json";
 import gameSlotMafiaAsset from "@/assets/game-slot-mafia.png.asset.json";
+import gameSlotSamuraiAsset from "@/assets/samurai/samurai-bg.webp.asset.json";
 import gameMinesAsset from "@/assets/game-mines.png.asset.json";
 import gameDiceAsset from "@/assets/game-dice.png.asset.json";
 import gameBlackjackAsset from "@/assets/game-blackjack.png.asset.json";
@@ -52,6 +53,7 @@ import gameRuletaAsset from "@/assets/game-ruleta.png.asset.json";
 import gameChickenAsset from "@/assets/game-chicken.webp.asset.json";
 const gameSpaceman = gameSpacemanAsset.url;
 const gameSlotMafia = gameSlotMafiaAsset.url;
+const gameSlotSamurai = gameSlotSamuraiAsset.url;
 const gameMines = gameMinesAsset.url;
 const gameDice = gameDiceAsset.url;
 const gameBlackjack = gameBlackjackAsset.url;
@@ -65,6 +67,7 @@ function prettyGameName(g: string): string {
   const k = (g || "").toLowerCase();
   if (k.includes("spaceman")) return "SPACEMAN";
   if (k.includes("mines") || k.includes("minas")) return "MINAS";
+  if (k.includes("slot_samurai") || k.includes("samurai")) return "SAMURAI LEGEND";
   if (k.includes("slot")) return "SLOT MAFIA";
   if (k.includes("dice") || k.includes("dado")) return "DADOS";
   if (k.includes("blackjack") && k.includes("vip")) return "BLACKJACK VIP";
@@ -192,6 +195,7 @@ function OnlineRotator({ online, username, onClick, clickable }: { online: numbe
 const GAMES = [
   { name: "SPACEMAN", img: gameSpaceman, tag: "POPULAR", tagCls: "bg-purple-600 text-white border-purple-400", to: "/spaceman" },
   { name: "SLOT", img: gameSlotMafia, tag: "NUEVO", tagCls: "bg-emerald-600 text-white border-emerald-400", to: "/slot" },
+  { name: "SAMURAI LEGEND", img: gameSlotSamurai, tag: "NUEVO", tagCls: "bg-emerald-600 text-white border-emerald-400", to: "/slotsamurai" },
   { name: "MINAS", img: gameMines, tag: "POPULAR", tagCls: "bg-purple-600 text-white border-purple-400", to: "/mines" },
   { name: "CHICKEN SPACE", img: gameChicken, tag: "NUEVO", tagCls: "bg-emerald-600 text-white border-emerald-400", to: "/chicken" },
   { name: "BLACKJACK", img: gameBlackjack, tag: "POPULAR", tagCls: "bg-purple-600 text-white border-purple-400", to: "/blackjack" },
@@ -494,6 +498,7 @@ export function HomePage() {
       spaceman: "/spaceman",
       mines: "/mines",
       slot: "/slot",
+      slot_samurai: "/slotsamurai",
       chicken: "/chicken",
       blackjack: "/blackjack",
       blackjack_vip: "/blackjackvip",

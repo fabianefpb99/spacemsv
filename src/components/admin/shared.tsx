@@ -76,6 +76,7 @@ export function shortId(id: string | null | undefined) {
 export const GAME_LABELS: Record<string, string> = {
   spaceman: "SPACEMAN",
   slot: "TRAGAMONEDAS",
+  slot_samurai: "SAMURAI LEGEND",
   mines: "BUSCAMINAS",
   dice: "DADOS",
   blackjack: "BLACKJACK",
