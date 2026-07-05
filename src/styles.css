@@ -4203,8 +4203,8 @@ html.light .my-bet-status--refunded:not(.theme-dark-fixed):not(.theme-dark-fixed
   position: absolute;
   top: 18px;
   right: calc(min(58vw, 260px) - 28px);
-  max-width: 150px;
-  padding: 8px 12px;
+  max-width: 190px;
+  padding: 9px 14px;
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.94);
   color: #4c1d95;
@@ -4216,7 +4216,8 @@ html.light .my-bet-status--refunded:not(.theme-dark-fixed):not(.theme-dark-fixed
   box-shadow: 0 6px 18px rgba(88, 28, 135, 0.35);
   opacity: 0;
   transform-origin: 90% 60%;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
   white-space: normal;
 }
 .mascot-bubble::after {
