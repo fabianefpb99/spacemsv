@@ -522,14 +522,7 @@ export function HomePage() {
   // Solo arrancamos visible la PRIMERA visita (sin cache previo). Si ya hay
   // contenido cacheado en este navegador, no parpadeamos el loader al volver
   // desde un juego. El efecto de abajo confirma/cierra según cuota.
-  const [showBrandLoader, setShowBrandLoader] = useState(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      return !sessionStorage.getItem("betspaceman:home:ready");
-    } catch {
-      return true;
-    }
-  });
+  const [showBrandLoader, setShowBrandLoader] = useState(false);
 
   // Ambient casino intro — máximo 5 veces por hora.
   // Audio file ya incluye fade-in (1.5s) y fade-out (5s) — 12s totales.
