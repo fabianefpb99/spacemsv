@@ -1467,6 +1467,18 @@ export function SlotSamuraiGame() {
           0%, 100% { transform: scale(1); }
           50%      { transform: scale(1.10); }
         }
+        @keyframes samurai-legend-glitch {
+          0%, 92%, 100% { transform: translate(0,0) skewX(0deg); filter: drop-shadow(0 6px 14px rgba(0,0,0,0.75)) drop-shadow(0 0 18px rgba(255,90,120,0.35)); }
+          92.5% { transform: translate(-2px, 0) skewX(-2deg); filter: drop-shadow(2px 0 0 rgba(255,60,90,0.85)) drop-shadow(-2px 0 0 rgba(60,200,255,0.75)) drop-shadow(0 0 18px rgba(255,90,120,0.5)); }
+          93.5% { transform: translate(2px, -1px) skewX(1deg); filter: drop-shadow(-2px 0 0 rgba(255,60,90,0.85)) drop-shadow(2px 0 0 rgba(60,200,255,0.75)) drop-shadow(0 0 18px rgba(255,90,120,0.5)); }
+          94.5% { transform: translate(-1px, 1px) skewX(0deg); filter: drop-shadow(1px 0 0 rgba(255,60,90,0.8)) drop-shadow(-1px 0 0 rgba(60,200,255,0.7)) drop-shadow(0 0 18px rgba(255,90,120,0.45)); }
+          95.5% { transform: translate(1px, 0) skewX(-1deg); filter: drop-shadow(-1px 0 0 rgba(255,60,90,0.8)) drop-shadow(1px 0 0 rgba(60,200,255,0.7)) drop-shadow(0 0 18px rgba(255,90,120,0.45)); }
+          96.5% { transform: translate(0, 0) skewX(0deg); filter: drop-shadow(0 6px 14px rgba(0,0,0,0.75)) drop-shadow(0 0 18px rgba(255,90,120,0.35)); }
+        }
+        .samurai-legend-logo {
+          animation: samurai-legend-glitch 5s infinite;
+          will-change: transform, filter;
+        }
       `}</style>
       {spinError && (
         <div
@@ -1530,7 +1542,7 @@ function SamuraiHero({
       <img
         src={samuraiLegendLogo}
         alt="Samurai Legend"
-        className="h-[118px] w-auto max-w-[95%] select-none"
+        className="samurai-legend-logo h-[118px] w-auto max-w-[95%] select-none"
         style={{
           filter:
             "drop-shadow(0 6px 14px rgba(0,0,0,0.75)) drop-shadow(0 0 18px rgba(255,90,120,0.35))",
@@ -1550,7 +1562,7 @@ function SamuraiHero({
             <img
               src={WIN_LOGOS[tier as "win" | "big" | "mega" | "super" | "jackpot"]}
               alt={EVENT_LABEL[tier]}
-              className="h-[64px] w-auto select-none"
+              className="h-[70px] w-auto select-none"
               style={{
                 filter:
                   "drop-shadow(0 3px 8px rgba(0,0,0,0.85)) drop-shadow(0 0 10px rgba(255,90,30,0.55))",
@@ -1558,7 +1570,7 @@ function SamuraiHero({
               draggable={false}
             />
             <div
-              className="-mt-1 font-display text-[20px] font-black tracking-wide leading-none"
+              className="-mt-3 font-display text-[22px] font-black tracking-wide leading-none"
               style={{
                 color: "#fef08a",
                 textShadow:
