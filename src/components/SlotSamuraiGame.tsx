@@ -21,10 +21,10 @@ import samuraiBgAsset from "@/assets/samurai/samurai-bg.webp.asset.json";
 import samuraiLegendLogoAsset from "@/assets/samurai/samurai-legend-logo.webp.asset.json";
 const samuraiBg = samuraiBgAsset.url;
 const samuraiLegendLogo = samuraiLegendLogoAsset.url;
-import winWinAsset from "@/assets/samurai/win-win.png.asset.json";
-import winBigAsset from "@/assets/samurai/win-big.png.asset.json";
-import winMegaAsset from "@/assets/samurai/win-mega.png.asset.json";
-import winSuperAsset from "@/assets/samurai/win-super.png.asset.json";
+import winWinAsset from "@/assets/samurai/win-win.webp.asset.json";
+import winBigAsset from "@/assets/samurai/win-big.webp.asset.json";
+import winMegaAsset from "@/assets/samurai/win-mega.webp.asset.json";
+import winSuperAsset from "@/assets/samurai/win-super.webp.asset.json";
 const WIN_LOGOS: Record<"win" | "big" | "mega" | "super" | "jackpot", string> = {
   win: winWinAsset.url,
   big: winBigAsset.url,
@@ -1550,7 +1550,7 @@ function SamuraiHero({
             <img
               src={WIN_LOGOS[tier as "win" | "big" | "mega" | "super" | "jackpot"]}
               alt={EVENT_LABEL[tier]}
-              className="h-[58px] w-auto select-none"
+              className="h-[64px] w-auto select-none"
               style={{
                 filter:
                   "drop-shadow(0 3px 8px rgba(0,0,0,0.85)) drop-shadow(0 0 10px rgba(255,90,30,0.55))",
@@ -1558,7 +1558,7 @@ function SamuraiHero({
               draggable={false}
             />
             <div
-              className="-mt-1 font-display text-[18px] font-black tracking-wide leading-none"
+              className="-mt-1 font-display text-[20px] font-black tracking-wide leading-none"
               style={{
                 color: "#fef08a",
                 textShadow:
