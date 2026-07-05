@@ -6,6 +6,9 @@ import mascotAsset from "@/assets/mascot-chica.webp.asset.json";
 
 const SHOWN_KEY = "betspace:mascot-shown";
 const FALLBACK_DELAY_MS = 1200;
+const SHOWS_KEY = "betspace:mascot:shows";
+const MAX_SHOWS_PER_HOUR = 2;
+const ONE_HOUR_MS = 60 * 60 * 1000;
 
 export function MascotFloater() {
   const isMobile = useIsMobile();
@@ -25,6 +28,22 @@ export function MascotFloater() {
       setDismissed(true);
       return;
     }
+    // Same per-hour cap as the STARTER promo popup
+    let shows: number[] = [];
+    try {
+      shows = JSON.parse(localStorage.getItem(SHOWS_KEY) || "[]");
+    } catch {
+      shows = [];
+    }
+    const nowTs = Date.now();
+    shows = shows.filter((ts) => nowTs - ts < ONE_HOUR_MS);
+    if (shows.length >= MAX_SHOWS_PER_HOUR) {
+      localStorage.setItem(SHOWS_KEY, JSON.stringify(shows));
+      setDismissed(true);
+      return;
+    }
+    shows.push(nowTs);
+    localStorage.setItem(SHOWS_KEY, JSON.stringify(shows));
     const img = new Image();
     img.src = mascotAsset.url;
     const done = () => setDecoded(true);
@@ -84,8 +103,16 @@ export function MascotFloater() {
     if (!visible) return;
     const onDocClick = (e: MouseEvent) => {
       const target = e.target as Element | null;
-      // Header and bottom nav keep working normally (no swallow, no close).
-      if (target && target.closest("header, nav")) return;
+      // Header, bottom nav, and any open drawer/dialog/menu keep working
+      // normally (no swallow, no close) so the hamburger menu and settings
+      // gear behave at the first click.
+      if (
+        target &&
+        target.closest(
+          'header, nav, [role="dialog"], [role="menu"], [data-radix-portal], [data-state="open"], aside',
+        )
+      )
+        return;
       // Anywhere else: close AND eat the click so the first tap dismisses
       // her without triggering the underlying UI.
       e.preventDefault();

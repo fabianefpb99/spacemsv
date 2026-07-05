@@ -4209,12 +4209,12 @@ html.light .my-bet-status--refunded:not(.theme-dark-fixed):not(.theme-dark-fixed
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.94);
   color: #2a1d4d;
-  font-family: var(--font-display, "Space Grotesk", ui-sans-serif, system-ui, sans-serif);
-  font-weight: 800;
+  font-family: 'Orbitron', 'Inter', system-ui, sans-serif;
+  font-weight: 700;
   font-size: 13px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  line-height: 1;
+  line-height: 0.95 !important;
   text-align: center;
   border: 1.5px solid #a855f7;
   box-shadow: 0 6px 18px rgba(88, 28, 135, 0.35);
