@@ -161,6 +161,16 @@ function MatchDetailPage() {
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [selection, setSelection] = useState<"home" | "draw" | "away">("draw");
   const [stake, setStake] = useState<number>(10000);
+  const [leaving, setLeaving] = useState(false);
+
+  function handleBack(e: React.MouseEvent) {
+    e.preventDefault();
+    if (leaving) return;
+    setLeaving(true);
+    window.setTimeout(() => {
+      navigate({ to: "/deportes" });
+    }, 240);
+  }
   const [placed, setPlaced] = useState<
     | null
     | {
@@ -255,7 +265,7 @@ function MatchDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#060210] text-white">
+    <div className={`min-h-screen bg-[#060210] text-white ${leaving ? "match-view-leave" : "match-view-enter"}`}>
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col pt-4 sm:max-w-lg">
         <header
           className="flex flex-col items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 -mt-4"
@@ -323,6 +333,7 @@ function MatchDetailPage() {
             <Link
               to="/deportes"
               aria-label="Volver a Deportes"
+              onClick={handleBack}
               className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-purple-500/30 bg-[#0b0522] text-purple-100 transition hover:border-fuchsia-400/60 hover:text-white"
             >
               <ArrowLeft className="h-4 w-4" />
