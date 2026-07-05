@@ -78,27 +78,24 @@ export function MascotFloater() {
   const dismissRef = useRef(handleDismiss);
   dismissRef.current = handleDismiss;
 
-  // Any click that isn't the mascot image itself closes it.
+  // Close on the first click anywhere that isn't the header/bottom nav.
+  // Scroll/touch-move does NOT close the mascot.
   useEffect(() => {
     if (!visible) return;
     const onDocClick = (e: MouseEvent) => {
       const target = e.target as Element | null;
       // Header and bottom nav keep working normally (no swallow, no close).
       if (target && target.closest("header, nav")) return;
-      // Anywhere else (including the mascot itself): close AND eat the click
-      // so the first tap dismisses her without triggering the underlying UI.
+      // Anywhere else: close AND eat the click so the first tap dismisses
+      // her without triggering the underlying UI.
       e.preventDefault();
       e.stopPropagation();
       dismissRef.current();
     };
     // capture=true so we run before other click handlers on the page.
     document.addEventListener("click", onDocClick, true);
-    // Also intercept the pointer/tap phase so <Link> and other components
-    // that navigate on mousedown don't slip through.
-    document.addEventListener("pointerdown", onDocClick as unknown as EventListener, true);
     return () => {
       document.removeEventListener("click", onDocClick, true);
-      document.removeEventListener("pointerdown", onDocClick as unknown as EventListener, true);
     };
   }, [visible]);
 
@@ -166,7 +163,7 @@ export function MascotFloater() {
           style={{
             width: "min(58vw, 260px)",
             filter:
-              "drop-shadow(0 0 1px rgba(255,255,255,0.9)) drop-shadow(0 0 1px rgba(255,255,255,0.85)) drop-shadow(0 0 2px rgba(168,85,247,0.55)) drop-shadow(0 14px 26px rgba(88, 28, 135, 0.55))",
+              "drop-shadow(0 0 1px rgba(139, 92, 246, 0.55)) drop-shadow(0 0 2px rgba(124, 58, 237, 0.42)) drop-shadow(0 0 4px rgba(88, 28, 135, 0.28)) drop-shadow(0 14px 26px rgba(88, 28, 135, 0.55))",
             pointerEvents: "auto",
           }}
         />
