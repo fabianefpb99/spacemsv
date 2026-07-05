@@ -27,18 +27,23 @@ export function chickenSafeProb(step: number): number {
   return Math.max(SAFE_PROB_FLOOR, p);
 }
 
-/** Pre-computed multipliers so the first jump starts low and the curve keeps
- *  the same relative growth between steps. Step 1 is anchored to 1.05x and
- *  each following step preserves the original RTP-based ratios. */
+/** Pre-computed multipliers. The first 5 jumps are intentionally short so the
+ *  player feels early wins without giving away much house edge; from step 6
+ *  onward the curve resumes the original RTP-based growth ratio, keeping the
+ *  tail exciting while the casino recovers more on the low-risk cash-outs. */
 function buildStepMultipliers(): number[] {
   const original: number[] = [1, CHICKEN_RTP * (1 / chickenSafeProb(1))];
   for (let i = 2; i <= CHICKEN_MAX_STEPS; i++) {
     original[i] = original[i - 1] * (1 / chickenSafeProb(i));
   }
 
+  // Short, morale-boosting early payouts (house-favored).
+  const earlyOverride = [1, 1.03, 1.08, 1.15, 1.25, 1.4];
   const multipliers: number[] = [1];
-  multipliers[1] = 1.05; // low first-jump payout
-  for (let i = 2; i <= CHICKEN_MAX_STEPS; i++) {
+  for (let i = 1; i < earlyOverride.length; i++) {
+    multipliers[i] = earlyOverride[i];
+  }
+  for (let i = earlyOverride.length; i <= CHICKEN_MAX_STEPS; i++) {
     const ratio = original[i] / original[i - 1];
     multipliers[i] = Math.round(multipliers[i - 1] * ratio * 100) / 100;
   }
