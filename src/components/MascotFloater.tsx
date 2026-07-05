@@ -17,6 +17,7 @@ export function MascotFloater() {
   const [dismissed, setDismissed] = useState(false);
   const [entered, setEntered] = useState(false);
   const [bubbleIn, setBubbleIn] = useState(false);
+  const [typed, setTyped] = useState("");
   const wrapRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const timerRef = useRef<number | null>(null);
@@ -87,6 +88,23 @@ export function MascotFloater() {
     };
   }, [visible]);
 
+  // Fast typewriter effect on the bubble text (simulates her speaking).
+  const FULL_TEXT = "¿QUÉ VAMOS\nA JUGAR HOY?";
+  useEffect(() => {
+    if (!bubbleIn) {
+      setTyped("");
+      return;
+    }
+    let i = 0;
+    setTyped("");
+    const id = window.setInterval(() => {
+      i += 1;
+      setTyped(FULL_TEXT.slice(0, i));
+      if (i >= FULL_TEXT.length) window.clearInterval(id);
+    }, 38);
+    return () => window.clearInterval(id);
+  }, [bubbleIn]);
+
   // Close when clicking anywhere outside the mascot image.
   const handleDismiss = () => {
     try {
@@ -146,9 +164,73 @@ export function MascotFloater() {
         <div
           className={`mascot-bubble ${bubbleIn ? "mascot-bubble--in" : ""}`}
         >
-          ¿QUÉ VAMOS
-          <br />
-          A JUGAR HOY?
+          <svg
+            className="mascot-bubble__frame"
+            viewBox="0 0 300 110"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <defs>
+              <linearGradient id="mbFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#1a0b3a" stopOpacity="0.96" />
+                <stop offset="100%" stopColor="#0a0418" stopOpacity="0.98" />
+              </linearGradient>
+              <linearGradient id="mbStroke" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#d946ef" />
+                <stop offset="50%" stopColor="#a855f7" />
+                <stop offset="100%" stopColor="#7c3aed" />
+              </linearGradient>
+              <filter id="mbGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="2.4" result="b" />
+                <feMerge>
+                  <feMergeNode in="b" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            {/* Main chamfered body */}
+            <path
+              d="M18,10 L282,10 L294,22 L294,72 L282,84 L232,84 L226,92 L60,92 L54,84 L18,84 L6,72 L6,22 Z"
+              fill="url(#mbFill)"
+              stroke="url(#mbStroke)"
+              strokeWidth="1.8"
+              filter="url(#mbGlow)"
+            />
+            {/* Inner accent line */}
+            <path
+              d="M22,16 L278,16 L288,26 L288,68 L278,78 L22,78 L12,68 L12,26 Z"
+              fill="none"
+              stroke="#c084fc"
+              strokeWidth="0.6"
+              strokeOpacity="0.55"
+            />
+            {/* Left bracket accent */}
+            <path
+              d="M2,36 L2,58 M2,36 L8,36 M2,58 L8,58"
+              stroke="url(#mbStroke)"
+              strokeWidth="1.6"
+              fill="none"
+              strokeLinecap="round"
+            />
+            {/* Top-right LED dots */}
+            <circle cx="248" cy="4" r="1.6" fill="#e879f9" />
+            <circle cx="256" cy="4" r="1.6" fill="#c084fc" opacity="0.75" />
+            <circle cx="264" cy="4" r="1.6" fill="#a855f7" opacity="0.55" />
+            {/* Bottom notch tick */}
+            <path
+              d="M140,92 L146,98 L154,98 L160,92"
+              stroke="url(#mbStroke)"
+              strokeWidth="1.4"
+              fill="none"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <span className="mascot-bubble__text">
+            {typed}
+            <span className="mascot-bubble__caret" aria-hidden="true">
+              ▍
+            </span>
+          </span>
         </div>
 
         {/* Close button */}
