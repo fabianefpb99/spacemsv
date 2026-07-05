@@ -1,66 +1,61 @@
-# Mascota "Chica BETSPACE" flotante en Home (mobile)
+## Samurai Legend — clon 5×3 de Slot Mafia
 
-Personaje decorativo anclado al borde inferior de la Home, **detrás** del bottom nav, con un globito *"¿Qué jugaremos hoy?"* a la izquierda de su cabeza. Solo mobile, solo Home.
+### Estrategia
+Clonar Slot Mafia manteniendo intacta toda la lógica (RNG, RTP, seguridad, apuestas, animaciones, balance). Solo cambiar: matriz (5×3), paylines adaptadas, símbolos más grandes, banner superior nuevo (reemplazo de HUD superior), tema visual samurái. Ruta nueva `/slotsamurai`. Slot Mafia queda intacto.
 
-## Comportamiento
+### Backend (migración Supabase)
 
-- Aparece **después** de cerrar el popup `STARTER APUESTA` (cualquier vía: X, click en imagen, backdrop). Fallback: si el popup no se muestra en esta sesión (límite 2/hora), aparece igual ~1.2s después de entrar a la Home.
-- Sale una sola vez por sesión (se recuerda con `sessionStorage`).
-- Botón "×" chico para descartarla.
-- Solo visible `<lg` (mobile/tablet) y solo en `/` y `/home`.
+Crear un juego **separado** (`slot_samurai`) para no contaminar métricas/RTP/boost/misiones del slot original:
 
-## Assets
+1. **Nueva función SQL** `public.spin_slot_samurai_v1(uuid, numeric, uuid)` — copia byte-a-byte de `spin_slot_v1` pero con:
+   - `v_rows := 3` (antes 4)
+   - Nuevo set de 20 paylines válidas en 5×3 (filas 0–2), Pay Both Ways igual
+   - `v_line_count := 20`
+   - Mismos símbolos, pesos, tablas de pago, min/max/step
+   - Registra en `transactions.game = 'slot_samurai'`
+   - Boost target por `'slot_samurai'`
+2. Grants: `REVOKE ... FROM anon, public`, `GRANT EXECUTE TO authenticated, service_role` (idéntico a `spin_slot_v1`).
+3. Seed en `rtp_config`: fila `('slot_samurai', 94.50, 94.50)`.
+4. **Sin cambios** en `spin_slot_v1`, tablas, RLS, ni columnas — cero superficie extra.
 
-- Imagen ya comprimida a **WebP 540×956, ~120 KB** desde el PNG original de 1.6 MB.
-- Se subirá al CDN como `src/assets/mascot-chica.webp.asset.json` con `lovable-assets`.
+### Server function
 
-## Carga limpia (sin flash)
+- `src/lib/games/slot-samurai.functions.ts` — copia de `slot.functions.ts` llamando `spin_slot_samurai_v1`. Mantiene `requireSupabaseAuth`, Zod, mismos errores.
+- `src/lib/games/slot-samurai.shared.ts` — copia de `slot.shared.ts` con `SLOT_ROWS = 3`, `SLOT_PAYLINES` de 20 líneas para 5×3, mismos símbolos/pagos.
 
-1. `new Image()` → `img.src = mascotAsset.url`.
-2. Cuando `img.decode()` resuelve **y** el evento `betspace:promo-starter-closed` ha ocurrido (o el fallback timer), recién montamos el nodo con `opacity:0`.
-3. `requestAnimationFrame` → añadimos clase `mascot-enter` que hace: `translateY(24px) scale(.98) opacity:0` → `translateY(0) scale(1) opacity:1` en 600ms `cubic-bezier(.22,.9,.3,1)`.
-4. Luego un idle sutil `mascot-float` (translateY ±4px, 5s loop).
-5. Globito: aparece 220ms después con `bubble-pop` (scale .8 → 1 + fade).
+### Frontend
 
-Sin la imagen decodificada no se renderiza nada → cero flash / cero layout shift.
+- `src/routes/slotsamurai.tsx` — copia de `slot.tsx`, head con SEO propio ("Samurai Legend"), renderiza `<SlotSamuraiGame />`.
+- `src/components/SlotSamuraiGame.tsx` — clon de `SlotGame.tsx` con:
+  - Grid 5×3, símbolos escalados proporcionalmente (más grandes)
+  - **Eliminado** el módulo superior (Líneas / Premio Total / Tiradas Gratis / Multiplicador / contenedor "MAFIA ROYALE")
+  - En su lugar: contenedor `<SamuraiBanner />` de mayor altura, listo para recibir el fondo definitivo (siguiente prompt) y para renderizar overlays de eventos (Win / Big Win / Mega Win / Super Win / Jackpot / Free Spins). El sistema de eventos ya se cablea (mismo estado del `total` actual → decide overlay por umbral × apuesta), pero visualmente vive dentro del banner en vez del HUD superior antiguo.
+  - Header BETSPACE y HUD inferior de apuestas: intactos (mismos componentes)
+- **Logo SVG**: intento profesional en `src/assets/samurai-legend-logo.svg` (tipografía tipo brush + katana estilizada, paleta BETSPACE morado/rosa/rojo). Si el resultado no se ve premium tras revisión visual, se deja como placeholder con nota `TODO_REPLACE_SVG` para reemplazo posterior.
+- **Fondo del banner**: la imagen adjunta `backgroud-samurai-betspace-2.png` se sube vía `lovable-assets` (comprimida a WebP ≤1024px, quality ~72, siguiendo la regla de memoria) y se usa como fondo del `<SamuraiBanner />`.
 
-## Composición
+### Integraciones (home, menús, admin)
 
-```text
-        ┌───────────────┐
-        │   contenido    │
-        │      ╭──────╮  │
-        │      │¿Qué  │  │  ← bubble blanco 90% opac,
-        │      │jug…? │  │    borde morado, colita
-        │      ╰────╮─╯  │
-        │          ╭─╮   │  ← chica, right-2, h ~46vh
-        │          │ │   │
-        ├──────────┴─┴──┤
-        │ ▓▓ Bottom Nav │  ← z-30 (queda encima)
-        └───────────────┘
-```
+- `src/routes/-home-page.tsx`: nuevo tile "SAMURAI LEGEND" apuntando a `/slotsamurai` (asset propio, se generará imagen tile pequeña o se reutiliza recorte del fondo comprimido). Se añade a la tabla `HOT_GAMES_LINKS` y al mapping de nombres.
+- `LoadingScreen.tsx`: nueva variante `slot_samurai` (o reutiliza `slot` si el fondo es igual — se decide en implementación).
+- Admin:
+  - `MissionsSection.tsx`: añadir `{ value: "slot_samurai", label: "Samurai Legend" }`.
+  - `RtpSection.tsx`: aparecerá automáticamente al leer `rtp_config` (fila seed nueva). Verificar y ajustar label si hardcodea nombres.
+  - `BoostSection.tsx`: añadir opción `slot_samurai` si lista juegos hardcoded.
+  - `DashboardSection.tsx` / earnings: revisar mapeos por `game` para incluir el nuevo key en labels.
+- Sidebar / drawers si listan juegos: añadir entrada.
 
-- Wrapper: `fixed bottom-0 right-0 z-20 lg:hidden pointer-events-none`.
-- Chica: `pointer-events-none`, altura `min(46vh, 420px)`, `right-1`, se recorta con el nav de forma natural (el nav es `z-30`).
-- Botón cerrar: `pointer-events-auto`, arriba de la cabeza, discreto.
-- Globo: `absolute`, `bg-white/92`, `border-2 border-purple-500`, `text-purple-900`, `rounded-2xl`, colita triangular hacia la chica.
+### Seguridad
 
-## Cambios técnicos
+- Función `SECURITY DEFINER` con `search_path` fijo, grants sólo a `authenticated`/`service_role` (idéntico patrón que `spin_slot_v1`). No se abre RLS nueva, no se exponen claves, no se altera esquema `auth`/`storage`. Reutiliza `_debit_bet` / `_credit_win` / `is_boost_target`.
 
-1. **Nuevo asset** `src/assets/mascot-chica.webp.asset.json` (subido con `lovable-assets`, PNG local no se guarda).
-2. **Nuevo componente** `src/components/MascotFloater.tsx`:
-   - Solo mobile (`useIsMobile`).
-   - Estado: `armed` (popup cerrado o fallback), `decoded`, `dismissed`.
-   - Preload+decode al montar.
-   - Escucha `window` evento `betspace:promo-starter-closed`.
-   - `sessionStorage` key `betspace:mascot-shown`.
-   - Portal a `document.body`.
-3. **`src/components/PromoPopup.tsx`**: al cerrar (X, backdrop, click imagen antes de navegar) `window.dispatchEvent(new CustomEvent("betspace:promo-starter-closed"))`.
-4. **`src/routes/-home-page.tsx`**: renderizar `<MascotFloater />` junto al `<PromoPopup />`.
-5. **`src/styles.css`**: keyframes `mascot-enter`, `mascot-float`, `bubble-pop`.
+### Detalles técnicos (paylines 5×3)
 
-## Fuera de alcance
+20 líneas válidas para filas 0–2 (subset directo de las 25 originales quitando referencias a fila 3, más V/W adaptadas). Definidas idénticas en SQL y en `SLOT_PAYLINES` compartido para que el cliente pinte las mismas cells que devuelve el servidor.
 
-- Versión desktop.
-- CTA que navegue (solo cerrar por ahora).
-- Cambios visuales al popup Starter salvo el `dispatchEvent`.
+### Orden de ejecución
+
+1. Migración SQL (spin_slot_samurai_v1 + rtp_config seed) — approve → ejecuta → regenera types.
+2. Subir fondo con `lovable-assets` (WebP comprimido).
+3. Archivos frontend + server function + admin edits.
+4. Verificar build TS y smoke test visual en `/slotsamurai`.
