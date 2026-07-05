@@ -4189,12 +4189,29 @@ html.light .my-bet-status--refunded:not(.theme-dark-fixed):not(.theme-dark-fixed
   60% { opacity: 1; transform: scale(1.04) translateY(0); }
   100% { opacity: 1; transform: scale(1) translateY(0); }
 }
+@keyframes mascot-exit {
+  0% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+  100% { opacity: 0; transform: translate3d(0, 24px, 0) scale(0.96); }
+}
+@keyframes mascot-bubble-out {
+  0% { opacity: 1; transform: scale(1) translateY(0); }
+  100% { opacity: 0; transform: scale(0.9) translateY(6px); }
+}
 .mascot-wrap {
   opacity: 0;
   will-change: transform, opacity;
 }
 .mascot-wrap--in {
   animation: mascot-enter 620ms cubic-bezier(0.22, 0.9, 0.3, 1) forwards;
+}
+.mascot-wrap--out {
+  animation: mascot-exit 380ms cubic-bezier(0.4, 0, 0.6, 1) forwards !important;
+}
+.mascot-wrap--out .mascot-img {
+  animation: none !important;
+}
+.mascot-wrap--out .mascot-bubble {
+  animation: mascot-bubble-out 260ms ease-in forwards !important;
 }
 .mascot-wrap--in .mascot-img {
   animation: mascot-float 5.2s ease-in-out 700ms infinite;
