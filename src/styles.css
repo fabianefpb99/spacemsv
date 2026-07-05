@@ -4202,23 +4202,23 @@ html.light .my-bet-status--refunded:not(.theme-dark-fixed):not(.theme-dark-fixed
 .mascot-bubble {
   position: absolute;
   top: 18px;
-  right: calc(min(58vw, 260px) - 28px);
-  max-width: 190px;
-  padding: 9px 14px;
+  right: calc(min(58vw, 260px) - 20px);
+  min-width: 170px;
+  max-width: 230px;
+  padding: 10px 16px;
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.94);
   color: #4c1d95;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.15;
   text-align: center;
   border: 1.5px solid #a855f7;
   box-shadow: 0 6px 18px rgba(88, 28, 135, 0.35);
   opacity: 0;
   transform-origin: 90% 60%;
-  pointer-events: auto;
-  cursor: pointer;
-  white-space: normal;
+  pointer-events: none;
+  white-space: nowrap;
 }
 .mascot-bubble::after {
   content: "";
