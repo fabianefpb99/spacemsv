@@ -1254,31 +1254,6 @@ export function SlotSamuraiGame() {
 
         {/* Reels frame wrapper — labels sit on the neon border edge */}
         <section className="relative mt-3">
-          {/* Title badge on frame — OUTSIDE clip so it isn't cut */}
-          <div className="absolute left-1/2 -top-3 z-30 -translate-x-1/2">
-            <div
-              className="flex items-center gap-2 rounded-full px-4 py-1"
-              style={{
-                background: "linear-gradient(180deg, rgba(20,8,42,0.95), rgba(8,2,18,0.95))",
-                border: "1px solid rgba(168,85,247,0.65)",
-                boxShadow: "0 0 18px rgba(168,85,247,0.55), inset 0 0 8px rgba(168,85,247,0.25)",
-              }}
-            >
-              <span className="text-[10px]">✦</span>
-              <span
-                className="font-display text-sm font-black tracking-[0.18em]"
-                style={{
-                  background: "linear-gradient(180deg,#c084fc 0%,#7c3aed 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  filter: "drop-shadow(0 0 8px rgba(168,85,247,0.7))",
-                }}
-              >MAFIA</span>
-              <span className="font-display text-sm font-black tracking-[0.18em] neon-green">ROYALE</span>
-              <span className="text-[10px]">✦</span>
-            </div>
-          </div>
-
           {/* Lines side labels — OUTSIDE the frame, in the gutter */}
           <div className="pointer-events-none absolute left-0 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2 -rotate-90">
             <span className="font-display text-[9px] font-bold tracking-[0.32em] neon-green whitespace-nowrap">
