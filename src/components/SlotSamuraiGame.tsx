@@ -604,8 +604,8 @@ function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boole
         decoding="sync"
         className="select-none pointer-events-none relative z-10"
         style={{
-          width: "104%",
-          height: "104%",
+          width: "101%",
+          height: "101%",
           objectFit: "contain",
           transform: scale !== 1 ? `scale(${scale})` : undefined,
           filter: highlight
