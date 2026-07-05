@@ -1539,7 +1539,7 @@ function SamuraiHero({
       />
       {/* Espacio reservado bajo el logo — el evento WIN aparece aquí sin empujar el layout */}
       <div
-        className="mt-0.5 flex h-[54px] w-full flex-col items-center justify-start"
+        className="mt-1 flex h-[78px] w-full flex-col items-center justify-start"
         aria-hidden={!showEvent}
       >
         {showEvent && (
