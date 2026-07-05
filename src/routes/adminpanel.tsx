@@ -52,7 +52,7 @@ import { SportsSection } from "@/components/admin/SportsSection";
 export const Route = createFileRoute("/adminpanel")({
   head: () => ({
     meta: [
-      { title: "Panel de Administración — BETSPACE Casino" },
+      { title: "BETSPACE | Casino Online y Apuestas Deportivas Colombia" },
       { name: "robots", content: "noindex,nofollow" },
     ],
   }),

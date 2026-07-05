@@ -48,7 +48,7 @@ import { useTheme } from "@/hooks/useTheme";
 export const Route = createFileRoute("/perfil")({
   head: () => ({
     meta: [
-      { title: "Mi Perfil — BETSPACE Casino" },
+      { title: "BETSPACE | Casino Online y Apuestas Deportivas Colombia" },
       { name: "description", content: "Tu cuenta, seguridad, balance y estadísticas en BETSPACE Casino." },
     ],
   }),

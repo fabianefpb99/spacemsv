@@ -7,9 +7,9 @@ import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
 export const Route = createFileRoute("/ruleta")({
   head: () => ({
     meta: [
-      { title: "Ruleta — BETSPACE Casino" },
+      { title: "BETSPACE | Ruleta Juego En linea" },
       { name: "description", content: "Juega Ruleta en BETSPACE Casino. Apuesta a rojo, negro o verde y multiplica tu saldo." },
-      { property: "og:title", content: "Ruleta — BETSPACE Casino" },
+      { property: "og:title", content: "BETSPACE | Ruleta Juego En linea" },
       { property: "og:description", content: "Juega Ruleta en BETSPACE Casino. Apuesta a rojo, negro o verde y multiplica tu saldo." },
     ],
   }),

@@ -83,9 +83,9 @@ import mundialHeroAsset from "@/assets/mundial-hero.webp.asset.json";
 export const Route = createFileRoute("/home")({
   head: () => ({
     meta: [
-      { title: "Inicio — BETSPACE Casino" },
+      { title: "BETSPACE | Casino Online y Apuestas Deportivas Colombia" },
       { name: "description", content: "Tu home en BETSPACE Casino: juegos destacados, jackpot y más." },
-      { property: "og:title", content: "Inicio — BETSPACE Casino" },
+      { property: "og:title", content: "BETSPACE | Casino Online y Apuestas Deportivas Colombia" },
       { property: "og:description", content: "Tu home en BETSPACE Casino: juegos destacados, jackpot y más." },
     ],
   }),

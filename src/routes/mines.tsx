@@ -7,9 +7,9 @@ import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
 export const Route = createFileRoute("/mines")({
   head: () => ({
     meta: [
-      { title: "Mines — BETSPACE Casino" },
+      { title: "BETSPACE | Juego de Minas Online" },
       { name: "description", content: "Juega Mines (Buscaminas) en BETSPACE Casino. RTP 97%." },
-      { property: "og:title", content: "Mines — BETSPACE Casino" },
+      { property: "og:title", content: "BETSPACE | Juego de Minas Online" },
       { property: "og:description", content: "Juega Mines (Buscaminas) en BETSPACE Casino. RTP 97%." },
     ],
   }),

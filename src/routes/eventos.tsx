@@ -40,9 +40,9 @@ import { notifyMissionComplete } from "@/components/MissionCompleteFloater";
 export const Route = createFileRoute("/eventos")({
   head: () => ({
     meta: [
-      { title: "Eventos — BETSPACE Casino" },
+      { title: "BETSPACE | Casino Online y Apuestas Deportivas Colombia" },
       { name: "description", content: "Completa desafíos diarios y semanales y gana saldo bonus, free spins y avatares exclusivos." },
-      { property: "og:title", content: "Eventos — BETSPACE Casino" },
+      { property: "og:title", content: "BETSPACE | Casino Online y Apuestas Deportivas Colombia" },
       { property: "og:description", content: "Completa desafíos diarios y semanales y gana saldo bonus, free spins y avatares exclusivos." },
     ],
   }),
