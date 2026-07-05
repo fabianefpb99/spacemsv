@@ -7,13 +7,13 @@ import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
 export const Route = createFileRoute("/chicken")({
   head: () => ({
     meta: [
-      { title: "Chicken Road — BETSPACE Casino" },
+      { title: "BETSPACE | Chicken Space Crash" },
       {
         name: "description",
         content:
           "Salta de asteroide en asteroide en Chicken Road de BETSPACE Casino. Multiplica tu apuesta o cobra antes de caer al vacío.",
       },
-      { property: "og:title", content: "Chicken Road — BETSPACE Casino" },
+      { property: "og:title", content: "BETSPACE | Chicken Space Crash" },
       {
         property: "og:description",
         content: "Salta, multiplica y cobra antes de que el asteroide se rompa.",

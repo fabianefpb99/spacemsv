@@ -20,7 +20,7 @@ export const Route = createFileRoute("/pay_/breb")({
   },
   head: () => ({
     meta: [
-      { title: "Confirmar pago — BETSPACE Casino" },
+      { title: "BETSPACE | Casino Online y Apuestas Deportivas Colombia" },
       { name: "description", content: "Sigue las instrucciones para completar tu depósito de forma segura." },
     ],
   }),

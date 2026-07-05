@@ -19,13 +19,13 @@ import { flagSvgUrl } from "@/lib/sports/world-cup-2026-teams";
 export const Route = createFileRoute("/deportes")({
   head: () => ({
     meta: [
-      { title: "Apuestas Deportivas Mundial 2026 — BETSPACE" },
+      { title: "BETSPACE | Apuestas Deportivas y Juegos Online de Apuesta en Colombia" },
       {
         name: "description",
         content:
           "Apuesta en los partidos del Mundial 2026 desde BETSPACE. Cuotas claras y experiencia simple, sin complicaciones.",
       },
-      { property: "og:title", content: "Apuestas Deportivas Mundial 2026 — BETSPACE" },
+      { property: "og:title", content: "BETSPACE | Apuestas Deportivas y Juegos Online de Apuesta en Colombia" },
       {
         property: "og:description",
         content:

@@ -7,13 +7,13 @@ import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
 export const Route = createFileRoute("/arena")({
   head: () => ({
     meta: [
-      { title: "Arena Galáctica — BETSPACE Casino" },
+      { title: "BETSPACE | Arena PvP Casino y Apuesta de Pelea" },
       {
         name: "description",
         content:
           "Apuesta a tu peleador favorito en la Arena Galáctica de BETSPACE Casino. Nova, Shadow, Titan o Blaze — solo uno sobrevive.",
       },
-      { property: "og:title", content: "Arena Galáctica — BETSPACE Casino" },
+      { property: "og:title", content: "BETSPACE | Arena PvP Casino y Apuesta de Pelea" },
       {
         property: "og:description",
         content: "Apuesta a tu peleador favorito y multiplica tu saldo.",

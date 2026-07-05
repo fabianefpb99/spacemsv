@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
-    meta: [{ title: "Restablecer contraseña — BETSPACE Casino" }],
+    meta: [{ title: "BETSPACE | Casino Online y Apuestas Deportivas Colombia" }],
   }),
   component: ResetPasswordPage,
 });
