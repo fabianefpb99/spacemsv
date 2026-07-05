@@ -18,8 +18,9 @@ import { Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "luc
 import { setMuted as setAudioMuted, playCashoutSound, playCoinsSound, isMuted, setBackgroundTrack, clearBackgroundTrack, getBackgroundTrack, stopAllGameAudio, getCtx, getMasterGain, AUDIO_STOP_ALL_EVENT } from "@/lib/gameAudio";
 import mafiaJazzUrl from "@/assets/mafia-jazz.mp3";
 import samuraiBgAsset from "@/assets/samurai/samurai-bg.webp.asset.json";
-import samuraiLegendLogo from "@/assets/samurai/samurai-legend-logo.svg";
+import samuraiLegendLogoAsset from "@/assets/samurai/samurai-legend-logo.webp.asset.json";
 const samuraiBg = samuraiBgAsset.url;
+const samuraiLegendLogo = samuraiLegendLogoAsset.url;
 
 import bossImg from "@/assets/slot/boss.png";
 import hatImg from "@/assets/slot/hat.png";
@@ -375,8 +376,8 @@ function playMegaWinSound() {
 /* ============================================================
    Reel component — continuous translateY strip (no flicker)
    ============================================================ */
-// 3 filas visibles → tiles más grandes para el mismo alto total (~264px).
-const TILE_H = 88;
+// 3 filas visibles → tiles más grandes aprovechando la fila menos.
+const TILE_H = 108;
 const SPIN_BASE_MS = 1400;
 const SPIN_STAGGER_MS = 220;
 
@@ -1178,28 +1179,20 @@ export function SlotSamuraiGame() {
 
   return (
     <div
-      className="relative min-h-screen text-white"
+      className="relative min-h-[100dvh] text-white"
       style={{
         backgroundColor: "#0a0416",
-        backgroundImage: `radial-gradient(80% 55% at 50% 0%, rgba(120,20,60,0.35) 0%, transparent 60%), radial-gradient(60% 40% at 50% 100%, rgba(80,20,120,0.22) 0%, transparent 70%)`,
-        backgroundRepeat: "no-repeat",
-        backgroundAttachment: "fixed",
+        backgroundImage: `linear-gradient(180deg, rgba(10,4,22,0.35) 0%, rgba(10,4,22,0.55) 45%, rgba(10,4,22,0.9) 100%), url(${samuraiBg})`,
+        backgroundSize: "cover, cover",
+        backgroundPosition: "center top, center top",
+        backgroundRepeat: "no-repeat, no-repeat",
+        backgroundAttachment: "fixed, fixed",
       }}
     >
-      <div className="pointer-events-none fixed inset-0 bg-stars opacity-40" aria-hidden />
-      <div
-        className="pointer-events-none fixed inset-0"
-        aria-hidden
-        style={{
-          background:
-            "radial-gradient(60% 50% at 50% 0%, rgba(120,40,200,0.28) 0%, transparent 60%), radial-gradient(40% 30% at 50% 100%, rgba(46,255,161,0.10) 0%, transparent 70%)",
-        }}
-      />
-
-      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-4 pt-4 sm:max-w-lg sm:px-4">
+      <div className="relative mx-auto flex min-h-[100dvh] max-w-md flex-col px-3 pb-3 pt-3 sm:max-w-lg sm:px-4">
         {/* Header */}
         <header
-          className="flex items-center justify-between bg-[#060210]/80 backdrop-blur-sm border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
+          className="flex items-center justify-between bg-[#060210]/80 backdrop-blur-sm border-b border-purple-500/20 pb-2 px-3 -mx-3 -mt-3"
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <div className="flex items-center gap-1">
@@ -1220,7 +1213,7 @@ export function SlotSamuraiGame() {
         </header>
 
         {/* Online + mute */}
-        <div className="mt-2 flex items-center justify-between">
+        <div className="mt-1.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="relative inline-flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
@@ -1237,15 +1230,8 @@ export function SlotSamuraiGame() {
           </button>
         </div>
 
-        {/* ============================================================
-           SamuraiBanner — reemplaza el antiguo HUD superior + badge
-           "MAFIA ROYALE". Espacio dedicado para identidad del juego
-           y overlays de eventos (Win / Big Win / Mega Win / Super Win /
-           Jackpot / Free Spins). El fondo definitivo se irá afinando
-           en próximos prompts; el sistema de eventos ya está cableado
-           al `total` del giro.
-           ============================================================ */}
-        <SamuraiBanner
+        {/* Logo + evento — integrados sobre el fondo global, sin card */}
+        <SamuraiHero
           lastWin={lastWin}
           displayedWin={displayedWin}
           bet={bet}
@@ -1253,7 +1239,7 @@ export function SlotSamuraiGame() {
         />
 
         {/* Reels frame wrapper — labels sit on the neon border edge */}
-        <section className="relative mt-3">
+        <section className="relative mt-1.5">
           {/* Lines side labels — OUTSIDE the frame, in the gutter */}
           <div className="pointer-events-none absolute left-0 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2 -rotate-90">
             <span className="font-display text-[9px] font-bold tracking-[0.32em] neon-green whitespace-nowrap">
@@ -1324,21 +1310,10 @@ export function SlotSamuraiGame() {
             </div>
           </div>
 
-          {/* Big win banner — OUTSIDE clip so it isn't cut */}
-          {lastWin > 0 && !spinning && (
-            <div
-              className="absolute inset-x-0 -bottom-3 z-30 mx-auto w-fit rounded-full border border-emerald-400/60 bg-[#062014]/95 px-4 py-1 backdrop-blur"
-              style={{ boxShadow: "0 0 24px rgba(46,255,161,0.55)", animation: "scale-in 0.3s ease-out" }}
-            >
-              <span className="font-display text-xs font-bold uppercase tracking-widest text-emerald-300">
-                ¡Ganaste! <span className="neon-green ml-1">${formatCOP(displayedWin)}</span>
-              </span>
-            </div>
-          )}
         </section>
 
         {/* Pay table preview — horizontal scroll carousel */}
-        <section className="mt-4 -mx-3 px-3 overflow-x-auto hide-scrollbar">
+        <section className="mt-2 -mx-3 px-3 overflow-x-auto hide-scrollbar">
           <div className="flex gap-1.5 w-max">
             {SYMBOLS.map((s) => (
               <div
@@ -1370,7 +1345,7 @@ export function SlotSamuraiGame() {
         </section>
 
         {/* Bet panel */}
-        <section className="mt-3 rounded-2xl glass-panel p-3">
+        <section className="mt-2 rounded-2xl glass-panel p-2.5">
           <div className="flex gap-2.5">
             {/* Left: bet controls */}
             <div className="flex-1">
@@ -1445,7 +1420,7 @@ export function SlotSamuraiGame() {
         </section>
 
         {/* Last wins ticker */}
-        <section className="mt-3 rounded-xl border border-purple-500/30 bg-[#0c0620]/80 p-2.5">
+        <section className="mt-2 rounded-xl border border-purple-500/30 bg-[#0c0620]/80 p-2">
           <div className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-purple-300" />
             <h3 className="font-display text-[11px] font-bold uppercase tracking-widest text-white">Últimas ganancias</h3>
@@ -1522,7 +1497,7 @@ const EVENT_LABEL: Record<SamuraiEventTier, string> = {
   jackpot: "JACKPOT",
 };
 
-function SamuraiBanner({
+function SamuraiHero({
   lastWin,
   displayedWin,
   bet,
@@ -1537,35 +1512,28 @@ function SamuraiBanner({
   const showEvent = tier !== "idle" && lastWin > 0;
   return (
     <section
-      className="relative mt-2 overflow-hidden rounded-2xl border border-fuchsia-500/30"
-      style={{
-        height: 190,
-        backgroundImage: `linear-gradient(180deg, rgba(10,4,22,0.15) 0%, rgba(10,4,22,0.65) 78%, rgba(10,4,22,0.95) 100%), url(${samuraiBg})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center 32%",
-        boxShadow:
-          "0 0 22px rgba(168,85,247,0.35), inset 0 0 24px rgba(255,90,140,0.15)",
-      }}
+      className="relative mt-1 flex flex-col items-center justify-center"
       aria-label="Samurai Legend"
     >
-      {/* Logo centrado del juego */}
-      <div className="absolute inset-x-0 top-3 flex justify-center">
-        <img
-          src={samuraiLegendLogo}
-          alt="Samurai Legend"
-          className="h-[110px] w-auto max-w-[86%] drop-shadow-[0_6px_18px_rgba(0,0,0,0.7)]"
-          style={{ filter: "drop-shadow(0 0 12px rgba(255,90,120,0.35))" }}
-          draggable={false}
-        />
-      </div>
-      {/* Overlay de evento de premio */}
+      {/* Logo integrado sobre el fondo global — sin card, sin borde */}
+      <img
+        src={samuraiLegendLogo}
+        alt="Samurai Legend"
+        className="h-[104px] w-auto max-w-[86%] select-none"
+        style={{
+          filter:
+            "drop-shadow(0 6px 14px rgba(0,0,0,0.75)) drop-shadow(0 0 18px rgba(255,90,120,0.35))",
+        }}
+        draggable={false}
+      />
+      {/* Overlay de evento de premio, flotando sobre el paisaje */}
       {showEvent && (
         <div
-          className="absolute inset-x-0 bottom-2 flex flex-col items-center"
+          className="mt-0.5 flex flex-col items-center"
           style={{ animation: "scale-in 0.35s ease-out" }}
         >
           <div
-            className="font-display text-lg font-black tracking-[0.28em]"
+            className="font-display text-lg font-black tracking-[0.28em] leading-none"
             style={{
               background:
                 tier === "jackpot"
@@ -1585,7 +1553,7 @@ function SamuraiBanner({
             {EVENT_LABEL[tier]}
           </div>
           <div
-            className="font-display text-xl font-black tracking-wide"
+            className="mt-0.5 font-display text-xl font-black tracking-wide leading-none"
             style={{
               color: "#fef08a",
               textShadow:
