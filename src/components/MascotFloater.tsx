@@ -16,12 +16,15 @@ export function MascotFloater() {
   const [decoded, setDecoded] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [entered, setEntered] = useState(false);
+  const [leaving, setLeaving] = useState(false);
   const [bubbleIn, setBubbleIn] = useState(false);
   const [typed, setTyped] = useState("");
   const wrapRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const timerRef = useRef<number | null>(null);
   const intervalRef = useRef<number | null>(null);
+  const idleTimerRef = useRef<number | null>(null);
+  const exitTimerRef = useRef<number | null>(null);
 
   // Preload + decode
   useEffect(() => {
@@ -116,13 +119,36 @@ export function MascotFloater() {
 
   // Close when clicking anywhere outside the mascot image.
   const handleDismiss = () => {
+    if (leaving) return;
     try {
       sessionStorage.setItem(SHOWN_KEY, "1");
     } catch {}
-    setDismissed(true);
+    setLeaving(true);
+    if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
+    if (exitTimerRef.current) window.clearTimeout(exitTimerRef.current);
+    exitTimerRef.current = window.setTimeout(() => {
+      setDismissed(true);
+    }, 400);
   };
   const dismissRef = useRef(handleDismiss);
   dismissRef.current = handleDismiss;
+
+  // Auto-dismiss after 10s of no interaction with the mascot itself.
+  useEffect(() => {
+    if (!visible || leaving) return;
+    idleTimerRef.current = window.setTimeout(() => {
+      dismissRef.current();
+    }, 10000);
+    return () => {
+      if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
+    };
+  }, [visible, leaving]);
+
+  useEffect(() => {
+    return () => {
+      if (exitTimerRef.current) window.clearTimeout(exitTimerRef.current);
+    };
+  }, []);
 
   // Close on the first click anywhere that isn't the header/bottom nav.
   // Scroll/touch-move does NOT close the mascot.
@@ -162,7 +188,7 @@ export function MascotFloater() {
     >
       <div
         ref={wrapRef}
-        className={`mascot-wrap ${entered ? "mascot-wrap--in" : ""}`}
+        className={`mascot-wrap ${entered ? "mascot-wrap--in" : ""} ${leaving ? "mascot-wrap--out" : ""}`}
         style={{
           position: "absolute",
           right: "-72px",
