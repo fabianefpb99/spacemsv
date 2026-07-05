@@ -333,6 +333,7 @@ function MatchDetailPage() {
             <Link
               to="/deportes"
               aria-label="Volver a Deportes"
+              onClick={handleBack}
               className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-purple-500/30 bg-[#0b0522] text-purple-100 transition hover:border-fuchsia-400/60 hover:text-white"
             >
               <ArrowLeft className="h-4 w-4" />
