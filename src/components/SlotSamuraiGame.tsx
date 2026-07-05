@@ -1496,32 +1496,107 @@ export function SlotSamuraiGame() {
   );
 }
 
-function HudCell({
-  label,
-  value,
-  accent,
-  wide,
+/* ============================================================
+   Samurai banner — reemplaza el HUD superior clásico.
+   Muestra la identidad del juego + overlays de eventos.
+   Umbrales (múltiplo de la apuesta) inspirados en la clasificación
+   estándar de la industria; ajustables en un futuro sin tocar
+   el resto del juego.
+   ============================================================ */
+type SamuraiEventTier = "idle" | "win" | "big" | "mega" | "super" | "jackpot";
+function classifySamuraiEvent(total: number, bet: number): SamuraiEventTier {
+  if (total <= 0 || bet <= 0) return "idle";
+  const m = total / bet;
+  if (m >= 100) return "jackpot";
+  if (m >= 50)  return "super";
+  if (m >= 20)  return "mega";
+  if (m >= 8)   return "big";
+  return "win";
+}
+const EVENT_LABEL: Record<SamuraiEventTier, string> = {
+  idle: "",
+  win: "WIN",
+  big: "BIG WIN",
+  mega: "MEGA WIN",
+  super: "SUPER WIN",
+  jackpot: "JACKPOT",
+};
+
+function SamuraiBanner({
+  lastWin,
+  displayedWin,
+  bet,
+  spinning,
 }: {
-  label: string;
-  value: string;
-  accent?: "green" | "purple" | "muted";
-  wide?: boolean;
+  lastWin: number;
+  displayedWin: number;
+  bet: number;
+  spinning: boolean;
 }) {
-  const cls =
-    accent === "green"  ? "neon-green" :
-    accent === "purple" ? "text-purple-300" :
-    accent === "muted"  ? "text-purple-300/50" :
-    "text-white";
+  const tier = spinning ? "idle" : classifySamuraiEvent(lastWin, bet);
+  const showEvent = tier !== "idle" && lastWin > 0;
   return (
-    <div className="text-center">
-      <div className="text-[8px] uppercase tracking-widest text-purple-200/70">{label}</div>
-      <div
-        className="mt-1 rounded-lg border border-purple-500/30 bg-[#160830]/70 py-1.5"
-        style={{ boxShadow: "inset 0 0 8px rgba(168,85,247,0.18)" }}
-      >
-        <span className={`font-display ${wide ? "text-[11px]" : "text-xs"} font-bold ${cls}`}>{value}</span>
+    <section
+      className="relative mt-2 overflow-hidden rounded-2xl border border-fuchsia-500/30"
+      style={{
+        height: 190,
+        backgroundImage: `linear-gradient(180deg, rgba(10,4,22,0.15) 0%, rgba(10,4,22,0.65) 78%, rgba(10,4,22,0.95) 100%), url(${samuraiBg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center 32%",
+        boxShadow:
+          "0 0 22px rgba(168,85,247,0.35), inset 0 0 24px rgba(255,90,140,0.15)",
+      }}
+      aria-label="Samurai Legend"
+    >
+      {/* Logo centrado del juego */}
+      <div className="absolute inset-x-0 top-3 flex justify-center">
+        <img
+          src={samuraiLegendLogo}
+          alt="Samurai Legend"
+          className="h-[110px] w-auto max-w-[86%] drop-shadow-[0_6px_18px_rgba(0,0,0,0.7)]"
+          style={{ filter: "drop-shadow(0 0 12px rgba(255,90,120,0.35))" }}
+          draggable={false}
+        />
       </div>
-    </div>
+      {/* Overlay de evento de premio */}
+      {showEvent && (
+        <div
+          className="absolute inset-x-0 bottom-2 flex flex-col items-center"
+          style={{ animation: "scale-in 0.35s ease-out" }}
+        >
+          <div
+            className="font-display text-lg font-black tracking-[0.28em]"
+            style={{
+              background:
+                tier === "jackpot"
+                  ? "linear-gradient(180deg,#fff3a8 0%,#f5c542 60%,#b8860b 100%)"
+                  : tier === "super"
+                    ? "linear-gradient(180deg,#ffe1e1 0%,#ff5b7a 60%,#7f1024 100%)"
+                    : tier === "mega"
+                      ? "linear-gradient(180deg,#ffe1a8 0%,#ff8a3c 60%,#a83a00 100%)"
+                      : tier === "big"
+                        ? "linear-gradient(180deg,#ffffff 0%,#ff9bb4 60%,#c11d6b 100%)"
+                        : "linear-gradient(180deg,#ffffff 0%,#c084fc 60%,#7c3aed 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              filter: "drop-shadow(0 0 10px rgba(255,180,80,0.65))",
+            }}
+          >
+            {EVENT_LABEL[tier]}
+          </div>
+          <div
+            className="font-display text-xl font-black tracking-wide"
+            style={{
+              color: "#fef08a",
+              textShadow:
+                "0 0 12px rgba(253,224,71,0.75), 0 2px 4px rgba(0,0,0,0.85)",
+            }}
+          >
+            +{formatCOP(displayedWin)} COP
+          </div>
+        </div>
+      )}
+    </section>
   );
 }
 
