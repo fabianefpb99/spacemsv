@@ -558,7 +558,7 @@ function Reel({
 }
 
 function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boolean; tier: WinTier }) {
-  const scale = (sym.id === "hat" ? 1.2 : sym.id === "boss" ? 1.14 : 1) * 1.12;
+  const scale = sym.id === "hat" ? 1.14 : sym.id === "boss" ? 1.08 : 1;
   // El color del marco lo dicta el tier (no el símbolo) para que el jugador
   // identifique de un vistazo cuán bueno fue el premio.
   const glow = highlight ? TIER_GLOW[tier] : sym.glow;
@@ -604,8 +604,8 @@ function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boole
         decoding="sync"
         className="select-none pointer-events-none relative z-10"
         style={{
-          width: "96%",
-          height: "96%",
+          width: "88%",
+          height: "88%",
           objectFit: "contain",
           transform: scale !== 1 ? `scale(${scale})` : undefined,
           filter: highlight
