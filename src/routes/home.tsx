@@ -295,7 +295,7 @@ const SLIDES = [
   },
 ];
 
-function HomePage() {
+export function HomePage() {
   const me = useMe();
   const { user, loading: authLoading } = useAuth();
   // Pre-warm the avatar caches (mission:/ vip:) while the user is on Home so
