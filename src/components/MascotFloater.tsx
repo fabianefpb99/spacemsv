@@ -21,6 +21,7 @@ export function MascotFloater() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const timerRef = useRef<number | null>(null);
+  const intervalRef = useRef<number | null>(null);
 
   // Preload + decode
   useEffect(() => {
