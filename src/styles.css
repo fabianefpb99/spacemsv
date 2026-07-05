@@ -149,21 +149,72 @@ html.light .home-wins-viewport {
   -webkit-mask-image: none !important;
   mask-image: none !important;
 }
-html.light [data-mission-floater],
-html.light [data-mission-floater] * {
-  opacity: 1 !important;
+/* ------------------------------------------------------------------
+ * Mission-complete floater — LIGHT MODE
+ * Fully redesigned from scratch for legibility on light backgrounds.
+ * Dark mode is untouched (see the component's Tailwind classes).
+ * ------------------------------------------------------------------ */
+html.light [data-mission-floater]:not(.theme-dark-fixed):not(.theme-dark-fixed *) {
+  background: #ffffff !important;
+  background-image: linear-gradient(135deg, #ffffff 0%, #faf5ff 100%) !important;
+  border: 1.5px solid #7c3aed !important;
+  border-radius: 14px !important;
+  box-shadow:
+    0 10px 24px -12px rgba(88, 28, 135, 0.35),
+    0 2px 6px -2px rgba(124, 58, 237, 0.18) !important;
   filter: none !important;
-  box-shadow: none !important;
+  opacity: 1 !important;
 }
-html.light [data-mission-floater] {
-  background: #1a0930 !important;
-  border-color: #a855f7 !important;
+html.light [data-mission-floater]:not(.theme-dark-fixed):not(.theme-dark-fixed *) * {
+  filter: none !important;
+  text-shadow: none !important;
+  opacity: 1 !important;
+}
+/* Icon chip (amber) */
+html.light [data-mission-floater] .bg-amber-400\/15 {
+  background-color: #fef3c7 !important;
+  box-shadow: inset 0 0 0 1.5px #f59e0b !important;
+  --tw-ring-color: transparent !important;
+}
+html.light [data-mission-floater] .text-amber-200 {
+  color: #b45309 !important;
+}
+/* "MISIÓN COMPLETADA" eyebrow */
+html.light [data-mission-floater] .text-amber-200.uppercase,
+html.light [data-mission-floater] .font-bold.uppercase.text-amber-200 {
+  color: #6d28d9 !important;
+}
+/* Title (main line) */
+html.light [data-mission-floater] .text-white {
+  color: #1e0b3a !important;
+}
+/* Subtitle inline accent */
+html.light [data-mission-floater] .text-fuchsia-200 {
+  color: #a21caf !important;
+}
+/* "GANASTE" small label */
+html.light [data-mission-floater] .text-purple-300\/70 {
+  color: #6b21a8 !important;
+  opacity: 0.85 !important;
+}
+/* Reward value (emerald) */
+html.light [data-mission-floater] .text-emerald-300 {
+  color: #047857 !important;
+}
+/* Close button */
+html.light [data-mission-floater] .mission-floater-close {
+  background-color: transparent !important;
+  color: #4c1d95 !important;
+}
+html.light [data-mission-floater] .mission-floater-close:hover {
+  background-color: #f3e8ff !important;
 }
 html.light [data-mission-floater] .mission-floater-close,
+html.light [data-mission-floater] .mission-floater-close span,
 html.light [data-mission-floater] .mission-floater-close svg,
 html.light [data-mission-floater] .mission-floater-close svg * {
-  color: #ffffff !important;
-  stroke: #ffffff !important;
+  color: #4c1d95 !important;
+  stroke: #4c1d95 !important;
   opacity: 1 !important;
 }
 
