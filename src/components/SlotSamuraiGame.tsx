@@ -21,6 +21,17 @@ import samuraiBgAsset from "@/assets/samurai/samurai-bg.webp.asset.json";
 import samuraiLegendLogoAsset from "@/assets/samurai/samurai-legend-logo.webp.asset.json";
 const samuraiBg = samuraiBgAsset.url;
 const samuraiLegendLogo = samuraiLegendLogoAsset.url;
+import winWinAsset from "@/assets/samurai/win-win.png.asset.json";
+import winBigAsset from "@/assets/samurai/win-big.png.asset.json";
+import winMegaAsset from "@/assets/samurai/win-mega.png.asset.json";
+import winSuperAsset from "@/assets/samurai/win-super.png.asset.json";
+const WIN_LOGOS: Record<"win" | "big" | "mega" | "super" | "jackpot", string> = {
+  win: winWinAsset.url,
+  big: winBigAsset.url,
+  mega: winMegaAsset.url,
+  super: winSuperAsset.url,
+  jackpot: winSuperAsset.url,
+};
 
 import bossImg from "@/assets/slot/boss.png";
 import hatImg from "@/assets/slot/hat.png";
@@ -377,7 +388,7 @@ function playMegaWinSound() {
    Reel component — continuous translateY strip (no flicker)
    ============================================================ */
 // 3 filas visibles → tiles más grandes aprovechando la fila menos.
-const TILE_H = 86;
+const TILE_H = 78;
 const SPIN_BASE_MS = 1400;
 const SPIN_STAGGER_MS = 220;
 
