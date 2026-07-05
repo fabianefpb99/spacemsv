@@ -14,6 +14,7 @@ export function MascotFloater() {
   const [dismissed, setDismissed] = useState(false);
   const [entered, setEntered] = useState(false);
   const [bubbleIn, setBubbleIn] = useState(false);
+  const imageRef = useRef<HTMLImageElement>(null);
   const timerRef = useRef<number | null>(null);
 
   // Preload + decode
@@ -84,8 +85,13 @@ export function MascotFloater() {
         className={`mascot-wrap ${entered ? "mascot-wrap--in" : ""}`}
         style={{
           position: "absolute",
-          right: "-8px",
+          right: "-40px",
           bottom: "56px", // roughly above bottom nav so feet peek behind it
+        }}
+        onClick={(e) => {
+          // Clicking the mascot image does not close it; everything else does.
+          if (e.target === imageRef.current) return;
+          handleDismiss();
         }}
       >
         {/* Speech bubble */}
@@ -98,23 +104,45 @@ export function MascotFloater() {
         {/* Close button */}
         <button
           type="button"
-          onClick={handleDismiss}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDismiss();
+          }}
           aria-label="Ocultar personaje"
           className="pointer-events-auto absolute -left-1 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white/90 ring-1 ring-white/20 backdrop-blur transition hover:bg-black/80"
         >
           <X className="h-3.5 w-3.5" strokeWidth={2.5} />
         </button>
 
+        {/* Soft purple shadow behind the mascot */}
+        <div
+          className="absolute -z-10"
+          style={{
+            right: "6%",
+            bottom: "6%",
+            width: "78%",
+            height: "52%",
+            background:
+              "radial-gradient(ellipse at center, rgba(124, 58, 237, 0.62) 0%, rgba(88, 28, 135, 0.32) 45%, transparent 72%)",
+            filter: "blur(32px)",
+            transform: "scale(1.15)",
+            pointerEvents: "none",
+          }}
+        />
+
         {/* Mascot image */}
         <img
+          ref={imageRef}
           src={mascotAsset.url}
           alt=""
           draggable={false}
           data-no-smooth-image="true"
           className="mascot-img block h-auto select-none"
+          onClick={(e) => e.stopPropagation()}
           style={{
             width: "min(58vw, 260px)",
-            filter: "drop-shadow(0 12px 24px rgba(88, 28, 135, 0.55))",
+            filter: "drop-shadow(0 14px 26px rgba(88, 28, 135, 0.55))",
+            pointerEvents: "auto",
           }}
         />
       </div>
