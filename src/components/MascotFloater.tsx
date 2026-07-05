@@ -154,7 +154,10 @@ export function MascotFloater() {
           draggable={false}
           data-no-smooth-image="true"
           className="mascot-img block h-auto select-none"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            console.log("image click", e.target);
+            e.stopPropagation();
+          }}
           style={{
             width: "min(58vw, 260px)",
             filter: "drop-shadow(0 14px 26px rgba(88, 28, 135, 0.55))",
