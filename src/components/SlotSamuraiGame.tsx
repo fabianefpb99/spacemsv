@@ -1530,7 +1530,7 @@ function SamuraiHero({
       <img
         src={samuraiLegendLogo}
         alt="Samurai Legend"
-        className="h-[82px] w-auto max-w-[86%] select-none"
+        className="h-[118px] w-auto max-w-[95%] select-none"
         style={{
           filter:
             "drop-shadow(0 6px 14px rgba(0,0,0,0.75)) drop-shadow(0 0 18px rgba(255,90,120,0.35))",
@@ -1539,7 +1539,7 @@ function SamuraiHero({
       />
       {/* Espacio reservado bajo el logo — el evento WIN aparece aquí sin empujar el layout */}
       <div
-        className="mt-1 flex h-[78px] w-full flex-col items-center justify-start"
+        className="mt-0 flex h-[86px] w-full flex-col items-center justify-start"
         aria-hidden={!showEvent}
       >
         {showEvent && (
@@ -1550,7 +1550,7 @@ function SamuraiHero({
             <img
               src={WIN_LOGOS[tier as "win" | "big" | "mega" | "super" | "jackpot"]}
               alt={EVENT_LABEL[tier]}
-              className="h-[34px] w-auto select-none"
+              className="h-[58px] w-auto select-none"
               style={{
                 filter:
                   "drop-shadow(0 3px 8px rgba(0,0,0,0.85)) drop-shadow(0 0 10px rgba(255,90,30,0.55))",
@@ -1558,7 +1558,7 @@ function SamuraiHero({
               draggable={false}
             />
             <div
-              className="-mt-0.5 font-display text-[15px] font-black tracking-wide leading-none"
+              className="-mt-1 font-display text-[18px] font-black tracking-wide leading-none"
               style={{
                 color: "#fef08a",
                 textShadow:
