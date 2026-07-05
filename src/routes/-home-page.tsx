@@ -67,6 +67,7 @@ function prettyGameName(g: string): string {
   const k = (g || "").toLowerCase();
   if (k.includes("spaceman")) return "SPACEMAN";
   if (k.includes("mines") || k.includes("minas")) return "MINAS";
+  if (k.includes("slot_samurai") || k.includes("samurai")) return "SAMURAI LEGEND";
   if (k.includes("slot")) return "SLOT MAFIA";
   if (k.includes("dice") || k.includes("dado")) return "DADOS";
   if (k.includes("blackjack") && k.includes("vip")) return "BLACKJACK VIP";
