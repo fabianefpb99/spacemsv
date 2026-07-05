@@ -7,7 +7,7 @@ import { flushSync } from "react-dom";
 import { Link } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { spinSlot, type SpinResult } from "@/lib/games/slot.functions";
+import { spinSlotSamurai, type SamuraiSpinResult } from "@/lib/games/slot-samurai.functions";
 import { useMe } from "@/hooks/useMe";
 import { useOnlineCount } from "@/hooks/useOnlineCount";
 import { useAuth } from "@/hooks/useAuth";
@@ -16,8 +16,10 @@ import { AuthDialog } from "@/components/auth/AuthDialog";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "lucide-react";
 import { setMuted as setAudioMuted, playCashoutSound, playCoinsSound, isMuted, setBackgroundTrack, clearBackgroundTrack, getBackgroundTrack, stopAllGameAudio, getCtx, getMasterGain, AUDIO_STOP_ALL_EVENT } from "@/lib/gameAudio";
-import pageBg from "@/assets/mines-page-bg.png";
 import mafiaJazzUrl from "@/assets/mafia-jazz.mp3";
+import samuraiBgAsset from "@/assets/samurai/samurai-bg.webp.asset.json";
+import samuraiLegendLogo from "@/assets/samurai/samurai-legend-logo.svg";
+const samuraiBg = samuraiBgAsset.url;
 
 import bossImg from "@/assets/slot/boss.png";
 import hatImg from "@/assets/slot/hat.png";
@@ -94,35 +96,30 @@ function pickRandomFillers(n: number): string[] {
 }
 
 const REELS = 5;
-const ROWS = 4;
+const ROWS = 3;
 
-/* 20 paylines on 5x4 grid (row index per reel, 0=top, 3=bottom) */
+/* 20 paylines on 5x3 grid — mirror of SAMURAI_PAYLINES in slot-samurai.shared.ts */
 const PAYLINES: number[][] = [
-  [1, 1, 1, 1, 1], // row 2
-  [2, 2, 2, 2, 2], // row 3
-  [0, 0, 0, 0, 0], // row 1 (top)
-  [3, 3, 3, 3, 3], // row 4 (bottom)
-  [0, 1, 2, 1, 0], // V top
-  [3, 2, 1, 2, 3], // ^ bottom
-  [1, 2, 3, 2, 1], // V mid
-  [2, 1, 0, 1, 2], // ^ mid
-  [0, 0, 1, 2, 2], // diag down upper
-  [3, 3, 2, 1, 1], // diag up lower
-  [1, 0, 0, 0, 1], // U upper
-  [2, 3, 3, 3, 2], // U lower
-  [0, 1, 1, 1, 0], // arch upper
-  [3, 2, 2, 2, 3], // arch lower
-  [1, 2, 1, 2, 1], // zigzag mid
-  [2, 1, 2, 1, 2], // zigzag mid 2
-  [0, 1, 2, 3, 3], // staircase down
-  [3, 2, 1, 0, 0], // staircase up
-  [1, 1, 2, 3, 3], // step down
-  [2, 2, 1, 0, 0], // step up
-  [0, 2, 0, 2, 0], // big zigzag top
-  [3, 1, 3, 1, 3], // big zigzag bottom
-  [1, 0, 1, 0, 1], // zigzag upper
-  [2, 3, 2, 3, 2], // zigzag lower
-  [0, 3, 0, 3, 0], // deep zigzag
+  [1, 1, 1, 1, 1],
+  [0, 0, 0, 0, 0],
+  [2, 2, 2, 2, 2],
+  [0, 1, 2, 1, 0],
+  [2, 1, 0, 1, 2],
+  [1, 0, 1, 0, 1],
+  [1, 2, 1, 2, 1],
+  [0, 1, 0, 1, 0],
+  [2, 1, 2, 1, 2],
+  [0, 0, 1, 2, 2],
+  [2, 2, 1, 0, 0],
+  [1, 0, 0, 0, 1],
+  [1, 2, 2, 2, 1],
+  [0, 1, 1, 1, 0],
+  [2, 1, 1, 1, 2],
+  [0, 2, 0, 2, 0],
+  [2, 0, 2, 0, 2],
+  [0, 1, 2, 2, 2],
+  [2, 1, 0, 0, 0],
+  [1, 0, 2, 0, 1],
 ];
 
 const MIN_BET = 500;
@@ -378,7 +375,8 @@ function playMegaWinSound() {
 /* ============================================================
    Reel component — continuous translateY strip (no flicker)
    ============================================================ */
-const TILE_H = 66; // px per tile (4 rows visible = 264px tall window, same as before)
+// 3 filas visibles → tiles más grandes para el mismo alto total (~264px).
+const TILE_H = 88;
 const SPIN_BASE_MS = 1400;
 const SPIN_STAGGER_MS = 220;
 
