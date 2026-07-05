@@ -1545,7 +1545,7 @@ function SamuraiHero({
         {showEvent && (
           <div
             className="flex flex-col items-center"
-            style={{ animation: "scale-in 0.35s ease-out" }}
+            style={{ animation: "scale-in 0.14s cubic-bezier(0.2,0.9,0.3,1.2)" }}
           >
             <img
               src={WIN_LOGOS[tier as "win" | "big" | "mega" | "super" | "jackpot"]}
