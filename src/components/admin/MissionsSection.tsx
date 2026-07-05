@@ -29,6 +29,7 @@ const GAME_OPTIONS: { value: string; label: string }[] = [
   { value: "", label: "Cualquier juego" },
   { value: "arena", label: "Arena" },
   { value: "slot", label: "Slot Mafia" },
+  { value: "slot_samurai", label: "Samurai Legend" },
   { value: "spaceman", label: "Spaceman" },
   { value: "dice", label: "Dados" },
   { value: "mines", label: "Mines" },
