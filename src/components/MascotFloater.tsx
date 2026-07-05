@@ -56,6 +56,7 @@ export function MascotFloater() {
   }, []);
 
   const visible = isMobile && armed && decoded && !dismissed;
+  console.log({ isMobile, armed, decoded, dismissed, visible });
 
   // Trigger enter animation on next frame after mount
   useEffect(() => {
