@@ -14,10 +14,10 @@ export const SAMURAI_SYMBOLS: readonly SamuraiSymbol[] = [
   { id: "car",   pay: [34, 130, 440],  weight: 3  },
   { id: "brief", pay: [24, 72, 240],   weight: 4  },
   { id: "gold",  pay: [19, 50, 165],   weight: 5  },
-  { id: "watch", pay: [13, 32, 95],    weight: 6  },
-  { id: "chip",  pay: [10, 24, 68],    weight: 8  },
-  { id: "hat",   pay: [8, 18, 50],     weight: 10 },
-  { id: "card",  pay: [7, 14, 32],     weight: 12 },
+  { id: "watch", pay: [9, 32, 95],     weight: 6  },
+  { id: "chip",  pay: [6, 24, 68],     weight: 8  },
+  { id: "hat",   pay: [5, 18, 50],     weight: 10 },
+  { id: "card",  pay: [4, 14, 32],     weight: 12 },
 ] as const;
 
 /** 20 paylines for a 5x3 grid (row index per reel, 0=top, 2=bottom). */
