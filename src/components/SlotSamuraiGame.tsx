@@ -37,10 +37,10 @@ import bossAsset from "@/assets/samurai/sym-boss.png.asset.json";
 import carAsset from "@/assets/samurai/sym-car.png.asset.json";
 import briefAsset from "@/assets/samurai/sym-brief.png.asset.json";
 import goldAsset from "@/assets/samurai/sym-gold.png.asset.json";
-import watchAsset from "@/assets/samurai/sym-watch.png.asset.json";
-import chipAsset from "@/assets/samurai/sym-chip.png.asset.json";
-import hatAsset from "@/assets/samurai/sym-hat.png.asset.json";
-import cardAsset from "@/assets/samurai/sym-card.webp.asset.json";
+import oniAsset from "@/assets/samurai/sym-oni.webp.asset.json";
+import shurikenAsset from "@/assets/samurai/sym-shuriken.webp.asset.json";
+import toriiAsset from "@/assets/samurai/sym-torii.webp.asset.json";
+import sakeAsset from "@/assets/samurai/sym-sake.webp.asset.json";
 
 import bonusMegaAsset from "@/assets/audio/slot-win/bonus-1.mp3.asset.json";
 import bonusBigAsset from "@/assets/audio/slot-win/bonus-2.mp3.asset.json";
@@ -65,10 +65,10 @@ const SYMBOLS: SymbolDef[] = [
   { id: "car",   img: carAsset.url,   label: "DRAGÓN",       pay: [34, 130, 440],  weight: 3,  glow: "168,85,247"  },
   { id: "brief", img: briefAsset.url, label: "GEISHA",       pay: [24, 72, 240],   weight: 4,  glow: "244,63,94"   },
   { id: "gold",  img: goldAsset.url,  label: "KANJI 侍",      pay: [19, 50, 165],   weight: 5,  glow: "255,180,40"  },
-  { id: "watch", img: watchAsset.url, label: "KATANA",       pay: [13, 32, 95],    weight: 6,  glow: "255,80,80"   },
-  { id: "chip",  img: chipAsset.url,  label: "A",            pay: [10, 24, 68],    weight: 8,  glow: "255,140,60"  },
-  { id: "hat",   img: hatAsset.url,   label: "K",            pay: [8, 18, 50],     weight: 10, glow: "255,120,80"  },
-  { id: "card",  img: cardAsset.url,  label: "Q",            pay: [7, 14, 32],     weight: 12, glow: "200,80,220"  },
+  { id: "watch", img: oniAsset.url,      label: "ONI",       pay: [13, 32, 95],    weight: 6,  glow: "255,80,80"   },
+  { id: "chip",  img: shurikenAsset.url, label: "SHURIKEN",  pay: [10, 24, 68],    weight: 8,  glow: "236,72,153"  },
+  { id: "hat",   img: toriiAsset.url,    label: "TORII",     pay: [8, 18, 50],     weight: 10, glow: "244,63,94"   },
+  { id: "card",  img: sakeAsset.url,     label: "SAKE",      pay: [7, 14, 32],     weight: 12, glow: "200,80,220"  },
 ];
 
 const SYMBOL_INDEX = new Map(SYMBOLS.map((s, i) => [s.id, i]));
