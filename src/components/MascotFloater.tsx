@@ -82,14 +82,24 @@ export function MascotFloater() {
   useEffect(() => {
     if (!visible) return;
     const onDocClick = (e: MouseEvent) => {
-      const img = imageRef.current;
-      const target = e.target as Node | null;
-      if (img && target && (img === target || img.contains(target))) return;
+      const target = e.target as Element | null;
+      // Header and bottom nav keep working normally (no swallow, no close).
+      if (target && target.closest("header, nav")) return;
+      // Anywhere else (including the mascot itself): close AND eat the click
+      // so the first tap dismisses her without triggering the underlying UI.
+      e.preventDefault();
+      e.stopPropagation();
       dismissRef.current();
     };
     // capture=true so we run before other click handlers on the page.
     document.addEventListener("click", onDocClick, true);
-    return () => document.removeEventListener("click", onDocClick, true);
+    // Also intercept the pointer/tap phase so <Link> and other components
+    // that navigate on mousedown don't slip through.
+    document.addEventListener("pointerdown", onDocClick as unknown as EventListener, true);
+    return () => {
+      document.removeEventListener("click", onDocClick, true);
+      document.removeEventListener("pointerdown", onDocClick as unknown as EventListener, true);
+    };
   }, [visible]);
 
   if (!visible || typeof document === "undefined") return null;
@@ -112,7 +122,9 @@ export function MascotFloater() {
         <div
           className={`mascot-bubble ${bubbleIn ? "mascot-bubble--in" : ""}`}
         >
-          ¿Qué jugaremos hoy?
+          ¿QUÉ VAMOS
+          <br />
+          A JUGAR HOY?
         </div>
 
         {/* Close button */}
