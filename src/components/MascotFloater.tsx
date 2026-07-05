@@ -163,7 +163,7 @@ export function MascotFloater() {
           style={{
             width: "min(58vw, 260px)",
             filter:
-              "drop-shadow(0 0 1px rgba(255,255,255,0.9)) drop-shadow(0 0 1px rgba(255,255,255,0.85)) drop-shadow(0 0 2px rgba(168,85,247,0.55)) drop-shadow(0 14px 26px rgba(88, 28, 135, 0.55))",
+              "drop-shadow(0 0 1px rgba(139, 92, 246, 0.55)) drop-shadow(0 0 2px rgba(124, 58, 237, 0.42)) drop-shadow(0 0 4px rgba(88, 28, 135, 0.28)) drop-shadow(0 14px 26px rgba(88, 28, 135, 0.55))",
             pointerEvents: "auto",
           }}
         />
