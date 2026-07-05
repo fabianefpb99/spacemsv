@@ -458,7 +458,7 @@ function MatchDetailPage() {
         </div>
 
         <div
-          className="md-ticket-light fixed inset-x-0 bottom-0 z-30 border-t border-neutral-200 bg-white shadow-[0_-10px_30px_-10px_rgba(0,0,0,0.35)]"
+          className={`md-ticket-light fixed inset-x-0 bottom-0 z-30 border-t border-neutral-200 bg-white shadow-[0_-10px_30px_-10px_rgba(0,0,0,0.35)] ${leaving ? "match-view-leave" : "match-view-enter"}`}
           style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
         >
           {placed ? (
