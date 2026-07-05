@@ -478,6 +478,7 @@ function Reel({
     }
 
     const handleEnd = (ev: TransitionEvent) => {
+      if (ev.target !== el) return;
       if (ev.propertyName !== "transform") return;
       if (spinTokenRef.current !== token) return;
       clearTimeout(fallback);
