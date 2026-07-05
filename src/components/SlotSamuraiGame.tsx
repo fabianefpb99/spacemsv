@@ -1193,7 +1193,7 @@ export function SlotSamuraiGame() {
       className="relative h-[100dvh] overflow-hidden text-white"
       style={{
         backgroundColor: "#0a0416",
-        backgroundImage: `linear-gradient(180deg, rgba(10,4,22,0.35) 0%, rgba(10,4,22,0.55) 45%, rgba(10,4,22,0.9) 100%), url(${samuraiBg})`,
+        backgroundImage: `linear-gradient(180deg, rgba(10,4,22,0.15) 0%, rgba(10,4,22,0.35) 45%, rgba(10,4,22,0.75) 100%), url(${samuraiBg})`,
         backgroundSize: "cover, cover",
         backgroundPosition: "center top, center top",
         backgroundRepeat: "no-repeat, no-repeat",
