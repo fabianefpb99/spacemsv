@@ -21,6 +21,7 @@ export function MascotFloater() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const timerRef = useRef<number | null>(null);
+  const intervalRef = useRef<number | null>(null);
 
   // Preload + decode
   useEffect(() => {
@@ -81,7 +82,8 @@ export function MascotFloater() {
   useEffect(() => {
     if (!visible) return;
     const r1 = requestAnimationFrame(() => setEntered(true));
-    const t = window.setTimeout(() => setBubbleIn(true), 260);
+    // Wait long enough so the STARTER APUESTA popup can't cover the typing.
+    const t = window.setTimeout(() => setBubbleIn(true), 1100);
     return () => {
       cancelAnimationFrame(r1);
       window.clearTimeout(t);
@@ -97,12 +99,19 @@ export function MascotFloater() {
     }
     let i = 0;
     setTyped("");
-    const id = window.setInterval(() => {
-      i += 1;
-      setTyped(FULL_TEXT.slice(0, i));
-      if (i >= FULL_TEXT.length) window.clearInterval(id);
-    }, 38);
-    return () => window.clearInterval(id);
+    // Small extra delay so the bubble pops in fully before typing starts.
+    const startId = window.setTimeout(() => {
+      const id = window.setInterval(() => {
+        i += 1;
+        setTyped(FULL_TEXT.slice(0, i));
+        if (i >= FULL_TEXT.length) window.clearInterval(id);
+      }, 65);
+      intervalRef.current = id;
+    }, 350);
+    return () => {
+      window.clearTimeout(startId);
+      if (intervalRef.current) window.clearInterval(intervalRef.current);
+    };
   }, [bubbleIn]);
 
   // Close when clicking anywhere outside the mascot image.
