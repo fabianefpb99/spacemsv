@@ -66,7 +66,7 @@ export function GameMenuDrawer() {
               >
                 <div className="flex items-center justify-between pl-6 pr-4 pb-3">
                   <Link
-                    to="/home"
+                    to="/"
                     onClick={() => setOpen(false)}
                     className="logo-shine"
                     aria-label="Inicio"
@@ -112,7 +112,7 @@ export function GameMenuDrawer() {
                     type="button"
                     onClick={() => {
                       setOpen(false);
-                      navigate({ to: "/home" });
+                      navigate({ to: "/" });
                     }}
                     className="group flex items-center gap-3 rounded-xl border border-rose-400/25 bg-gradient-to-r from-rose-500/10 to-rose-500/[0.03] px-3 py-3 text-left transition hover:border-rose-400/50 hover:from-rose-500/20"
                   >

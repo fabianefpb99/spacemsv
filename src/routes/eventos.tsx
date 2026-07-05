@@ -127,7 +127,7 @@ const MISSIONS: Mission[] = [
     progress: 0,
     goal: 10000,
     reward: { kind: "bonus", value: 500, label: "500 Bonus" },
-    cta: { label: "Apostar", to: "/home" },
+    cta: { label: "Apostar", to: "/" },
     accent: "emerald",
     icon: <MissionIcon src={iconCoins.url} alt="Monedas" />,
   },
@@ -163,7 +163,7 @@ const MISSIONS: Mission[] = [
     progress: 12500,
     goal: 50000,
     reward: { kind: "bonus", value: 1500, label: "1.500 Bonus" },
-    cta: { label: "Jugar", to: "/home" },
+    cta: { label: "Jugar", to: "/" },
     accent: "purple",
     icon: <MissionIcon src={iconCoins.url} alt="Monedas" />,
   },
@@ -464,7 +464,7 @@ function EventosPage() {
               ? `+${r.reward_value} XP`
               : "Avatar"),
     },
-    cta: { label: r.cta_label || "Jugar", to: r.cta_to || "/home" },
+    cta: { label: r.cta_label || "Jugar", to: r.cta_to || "/" },
     accent: r.accent,
     icon: <MissionIcon src={getMissionIconUrl(r.icon_key)} alt="" />,
     rewardImage: r.reward_image_url ?? undefined,
@@ -540,7 +540,7 @@ function EventosPage() {
                   </button>
                 }
               />
-              <Link to="/home" className="logo-shine">
+              <Link to="/" className="logo-shine">
                 <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7 translate-y-px" />
                 <img src={betspaceLogo} alt="" aria-hidden="true" className="logo-shine-overlay h-6 w-auto sm:h-7 translate-y-px" />
               </Link>
@@ -716,7 +716,7 @@ function EventosPage() {
         style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       >
         <div className="mx-auto flex max-w-md items-end justify-between px-4 pt-2 pb-2 sm:max-w-lg">
-          <BottomItem icon={<Home className="h-5 w-5" />} label="INICIO" to="/home" />
+          <BottomItem icon={<Home className="h-5 w-5" />} label="INICIO" to="/" />
           <BottomItem icon={<Star className="h-5 w-5" />} label="EVENTOS" active />
           <BottomCenter />
           <BottomItem icon={<Wallet className="h-5 w-5" />} label="DEPÓSITO" to="/pay" />

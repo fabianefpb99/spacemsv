@@ -284,7 +284,7 @@ function SlidesEditor() {
         title: "Nuevo slide",
         description: "",
         cta_label: "Ver más",
-        cta_link: "/home",
+        cta_link: "/",
         active: true,
       },
     }));
@@ -650,7 +650,7 @@ function FeaturedEditor() {
         name: "NUEVO",
         tag: "POPULAR",
         tag_color: "purple",
-        link: "/home",
+        link: "/",
         active: true,
       },
     }));

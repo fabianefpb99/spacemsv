@@ -284,7 +284,7 @@ function MatchDetailPage() {
                   </button>
                 }
               />
-              <Link to="/home" className="logo-shine">
+              <Link to="/" className="logo-shine">
                 <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7 translate-y-px" />
                 <img src={betspaceLogo} alt="" aria-hidden="true" className="logo-shine-overlay h-6 w-auto sm:h-7 translate-y-px" />
               </Link>

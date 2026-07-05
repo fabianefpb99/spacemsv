@@ -69,7 +69,7 @@ const ITEMS: Item[] = [
 ];
 
 const PRIMARY_ITEMS: { label: string; icon: React.ComponentType<{ className?: string; strokeWidth?: number }>; to: string; accent: "fuchsia" | "cyan" }[] = [
-  { label: "Juegos", icon: Gamepad2, to: "/home", accent: "fuchsia" },
+  { label: "Juegos", icon: Gamepad2, to: "/", accent: "fuchsia" },
   { label: "Deportes", icon: FootballIcon, to: "/deportes", accent: "cyan" },
 ];
 
@@ -236,7 +236,7 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
               >
                 <div className="flex items-center justify-between pl-6 pr-4 pb-3">
                   <Link
-                    to="/home"
+                    to="/"
                     onClick={() => setOpen(false)}
                     className="logo-shine"
                     aria-label="Inicio"

@@ -741,7 +741,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
         >
           <div className="flex items-center gap-1">
             <GameMenuDrawer />
-            <Link to="/home">
+            <Link to="/">
               <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7 translate-y-px" />
             </Link>
           </div>

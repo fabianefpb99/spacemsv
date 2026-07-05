@@ -145,7 +145,7 @@ function AdminPanelPage() {
         title="Acceso restringido"
         msg="No tienes permisos para acceder al panel administrativo."
         cta="Volver al inicio"
-        onCta={() => navigate({ to: "/home" })}
+        onCta={() => navigate({ to: "/" })}
       />
     );
   }
@@ -221,7 +221,7 @@ function AdminPanelPage() {
           <button
             onClick={async () => {
               await signOut();
-              navigate({ to: "/home" });
+              navigate({ to: "/" });
             }}
             className="mt-2 flex items-center justify-center gap-2 rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-xs font-bold uppercase tracking-wider text-rose-300 hover:bg-rose-500/20"
           >
@@ -248,7 +248,7 @@ function AdminPanelPage() {
               {currentLabel}
             </h1>
             <button
-              onClick={() => navigate({ to: "/home" })}
+              onClick={() => navigate({ to: "/" })}
               aria-label="Salir"
               className="rounded-md p-2 text-purple-100 hover:bg-white/5"
             >
@@ -264,7 +264,7 @@ function AdminPanelPage() {
               <p className="text-xs text-purple-200/70">Gestiona tu casino en tiempo real</p>
             </div>
             <Link
-              to="/home"
+              to="/"
               className="inline-flex items-center gap-2 rounded-md border border-purple-500/30 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-purple-100 hover:bg-white/5"
             >
               <ArrowLeft className="h-4 w-4" /> Volver al casino
@@ -318,7 +318,7 @@ function AdminPanelPage() {
             <button
               onClick={async () => {
                 await signOut();
-                navigate({ to: "/home" });
+                navigate({ to: "/" });
               }}
               className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-xs font-bold uppercase tracking-wider text-rose-300 hover:bg-rose-500/20"
             >

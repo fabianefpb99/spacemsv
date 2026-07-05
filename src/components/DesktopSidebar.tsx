@@ -31,7 +31,7 @@ import { getPublicDrawerSettings } from "@/lib/admin/drawer-content.functions";
 type Item = { label: string; icon: LucideIcon; to: string };
 
 const ITEMS: Item[] = [
-  { label: "Inicio", icon: Home, to: "/home" },
+  { label: "Inicio", icon: Home, to: "/" },
   { label: "Eventos y Bonos", icon: Gift, to: "/eventos" },
   { label: "Mis Recargas", icon: History, to: "/mis-recargas" },
   { label: "Depósito", icon: Wallet, to: "/pay" },
@@ -76,7 +76,7 @@ export function DesktopSidebar() {
       className="theme-dark-fixed desktop-sidebar fixed inset-y-0 left-0 z-30 hidden h-screen w-[260px] flex-col border-r border-purple-500/20 bg-[#0a0418] text-white lg:flex"
     >
       <div className="flex items-center pl-6 pr-4 pt-6 pb-3">
-        <Link to="/home" className="logo-shine" aria-label="Inicio">
+        <Link to="/" className="logo-shine" aria-label="Inicio">
           <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto" />
         </Link>
       </div>
@@ -86,7 +86,7 @@ export function DesktopSidebar() {
       <nav className="mt-2 flex-1 overflow-y-auto px-2">
         <ul className="flex flex-col gap-0.5">
           {ITEMS.map((it) => {
-            const active = path === it.to || (it.to !== "/home" && path.startsWith(it.to));
+            const active = path === it.to || (it.to !== "/" && path.startsWith(it.to));
             return (
               <li key={it.label}>
                 <button

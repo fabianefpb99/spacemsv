@@ -64,7 +64,7 @@ function TransaccionesPage() {
       <div className="min-h-screen bg-[#060210] text-white">
         <div className="mx-auto flex min-h-screen max-w-md flex-col items-center justify-center gap-4 px-6 text-center">
           <p className="text-purple-200/80">Inicia sesión para ver tu historial.</p>
-          <Link to="/home" className="rounded-md bg-purple-600 px-4 py-2 text-xs font-bold uppercase tracking-wider">Ir al inicio</Link>
+          <Link to="/" className="rounded-md bg-purple-600 px-4 py-2 text-xs font-bold uppercase tracking-wider">Ir al inicio</Link>
         </div>
       </div>
     );

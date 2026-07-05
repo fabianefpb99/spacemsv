@@ -593,7 +593,7 @@ export function MinesGame() {
         >
           <div className="flex items-center gap-1">
             <GameMenuDrawer />
-            <Link to="/home">
+            <Link to="/">
               <img
                 src={betspaceLogo}
                 alt="BETSPACE"

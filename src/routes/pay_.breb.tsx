@@ -197,7 +197,7 @@ function PayBrebPage() {
             <Link to="/pay" className="rounded-md p-2 text-white hover:bg-white/10" aria-label="Volver">
               <ArrowLeft className="h-7 w-7" strokeWidth={3} />
             </Link>
-            <Link to="/home">
+            <Link to="/">
               <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7 translate-y-px" />
             </Link>
           </div>
@@ -351,7 +351,7 @@ function PayBrebPage() {
           </button>
         ) : (
           <button
-            onClick={() => navigate({ to: "/home" })}
+            onClick={() => navigate({ to: "/" })}
             className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl border border-purple-500/40 bg-[#0c0620] px-4 py-3.5 text-sm font-extrabold uppercase tracking-wide text-purple-200"
           >
             Volver al inicio

@@ -45,7 +45,7 @@ export function RequireAuth({ children }: { children: ReactNode }) {
               Iniciar sesión / Registrarse
             </button>
             <Link
-              to="/home"
+              to="/"
               className="w-full rounded-md border border-purple-500/40 px-4 py-3 text-xs font-bold uppercase tracking-wider text-purple-200 hover:bg-white/5"
             >
               Volver al inicio

@@ -215,7 +215,7 @@ function DeportesPage() {
                   </button>
                 }
               />
-              <Link to="/home" className="logo-shine">
+              <Link to="/" className="logo-shine">
                 <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7 translate-y-px" />
                 <img src={betspaceLogo} alt="" aria-hidden="true" className="logo-shine-overlay h-6 w-auto sm:h-7 translate-y-px" />
               </Link>
@@ -369,7 +369,7 @@ function DeportesPage() {
         style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       >
         <div className="mx-auto flex max-w-md items-end justify-between px-4 pt-2 pb-2 sm:max-w-lg">
-          <BottomItem icon={<Home className="h-5 w-5" />} label="INICIO" to="/home" />
+          <BottomItem icon={<Home className="h-5 w-5" />} label="INICIO" to="/" />
           <BottomItem icon={<Star className="h-5 w-5" />} label="EVENTOS" to="/eventos" />
           <BottomCenter />
           <BottomItem icon={<Wallet className="h-5 w-5" />} label="DEPÓSITO" to="/pay" />
