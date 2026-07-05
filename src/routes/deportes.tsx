@@ -395,7 +395,7 @@ function DeportesPage() {
   );
 }
 
-function MatchCard({ match }: { match: PublicMatch }) {
+function MatchCard({ match, myBetsCount = 0 }: { match: PublicMatch; myBetsCount?: number }) {
   const ready = useFlagsReady([match.home.code, match.away.code]);
   return (
     <Link
@@ -429,6 +429,15 @@ function MatchCard({ match }: { match: PublicMatch }) {
           <Clock className="h-3 w-3 text-purple-300/80" />
           {match.time}
         </span>
+        {myBetsCount > 0 && (
+          <span
+            className="inline-flex shrink-0 items-center gap-1 rounded-full border border-emerald-400/60 bg-emerald-500/15 px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wider text-emerald-100 shadow-[0_0_8px_rgba(16,185,129,0.35)]"
+            title={myBetsCount === 1 ? "Tienes 1 apuesta activa en este partido" : `Tienes ${myBetsCount} apuestas activas en este partido`}
+          >
+            <Ticket className="h-2.5 w-2.5" strokeWidth={2.5} />
+            {myBetsCount === 1 ? "Tu apuesta" : `Tus apuestas · ${myBetsCount}`}
+          </span>
+        )}
         <div className="ml-auto flex shrink-0 items-center">
           {match.live && (
             <span className="inline-flex items-center gap-1 rounded-full border border-fuchsia-400/60 bg-fuchsia-500/15 px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wider text-fuchsia-100">
