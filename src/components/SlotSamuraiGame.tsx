@@ -64,10 +64,10 @@ const SYMBOLS: SymbolDef[] = [
   { id: "car",   img: carAsset.url,   label: "DRAGÓN",       pay: [34, 130, 440],  weight: 3,  glow: "168,85,247"  },
   { id: "brief", img: briefAsset.url, label: "GEISHA",       pay: [24, 72, 240],   weight: 4,  glow: "244,63,94"   },
   { id: "gold",  img: goldAsset.url,  label: "KANJI 侍",      pay: [19, 50, 165],   weight: 5,  glow: "255,180,40"  },
-  { id: "watch", img: oniAsset.url,      label: "ONI",       pay: [13, 32, 95],    weight: 6,  glow: "255,80,80"   },
-  { id: "chip",  img: shurikenAsset.url, label: "SHURIKEN",  pay: [10, 24, 68],    weight: 8,  glow: "236,72,153"  },
-  { id: "hat",   img: toriiAsset.url,    label: "TORII",     pay: [8, 18, 50],     weight: 10, glow: "244,63,94"   },
-  { id: "card",  img: sakeAsset.url,     label: "SAKE",      pay: [7, 14, 32],     weight: 12, glow: "200,80,220"  },
+  { id: "watch", img: oniAsset.url,      label: "ONI",       pay: [9, 32, 95],     weight: 6,  glow: "255,80,80"   },
+  { id: "chip",  img: shurikenAsset.url, label: "SHURIKEN",  pay: [6, 24, 68],     weight: 8,  glow: "236,72,153"  },
+  { id: "hat",   img: toriiAsset.url,    label: "TORII",     pay: [5, 18, 50],     weight: 10, glow: "244,63,94"   },
+  { id: "card",  img: sakeAsset.url,     label: "SAKE",      pay: [4, 14, 32],     weight: 12, glow: "200,80,220"  },
 ];
 
 const SYMBOL_INDEX = new Map(SYMBOLS.map((s, i) => [s.id, i]));
@@ -1544,10 +1544,10 @@ type SamuraiEventTier = "idle" | "win" | "big" | "mega" | "super" | "jackpot";
 function classifySamuraiEvent(total: number, bet: number): SamuraiEventTier {
   if (total <= 0 || bet <= 0) return "idle";
   const m = total / bet;
-  if (m >= 50)  return "jackpot";
-  if (m >= 20)  return "super";
-  if (m >= 8)   return "mega";
-  if (m >= 2)   return "big";
+  if (m >= 20)  return "jackpot";
+  if (m >= 8)   return "super";
+  if (m >= 3)   return "mega";
+  if (m >= 1)   return "big";
   return "win";
 }
 const EVENT_LABEL: Record<SamuraiEventTier, string> = {
