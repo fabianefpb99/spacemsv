@@ -1153,7 +1153,7 @@ export function SlotSamuraiGame() {
       return;
     }
     // Duration scales gently with the size of the win, capped so it never drags.
-    const duration = Math.min(1680, Math.max(600, 420 + Math.log10(lastWin + 1) * 264));
+    const duration = Math.min(900, Math.max(280, 200 + Math.log10(lastWin + 1) * 140));
     playCoinsSound(duration);
     const start = performance.now();
     let raf = 0;
