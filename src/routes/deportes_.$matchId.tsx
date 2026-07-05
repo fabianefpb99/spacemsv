@@ -265,7 +265,7 @@ function MatchDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#060210] text-white">
+    <div className={`min-h-screen bg-[#060210] text-white ${leaving ? "match-view-leave" : "match-view-enter"}`}>
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col pt-4 sm:max-w-lg">
         <header
           className="flex flex-col items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 -mt-4"
