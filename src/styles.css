@@ -4143,6 +4143,16 @@ html.light .terminos-scope .terminos-footer {
 .my-bet-payout .my-bet-box-label { color: rgba(240, 171, 252, 0.85); }
 .my-bet-payout .my-bet-box-value { color: #fae8ff; }
 
+/* Mini banderas en cada ticket del historial */
+.my-bet-teams .my-bet-flag {
+  ring-color: rgba(255, 255, 255, 0.10);
+  background-color: #0c0620;
+}
+html.light .my-bet-teams .my-bet-flag:not(.theme-dark-fixed):not(.theme-dark-fixed *) {
+  ring-color: rgba(76, 29, 149, 0.20) !important;
+  background-color: #f4efff !important;
+}
+
 /* Status pill — modo oscuro */
 .my-bet-status--pending {
   color: #fae8ff;
