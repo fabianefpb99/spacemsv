@@ -20,6 +20,13 @@ export function PromoPopup() {
   const [remaining, setRemaining] = useState(DURATION_MS);
   const navigate = useNavigate();
 
+  const closePopup = () => {
+    setOpen(false);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("betspace:promo-starter-closed"));
+    }
+  };
+
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -99,7 +106,7 @@ export function PromoPopup() {
 
   const handleImageClick = () => {
     navigate({ to: "/pay" });
-    setOpen(false);
+    closePopup();
   };
 
   return (
@@ -109,14 +116,14 @@ export function PromoPopup() {
       role="dialog"
       aria-modal="true"
       aria-label="Promoción Combo Starter"
-      onClick={() => setOpen(false)}
+      onClick={closePopup}
     >
       <div
         className="relative w-full max-w-sm sm:max-w-md animate-promo-blop"
         onClick={(e) => e.stopPropagation()}
       >
         <button
-          onClick={() => setOpen(false)}
+          onClick={closePopup}
           aria-label="Cerrar promoción"
           className="promo-close-btn absolute -right-2 -top-2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/80 text-white ring-2 ring-purple-400/60 shadow-lg shadow-purple-900/60 transition hover:bg-black hover:ring-purple-300"
         >
