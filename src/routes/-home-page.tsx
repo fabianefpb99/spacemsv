@@ -3,6 +3,7 @@ import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Menu, ChevronRight, ChevronLeft, Gift, Home, Star, Wallet, User, Trophy } from "lucide-react";
 import { type PointerEvent, useEffect, useRef, useState } from "react";
 import { PromoPopup } from "@/components/PromoPopup";
+import { MascotFloater } from "@/components/MascotFloater";
 import { BrandLoader } from "@/components/BrandLoader";
 import { SkeletonImage } from "@/components/SkeletonImage";
 import { stopAllGameAudio } from "@/lib/gameAudio";
@@ -755,6 +756,7 @@ export function HomePage() {
     <div className="min-h-screen bg-[#060210] text-white lg:pl-[260px]">
       <BrandLoader active={showBrandLoader} minMs={1900} />
       <PromoPopup />
+      <MascotFloater />
       <DesktopSidebar />
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4 lg:max-w-3xl lg:px-6">
         {/* Header — must match SpacemanGame header exactly, sin icono de sonido */}
