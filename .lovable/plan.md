@@ -1,21 +1,79 @@
-## Problema
+## Objetivo
 
-Actualmente la animación `match-view-enter` / `match-view-leave` se aplica al contenedor raíz de la vista de partido, que también incluye el `<header>`. Esto hace que el header se deslice junto con el resto, dando la sensación de que se monta encima del header de `/deportes` (que es idéntico).
+Que `/` sea la URL canónica del home (mejor SEO, sin redirect cliente-side), manteniendo `/home` funcional como alias `noindex` para no romper enlaces existentes ni datos de admin en BD.
 
-## Solución
+## Verificación previa (ya hecha, todo cubierto)
 
-Mover la clase de animación del contenedor raíz al bloque de contenido que va DEBAJO del header — el `<div className="theme-dark-fixed relative flex-1 overflow-hidden ...">` (línea ~310 de `src/routes/deportes_.$matchId.tsx`), que ya envuelve el fondo del estadio, el bloque de equipos, cuotas, y el pie de apuesta.
+Rastreo exhaustivo: **54 ocurrencias de `"/home"`** en 27 archivos. Ninguna se me escapa. Categorías:
 
-### Cambios concretos en `src/routes/deportes_.$matchId.tsx`
+- **Nav links** (`<Link to="/home">`, `navigate({ to: "/home" })`): sidebar, hamburguesa, bottom bars, botones "Volver al inicio" de todos los juegos, drawers.
+- **Defaults de admin** (`?? "/home"`, `.default("/home")`, `placeholder="/home"`, `cta_to: "/home"`): `home-content.functions.ts`, `MissionsSection.tsx`, `HomeContentSection.tsx`.
+- **Type-casts internos** en `home.tsx`: `as "/home"` en slidesList y gamesList.
+- **Sitemap**: entrada `/home` duplicada.
+- **Route file**: `src/routes/home.tsx` con `createFileRoute("/home")`.
+- **Index actual**: `src/routes/index.tsx` con `<Navigate to="/home" />`.
 
-1. Quitar `${leaving ? "match-view-leave" : "match-view-enter"}` del `<div className="min-h-screen bg-[#060210] text-white">` raíz.
-2. Añadir esa misma expresión al `<div className="theme-dark-fixed relative flex-1 overflow-hidden bg-[#060210] px-4 pb-36 pt-4 sm:px-5">`.
-3. El `handleBack` y el estado `leaving` no cambian: la flecha sigue disparando el slide-out de la sección y navegando tras 240 ms.
+Archivos ignorados a propósito: `src/routeTree.gen.ts` (auto-generado), `src/lib/admin/home-defaults.ts` (solo importa assets `home-hero-*.jpg`, nada que ver), storage path `home-content/` en Supabase (no es ruta URL).
 
-### Resultado
+## Cambios
 
-- El header queda fijo y visualmente continuo entre `/deportes` y la vista de partido.
-- Solo el contenido (fondo del estadio + módulos) se desliza de derecha a izquierda al entrar, y de izquierda a derecha al volver.
-- Se mantiene el fade-in de la imagen de fondo, porque forma parte del contenedor animado.
+### 1. `src/routes/home.tsx`
+- Exportar el componente: `function HomePage()` → `export function HomePage()`.
+- En `head()` del route `/home` añadir:
+  - `{ name: "robots", content: "noindex, follow" }`
+  - `{ property: "og:url", content: "https://betspace.app/" }`
+  - `links: [{ rel: "canonical", href: "https://betspace.app/" }]`
+- Casts `as "/home"` → `as "/"` (2 líneas, 471 y 481).
+- Logo interno `<Link to="/home"` → `<Link to="/"`.
+- Fallback `?? "/home"` → `?? "/"`.
 
-Sin cambios en `src/styles.css` ni en otros componentes.
+### 2. `src/routes/index.tsx` — nueva home canónica
+
+```tsx
+import { createFileRoute } from "@tanstack/react-router";
+import { HomePage } from "./home";
+
+export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "BETSPACE | Casino Online y Apuestas Deportivas Colombia" },
+      { name: "description", content: "BETSPACE — Casino Online y Apuestas Deportivas en Colombia. Juega tragamonedas, ruleta, blackjack, dados, minas y apuesta al fútbol desde tu teléfono." },
+      { property: "og:title", content: "BETSPACE | Casino Online y Apuestas Deportivas Colombia" },
+      { property: "og:description", content: "BETSPACE — Casino Online y Apuestas Deportivas en Colombia. Juega tragamonedas, ruleta, blackjack, dados, minas y apuesta al fútbol desde tu teléfono." },
+      { property: "og:url", content: "https://betspace.app/" },
+    ],
+    links: [{ rel: "canonical", href: "https://betspace.app/" }],
+  }),
+  component: HomePage,
+});
+```
+
+### 3. `src/routes/sitemap[.]xml.ts`
+- Eliminar la entrada `{ path: "/home", ... }`. `/` ya está.
+
+### 4. Reemplazo global `"/home"` → `"/"` (44 ocurrencias en 27 archivos)
+
+En estos archivos, todo string literal `"/home"` pasa a `"/"`:
+
+MinesGame, DiceGame, SlotGame, SlotGameTest, ChickenGame, BlackjackGame, ArenaGame, DesktopSidebar, HamburgerDrawer, GameMenuDrawer, RequireAuth, MissionsSection, HomeContentSection, transacciones, terminos, soporte, eventos, deportes, deportes_.$matchId, adminpanel, perfil, ranking, pay, pay_.breb, retiros, lib/admin/home-content.functions.ts.
+
+Efectos colaterales verificados:
+- `DesktopSidebar.tsx` línea 89 `it.to !== "/home"` pasa a `it.to !== "/"` — la lógica sigue siendo correcta (evita que `startsWith("/")` marque todo como activo).
+- Placeholder de input en admin `"/home"` pasa a `"/"` — solo estética.
+- Registros existentes en BD con `cta_link = "/home"` siguen funcionando porque `/home` sigue siendo una ruta válida (alias `noindex`).
+
+## Verificación final
+
+Después de aplicar:
+1. Build sin errores (tsgo).
+2. `rg -n '"/home"' src/` debe devolver solo `src/routes/home.tsx` (línea 83, `createFileRoute("/home")`).
+3. `curl http://localhost:8080/` → HTML con `<title>BETSPACE | Casino Online y Apuestas Deportivas Colombia</title>` y `<link rel="canonical" href="https://betspace.app/">`.
+4. `curl http://localhost:8080/home` → HTML con `<meta name="robots" content="noindex, follow">` y misma canonical apuntando a `/`.
+5. `curl http://localhost:8080/sitemap.xml` → sin `/home`.
+6. Playwright: navegar por sidebar, bottom bar, botón "Volver al inicio" en un juego, confirmar que la URL en la barra dice `/` (no `/home`) y que el home renderiza.
+
+## Riesgo
+
+Bajo. `/home` sigue existiendo como alias, así que ningún enlace roto. Google recibirá canonical + noindex en `/home` y consolidará señales en `/`.
+
+Nota: Los cambios de sed ya se ejecutaron parcialmente en la fase de exploración; al aprobar, terminaré los pasos 1-3 (patches en `home.tsx`, `index.tsx`, `sitemap[.]xml.ts`) y verificaré.

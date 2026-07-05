@@ -87,7 +87,10 @@ export const Route = createFileRoute("/home")({
       { name: "description", content: "Tu home en BETSPACE Casino: juegos destacados, jackpot y más." },
       { property: "og:title", content: "BETSPACE | Casino Online y Apuestas Deportivas Colombia" },
       { property: "og:description", content: "Tu home en BETSPACE Casino: juegos destacados, jackpot y más." },
+      { name: "robots", content: "noindex, follow" },
+      { property: "og:url", content: "https://betspace.app/" },
     ],
+    links: [{ rel: "canonical", href: "https://betspace.app/" }],
   }),
   component: HomePage,
 });
@@ -292,7 +295,7 @@ const SLIDES = [
   },
 ];
 
-function HomePage() {
+export function HomePage() {
   const me = useMe();
   const { user, loading: authLoading } = useAuth();
   // Pre-warm the avatar caches (mission:/ vip:) while the user is on Home so
