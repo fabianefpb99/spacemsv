@@ -194,6 +194,19 @@ function DeportesPage() {
   const matchesQuery = usePublishedMatches();
   const matches = matchesQuery.data ?? [];
 
+  // Contador de apuestas activas por partido (solo pending) para el usuario logueado.
+  const getMyBets = useServerFn(getMySportsBets);
+  const myBetsQuery = useQuery({
+    queryKey: ["my-sports-bets", user?.id ?? null],
+    enabled: !authLoading && !!user,
+    staleTime: 15_000,
+    queryFn: async () => (await getMyBets()).bets,
+  });
+  const pendingByMatch = (myBetsQuery.data ?? []).reduce<Record<string, number>>((acc, b) => {
+    if (b.status === "pending") acc[b.match_id] = (acc[b.match_id] ?? 0) + 1;
+    return acc;
+  }, {});
+
   return (
     <div className="min-h-screen bg-[#060210] text-white">
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col pt-4 sm:max-w-lg">
@@ -340,7 +353,9 @@ function DeportesPage() {
                     No hay partidos programados por ahora. Vuelve pronto.
                   </div>
                 ) : (
-                  matches.map((m) => <MatchCard key={m.id} match={m} />)
+                  matches.map((m) => (
+                    <MatchCard key={m.id} match={m} myBetsCount={pendingByMatch[m.id] ?? 0} />
+                  ))
                 )}
               </div>
             </section>
