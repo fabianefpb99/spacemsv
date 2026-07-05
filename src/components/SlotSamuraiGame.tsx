@@ -21,6 +21,17 @@ import samuraiBgAsset from "@/assets/samurai/samurai-bg.webp.asset.json";
 import samuraiLegendLogoAsset from "@/assets/samurai/samurai-legend-logo.webp.asset.json";
 const samuraiBg = samuraiBgAsset.url;
 const samuraiLegendLogo = samuraiLegendLogoAsset.url;
+import winWinAsset from "@/assets/samurai/win-win.png.asset.json";
+import winBigAsset from "@/assets/samurai/win-big.png.asset.json";
+import winMegaAsset from "@/assets/samurai/win-mega.png.asset.json";
+import winSuperAsset from "@/assets/samurai/win-super.png.asset.json";
+const WIN_LOGOS: Record<"win" | "big" | "mega" | "super" | "jackpot", string> = {
+  win: winWinAsset.url,
+  big: winBigAsset.url,
+  mega: winMegaAsset.url,
+  super: winSuperAsset.url,
+  jackpot: winSuperAsset.url,
+};
 
 import bossImg from "@/assets/slot/boss.png";
 import hatImg from "@/assets/slot/hat.png";
@@ -377,7 +388,7 @@ function playMegaWinSound() {
    Reel component — continuous translateY strip (no flicker)
    ============================================================ */
 // 3 filas visibles → tiles más grandes aprovechando la fila menos.
-const TILE_H = 86;
+const TILE_H = 78;
 const SPIN_BASE_MS = 1400;
 const SPIN_STAGGER_MS = 220;
 
@@ -1182,7 +1193,7 @@ export function SlotSamuraiGame() {
       className="relative h-[100dvh] overflow-hidden text-white"
       style={{
         backgroundColor: "#0a0416",
-        backgroundImage: `linear-gradient(180deg, rgba(10,4,22,0.35) 0%, rgba(10,4,22,0.55) 45%, rgba(10,4,22,0.9) 100%), url(${samuraiBg})`,
+        backgroundImage: `linear-gradient(180deg, rgba(10,4,22,0.15) 0%, rgba(10,4,22,0.35) 45%, rgba(10,4,22,0.75) 100%), url(${samuraiBg})`,
         backgroundSize: "cover, cover",
         backgroundPosition: "center top, center top",
         backgroundRepeat: "no-repeat, no-repeat",
@@ -1512,7 +1523,7 @@ function SamuraiHero({
   const showEvent = tier !== "idle" && lastWin > 0;
   return (
     <section
-      className="relative mt-0.5 flex flex-col items-center justify-center"
+      className="relative mt-0 flex flex-col items-center justify-center"
       aria-label="Samurai Legend"
     >
       {/* Logo integrado sobre el fondo global — sin card, sin borde */}
@@ -1526,44 +1537,39 @@ function SamuraiHero({
         }}
         draggable={false}
       />
-      {/* Overlay de evento de premio, flotando sobre el paisaje */}
-      {showEvent && (
-        <div
-          className="mt-0.5 flex flex-col items-center"
-          style={{ animation: "scale-in 0.35s ease-out" }}
-        >
+      {/* Espacio reservado bajo el logo — el evento WIN aparece aquí sin empujar el layout */}
+      <div
+        className="mt-0.5 flex h-[54px] w-full flex-col items-center justify-start"
+        aria-hidden={!showEvent}
+      >
+        {showEvent && (
           <div
-            className="font-display text-lg font-black tracking-[0.28em] leading-none"
-            style={{
-              background:
-                tier === "jackpot"
-                  ? "linear-gradient(180deg,#fff3a8 0%,#f5c542 60%,#b8860b 100%)"
-                  : tier === "super"
-                    ? "linear-gradient(180deg,#ffe1e1 0%,#ff5b7a 60%,#7f1024 100%)"
-                    : tier === "mega"
-                      ? "linear-gradient(180deg,#ffe1a8 0%,#ff8a3c 60%,#a83a00 100%)"
-                      : tier === "big"
-                        ? "linear-gradient(180deg,#ffffff 0%,#ff9bb4 60%,#c11d6b 100%)"
-                        : "linear-gradient(180deg,#ffffff 0%,#c084fc 60%,#7c3aed 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              filter: "drop-shadow(0 0 10px rgba(255,180,80,0.65))",
-            }}
+            className="flex flex-col items-center"
+            style={{ animation: "scale-in 0.35s ease-out" }}
           >
-            {EVENT_LABEL[tier]}
+            <img
+              src={WIN_LOGOS[tier as "win" | "big" | "mega" | "super" | "jackpot"]}
+              alt={EVENT_LABEL[tier]}
+              className="h-[34px] w-auto select-none"
+              style={{
+                filter:
+                  "drop-shadow(0 3px 8px rgba(0,0,0,0.85)) drop-shadow(0 0 10px rgba(255,90,30,0.55))",
+              }}
+              draggable={false}
+            />
+            <div
+              className="-mt-0.5 font-display text-[15px] font-black tracking-wide leading-none"
+              style={{
+                color: "#fef08a",
+                textShadow:
+                  "0 0 10px rgba(253,224,71,0.85), 0 2px 4px rgba(0,0,0,0.95)",
+              }}
+            >
+              +{formatCOP(displayedWin)} COP
+            </div>
           </div>
-          <div
-            className="mt-0.5 font-display text-xl font-black tracking-wide leading-none"
-            style={{
-              color: "#fef08a",
-              textShadow:
-                "0 0 12px rgba(253,224,71,0.75), 0 2px 4px rgba(0,0,0,0.85)",
-            }}
-          >
-            +{formatCOP(displayedWin)} COP
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </section>
   );
 }
