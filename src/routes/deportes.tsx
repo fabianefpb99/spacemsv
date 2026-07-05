@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Menu, Home, Star, Wallet, User, Trophy, Calendar, Clock, ChevronRight, Ticket } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
+import stadiumBg from "@/assets/stadium-bg.jpg";
 import mundialHeroAsset from "@/assets/mundial-hero.webp.asset.json";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { NotificationBell } from "@/components/admin/NotificationBell";
