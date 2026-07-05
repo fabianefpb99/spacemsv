@@ -14,6 +14,7 @@ import { Route as TransaccionesRouteImport } from './routes/transacciones'
 import { Route as TerminosRouteImport } from './routes/terminos'
 import { Route as SpacemanRouteImport } from './routes/spaceman'
 import { Route as SoporteRouteImport } from './routes/soporte'
+import { Route as SlotsamuraiRouteImport } from './routes/slotsamurai'
 import { Route as SlotpruebasRouteImport } from './routes/slotpruebas'
 import { Route as SlotRouteImport } from './routes/slot'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -69,6 +70,11 @@ const SpacemanRoute = SpacemanRouteImport.update({
 const SoporteRoute = SoporteRouteImport.update({
   id: '/soporte',
   path: '/soporte',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SlotsamuraiRoute = SlotsamuraiRouteImport.update({
+  id: '/slotsamurai',
+  path: '/slotsamurai',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SlotpruebasRoute = SlotpruebasRouteImport.update({
@@ -254,6 +260,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/slot': typeof SlotRoute
   '/slotpruebas': typeof SlotpruebasRoute
+  '/slotsamurai': typeof SlotsamuraiRoute
   '/soporte': typeof SoporteRoute
   '/spaceman': typeof SpacemanRoute
   '/terminos': typeof TerminosRoute
@@ -292,6 +299,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/slot': typeof SlotRoute
   '/slotpruebas': typeof SlotpruebasRoute
+  '/slotsamurai': typeof SlotsamuraiRoute
   '/soporte': typeof SoporteRoute
   '/spaceman': typeof SpacemanRoute
   '/terminos': typeof TerminosRoute
@@ -331,6 +339,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/slot': typeof SlotRoute
   '/slotpruebas': typeof SlotpruebasRoute
+  '/slotsamurai': typeof SlotsamuraiRoute
   '/soporte': typeof SoporteRoute
   '/spaceman': typeof SpacemanRoute
   '/terminos': typeof TerminosRoute
@@ -371,6 +380,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/slot'
     | '/slotpruebas'
+    | '/slotsamurai'
     | '/soporte'
     | '/spaceman'
     | '/terminos'
@@ -409,6 +419,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/slot'
     | '/slotpruebas'
+    | '/slotsamurai'
     | '/soporte'
     | '/spaceman'
     | '/terminos'
@@ -447,6 +458,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/slot'
     | '/slotpruebas'
+    | '/slotsamurai'
     | '/soporte'
     | '/spaceman'
     | '/terminos'
@@ -486,6 +498,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SlotRoute: typeof SlotRoute
   SlotpruebasRoute: typeof SlotpruebasRoute
+  SlotsamuraiRoute: typeof SlotsamuraiRoute
   SoporteRoute: typeof SoporteRoute
   SpacemanRoute: typeof SpacemanRoute
   TerminosRoute: typeof TerminosRoute
@@ -537,6 +550,13 @@ declare module '@tanstack/react-router' {
       path: '/soporte'
       fullPath: '/soporte'
       preLoaderRoute: typeof SoporteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/slotsamurai': {
+      id: '/slotsamurai'
+      path: '/slotsamurai'
+      fullPath: '/slotsamurai'
+      preLoaderRoute: typeof SlotsamuraiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/slotpruebas': {
@@ -782,6 +802,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SlotRoute: SlotRoute,
   SlotpruebasRoute: SlotpruebasRoute,
+  SlotsamuraiRoute: SlotsamuraiRoute,
   SoporteRoute: SoporteRoute,
   SpacemanRoute: SpacemanRoute,
   TerminosRoute: TerminosRoute,
