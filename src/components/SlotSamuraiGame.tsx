@@ -18,8 +18,9 @@ import { Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "luc
 import { setMuted as setAudioMuted, playCashoutSound, playCoinsSound, isMuted, setBackgroundTrack, clearBackgroundTrack, getBackgroundTrack, stopAllGameAudio, getCtx, getMasterGain, AUDIO_STOP_ALL_EVENT } from "@/lib/gameAudio";
 import mafiaJazzUrl from "@/assets/mafia-jazz.mp3";
 import samuraiBgAsset from "@/assets/samurai/samurai-bg.webp.asset.json";
-import samuraiLegendLogo from "@/assets/samurai/samurai-legend-logo.svg";
+import samuraiLegendLogoAsset from "@/assets/samurai/samurai-legend-logo.webp.asset.json";
 const samuraiBg = samuraiBgAsset.url;
+const samuraiLegendLogo = samuraiLegendLogoAsset.url;
 
 import bossImg from "@/assets/slot/boss.png";
 import hatImg from "@/assets/slot/hat.png";
@@ -375,8 +376,8 @@ function playMegaWinSound() {
 /* ============================================================
    Reel component — continuous translateY strip (no flicker)
    ============================================================ */
-// 3 filas visibles → tiles más grandes para el mismo alto total (~264px).
-const TILE_H = 88;
+// 3 filas visibles → tiles más grandes aprovechando la fila menos.
+const TILE_H = 108;
 const SPIN_BASE_MS = 1400;
 const SPIN_STAGGER_MS = 220;
 
