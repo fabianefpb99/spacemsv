@@ -1,79 +1,66 @@
-## Objetivo
+# Mascota "Chica BETSPACE" flotante en Home (mobile)
 
-Que `/` sea la URL canónica del home (mejor SEO, sin redirect cliente-side), manteniendo `/home` funcional como alias `noindex` para no romper enlaces existentes ni datos de admin en BD.
+Personaje decorativo anclado al borde inferior de la Home, **detrás** del bottom nav, con un globito *"¿Qué jugaremos hoy?"* a la izquierda de su cabeza. Solo mobile, solo Home.
 
-## Verificación previa (ya hecha, todo cubierto)
+## Comportamiento
 
-Rastreo exhaustivo: **54 ocurrencias de `"/home"`** en 27 archivos. Ninguna se me escapa. Categorías:
+- Aparece **después** de cerrar el popup `STARTER APUESTA` (cualquier vía: X, click en imagen, backdrop). Fallback: si el popup no se muestra en esta sesión (límite 2/hora), aparece igual ~1.2s después de entrar a la Home.
+- Sale una sola vez por sesión (se recuerda con `sessionStorage`).
+- Botón "×" chico para descartarla.
+- Solo visible `<lg` (mobile/tablet) y solo en `/` y `/home`.
 
-- **Nav links** (`<Link to="/home">`, `navigate({ to: "/home" })`): sidebar, hamburguesa, bottom bars, botones "Volver al inicio" de todos los juegos, drawers.
-- **Defaults de admin** (`?? "/home"`, `.default("/home")`, `placeholder="/home"`, `cta_to: "/home"`): `home-content.functions.ts`, `MissionsSection.tsx`, `HomeContentSection.tsx`.
-- **Type-casts internos** en `home.tsx`: `as "/home"` en slidesList y gamesList.
-- **Sitemap**: entrada `/home` duplicada.
-- **Route file**: `src/routes/home.tsx` con `createFileRoute("/home")`.
-- **Index actual**: `src/routes/index.tsx` con `<Navigate to="/home" />`.
+## Assets
 
-Archivos ignorados a propósito: `src/routeTree.gen.ts` (auto-generado), `src/lib/admin/home-defaults.ts` (solo importa assets `home-hero-*.jpg`, nada que ver), storage path `home-content/` en Supabase (no es ruta URL).
+- Imagen ya comprimida a **WebP 540×956, ~120 KB** desde el PNG original de 1.6 MB.
+- Se subirá al CDN como `src/assets/mascot-chica.webp.asset.json` con `lovable-assets`.
 
-## Cambios
+## Carga limpia (sin flash)
 
-### 1. `src/routes/home.tsx`
-- Exportar el componente: `function HomePage()` → `export function HomePage()`.
-- En `head()` del route `/home` añadir:
-  - `{ name: "robots", content: "noindex, follow" }`
-  - `{ property: "og:url", content: "https://betspace.app/" }`
-  - `links: [{ rel: "canonical", href: "https://betspace.app/" }]`
-- Casts `as "/home"` → `as "/"` (2 líneas, 471 y 481).
-- Logo interno `<Link to="/home"` → `<Link to="/"`.
-- Fallback `?? "/home"` → `?? "/"`.
+1. `new Image()` → `img.src = mascotAsset.url`.
+2. Cuando `img.decode()` resuelve **y** el evento `betspace:promo-starter-closed` ha ocurrido (o el fallback timer), recién montamos el nodo con `opacity:0`.
+3. `requestAnimationFrame` → añadimos clase `mascot-enter` que hace: `translateY(24px) scale(.98) opacity:0` → `translateY(0) scale(1) opacity:1` en 600ms `cubic-bezier(.22,.9,.3,1)`.
+4. Luego un idle sutil `mascot-float` (translateY ±4px, 5s loop).
+5. Globito: aparece 220ms después con `bubble-pop` (scale .8 → 1 + fade).
 
-### 2. `src/routes/index.tsx` — nueva home canónica
+Sin la imagen decodificada no se renderiza nada → cero flash / cero layout shift.
 
-```tsx
-import { createFileRoute } from "@tanstack/react-router";
-import { HomePage } from "./home";
+## Composición
 
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "BETSPACE | Casino Online y Apuestas Deportivas Colombia" },
-      { name: "description", content: "BETSPACE — Casino Online y Apuestas Deportivas en Colombia. Juega tragamonedas, ruleta, blackjack, dados, minas y apuesta al fútbol desde tu teléfono." },
-      { property: "og:title", content: "BETSPACE | Casino Online y Apuestas Deportivas Colombia" },
-      { property: "og:description", content: "BETSPACE — Casino Online y Apuestas Deportivas en Colombia. Juega tragamonedas, ruleta, blackjack, dados, minas y apuesta al fútbol desde tu teléfono." },
-      { property: "og:url", content: "https://betspace.app/" },
-    ],
-    links: [{ rel: "canonical", href: "https://betspace.app/" }],
-  }),
-  component: HomePage,
-});
+```text
+        ┌───────────────┐
+        │   contenido    │
+        │      ╭──────╮  │
+        │      │¿Qué  │  │  ← bubble blanco 90% opac,
+        │      │jug…? │  │    borde morado, colita
+        │      ╰────╮─╯  │
+        │          ╭─╮   │  ← chica, right-2, h ~46vh
+        │          │ │   │
+        ├──────────┴─┴──┤
+        │ ▓▓ Bottom Nav │  ← z-30 (queda encima)
+        └───────────────┘
 ```
 
-### 3. `src/routes/sitemap[.]xml.ts`
-- Eliminar la entrada `{ path: "/home", ... }`. `/` ya está.
+- Wrapper: `fixed bottom-0 right-0 z-20 lg:hidden pointer-events-none`.
+- Chica: `pointer-events-none`, altura `min(46vh, 420px)`, `right-1`, se recorta con el nav de forma natural (el nav es `z-30`).
+- Botón cerrar: `pointer-events-auto`, arriba de la cabeza, discreto.
+- Globo: `absolute`, `bg-white/92`, `border-2 border-purple-500`, `text-purple-900`, `rounded-2xl`, colita triangular hacia la chica.
 
-### 4. Reemplazo global `"/home"` → `"/"` (44 ocurrencias en 27 archivos)
+## Cambios técnicos
 
-En estos archivos, todo string literal `"/home"` pasa a `"/"`:
+1. **Nuevo asset** `src/assets/mascot-chica.webp.asset.json` (subido con `lovable-assets`, PNG local no se guarda).
+2. **Nuevo componente** `src/components/MascotFloater.tsx`:
+   - Solo mobile (`useIsMobile`).
+   - Estado: `armed` (popup cerrado o fallback), `decoded`, `dismissed`.
+   - Preload+decode al montar.
+   - Escucha `window` evento `betspace:promo-starter-closed`.
+   - `sessionStorage` key `betspace:mascot-shown`.
+   - Portal a `document.body`.
+3. **`src/components/PromoPopup.tsx`**: al cerrar (X, backdrop, click imagen antes de navegar) `window.dispatchEvent(new CustomEvent("betspace:promo-starter-closed"))`.
+4. **`src/routes/-home-page.tsx`**: renderizar `<MascotFloater />` junto al `<PromoPopup />`.
+5. **`src/styles.css`**: keyframes `mascot-enter`, `mascot-float`, `bubble-pop`.
 
-MinesGame, DiceGame, SlotGame, SlotGameTest, ChickenGame, BlackjackGame, ArenaGame, DesktopSidebar, HamburgerDrawer, GameMenuDrawer, RequireAuth, MissionsSection, HomeContentSection, transacciones, terminos, soporte, eventos, deportes, deportes_.$matchId, adminpanel, perfil, ranking, pay, pay_.breb, retiros, lib/admin/home-content.functions.ts.
+## Fuera de alcance
 
-Efectos colaterales verificados:
-- `DesktopSidebar.tsx` línea 89 `it.to !== "/home"` pasa a `it.to !== "/"` — la lógica sigue siendo correcta (evita que `startsWith("/")` marque todo como activo).
-- Placeholder de input en admin `"/home"` pasa a `"/"` — solo estética.
-- Registros existentes en BD con `cta_link = "/home"` siguen funcionando porque `/home` sigue siendo una ruta válida (alias `noindex`).
-
-## Verificación final
-
-Después de aplicar:
-1. Build sin errores (tsgo).
-2. `rg -n '"/home"' src/` debe devolver solo `src/routes/home.tsx` (línea 83, `createFileRoute("/home")`).
-3. `curl http://localhost:8080/` → HTML con `<title>BETSPACE | Casino Online y Apuestas Deportivas Colombia</title>` y `<link rel="canonical" href="https://betspace.app/">`.
-4. `curl http://localhost:8080/home` → HTML con `<meta name="robots" content="noindex, follow">` y misma canonical apuntando a `/`.
-5. `curl http://localhost:8080/sitemap.xml` → sin `/home`.
-6. Playwright: navegar por sidebar, bottom bar, botón "Volver al inicio" en un juego, confirmar que la URL en la barra dice `/` (no `/home`) y que el home renderiza.
-
-## Riesgo
-
-Bajo. `/home` sigue existiendo como alias, así que ningún enlace roto. Google recibirá canonical + noindex en `/home` y consolidará señales en `/`.
-
-Nota: Los cambios de sed ya se ejecutaron parcialmente en la fase de exploración; al aprobar, terminaré los pasos 1-3 (patches en `home.tsx`, `index.tsx`, `sitemap[.]xml.ts`) y verificaré.
+- Versión desktop.
+- CTA que navegue (solo cerrar por ahora).
+- Cambios visuales al popup Starter salvo el `dispatchEvent`.
