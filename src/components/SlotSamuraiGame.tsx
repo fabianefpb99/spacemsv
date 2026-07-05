@@ -37,10 +37,10 @@ import bossAsset from "@/assets/samurai/sym-boss.png.asset.json";
 import carAsset from "@/assets/samurai/sym-car.png.asset.json";
 import briefAsset from "@/assets/samurai/sym-brief.png.asset.json";
 import goldAsset from "@/assets/samurai/sym-gold.png.asset.json";
-import watchAsset from "@/assets/samurai/sym-watch.png.asset.json";
-import chipAsset from "@/assets/samurai/sym-chip.png.asset.json";
-import hatAsset from "@/assets/samurai/sym-hat.png.asset.json";
-import cardAsset from "@/assets/samurai/sym-card.webp.asset.json";
+import oniAsset from "@/assets/samurai/sym-oni.webp.asset.json";
+import shurikenAsset from "@/assets/samurai/sym-shuriken.webp.asset.json";
+import toriiAsset from "@/assets/samurai/sym-torii.webp.asset.json";
+import sakeAsset from "@/assets/samurai/sym-sake.webp.asset.json";
 
 import bonusMegaAsset from "@/assets/audio/slot-win/bonus-1.mp3.asset.json";
 import bonusBigAsset from "@/assets/audio/slot-win/bonus-2.mp3.asset.json";
@@ -65,10 +65,10 @@ const SYMBOLS: SymbolDef[] = [
   { id: "car",   img: carAsset.url,   label: "DRAGÓN",       pay: [34, 130, 440],  weight: 3,  glow: "168,85,247"  },
   { id: "brief", img: briefAsset.url, label: "GEISHA",       pay: [24, 72, 240],   weight: 4,  glow: "244,63,94"   },
   { id: "gold",  img: goldAsset.url,  label: "KANJI 侍",      pay: [19, 50, 165],   weight: 5,  glow: "255,180,40"  },
-  { id: "watch", img: watchAsset.url, label: "KATANA",       pay: [13, 32, 95],    weight: 6,  glow: "255,80,80"   },
-  { id: "chip",  img: chipAsset.url,  label: "A",            pay: [10, 24, 68],    weight: 8,  glow: "255,140,60"  },
-  { id: "hat",   img: hatAsset.url,   label: "K",            pay: [8, 18, 50],     weight: 10, glow: "255,120,80"  },
-  { id: "card",  img: cardAsset.url,  label: "Q",            pay: [7, 14, 32],     weight: 12, glow: "200,80,220"  },
+  { id: "watch", img: oniAsset.url,      label: "ONI",       pay: [13, 32, 95],    weight: 6,  glow: "255,80,80"   },
+  { id: "chip",  img: shurikenAsset.url, label: "SHURIKEN",  pay: [10, 24, 68],    weight: 8,  glow: "236,72,153"  },
+  { id: "hat",   img: toriiAsset.url,    label: "TORII",     pay: [8, 18, 50],     weight: 10, glow: "244,63,94"   },
+  { id: "card",  img: sakeAsset.url,     label: "SAKE",      pay: [7, 14, 32],     weight: 12, glow: "200,80,220"  },
 ];
 
 const SYMBOL_INDEX = new Map(SYMBOLS.map((s, i) => [s.id, i]));
@@ -604,8 +604,8 @@ function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boole
         decoding="sync"
         className="select-none pointer-events-none relative z-10"
         style={{
-          width: "104%",
-          height: "104%",
+          width: "101%",
+          height: "101%",
           objectFit: "contain",
           transform: scale !== 1 ? `scale(${scale})` : undefined,
           filter: highlight
@@ -1467,17 +1467,62 @@ export function SlotSamuraiGame() {
           0%, 100% { transform: scale(1); }
           50%      { transform: scale(1.10); }
         }
-        @keyframes samurai-legend-glitch {
-          0%, 92%, 100% { transform: translate(0,0) skewX(0deg); filter: drop-shadow(0 6px 14px rgba(0,0,0,0.75)) drop-shadow(0 0 18px rgba(255,90,120,0.35)); }
-          92.5% { transform: translate(-2px, 0) skewX(-2deg); filter: drop-shadow(2px 0 0 rgba(255,60,90,0.85)) drop-shadow(-2px 0 0 rgba(60,200,255,0.75)) drop-shadow(0 0 18px rgba(255,90,120,0.5)); }
-          93.5% { transform: translate(2px, -1px) skewX(1deg); filter: drop-shadow(-2px 0 0 rgba(255,60,90,0.85)) drop-shadow(2px 0 0 rgba(60,200,255,0.75)) drop-shadow(0 0 18px rgba(255,90,120,0.5)); }
-          94.5% { transform: translate(-1px, 1px) skewX(0deg); filter: drop-shadow(1px 0 0 rgba(255,60,90,0.8)) drop-shadow(-1px 0 0 rgba(60,200,255,0.7)) drop-shadow(0 0 18px rgba(255,90,120,0.45)); }
-          95.5% { transform: translate(1px, 0) skewX(-1deg); filter: drop-shadow(-1px 0 0 rgba(255,60,90,0.8)) drop-shadow(1px 0 0 rgba(60,200,255,0.7)) drop-shadow(0 0 18px rgba(255,90,120,0.45)); }
-          96.5% { transform: translate(0, 0) skewX(0deg); filter: drop-shadow(0 6px 14px rgba(0,0,0,0.75)) drop-shadow(0 0 18px rgba(255,90,120,0.35)); }
+        /* Brillo cinematográfico: pulso de neón + sweep de luz cada 5s */
+        @keyframes samurai-legend-neon {
+          0%, 100% {
+            filter:
+              drop-shadow(0 6px 14px rgba(0,0,0,0.75))
+              drop-shadow(0 0 14px rgba(255,90,120,0.35))
+              drop-shadow(0 0 22px rgba(168,85,247,0.25));
+          }
+          50% {
+            filter:
+              drop-shadow(0 6px 14px rgba(0,0,0,0.75))
+              drop-shadow(0 0 22px rgba(255,90,120,0.65))
+              drop-shadow(0 0 34px rgba(236,72,153,0.55))
+              drop-shadow(0 0 44px rgba(168,85,247,0.4));
+          }
+        }
+        .samurai-legend-wrap {
+          position: relative;
+          display: inline-block;
+          isolation: isolate;
         }
         .samurai-legend-logo {
-          animation: samurai-legend-glitch 5s infinite;
-          will-change: transform, filter;
+          animation: samurai-legend-neon 3.2s ease-in-out infinite;
+          will-change: filter;
+          display: block;
+        }
+        .samurai-legend-wrap::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          background: linear-gradient(
+            115deg,
+            transparent 40%,
+            rgba(255,255,255,0.55) 49%,
+            rgba(255,220,240,0.85) 50%,
+            rgba(255,255,255,0.55) 51%,
+            transparent 60%
+          );
+          mix-blend-mode: overlay;
+          transform: translateX(-120%);
+          animation: samurai-legend-shine 5s ease-in-out infinite;
+          -webkit-mask-image: var(--samurai-mask);
+                  mask-image: var(--samurai-mask);
+          -webkit-mask-size: contain;
+                  mask-size: contain;
+          -webkit-mask-repeat: no-repeat;
+                  mask-repeat: no-repeat;
+          -webkit-mask-position: center;
+                  mask-position: center;
+        }
+        @keyframes samurai-legend-shine {
+          0%   { transform: translateX(-120%); opacity: 0; }
+          10%  { opacity: 1; }
+          35%  { transform: translateX(120%); opacity: 1; }
+          36%, 100% { transform: translateX(120%); opacity: 0; }
         }
       `}</style>
       {spinError && (
@@ -1539,19 +1584,22 @@ function SamuraiHero({
       aria-label="Samurai Legend"
     >
       {/* Logo integrado sobre el fondo global — sin card, sin borde */}
-      <img
-        src={samuraiLegendLogo}
-        alt="Samurai Legend"
-        className="samurai-legend-logo h-[118px] w-auto max-w-[95%] select-none"
+      <div
+        className="samurai-legend-wrap max-w-[95%]"
         style={{
-          filter:
-            "drop-shadow(0 6px 14px rgba(0,0,0,0.75)) drop-shadow(0 0 18px rgba(255,90,120,0.35))",
+          ["--samurai-mask" as string]: `url(${samuraiLegendLogo})`,
         }}
-        draggable={false}
-      />
+      >
+        <img
+          src={samuraiLegendLogo}
+          alt="Samurai Legend"
+          className="samurai-legend-logo h-[124px] w-auto select-none"
+          draggable={false}
+        />
+      </div>
       {/* Espacio reservado bajo el logo — el evento WIN aparece aquí sin empujar el layout */}
       <div
-        className="mt-0 flex h-[86px] w-full flex-col items-center justify-start"
+        className="-mt-3 flex h-[86px] w-full flex-col items-center justify-start"
         aria-hidden={!showEvent}
       >
         {showEvent && (
@@ -1562,7 +1610,7 @@ function SamuraiHero({
             <img
               src={WIN_LOGOS[tier as "win" | "big" | "mega" | "super" | "jackpot"]}
               alt={EVENT_LABEL[tier]}
-              className="h-[70px] w-auto select-none"
+              className="h-[74px] w-auto select-none"
               style={{
                 filter:
                   "drop-shadow(0 3px 8px rgba(0,0,0,0.85)) drop-shadow(0 0 10px rgba(255,90,30,0.55))",
@@ -1570,7 +1618,7 @@ function SamuraiHero({
               draggable={false}
             />
             <div
-              className="-mt-3 font-display text-[22px] font-black tracking-wide leading-none"
+              className="-mt-4 font-display text-[24px] font-black tracking-wide leading-none"
               style={{
                 color: "#fef08a",
                 textShadow:
