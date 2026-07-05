@@ -161,6 +161,16 @@ function MatchDetailPage() {
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [selection, setSelection] = useState<"home" | "draw" | "away">("draw");
   const [stake, setStake] = useState<number>(10000);
+  const [leaving, setLeaving] = useState(false);
+
+  function handleBack(e: React.MouseEvent) {
+    e.preventDefault();
+    if (leaving) return;
+    setLeaving(true);
+    window.setTimeout(() => {
+      navigate({ to: "/deportes" });
+    }, 240);
+  }
   const [placed, setPlaced] = useState<
     | null
     | {
