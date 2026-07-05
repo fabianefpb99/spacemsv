@@ -387,7 +387,7 @@ function MatchCard({ match }: { match: PublicMatch }) {
       to="/deportes/$matchId"
       params={{ matchId: match.id }}
       aria-label={`${match.home.name} vs ${match.away.name} — ${match.competition}`}
-      className="theme-dark-fixed group relative block overflow-hidden rounded-2xl border border-purple-500/30 bg-[#0c0620]/70 p-3 shadow-[0_0_16px_rgba(76,29,149,0.25)] transition hover:border-fuchsia-400/60 hover:shadow-[0_0_18px_rgba(217,70,239,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-400/70 sm:p-4"
+      className="theme-dark-fixed group relative block overflow-hidden rounded-2xl border border-purple-500/30 bg-[#0c0620]/90 p-3 shadow-[0_0_16px_rgba(76,29,149,0.25)] transition hover:border-fuchsia-400/60 hover:shadow-[0_0_18px_rgba(217,70,239,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-400/70 sm:p-4"
       style={{
         opacity: ready ? 1 : 0,
         transform: ready ? "translateY(0)" : "translateY(6px)",
@@ -396,9 +396,9 @@ function MatchCard({ match }: { match: PublicMatch }) {
       }}
     >
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
-        <img src={stadiumBg} alt="" className="absolute inset-0 h-full w-full object-cover opacity-[0.18]" />
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0c0620]/85 via-[#150830]/80 to-[#0c0620]/90" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(168,85,247,0.22),transparent_70%)]" />
+        <img src={stadiumBg} alt="" className="absolute inset-0 h-full w-full object-cover opacity-[0.10]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0c0620]/95 via-[#150830]/92 to-[#0c0620]/95" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(168,85,247,0.35),transparent_65%)]" />
       </div>
       <div className="relative z-10">
       {/* Fila superior: todo en una línea */}
