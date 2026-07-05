@@ -53,10 +53,9 @@ export function AvatarPickerDialog({ open, onOpenChange, userId, currentKey }: P
   const save = useMutation({
     mutationFn: async (key: string) => {
       if (!userId) throw new Error("Sin sesión");
-      const { error } = await supabase
-        .from("profiles")
-        .update({ avatar_key: key })
-        .eq("id", userId);
+      const { error } = await supabase.rpc("set_my_avatar_key", {
+        _avatar_key: key,
+      });
       if (error) throw error;
       return key;
     },
