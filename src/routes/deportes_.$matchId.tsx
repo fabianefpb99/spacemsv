@@ -243,10 +243,12 @@ function MatchDetailPage() {
   const potentialPayout = Math.floor(stake * selected.odd);
   const balance = me.data?.balance ?? 0;
   const minStake = 1000;
+  const maxStake = 100000;
   const insufficientFunds = user != null && stake > balance;
   const belowMin = stake < minStake;
+  const aboveMax = stake > maxStake;
   const canBet =
-    !!user && !mutation.isPending && !insufficientFunds && !belowMin && stake > 0;
+    !!user && !mutation.isPending && !insufficientFunds && !belowMin && !aboveMax && stake > 0;
 
   function handlePlaceBet() {
     if (!user) {
@@ -255,6 +257,10 @@ function MatchDetailPage() {
     }
     if (belowMin) {
       toast.error(`Apuesta mínima: ${formatCOP(minStake)} COP`);
+      return;
+    }
+    if (aboveMax) {
+      toast.error(`Apuesta máxima: ${formatCOP(maxStake)} COP`);
       return;
     }
     if (insufficientFunds) {
@@ -564,11 +570,14 @@ function MatchDetailPage() {
                   <span className="text-sm font-bold text-neutral-500">$</span>
                   <input
                     id="stake"
-                    type="number"
+                    type="text"
                     inputMode="numeric"
-                    min={0}
-                    value={stake}
-                    onChange={(e) => setStake(Math.max(0, Number(e.target.value) || 0))}
+                    value={stake === 0 ? "" : String(stake)}
+                    onChange={(e) => {
+                      const digits = e.target.value.replace(/\D/g, "").replace(/^0+/, "");
+                      const n = digits === "" ? 0 : Number(digits);
+                      setStake(Math.min(maxStake, Math.max(0, n)));
+                    }}
                     className="w-full min-w-0 bg-transparent font-display text-sm font-black text-neutral-900 outline-none"
                   />
                   <span className="text-[10px] font-bold text-neutral-500">COP</span>
@@ -601,7 +610,9 @@ function MatchDetailPage() {
                         ? "Saldo insuficiente"
                         : belowMin
                           ? `Mín ${formatCOP(minStake)}`
-                          : "Apostar"}
+                          : aboveMax
+                            ? `Máx ${formatCOP(maxStake)}`
+                            : "Apostar"}
                 </button>
               </div>
             </div>
