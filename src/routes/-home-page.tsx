@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Menu, ChevronRight, ChevronLeft, Gift, Home, Star, Wallet, User, Trophy } from "lucide-react";
 import { type PointerEvent, useEffect, useRef, useState } from "react";
@@ -79,21 +79,6 @@ import jackpotBanner from "@/assets/jackpot-banner.jpg";
 import ruletaBanner from "@/assets/ruleta-banner.jpg";
 import casinoIntro from "@/assets/audio/casino-intro.mp3.asset.json";
 import mundialHeroAsset from "@/assets/mundial-hero.webp.asset.json";
-
-export const Route = createFileRoute("/home")({
-  head: () => ({
-    meta: [
-      { title: "BETSPACE | Casino Online y Apuestas Deportivas Colombia" },
-      { name: "description", content: "Tu home en BETSPACE Casino: juegos destacados, jackpot y más." },
-      { property: "og:title", content: "BETSPACE | Casino Online y Apuestas Deportivas Colombia" },
-      { property: "og:description", content: "Tu home en BETSPACE Casino: juegos destacados, jackpot y más." },
-      { name: "robots", content: "noindex, follow" },
-      { property: "og:url", content: "https://betspace.app/" },
-    ],
-    links: [{ rel: "canonical", href: "https://betspace.app/" }],
-  }),
-  component: HomePage,
-});
 
 function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
