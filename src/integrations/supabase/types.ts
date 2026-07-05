@@ -2224,6 +2224,14 @@ export type Database = {
         }
         Returns: Json
       }
+      spin_slot_samurai_v1: {
+        Args: {
+          p_bet_amount: number
+          p_client_action_id: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
       spin_slot_v1: {
         Args: {
           p_bet_amount: number
