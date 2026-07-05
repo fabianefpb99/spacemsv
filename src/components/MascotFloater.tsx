@@ -78,27 +78,24 @@ export function MascotFloater() {
   const dismissRef = useRef(handleDismiss);
   dismissRef.current = handleDismiss;
 
-  // Any click that isn't the mascot image itself closes it.
+  // Close on the first click anywhere that isn't the header/bottom nav.
+  // Scroll/touch-move does NOT close the mascot.
   useEffect(() => {
     if (!visible) return;
     const onDocClick = (e: MouseEvent) => {
       const target = e.target as Element | null;
       // Header and bottom nav keep working normally (no swallow, no close).
       if (target && target.closest("header, nav")) return;
-      // Anywhere else (including the mascot itself): close AND eat the click
-      // so the first tap dismisses her without triggering the underlying UI.
+      // Anywhere else: close AND eat the click so the first tap dismisses
+      // her without triggering the underlying UI.
       e.preventDefault();
       e.stopPropagation();
       dismissRef.current();
     };
     // capture=true so we run before other click handlers on the page.
     document.addEventListener("click", onDocClick, true);
-    // Also intercept the pointer/tap phase so <Link> and other components
-    // that navigate on mousedown don't slip through.
-    document.addEventListener("pointerdown", onDocClick as unknown as EventListener, true);
     return () => {
       document.removeEventListener("click", onDocClick, true);
-      document.removeEventListener("pointerdown", onDocClick as unknown as EventListener, true);
     };
   }, [visible]);
 
