@@ -708,8 +708,16 @@ function MyBetRowCard({ bet }: { bet: MyBetRow }) {
       <div className="my-bet-selection mt-1.5 truncate font-display text-[12px] font-black">
         {selectionLabel(bet.selection, bet.home_name, bet.away_name)}
       </div>
-      <div className="my-bet-teams mt-0.5 truncate text-[10px]">
-        {bet.home_name} vs {bet.away_name}
+      <div className="my-bet-teams mt-0.5 flex items-center gap-1.5 text-[10px]">
+        <span className="my-bet-flag flex h-4 w-6 overflow-hidden rounded-[3px] ring-1 ring-inset">
+          <Flag code={bet.home_flag_code} name={bet.home_name} />
+        </span>
+        <span className="truncate">{bet.home_name}</span>
+        <span className="text-purple-300/50">vs</span>
+        <span className="truncate">{bet.away_name}</span>
+        <span className="my-bet-flag flex h-4 w-6 overflow-hidden rounded-[3px] ring-1 ring-inset">
+          <Flag code={bet.away_flag_code} name={bet.away_name} />
+        </span>
       </div>
       <div className="mt-2 grid grid-cols-2 gap-2">
         <div className="my-bet-stake rounded-lg px-2 py-1.5">
