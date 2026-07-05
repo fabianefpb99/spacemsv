@@ -1512,14 +1512,14 @@ function SamuraiHero({
   const showEvent = tier !== "idle" && lastWin > 0;
   return (
     <section
-      className="relative mt-1 flex flex-col items-center justify-center"
+      className="relative mt-0.5 flex flex-col items-center justify-center"
       aria-label="Samurai Legend"
     >
       {/* Logo integrado sobre el fondo global — sin card, sin borde */}
       <img
         src={samuraiLegendLogo}
         alt="Samurai Legend"
-        className="h-[104px] w-auto max-w-[86%] select-none"
+        className="h-[82px] w-auto max-w-[86%] select-none"
         style={{
           filter:
             "drop-shadow(0 6px 14px rgba(0,0,0,0.75)) drop-shadow(0 0 18px rgba(255,90,120,0.35))",
