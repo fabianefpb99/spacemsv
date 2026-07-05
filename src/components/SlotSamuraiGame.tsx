@@ -1467,17 +1467,62 @@ export function SlotSamuraiGame() {
           0%, 100% { transform: scale(1); }
           50%      { transform: scale(1.10); }
         }
-        @keyframes samurai-legend-glitch {
-          0%, 92%, 100% { transform: translate(0,0) skewX(0deg); filter: drop-shadow(0 6px 14px rgba(0,0,0,0.75)) drop-shadow(0 0 18px rgba(255,90,120,0.35)); }
-          92.5% { transform: translate(-2px, 0) skewX(-2deg); filter: drop-shadow(2px 0 0 rgba(255,60,90,0.85)) drop-shadow(-2px 0 0 rgba(60,200,255,0.75)) drop-shadow(0 0 18px rgba(255,90,120,0.5)); }
-          93.5% { transform: translate(2px, -1px) skewX(1deg); filter: drop-shadow(-2px 0 0 rgba(255,60,90,0.85)) drop-shadow(2px 0 0 rgba(60,200,255,0.75)) drop-shadow(0 0 18px rgba(255,90,120,0.5)); }
-          94.5% { transform: translate(-1px, 1px) skewX(0deg); filter: drop-shadow(1px 0 0 rgba(255,60,90,0.8)) drop-shadow(-1px 0 0 rgba(60,200,255,0.7)) drop-shadow(0 0 18px rgba(255,90,120,0.45)); }
-          95.5% { transform: translate(1px, 0) skewX(-1deg); filter: drop-shadow(-1px 0 0 rgba(255,60,90,0.8)) drop-shadow(1px 0 0 rgba(60,200,255,0.7)) drop-shadow(0 0 18px rgba(255,90,120,0.45)); }
-          96.5% { transform: translate(0, 0) skewX(0deg); filter: drop-shadow(0 6px 14px rgba(0,0,0,0.75)) drop-shadow(0 0 18px rgba(255,90,120,0.35)); }
+        /* Brillo cinematográfico: pulso de neón + sweep de luz cada 5s */
+        @keyframes samurai-legend-neon {
+          0%, 100% {
+            filter:
+              drop-shadow(0 6px 14px rgba(0,0,0,0.75))
+              drop-shadow(0 0 14px rgba(255,90,120,0.35))
+              drop-shadow(0 0 22px rgba(168,85,247,0.25));
+          }
+          50% {
+            filter:
+              drop-shadow(0 6px 14px rgba(0,0,0,0.75))
+              drop-shadow(0 0 22px rgba(255,90,120,0.65))
+              drop-shadow(0 0 34px rgba(236,72,153,0.55))
+              drop-shadow(0 0 44px rgba(168,85,247,0.4));
+          }
+        }
+        .samurai-legend-wrap {
+          position: relative;
+          display: inline-block;
+          isolation: isolate;
         }
         .samurai-legend-logo {
-          animation: samurai-legend-glitch 5s infinite;
-          will-change: transform, filter;
+          animation: samurai-legend-neon 3.2s ease-in-out infinite;
+          will-change: filter;
+          display: block;
+        }
+        .samurai-legend-wrap::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          background: linear-gradient(
+            115deg,
+            transparent 40%,
+            rgba(255,255,255,0.55) 49%,
+            rgba(255,220,240,0.85) 50%,
+            rgba(255,255,255,0.55) 51%,
+            transparent 60%
+          );
+          mix-blend-mode: overlay;
+          transform: translateX(-120%);
+          animation: samurai-legend-shine 5s ease-in-out infinite;
+          -webkit-mask-image: var(--samurai-mask);
+                  mask-image: var(--samurai-mask);
+          -webkit-mask-size: contain;
+                  mask-size: contain;
+          -webkit-mask-repeat: no-repeat;
+                  mask-repeat: no-repeat;
+          -webkit-mask-position: center;
+                  mask-position: center;
+        }
+        @keyframes samurai-legend-shine {
+          0%   { transform: translateX(-120%); opacity: 0; }
+          10%  { opacity: 1; }
+          35%  { transform: translateX(120%); opacity: 1; }
+          36%, 100% { transform: translateX(120%); opacity: 0; }
         }
       `}</style>
       {spinError && (
