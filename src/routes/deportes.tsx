@@ -416,29 +416,31 @@ function MatchCard({ match, myBetsCount = 0 }: { match: PublicMatch; myBetsCount
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(168,85,247,0.35),transparent_65%)]" />
       </div>
       <div className="relative z-10">
-      {/* Fila superior: todo en una línea */}
-      <div className="flex items-center gap-1.5 whitespace-nowrap">
-        <span className="shrink-0 rounded-full border border-purple-400/50 bg-purple-500/15 px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wider text-purple-100">
-          {match.competition}
-        </span>
-        <span className="inline-flex shrink-0 items-center gap-1 text-[9px] font-semibold text-purple-100/80">
-          <Calendar className="h-3 w-3 text-purple-300/80" />
-          {match.date}
-        </span>
-        <span className="inline-flex shrink-0 items-center gap-1 text-[9px] font-semibold text-purple-100/80">
-          <Clock className="h-3 w-3 text-purple-300/80" />
-          {match.time}
-        </span>
-        {myBetsCount > 0 && (
-          <span
-            className="inline-flex shrink-0 items-center gap-1 rounded-full border border-emerald-400/60 bg-emerald-500/15 px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wider text-emerald-100 shadow-[0_0_8px_rgba(16,185,129,0.35)]"
-            title={myBetsCount === 1 ? "Tienes 1 apuesta activa en este partido" : `Tienes ${myBetsCount} apuestas activas en este partido`}
-          >
-            <Ticket className="h-2.5 w-2.5" strokeWidth={2.5} />
-            {myBetsCount === 1 ? "Tu apuesta" : `Tus apuestas · ${myBetsCount}`}
+      {/* Fila superior: info a la izquierda, estado/apuestas a la derecha */}
+      <div className="flex items-center justify-between gap-1.5 whitespace-nowrap">
+        <div className="flex items-center gap-1.5">
+          <span className="shrink-0 rounded-full border border-purple-400/50 bg-purple-500/15 px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wider text-purple-100">
+            {match.competition}
           </span>
-        )}
-        <div className="ml-auto flex shrink-0 items-center">
+          <span className="inline-flex shrink-0 items-center gap-1 text-[9px] font-semibold text-purple-100/80">
+            <Calendar className="h-3 w-3 text-purple-300/80" />
+            {match.date}
+          </span>
+          <span className="inline-flex shrink-0 items-center gap-1 text-[9px] font-semibold text-purple-100/80">
+            <Clock className="h-3 w-3 text-purple-300/80" />
+            {match.time}
+          </span>
+        </div>
+        <div className="flex shrink-0 items-center gap-1.5">
+          {myBetsCount > 0 && (
+            <span
+              className="inline-flex shrink-0 items-center gap-1 rounded-full border border-emerald-400/60 bg-emerald-500/15 px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wider text-emerald-100 shadow-[0_0_8px_rgba(16,185,129,0.35)]"
+              title={myBetsCount === 1 ? "Tienes 1 apuesta activa en este partido" : `Tienes ${myBetsCount} apuestas activas en este partido`}
+            >
+              <Ticket className="h-2.5 w-2.5" strokeWidth={2.5} />
+              {myBetsCount === 1 ? "TU APUESTA: 1" : `TUS APUESTAS: ${myBetsCount}`}
+            </span>
+          )}
           {match.live && (
             <span className="inline-flex items-center gap-1 rounded-full border border-fuchsia-400/60 bg-fuchsia-500/15 px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wider text-fuchsia-100">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-fuchsia-300 shadow-[0_0_6px_rgba(240,171,252,0.9)]" />
