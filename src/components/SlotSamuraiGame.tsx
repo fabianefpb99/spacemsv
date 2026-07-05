@@ -604,8 +604,8 @@ function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boole
         decoding="sync"
         className="select-none pointer-events-none relative z-10"
         style={{
-          width: "101%",
-          height: "101%",
+          width: "96%",
+          height: "96%",
           objectFit: "contain",
           transform: scale !== 1 ? `scale(${scale})` : undefined,
           filter: highlight
@@ -1599,7 +1599,7 @@ function SamuraiHero({
       </div>
       {/* Espacio reservado bajo el logo — el evento WIN aparece aquí sin empujar el layout */}
       <div
-        className="-mt-3 flex h-[86px] w-full flex-col items-center justify-start"
+        className="-mt-6 flex h-[98px] w-full flex-col items-center justify-start"
         aria-hidden={!showEvent}
       >
         {showEvent && (
@@ -1618,7 +1618,7 @@ function SamuraiHero({
               draggable={false}
             />
             <div
-              className="-mt-4 font-display text-[24px] font-black tracking-wide leading-none"
+              className="mt-0 font-display text-[24px] font-black tracking-wide leading-none"
               style={{
                 color: "#fef08a",
                 textShadow:
