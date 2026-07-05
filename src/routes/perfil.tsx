@@ -153,7 +153,7 @@ function PerfilPage() {
         <div className="mx-auto flex min-h-screen max-w-md flex-col items-center justify-center gap-4 px-6 text-center">
           <p className="text-purple-200/80">Inicia sesión para ver tu perfil.</p>
           <Link
-            to="/home"
+            to="/"
             className="rounded-md bg-purple-600 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white hover:bg-purple-500"
           >
             Ir al inicio
@@ -210,7 +210,7 @@ function PerfilPage() {
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <button
-            onClick={() => navigate({ to: "/home" })}
+            onClick={() => navigate({ to: "/" })}
             aria-label="Atrás"
             className="rounded-md p-2 text-purple-100 hover:bg-white/5"
           >
@@ -589,7 +589,7 @@ function PerfilPage() {
                 type="button"
                 onClick={async () => {
                   await signOut();
-                  navigate({ to: "/home" });
+                  navigate({ to: "/" });
                 }}
                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-rose-500/50 bg-rose-500/10 py-3 text-sm font-bold uppercase tracking-wider text-rose-300 hover:bg-rose-500/20"
               >

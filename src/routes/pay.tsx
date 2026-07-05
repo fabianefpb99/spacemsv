@@ -125,13 +125,13 @@ function PayPage() {
         >
           <div className="flex items-center gap-1">
             <button
-              onClick={() => navigate({ to: "/home" })}
+              onClick={() => navigate({ to: "/" })}
               className="rounded-md p-2 text-white hover:bg-white/10"
               aria-label="Volver"
             >
               <ArrowLeft className="h-7 w-7" strokeWidth={3} />
             </button>
-            <Link to="/home">
+            <Link to="/">
               <img
                 src={betspaceLogo}
                 alt="BETSPACE"

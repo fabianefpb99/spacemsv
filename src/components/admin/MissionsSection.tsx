@@ -92,7 +92,7 @@ const EMPTY: Omit<Mission, "id"> = {
   reward_label: "",
   reward_image_url: null,
   cta_label: "Jugar",
-  cta_to: "/home",
+  cta_to: "/",
   sort_order: 0,
   is_active: true,
   trigger_event: "bet_placed",
@@ -327,7 +327,7 @@ function MissionEditor({
       reward_label: m.reward_label?.trim() || autoLabel(m),
       reward_image_url: m.reward_image_url ?? null,
       cta_label: m.cta_label?.trim() || "Jugar",
-      cta_to: m.cta_to?.trim() || "/home",
+      cta_to: m.cta_to?.trim() || "/",
       sort_order: Number(m.sort_order) || 0,
       is_active: m.is_active ?? true,
       trigger_event: (m.trigger_event ?? "bet_placed") as TriggerEvent,
@@ -531,7 +531,7 @@ function MissionEditor({
               type="text"
               value={m.cta_to ?? ""}
               onChange={(e) => set("cta_to", e.target.value)}
-              placeholder="/home"
+              placeholder="/"
               className={inputCls}
             />
           </Field>

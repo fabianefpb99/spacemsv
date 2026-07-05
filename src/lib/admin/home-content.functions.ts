@@ -75,7 +75,7 @@ const slideInput = z.object({
   title: z.string().min(1).max(120),
   description: z.string().max(400).default(""),
   cta_label: z.string().min(1).max(60).default("Ver más"),
-  cta_link: z.string().min(1).max(200).default("/home"),
+  cta_link: z.string().min(1).max(200).default("/"),
   active: z.boolean().default(true),
 });
 
@@ -135,7 +135,7 @@ const featuredInput = z.object({
   name: z.string().min(1).max(60),
   tag: z.string().max(30).default("POPULAR"),
   tag_color: z.enum(["purple", "emerald", "rose", "amber", "fuchsia"]).default("purple"),
-  link: z.string().min(1).max(200).default("/home"),
+  link: z.string().min(1).max(200).default("/"),
   active: z.boolean().default(true),
 });
 

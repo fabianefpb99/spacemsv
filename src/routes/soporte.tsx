@@ -58,7 +58,7 @@ function SoportePage() {
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <button
-            onClick={() => navigate({ to: "/home" })}
+            onClick={() => navigate({ to: "/" })}
             aria-label="Atrás"
             className="rounded-md p-2 text-[#3b0764] hover:bg-[#f1ebfa] dark:text-purple-100 dark:hover:bg-white/5"
           >

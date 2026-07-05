@@ -468,7 +468,7 @@ function HomePage() {
         title: s.title,
         desc: s.description ?? "",
         cta: s.cta_label ?? "Ver más",
-        to: (s.cta_link ?? "/home") as "/home",
+        to: (s.cta_link ?? "/") as "/",
       }))
     : SLIDES;
 
@@ -478,7 +478,7 @@ function HomePage() {
         img: g.image_url,
         tag: g.tag ?? "POPULAR",
         tagCls: TAG_CLS[g.tag_color ?? "purple"] ?? TAG_CLS.purple,
-        to: (g.link ?? "/home") as "/home",
+        to: (g.link ?? "/") as "/",
       }))
     : GAMES;
   // Aseguramos que TODOS los juegos del catálogo aparezcan en el deslizable,
@@ -789,7 +789,7 @@ function HomePage() {
                 }
               />
               </div>
-              <Link to="/home" className="logo-shine">
+              <Link to="/" className="logo-shine">
                 <img
                   src={betspaceLogo}
                   alt="BETSPACE"

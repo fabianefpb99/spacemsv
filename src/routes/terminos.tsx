@@ -153,7 +153,7 @@ function TerminosPage() {
     <div className="terminos-scope min-h-screen bg-[#060210] text-white">
       <div className="mx-auto flex min-h-screen max-w-2xl flex-col px-4 pb-10 pt-4">
         <header className="terminos-header -mx-4 flex items-center gap-3 border-b border-purple-500/20 bg-[#060210] px-4 pb-3">
-          <Link to="/home" aria-label="Atrás" className="terminos-back rounded-md p-2 text-purple-100 hover:bg-white/5">
+          <Link to="/" aria-label="Atrás" className="terminos-back rounded-md p-2 text-purple-100 hover:bg-white/5">
             <ArrowLeft className="h-6 w-6" strokeWidth={2.5} />
           </Link>
           <h1 className="terminos-title font-display text-base font-bold uppercase tracking-widest">
