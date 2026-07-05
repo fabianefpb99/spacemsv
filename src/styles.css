@@ -4214,7 +4214,7 @@ html.light .my-bet-status--refunded:not(.theme-dark-fixed):not(.theme-dark-fixed
   font-size: 13px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  line-height: 1.2;
+  line-height: 1;
   text-align: center;
   border: 1.5px solid #a855f7;
   box-shadow: 0 6px 18px rgba(88, 28, 135, 0.35);
