@@ -56,7 +56,6 @@ export function MascotFloater() {
   }, []);
 
   const visible = isMobile && armed && decoded && !dismissed;
-  console.log({ isMobile, armed, decoded, dismissed, visible });
 
   // Trigger enter animation on next frame after mount
   useEffect(() => {
@@ -79,16 +78,18 @@ export function MascotFloater() {
   const dismissRef = useRef(handleDismiss);
   dismissRef.current = handleDismiss;
 
+  // Any click that isn't the mascot image itself closes it.
   useEffect(() => {
     if (!visible) return;
     const onDocClick = (e: MouseEvent) => {
-      console.log("doc click", e.target, imageRef.current === e.target, imageRef.current?.contains(e.target as Node));
-      if (!imageRef.current) return;
-      if (imageRef.current === e.target || imageRef.current.contains(e.target as Node)) return;
+      const img = imageRef.current;
+      const target = e.target as Node | null;
+      if (img && target && (img === target || img.contains(target))) return;
       dismissRef.current();
     };
-    document.addEventListener("click", onDocClick);
-    return () => document.removeEventListener("click", onDocClick);
+    // capture=true so we run before other click handlers on the page.
+    document.addEventListener("click", onDocClick, true);
+    return () => document.removeEventListener("click", onDocClick, true);
   }, [visible]);
 
   if (!visible || typeof document === "undefined") return null;
@@ -103,17 +104,13 @@ export function MascotFloater() {
         className={`mascot-wrap ${entered ? "mascot-wrap--in" : ""}`}
         style={{
           position: "absolute",
-          right: "-40px",
+          right: "-72px",
           bottom: "56px", // roughly above bottom nav so feet peek behind it
         }}
       >
         {/* Speech bubble */}
         <div
           className={`mascot-bubble ${bubbleIn ? "mascot-bubble--in" : ""}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleDismiss();
-          }}
         >
           ¿Qué jugaremos hoy?
         </div>
@@ -154,10 +151,6 @@ export function MascotFloater() {
           draggable={false}
           data-no-smooth-image="true"
           className="mascot-img block h-auto select-none"
-          onClick={(e) => {
-            console.log("image click", e.target);
-            e.stopPropagation();
-          }}
           style={{
             width: "min(58vw, 260px)",
             filter: "drop-shadow(0 14px 26px rgba(88, 28, 135, 0.55))",
