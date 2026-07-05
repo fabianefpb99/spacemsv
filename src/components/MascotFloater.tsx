@@ -82,6 +82,7 @@ export function MascotFloater() {
   useEffect(() => {
     if (!visible) return;
     const onDocClick = (e: MouseEvent) => {
+      console.log("doc click", e.target, imageRef.current === e.target, imageRef.current?.contains(e.target as Node));
       if (!imageRef.current) return;
       if (imageRef.current === e.target || imageRef.current.contains(e.target as Node)) return;
       dismissRef.current();
