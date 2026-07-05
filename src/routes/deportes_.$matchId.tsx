@@ -265,7 +265,7 @@ function MatchDetailPage() {
   }
 
   return (
-    <div className={`min-h-screen bg-[#060210] text-white ${leaving ? "match-view-leave" : "match-view-enter"}`}>
+    <div className="min-h-screen bg-[#060210] text-white">
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col pt-4 sm:max-w-lg">
         <header
           className="flex flex-col items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 -mt-4"
@@ -317,7 +317,7 @@ function MatchDetailPage() {
         </header>
         <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
 
-        <div className="theme-dark-fixed relative flex-1 overflow-hidden bg-[#060210] px-4 pb-36 pt-4 sm:px-5">
+        <div className={`theme-dark-fixed relative flex-1 overflow-hidden bg-[#060210] px-4 pb-36 pt-4 sm:px-5 ${leaving ? "match-view-leave" : "match-view-enter"}`}>
           <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[380px] sm:h-[420px]">
             <img
               src={stadiumBg}
