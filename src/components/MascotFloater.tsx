@@ -16,12 +16,15 @@ export function MascotFloater() {
   const [decoded, setDecoded] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [entered, setEntered] = useState(false);
+  const [leaving, setLeaving] = useState(false);
   const [bubbleIn, setBubbleIn] = useState(false);
   const [typed, setTyped] = useState("");
   const wrapRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const timerRef = useRef<number | null>(null);
   const intervalRef = useRef<number | null>(null);
+  const idleTimerRef = useRef<number | null>(null);
+  const exitTimerRef = useRef<number | null>(null);
 
   // Preload + decode
   useEffect(() => {
@@ -116,13 +119,36 @@ export function MascotFloater() {
 
   // Close when clicking anywhere outside the mascot image.
   const handleDismiss = () => {
+    if (leaving) return;
     try {
       sessionStorage.setItem(SHOWN_KEY, "1");
     } catch {}
-    setDismissed(true);
+    setLeaving(true);
+    if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
+    if (exitTimerRef.current) window.clearTimeout(exitTimerRef.current);
+    exitTimerRef.current = window.setTimeout(() => {
+      setDismissed(true);
+    }, 400);
   };
   const dismissRef = useRef(handleDismiss);
   dismissRef.current = handleDismiss;
+
+  // Auto-dismiss after 10s of no interaction with the mascot itself.
+  useEffect(() => {
+    if (!visible || leaving) return;
+    idleTimerRef.current = window.setTimeout(() => {
+      dismissRef.current();
+    }, 10000);
+    return () => {
+      if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
+    };
+  }, [visible, leaving]);
+
+  useEffect(() => {
+    return () => {
+      if (exitTimerRef.current) window.clearTimeout(exitTimerRef.current);
+    };
+  }, []);
 
   // Close on the first click anywhere that isn't the header/bottom nav.
   // Scroll/touch-move does NOT close the mascot.
@@ -162,7 +188,7 @@ export function MascotFloater() {
     >
       <div
         ref={wrapRef}
-        className={`mascot-wrap ${entered ? "mascot-wrap--in" : ""}`}
+        className={`mascot-wrap ${entered ? "mascot-wrap--in" : ""} ${leaving ? "mascot-wrap--out" : ""}`}
         style={{
           position: "absolute",
           right: "-72px",
@@ -202,7 +228,7 @@ export function MascotFloater() {
               d="M18,10 L282,10 L294,22 L294,72 L282,84 L232,84 L226,92 L60,92 L54,84 L18,84 L6,72 L6,22 Z"
               fill="url(#mbFill)"
               stroke="url(#mbStroke)"
-              strokeWidth="1.8"
+              strokeWidth="1.9"
               filter="url(#mbGlow)"
             />
             {/* Inner accent line */}
@@ -210,14 +236,14 @@ export function MascotFloater() {
               d="M22,16 L278,16 L288,26 L288,68 L278,78 L22,78 L12,68 L12,26 Z"
               fill="none"
               stroke="#c084fc"
-              strokeWidth="0.6"
-              strokeOpacity="0.55"
+              strokeWidth="0.65"
+              strokeOpacity="0.6"
             />
             {/* Left bracket accent */}
             <path
               d="M2,36 L2,58 M2,36 L8,36 M2,58 L8,58"
               stroke="url(#mbStroke)"
-              strokeWidth="1.6"
+              strokeWidth="1.7"
               fill="none"
               strokeLinecap="round"
             />
@@ -229,7 +255,7 @@ export function MascotFloater() {
             <path
               d="M140,92 L146,98 L154,98 L160,92"
               stroke="url(#mbStroke)"
-              strokeWidth="1.4"
+              strokeWidth="1.5"
               fill="none"
               strokeLinejoin="round"
             />
@@ -281,7 +307,7 @@ export function MascotFloater() {
           style={{
             width: "min(58vw, 260px)",
             filter:
-              "drop-shadow(0 0 1px rgba(139, 92, 246, 0.55)) drop-shadow(0 0 2px rgba(124, 58, 237, 0.42)) drop-shadow(0 0 4px rgba(88, 28, 135, 0.28)) drop-shadow(0 14px 26px rgba(88, 28, 135, 0.55))",
+              "drop-shadow(0 0 1px rgba(139, 92, 246, 0.6)) drop-shadow(0 0 2px rgba(124, 58, 237, 0.47)) drop-shadow(0 0 4px rgba(88, 28, 135, 0.33)) drop-shadow(0 14px 26px rgba(88, 28, 135, 0.6))",
             pointerEvents: "auto",
           }}
         />
