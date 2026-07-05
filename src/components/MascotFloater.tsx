@@ -14,6 +14,7 @@ export function MascotFloater() {
   const [dismissed, setDismissed] = useState(false);
   const [entered, setEntered] = useState(false);
   const [bubbleIn, setBubbleIn] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const timerRef = useRef<number | null>(null);
 
@@ -67,14 +68,28 @@ export function MascotFloater() {
     };
   }, [visible]);
 
-  if (!visible || typeof document === "undefined") return null;
-
+  // Close when clicking anywhere outside the mascot image.
   const handleDismiss = () => {
     try {
       sessionStorage.setItem(SHOWN_KEY, "1");
     } catch {}
     setDismissed(true);
   };
+  const dismissRef = useRef(handleDismiss);
+  dismissRef.current = handleDismiss;
+
+  useEffect(() => {
+    if (!visible) return;
+    const onDocClick = (e: MouseEvent) => {
+      if (!imageRef.current) return;
+      if (imageRef.current === e.target || imageRef.current.contains(e.target as Node)) return;
+      dismissRef.current();
+    };
+    document.addEventListener("click", onDocClick);
+    return () => document.removeEventListener("click", onDocClick);
+  }, [visible]);
+
+  if (!visible || typeof document === "undefined") return null;
 
   return createPortal(
     <div
@@ -82,21 +97,21 @@ export function MascotFloater() {
       aria-hidden="true"
     >
       <div
+        ref={wrapRef}
         className={`mascot-wrap ${entered ? "mascot-wrap--in" : ""}`}
         style={{
           position: "absolute",
           right: "-40px",
           bottom: "56px", // roughly above bottom nav so feet peek behind it
         }}
-        onClick={(e) => {
-          // Clicking the mascot image does not close it; everything else does.
-          if (e.target === imageRef.current) return;
-          handleDismiss();
-        }}
       >
         {/* Speech bubble */}
         <div
           className={`mascot-bubble ${bubbleIn ? "mascot-bubble--in" : ""}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDismiss();
+          }}
         >
           ¿Qué jugaremos hoy?
         </div>
@@ -126,7 +141,6 @@ export function MascotFloater() {
               "radial-gradient(ellipse at center, rgba(124, 58, 237, 0.62) 0%, rgba(88, 28, 135, 0.32) 45%, transparent 72%)",
             filter: "blur(32px)",
             transform: "scale(1.15)",
-            pointerEvents: "none",
           }}
         />
 
