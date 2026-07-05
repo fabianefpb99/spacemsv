@@ -4216,7 +4216,8 @@ html.light .my-bet-status--refunded:not(.theme-dark-fixed):not(.theme-dark-fixed
   box-shadow: 0 6px 18px rgba(88, 28, 135, 0.35);
   opacity: 0;
   transform-origin: 90% 60%;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
   white-space: normal;
 }
 .mascot-bubble::after {
