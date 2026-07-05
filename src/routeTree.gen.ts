@@ -26,6 +26,7 @@ import { Route as PayRouteImport } from './routes/pay'
 import { Route as MisRecargasRouteImport } from './routes/mis-recargas'
 import { Route as MinesRouteImport } from './routes/mines'
 import { Route as McpRouteImport } from './routes/mcp'
+import { Route as HomeRouteImport } from './routes/home'
 import { Route as EventosRouteImport } from './routes/eventos'
 import { Route as DeportesRouteImport } from './routes/deportes'
 import { Route as DadosRouteImport } from './routes/dados'
@@ -128,6 +129,11 @@ const MinesRoute = MinesRouteImport.update({
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
   path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EventosRoute = EventosRouteImport.update({
@@ -235,6 +241,7 @@ export interface FileRoutesByFullPath {
   '/dados': typeof DadosRoute
   '/deportes': typeof DeportesRoute
   '/eventos': typeof EventosRoute
+  '/home': typeof HomeRoute
   '/mcp': typeof McpRoute
   '/mines': typeof MinesRoute
   '/mis-recargas': typeof MisRecargasRoute
@@ -272,6 +279,7 @@ export interface FileRoutesByTo {
   '/dados': typeof DadosRoute
   '/deportes': typeof DeportesRoute
   '/eventos': typeof EventosRoute
+  '/home': typeof HomeRoute
   '/mcp': typeof McpRoute
   '/mines': typeof MinesRoute
   '/mis-recargas': typeof MisRecargasRoute
@@ -310,6 +318,7 @@ export interface FileRoutesById {
   '/dados': typeof DadosRoute
   '/deportes': typeof DeportesRoute
   '/eventos': typeof EventosRoute
+  '/home': typeof HomeRoute
   '/mcp': typeof McpRoute
   '/mines': typeof MinesRoute
   '/mis-recargas': typeof MisRecargasRoute
@@ -349,6 +358,7 @@ export interface FileRouteTypes {
     | '/dados'
     | '/deportes'
     | '/eventos'
+    | '/home'
     | '/mcp'
     | '/mines'
     | '/mis-recargas'
@@ -386,6 +396,7 @@ export interface FileRouteTypes {
     | '/dados'
     | '/deportes'
     | '/eventos'
+    | '/home'
     | '/mcp'
     | '/mines'
     | '/mis-recargas'
@@ -423,6 +434,7 @@ export interface FileRouteTypes {
     | '/dados'
     | '/deportes'
     | '/eventos'
+    | '/home'
     | '/mcp'
     | '/mines'
     | '/mis-recargas'
@@ -461,6 +473,7 @@ export interface RootRouteChildren {
   DadosRoute: typeof DadosRoute
   DeportesRoute: typeof DeportesRoute
   EventosRoute: typeof EventosRoute
+  HomeRoute: typeof HomeRoute
   McpRoute: typeof McpRoute
   MinesRoute: typeof MinesRoute
   MisRecargasRoute: typeof MisRecargasRoute
@@ -610,6 +623,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/eventos': {
       id: '/eventos'
       path: '/eventos'
@@ -749,6 +769,7 @@ const rootRouteChildren: RootRouteChildren = {
   DadosRoute: DadosRoute,
   DeportesRoute: DeportesRoute,
   EventosRoute: EventosRoute,
+  HomeRoute: HomeRoute,
   McpRoute: McpRoute,
   MinesRoute: MinesRoute,
   MisRecargasRoute: MisRecargasRoute,
