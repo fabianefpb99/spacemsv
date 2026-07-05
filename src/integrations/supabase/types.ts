@@ -2187,6 +2187,7 @@ export type Database = {
         }[]
       }
       redeem_referral: { Args: { p_code: string }; Returns: Json }
+      set_my_avatar_key: { Args: { _avatar_key: string }; Returns: undefined }
       spaceman_cashout: {
         Args: {
           p_client_action_id: string
