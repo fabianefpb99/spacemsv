@@ -1497,7 +1497,7 @@ const EVENT_LABEL: Record<SamuraiEventTier, string> = {
   jackpot: "JACKPOT",
 };
 
-function SamuraiBanner({
+function SamuraiHero({
   lastWin,
   displayedWin,
   bet,
@@ -1512,35 +1512,28 @@ function SamuraiBanner({
   const showEvent = tier !== "idle" && lastWin > 0;
   return (
     <section
-      className="relative mt-2 overflow-hidden rounded-2xl border border-fuchsia-500/30"
-      style={{
-        height: 190,
-        backgroundImage: `linear-gradient(180deg, rgba(10,4,22,0.15) 0%, rgba(10,4,22,0.65) 78%, rgba(10,4,22,0.95) 100%), url(${samuraiBg})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center 32%",
-        boxShadow:
-          "0 0 22px rgba(168,85,247,0.35), inset 0 0 24px rgba(255,90,140,0.15)",
-      }}
+      className="relative mt-1 flex flex-col items-center justify-center"
       aria-label="Samurai Legend"
     >
-      {/* Logo centrado del juego */}
-      <div className="absolute inset-x-0 top-3 flex justify-center">
-        <img
-          src={samuraiLegendLogo}
-          alt="Samurai Legend"
-          className="h-[110px] w-auto max-w-[86%] drop-shadow-[0_6px_18px_rgba(0,0,0,0.7)]"
-          style={{ filter: "drop-shadow(0 0 12px rgba(255,90,120,0.35))" }}
-          draggable={false}
-        />
-      </div>
-      {/* Overlay de evento de premio */}
+      {/* Logo integrado sobre el fondo global — sin card, sin borde */}
+      <img
+        src={samuraiLegendLogo}
+        alt="Samurai Legend"
+        className="h-[104px] w-auto max-w-[86%] select-none"
+        style={{
+          filter:
+            "drop-shadow(0 6px 14px rgba(0,0,0,0.75)) drop-shadow(0 0 18px rgba(255,90,120,0.35))",
+        }}
+        draggable={false}
+      />
+      {/* Overlay de evento de premio, flotando sobre el paisaje */}
       {showEvent && (
         <div
-          className="absolute inset-x-0 bottom-2 flex flex-col items-center"
+          className="mt-0.5 flex flex-col items-center"
           style={{ animation: "scale-in 0.35s ease-out" }}
         >
           <div
-            className="font-display text-lg font-black tracking-[0.28em]"
+            className="font-display text-lg font-black tracking-[0.28em] leading-none"
             style={{
               background:
                 tier === "jackpot"
@@ -1560,7 +1553,7 @@ function SamuraiBanner({
             {EVENT_LABEL[tier]}
           </div>
           <div
-            className="font-display text-xl font-black tracking-wide"
+            className="mt-0.5 font-display text-xl font-black tracking-wide leading-none"
             style={{
               color: "#fef08a",
               textShadow:
