@@ -1,33 +1,40 @@
+Plan de corrección para `/slotsamurai`
 
-## Ajustes visuales Samurai Legend (`/slotsamurai`)
+Objetivo: corregir únicamente layout/distribución visual de Samurai Legend para que en móvil 390×844 todo quede en una sola vista, sin scroll vertical, siguiendo el boceto `BOCETO-3.png`. No tocaré lógica, RTP, pagos, seguridad, balance, validaciones, backend, admin ni el header BETSPACE.
 
-Solo se toca `src/components/SlotSamuraiGame.tsx` y assets del logo. Cero cambios en lógica, RTP, seguridad, header BETSPACE ni HUD de apuestas.
+Cambios concretos:
 
-### 1. Fondo Samurai como fondo global (como el planeta en Slot Mafia)
-- Eliminar el `<SamuraiBanner>` como tarjeta con fondo propio.
-- Aplicar `samurai-bg.webp` como `background-image` del contenedor raíz del juego (mismo patrón que Slot Mafia con el planeta): `background-size: cover`, `background-position: top center`, con overlay oscuro sutil para legibilidad. El fondo cubre header + zona del logo + grid + HUD como un solo lienzo continuo, sin borde ni contenedor visible.
+1. Eliminar la causa real del scroll
+- Cambiar el contenedor del juego de altura mínima a altura fija de viewport: `h-[100dvh] overflow-hidden`.
+- Quitar el crecimiento vertical innecesario del wrapper interno (`min-h-[100dvh]`) y convertirlo en layout compacto con altura controlada.
+- Reducir padding vertical global del juego; el header queda visualmente igual, pero el resto no seguirá empujando el documento.
 
-### 2. Logo Samurai PNG comprimido
-- Tomar `user-uploads://SAMURAI-LEGEND-BETSPACE.png`, comprimir a WebP (~1024px máx, quality ~72) y subir con `lovable-assets create` → `src/assets/samurai/samurai-legend-logo.webp.asset.json`.
-- Reemplazar el import del SVG actual por el nuevo pointer WebP.
-- Borrar el SVG anterior (`samurai-legend-logo.svg`) al terminar.
+2. Compactar el módulo de reels verticalmente
+- Reducir `TILE_H` de `108` a un valor móvil más compacto, aprox. `82–88px`, para que las 3 filas no ocupen 324px.
+- Mantener 5×3 y la misma lógica de reels; solo cambia la caja visual.
+- Aumentar el tamaño visual de los íconos dentro de cada celda para que no se vean “perdidos” en filas altas.
+- Quitar padding superior interno del frame (`pt-3`) y reducir padding del marco de reels para cerrar el espacio entre borde e íconos.
+- Resultado esperado: las filas quedan mucho más juntas, sin el espacio vacío que se ve en tus imágenes de error.
 
-### 3. Logo integrado sobre el paisaje (sin contenedor)
-- Renderizar el `<img>` del logo centrado directamente sobre el fondo, sin card, sin borde, sin `background`, solo `drop-shadow` sutil.
-- Debajo del logo (mismo bloque, sin panel): overlay de eventos (MEGA WIN / BIG WIN / +monto) como texto flotante sobre el fondo. Mantiene el sistema de tiers ya cableado.
+3. Rebalancear alturas como el boceto
+- Logo/hero Samurai más bajo y más integrado: mantener presencia del logo, pero sin consumir 104px fijos si no hay evento.
+- Reels inmediatamente debajo del logo, con margen mínimo.
+- Paytable más baja: cards más compactas, menos padding y símbolos más pequeños si hace falta.
+- Panel de apuesta más bajo: reducir alturas de botones `- / +`, quick bets, `AUTO` y padding, manteniendo el HUD funcional.
+- Últimas ganancias más compacto: altura reducida, sin esconderse bajo el viewport.
 
-### 4. Layout compacto 5×3 sin scroll (390×844 ref.)
-- **Zona superior (logo + eventos)**: altura reducida (~26–30% del alto útil), sin `min-height` grandes.
-- **Grid 5×3**: subir `TILE_H` de `88` a ~`104–112` para símbolos más grandes aprovechando la fila menos.
-- **Gaps verticales** entre zona superior ↔ marco slot ↔ HUD inferior: reducir a `8–12px` para sentir un único bloque.
-- **Eliminar** el módulo inferior "¡GANASTE! $700". La ganancia se comunica solo arriba.
-- Contenedor raíz `h-[100dvh] overflow-hidden flex-col`; las zonas reparten alto con `flex-1`/`flex-none` — sin scroll.
+4. Validación obligatoria antes de terminar
+- Medir en preview móvil 390×844:
+  - `document.documentElement.scrollHeight <= window.innerHeight`
+  - ningún bloque queda escondido abajo
+  - reels, paytable, apuestas y últimas ganancias visibles en una sola pantalla
+- Comparar visualmente contra `BOCETO-3.png`: composición vertical completa, sin scroll, sin grandes huecos entre filas.
 
-### 5. Lo que NO se toca
-- `src/routes/slotsamurai.tsx`, server function, `slot-samurai.shared.ts`
-- Header BETSPACE, HUD inferior (BetAmount, GIRAR, AUTO, quick bets, últimas ganancias)
-- Admin, integraciones, home tile, RTP, seguridad
+Archivos a tocar:
+- `src/components/SlotSamuraiGame.tsx` solamente.
 
-### Verificación
-- Typecheck automático.
-- Smoke visual en `/slotsamurai` 390×844: fondo continuo, logo PNG sin caja, grid más grande, sin scroll, sin panel "¡GANASTE!".
+Archivos/partes que NO tocaré:
+- Header BETSPACE como estructura/función.
+- HUD de balance y autenticación.
+- Funciones server, shared RTP, validaciones, pagos, balance, seguridad.
+- Admin y rutas.
