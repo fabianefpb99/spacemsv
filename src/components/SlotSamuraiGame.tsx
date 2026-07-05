@@ -1180,10 +1180,8 @@ export function SlotSamuraiGame() {
     <div
       className="relative min-h-screen text-white"
       style={{
-        backgroundColor: "#060210",
-        backgroundImage: `url(${pageBg})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center top",
+        backgroundColor: "#0a0416",
+        backgroundImage: `radial-gradient(80% 55% at 50% 0%, rgba(120,20,60,0.35) 0%, transparent 60%), radial-gradient(60% 40% at 50% 100%, rgba(80,20,120,0.22) 0%, transparent 70%)`,
         backgroundRepeat: "no-repeat",
         backgroundAttachment: "fixed",
       }}
@@ -1239,13 +1237,20 @@ export function SlotSamuraiGame() {
           </button>
         </div>
 
-        {/* HUD (matches reference) */}
-        <section className="mt-2 grid grid-cols-4 gap-1.5 rounded-2xl glass-panel p-1.5 sm:p-2">
-          <HudCell label="LÍNEAS" value={String(LINES)} />
-          <HudCell label="PREMIO TOTAL" value={lastWin > 0 ? `${formatCOP(displayedWin)} COP` : "—"} accent="green" wide />
-          <HudCell label="TIRADAS GRATIS" value="--" accent="muted" />
-          <HudCell label="MULTIPLICADOR" value={`x${winMult >= 10 ? winMult.toFixed(1) : winMult.toFixed(2).replace(/\.?0+$/, "")}`} accent="purple" />
-        </section>
+        {/* ============================================================
+           SamuraiBanner — reemplaza el antiguo HUD superior + badge
+           "MAFIA ROYALE". Espacio dedicado para identidad del juego
+           y overlays de eventos (Win / Big Win / Mega Win / Super Win /
+           Jackpot / Free Spins). El fondo definitivo se irá afinando
+           en próximos prompts; el sistema de eventos ya está cableado
+           al `total` del giro.
+           ============================================================ */}
+        <SamuraiBanner
+          lastWin={lastWin}
+          displayedWin={displayedWin}
+          bet={bet}
+          spinning={spinning}
+        />
 
         {/* Reels frame wrapper — labels sit on the neon border edge */}
         <section className="relative mt-3">
