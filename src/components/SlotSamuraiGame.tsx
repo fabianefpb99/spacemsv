@@ -1,9 +1,8 @@
 import { AuthControl } from "@/components/auth/AuthControl";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useVisibleInterval } from "@/hooks/useVisibleInterval";
 import { FitText } from "@/components/ui/fit-text";
 import { BetAmount } from "@/components/games/BetAmount";
-import { flushSync } from "react-dom";
 import { Link } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -421,7 +420,7 @@ function Reel({
   useEffect(() => { finalSymsRef.current = finalSyms; }, [finalSyms]);
 
   // Sync strip with finalSyms when not spinning (e.g. initial render).
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (spinning) return;
     setStrip(finalSyms);
     displayedRef.current = finalSyms;
@@ -440,35 +439,25 @@ function Reel({
     // then fillers, then the new landing symbols.
     const startSyms = displayedRef.current;
     const longStrip = [...startSyms, ...fillers, ...finalSyms];
-    // Update strip state — React will commit before the next paint.
-    setStrip(longStrip);
-
     const dur = SPIN_BASE_MS + reelIndex * SPIN_STAGGER_MS;
     const targetY = (longStrip.length - ROWS) * TILE_H;
-
-    // Wait TWO animation frames: first for React to commit the longer strip
-    // to the DOM, second to kick off the transform transition. This avoids
-    // flushSync (which warns/no-ops when called inside a commit phase) while
-    // still guaranteeing the DOM has the full strip before we animate.
-    let raf2 = 0;
-    const raf1 = requestAnimationFrame(() => {
-      if (spinTokenRef.current !== token) return;
-      const el = innerRef.current;
-      if (!el) return;
-      // Position at top (showing previously-visible symbols) — no jump.
-      el.style.transition = "none";
-      el.style.transform = "translateY(0)";
-      // Force reflow so the browser locks in the starting transform.
-      void el.offsetHeight;
-      raf2 = requestAnimationFrame(() => {
-        if (spinTokenRef.current !== token) return;
-        el.style.transition = `transform ${dur}ms cubic-bezier(.16,.84,.32,1)`;
-        el.style.transform = `translateY(-${targetY}px)`;
-      });
-    });
-
     const el = innerRef.current;
     if (!el) return;
+
+    // Lock the reel at the top BEFORE inserting the long strip, so the next
+    // frame always starts from the previous visible symbols and falls smoothly.
+    el.style.transition = "none";
+    el.style.transform = "translateY(0)";
+    setStrip(longStrip);
+
+    const raf = requestAnimationFrame(() => {
+      if (spinTokenRef.current !== token) return;
+      el.style.transition = "none";
+      el.style.transform = "translateY(0)";
+      void el.offsetHeight;
+      el.style.transition = `transform ${dur}ms cubic-bezier(.16,.84,.32,1)`;
+      el.style.transform = `translateY(-${targetY}px)`;
+    });
 
     // Fallback: ensure onStop fires even if transitionend is missed.
     const fallback = setTimeout(() => {
@@ -498,8 +487,7 @@ function Reel({
     el.addEventListener("transitionend", handleEnd);
 
     return () => {
-      cancelAnimationFrame(raf1);
-      cancelAnimationFrame(raf2);
+      cancelAnimationFrame(raf);
       clearTimeout(fallback);
       el.removeEventListener("transitionend", handleEnd);
     };
