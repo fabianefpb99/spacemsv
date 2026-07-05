@@ -386,7 +386,7 @@ function MatchCard({ match }: { match: PublicMatch }) {
       to="/deportes/$matchId"
       params={{ matchId: match.id }}
       aria-label={`${match.home.name} vs ${match.away.name} — ${match.competition}`}
-      className="theme-dark-fixed group relative block overflow-hidden rounded-2xl border border-purple-500/30 bg-[#0c0620]/90 p-3 shadow-[0_0_16px_rgba(76,29,149,0.25)] transition hover:border-fuchsia-400/60 hover:shadow-[0_0_18px_rgba(217,70,239,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-400/70 sm:p-4"
+      className="theme-dark-fixed group relative block overflow-hidden rounded-2xl border border-purple-500/30 bg-[#0c0620]/70 p-3 shadow-[0_0_16px_rgba(76,29,149,0.25)] transition hover:border-fuchsia-400/60 hover:shadow-[0_0_18px_rgba(217,70,239,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-400/70 sm:p-4"
       style={{
         opacity: ready ? 1 : 0,
         transform: ready ? "translateY(0)" : "translateY(6px)",
@@ -394,6 +394,12 @@ function MatchCard({ match }: { match: PublicMatch }) {
         pointerEvents: ready ? undefined : "none",
       }}
     >
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
+        <img src={stadiumBg} alt="" className="absolute inset-0 h-full w-full object-cover opacity-[0.18]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0c0620]/85 via-[#150830]/80 to-[#0c0620]/90" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(168,85,247,0.22),transparent_70%)]" />
+      </div>
+      <div className="relative z-10">
       {/* Fila superior: todo en una línea */}
       <div className="flex items-center gap-1.5 whitespace-nowrap">
         <span className="shrink-0 rounded-full border border-purple-400/50 bg-purple-500/15 px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wider text-purple-100">
@@ -417,7 +423,7 @@ function MatchCard({ match }: { match: PublicMatch }) {
         </div>
       </div>
 
-      <div className="mt-2 h-px w-full bg-purple-500/20" />
+      <div className="mt-1.5 h-px w-full bg-purple-500/20" />
 
       {/* Equipos */}
       <div className="mt-3 grid grid-cols-3 items-center gap-2">
@@ -445,8 +451,8 @@ function MatchCard({ match }: { match: PublicMatch }) {
       </div>
 
       {/* Cuotas 1 X 2 */}
-      <div className="mt-3 rounded-xl border border-purple-500/25 bg-[#150830]/70 p-2">
-        <div className="mb-1.5 px-1 text-[9px] font-bold uppercase tracking-widest text-purple-200/70">
+      <div className="mt-2 rounded-xl border border-purple-500/25 bg-[#150830]/70 p-1.5">
+        <div className="mb-1 px-1 text-[9px] font-bold uppercase tracking-widest text-purple-200/70">
           1X2 · Resultado final
         </div>
         <div className="grid grid-cols-3 gap-1.5">
@@ -454,6 +460,7 @@ function MatchCard({ match }: { match: PublicMatch }) {
           <OddChip label="X" value={match.odds.draw} />
           <OddChip label="2" value={match.odds.away} />
         </div>
+      </div>
       </div>
     </Link>
   );
@@ -464,7 +471,7 @@ function OddChip({ label, value }: { label: string; value: string }) {
     <button
       type="button"
       onClick={(e) => e.stopPropagation()}
-      className="sports-odd-chip flex flex-col items-center justify-center gap-0.5 rounded-lg border border-purple-500/25 bg-[#0c0620]/80 py-1.5 transition hover:border-fuchsia-400/60 hover:bg-[#1a0a3a]/80"
+      className="sports-odd-chip flex flex-col items-center justify-center gap-0.5 rounded-lg border border-purple-500/25 bg-[#0c0620]/80 py-1 transition hover:border-fuchsia-400/60 hover:bg-[#1a0a3a]/80"
     >
       <span className="text-[10px] font-semibold uppercase tracking-widest text-purple-200/70">
         {label}
