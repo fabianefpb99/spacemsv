@@ -440,31 +440,35 @@ function Reel({
     // then fillers, then the new landing symbols.
     const startSyms = displayedRef.current;
     const longStrip = [...startSyms, ...fillers, ...finalSyms];
-    // CRITICAL: flushSync forces React to commit the new (longer) strip to the
-    // DOM synchronously BEFORE we touch transforms. Without this, iOS Safari's
-    // requestAnimationFrame can fire before React commits the new tree, so the
-    // transition starts on the old 3-tile DOM and the new tiles "pop in" mid
-    // animation, giving the impression that icons disappear at spin start.
-    flushSync(() => setStrip(longStrip));
+    // Update strip state — React will commit before the next paint.
+    setStrip(longStrip);
 
-    const el = innerRef.current;
-    if (!el) return;
-
-    // 1) Position at top (showing the previously-visible symbols) — no jump.
-    el.style.transition = "none";
-    el.style.transform = "translateY(0)";
-    // force reflow so the next frame sees the new transform
-    void el.offsetHeight;
-
-    // 2) Next frame: animate to landing position.
     const dur = SPIN_BASE_MS + reelIndex * SPIN_STAGGER_MS;
     const targetY = (longStrip.length - ROWS) * TILE_H;
 
-    const raf = requestAnimationFrame(() => {
+    // Wait TWO animation frames: first for React to commit the longer strip
+    // to the DOM, second to kick off the transform transition. This avoids
+    // flushSync (which warns/no-ops when called inside a commit phase) while
+    // still guaranteeing the DOM has the full strip before we animate.
+    let raf2 = 0;
+    const raf1 = requestAnimationFrame(() => {
       if (spinTokenRef.current !== token) return;
-      el.style.transition = `transform ${dur}ms cubic-bezier(.16,.84,.32,1)`;
-      el.style.transform = `translateY(-${targetY}px)`;
+      const el = innerRef.current;
+      if (!el) return;
+      // Position at top (showing previously-visible symbols) — no jump.
+      el.style.transition = "none";
+      el.style.transform = "translateY(0)";
+      // Force reflow so the browser locks in the starting transform.
+      void el.offsetHeight;
+      raf2 = requestAnimationFrame(() => {
+        if (spinTokenRef.current !== token) return;
+        el.style.transition = `transform ${dur}ms cubic-bezier(.16,.84,.32,1)`;
+        el.style.transform = `translateY(-${targetY}px)`;
+      });
     });
+
+    const el = innerRef.current;
+    if (!el) return;
 
     // Fallback: ensure onStop fires even if transitionend is missed.
     const fallback = setTimeout(() => {
@@ -494,7 +498,8 @@ function Reel({
     el.addEventListener("transitionend", handleEnd);
 
     return () => {
-      cancelAnimationFrame(raf);
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
       clearTimeout(fallback);
       el.removeEventListener("transitionend", handleEnd);
     };
