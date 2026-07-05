@@ -121,7 +121,13 @@ export const WORLD_CUP_2026_TEAMS_BY_CODE: Readonly<Record<string, WorldCupTeam>
 
 /** Convierte código alpha-2 en la URL del SVG en flagcdn. */
 export function flagSvgUrl(code: string): string {
-  return `https://flagcdn.com/${code.toLowerCase()}.svg`;
+  const c = code.toLowerCase();
+  // Caso especial: "GB" representa a Inglaterra en nuestra lista del Mundial
+  // (no al Reino Unido). Usamos la bandera de la subdivisión inglesa
+  // (cruz de San Jorge) para diferenciarla de la Union Jack y evitar
+  // confusión con banderas similares (p. ej. Australia).
+  if (c === "gb") return "https://flagcdn.com/gb-eng.svg";
+  return `https://flagcdn.com/${c}.svg`;
 }
 
 /** Devuelve el nombre en español o el propio código si no está registrado. */
