@@ -228,7 +228,7 @@ export function MascotFloater() {
               d="M18,10 L282,10 L294,22 L294,72 L282,84 L232,84 L226,92 L60,92 L54,84 L18,84 L6,72 L6,22 Z"
               fill="url(#mbFill)"
               stroke="url(#mbStroke)"
-              strokeWidth="1.8"
+              strokeWidth="1.9"
               filter="url(#mbGlow)"
             />
             {/* Inner accent line */}
@@ -236,14 +236,14 @@ export function MascotFloater() {
               d="M22,16 L278,16 L288,26 L288,68 L278,78 L22,78 L12,68 L12,26 Z"
               fill="none"
               stroke="#c084fc"
-              strokeWidth="0.6"
-              strokeOpacity="0.55"
+              strokeWidth="0.65"
+              strokeOpacity="0.6"
             />
             {/* Left bracket accent */}
             <path
               d="M2,36 L2,58 M2,36 L8,36 M2,58 L8,58"
               stroke="url(#mbStroke)"
-              strokeWidth="1.6"
+              strokeWidth="1.7"
               fill="none"
               strokeLinecap="round"
             />
@@ -255,7 +255,7 @@ export function MascotFloater() {
             <path
               d="M140,92 L146,98 L154,98 L160,92"
               stroke="url(#mbStroke)"
-              strokeWidth="1.4"
+              strokeWidth="1.5"
               fill="none"
               strokeLinejoin="round"
             />
