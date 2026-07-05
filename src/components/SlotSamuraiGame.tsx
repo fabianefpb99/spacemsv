@@ -875,11 +875,11 @@ function MegaOrnament() {
 
 const LINES = PAYLINES.length;
 
-export function SlotGame() {
+export function SlotSamuraiGame() {
   const { user } = useAuth();
   const me = useMe();
   const queryClient = useQueryClient();
-  const callSpin = useServerFn(spinSlot);
+  const callSpin = useServerFn(spinSlotSamurai);
   const isAuthed = !!user;
   // Source of truth = backend. If it hasn't loaded yet, never pretend the
   // user has 0 because that looks like lost money.
@@ -892,7 +892,7 @@ export function SlotGame() {
   // Holds the official outcome returned by the server until the visual
   // animation finishes. Reading it inside the "all reels stopped" effect
   // lets us paint wins exactly as the backend decided.
-  const pendingResultRef = useRef<SpinResult | null>(null);
+  const pendingResultRef = useRef<SamuraiSpinResult | null>(null);
   // Bumped whenever a server result lands. Included in the settle effect's
   // deps so it re-runs if the network was slower than the spin animation.
   const [resultTick, setResultTick] = useState(0);
