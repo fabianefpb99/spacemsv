@@ -1544,10 +1544,10 @@ type SamuraiEventTier = "idle" | "win" | "big" | "mega" | "super" | "jackpot";
 function classifySamuraiEvent(total: number, bet: number): SamuraiEventTier {
   if (total <= 0 || bet <= 0) return "idle";
   const m = total / bet;
-  if (m >= 100) return "jackpot";
-  if (m >= 50)  return "super";
-  if (m >= 20)  return "mega";
-  if (m >= 8)   return "big";
+  if (m >= 50)  return "jackpot";
+  if (m >= 20)  return "super";
+  if (m >= 8)   return "mega";
+  if (m >= 2)   return "big";
   return "win";
 }
 const EVENT_LABEL: Record<SamuraiEventTier, string> = {
