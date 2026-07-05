@@ -1154,8 +1154,8 @@ export function HomePage() {
               <div className="promo-banner__eyebrow text-[10px] font-semibold uppercase tracking-widest text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
                 Jackpot activo hoy
               </div>
-              <div className="promo-banner__title mt-0.5 font-display text-lg font-black leading-none tracking-wide text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] sm:text-xl">
-                <span className="neon-green mr-1">$</span>
+              <div className="promo-banner__title mt-0.5 font-display text-2xl font-black leading-none tracking-wide text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] sm:text-3xl">
+                <span className="neon-green mr-1 text-xl sm:text-2xl">$</span>
                 {formatCOP(jackpotAmount)}
               </div>
               <div className="promo-banner__tag promo-banner__tag--amber mt-1 inline-block rounded-sm bg-amber-500/80 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-black shadow-[0_0_8px_rgba(251,191,36,0.6)]">
