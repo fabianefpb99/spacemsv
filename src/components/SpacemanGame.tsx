@@ -484,7 +484,8 @@ export function SpacemanGame() {
       return;
     }
     const thresholds: number[] = [1.2, 2, 3];
-    for (let t = 6; t <= Math.floor(multiplier) + 3; t += 3) thresholds.push(t);
+    const cap = Number.isFinite(multiplier) ? Math.min(Math.floor(multiplier) + 3, 300) : 3;
+    for (let t = 6; t <= cap; t += 3) thresholds.push(t);
     for (const threshold of thresholds) {
       if (multiplier >= threshold && !meteorFiredRef.current.has(threshold)) {
         meteorFiredRef.current.add(threshold);
