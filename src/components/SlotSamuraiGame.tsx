@@ -15,7 +15,8 @@ import { AuthDialog } from "@/components/auth/AuthDialog";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "lucide-react";
 import { setMuted as setAudioMuted, playCashoutSound, playCoinsSound, isMuted, setBackgroundTrack, clearBackgroundTrack, getBackgroundTrack, stopAllGameAudio, getCtx, getMasterGain, AUDIO_STOP_ALL_EVENT } from "@/lib/gameAudio";
-import mafiaJazzUrl from "@/assets/mafia-jazz.mp3";
+import samuraiBgmAsset from "@/assets/samurai/samurai-bgm.mp3.asset.json";
+const samuraiBgmUrl = samuraiBgmAsset.url;
 import samuraiBgAsset from "@/assets/samurai/samurai-bg.webp.asset.json";
 import samuraiLegendLogoAsset from "@/assets/samurai/samurai-legend-logo.webp.asset.json";
 const samuraiBg = samuraiBgAsset.url;
@@ -975,7 +976,7 @@ export function SlotSamuraiGame() {
     window.addEventListener("pagehide", stopOnBackground);
     window.addEventListener("blur", stopOnBackground);
     document.addEventListener("visibilitychange", stopOnBackground);
-    const audio = setBackgroundTrack(mafiaJazzUrl, { volume: 0.009, loop: true });
+    const audio = setBackgroundTrack(samuraiBgmUrl, { volume: 0.14, loop: true });
     if (!audio) return;
     const onFirst = () => {
       audio.play().catch(() => {});
