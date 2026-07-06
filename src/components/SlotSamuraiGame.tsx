@@ -1569,6 +1569,18 @@ function SamuraiHero({
 }) {
   const tier = spinning ? "idle" : classifySamuraiEvent(lastWin, bet);
   const showEvent = tier !== "idle" && lastWin > 0;
+  // Pre-decodifica los 4 logos de tier al montar el hero. Sin esto, Android
+  // gama baja decodifica el WebP en el momento del primer BIG/MEGA/SUPER y
+  // eso genera un delay perceptible antes de que el logo aparezca.
+  useEffect(() => {
+    (Object.values(WIN_LOGOS) as string[]).forEach((src) => {
+      const img = new Image();
+      img.src = src;
+      // decode() fuerza al navegador a preparar la imagen fuera del hilo de
+      // render; si no está soportado, el simple .src ya la mete en caché.
+      if (typeof img.decode === "function") img.decode().catch(() => {});
+    });
+  }, []);
   return (
     <section
       className="relative mt-0 flex flex-col items-center justify-center"
