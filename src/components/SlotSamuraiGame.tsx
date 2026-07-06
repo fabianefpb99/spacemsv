@@ -96,6 +96,7 @@ const TIER_GLOW: Record<WinTier, string> = {
 
 /* Weighted random fillers for the spinning strip */
 const SPIN_FILLER_COUNT = 18; // tiles above the final 3
+const BGM_VOLUME = 0.0648; // dos rebajas de 10 % respecto al original 0.08
 function pickRandomFillers(n: number): string[] {
   const totalWeight = SYMBOLS.reduce((a, s) => a + s.weight, 0);
   const out: string[] = [];
