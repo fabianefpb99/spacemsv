@@ -1033,7 +1033,7 @@ export function SlotSamuraiGame() {
   useEffect(() => {
     setAudioMuted(muted);
     if (!bgmRef.current) return;
-    bgmRef.current.setVolume(muted ? 0 : 0.072, 0);
+    bgmRef.current.setVolume(muted ? 0 : BGM_VOLUME, 0);
   }, [muted]);
   // Pre-decode todas las imágenes de símbolos al montar para evitar
   // "icono fantasma" durante el primer giro en iOS/Android. Una vez
