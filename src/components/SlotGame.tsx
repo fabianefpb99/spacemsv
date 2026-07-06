@@ -430,7 +430,7 @@ function Reel({
   useEffect(() => {
     if (!spinning) return;
     const token = ++spinTokenRef.current;
-    const fillers = pickRandomFillers(SPIN_FILLER_COUNT);
+    const fillers = pickRandomFillers(ANDROID ? ANDROID_FILLER_COUNT : SPIN_FILLER_COUNT);
     // Start the strip with what's already on screen so the swap is invisible,
     // then fillers, then the new landing symbols.
     const startSyms = displayedRef.current;
