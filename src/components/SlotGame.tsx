@@ -1,6 +1,7 @@
 import { AuthControl } from "@/components/auth/AuthControl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useVisibleInterval } from "@/hooks/useVisibleInterval";
+import { isAndroid } from "@/lib/platform";
 import { FitText } from "@/components/ui/fit-text";
 import { BetAmount } from "@/components/games/BetAmount";
 import { flushSync } from "react-dom";
@@ -80,6 +81,10 @@ const TIER_GLOW: Record<WinTier, string> = {
 
 /* Weighted random fillers for the spinning strip */
 const SPIN_FILLER_COUNT = 18; // tiles above the final 3
+// En Android reducimos la longitud del strip de giro para bajar la
+// presión sobre el compositor (menos tiles a rasterizar por rodillo).
+const ANDROID = isAndroid();
+const ANDROID_FILLER_COUNT = 10;
 function pickRandomFillers(n: number): string[] {
   const totalWeight = SYMBOLS.reduce((a, s) => a + s.weight, 0);
   const out: string[] = [];
