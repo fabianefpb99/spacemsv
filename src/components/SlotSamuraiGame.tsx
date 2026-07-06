@@ -545,9 +545,6 @@ function Reel({
         className="absolute inset-x-0 top-0 flex flex-col will-change-transform"
         style={ANDROID ? {
           transform: "translate3d(0,0,0)",
-          // Android-only: aislar repintado sin `size`; `contain:size` colapsa
-          // el rodillo absoluto y recorta todos los símbolos.
-          contain: "layout paint",
           backfaceVisibility: "hidden",
         } : undefined}
       >
@@ -593,7 +590,7 @@ function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boole
           : undefined,
         transition: highlight ? "box-shadow 200ms ease" : undefined,
         overflow: "hidden",
-        contain: "paint",
+        contain: ANDROID ? "paint" : undefined,
       }}
     >
       {/* Llamas realistas detrás del símbolo */}
