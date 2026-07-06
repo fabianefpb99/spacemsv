@@ -392,6 +392,10 @@ function playMegaWinSound() {
 const TILE_H = 78;
 const SPIN_BASE_MS = 1400;
 const SPIN_STAGGER_MS = 220;
+// En Android reducimos la longitud del strip de giro: menos tiles que
+// componer por rodillo → menos presión sobre el compositor y menos "freeze".
+const ANDROID = isAndroid();
+const ANDROID_FILLER_COUNT = 10;
 
 function Reel({
   finalSyms,
