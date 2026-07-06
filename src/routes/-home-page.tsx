@@ -43,7 +43,7 @@ import heroArenaImg from "@/assets/home-hero-arena.png.asset.json";
 import heroChickenImg from "@/assets/home-hero-chicken.webp.asset.json";
 import gameSpacemanAsset from "@/assets/game-spaceman.png.asset.json";
 import gameSlotMafiaAsset from "@/assets/game-slot-mafia.png.asset.json";
-import gameSlotSamuraiAsset from "@/assets/samurai/samurai-bg.webp.asset.json";
+import gameSlotSamuraiAsset from "@/assets/game-slot-samurai.webp.asset.json";
 import gameMinesAsset from "@/assets/game-mines.png.asset.json";
 import gameDiceAsset from "@/assets/game-dice.png.asset.json";
 import gameBlackjackAsset from "@/assets/game-blackjack.png.asset.json";
