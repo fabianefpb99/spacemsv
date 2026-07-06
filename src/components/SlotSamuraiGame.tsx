@@ -977,7 +977,7 @@ export function SlotSamuraiGame() {
     window.addEventListener("blur", stopOnBackground);
     document.addEventListener("visibilitychange", stopOnBackground);
     // Música de fondo SAMURAI (mismo patrón que Slot Mafia).
-    const audio = setBackgroundTrack(samuraiBgmUrl, { volume: 0.55, loop: true });
+    const audio = setBackgroundTrack(samuraiBgmUrl, { volume: 0.08, loop: true });
     if (!audio) {
       return () => {
         window.removeEventListener("pagehide", stopOnBackground);
