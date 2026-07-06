@@ -1000,7 +1000,7 @@ export function SlotSamuraiGame() {
     window.addEventListener("blur", stopOnBackground);
     document.addEventListener("visibilitychange", stopOnBackground);
 
-    const BGM_VOLUME = 0.072; // 10 % más bajo que el anterior 0.08
+    
     const startBgm = () => {
       bgmRef.current?.stop();
       bgmRef.current = playSound(samuraiBgmUrl, {
