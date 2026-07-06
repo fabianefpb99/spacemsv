@@ -81,7 +81,7 @@ import blackjackPromo from "@/assets/blackjack-promo.png.asset.json";
 import blackjackBanner from "@/assets/blackjack-banner.jpg";
 import jackpotBanner from "@/assets/jackpot-banner.jpg";
 import ruletaBanner from "@/assets/ruleta-banner.jpg";
-import casinoIntroUrl from "@/assets/audio/casino-intro-fixed.mp3";
+import casinoIntro from "@/assets/audio/casino-intro.mp3.asset.json";
 import mundialHeroAsset from "@/assets/mundial-hero.webp.asset.json";
 
 function formatCOP(n: number) {
