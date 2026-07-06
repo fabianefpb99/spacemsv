@@ -981,57 +981,58 @@ export function SlotSamuraiGame() {
   }, [stopWinSample]);
   useEffect(() => { if (muted) stopWinSample(); }, [muted, stopWinSample]);
 
-  // Música de fondo — jazz suave temática mafia/imperio. Se inicia tras
-  // el primer gesto del usuario (requisito de los navegadores) y respeta
-  // el botón de mute del HUD.
+  // Música de fondo — samurai vía Web Audio API para que el volumen se respete
+  // igual en iOS, Android y desktop. Se inicia tras el primer gesto del usuario.
   useEffect(() => {
     // Garantiza que ningún audio de un juego previo siga vivo.
     stopAllGameAudio();
-    const onStopAll = () => stopReelLoop();
+    const onStopAll = () => {
+      bgmRef.current?.stop();
+      stopReelLoop();
+    };
     const stopOnBackground = () => {
-      clearBackgroundTrack();
+      bgmRef.current?.stop();
       stopReelLoop();
     };
     window.addEventListener(AUDIO_STOP_ALL_EVENT, onStopAll);
     window.addEventListener("pagehide", stopOnBackground);
     window.addEventListener("blur", stopOnBackground);
     document.addEventListener("visibilitychange", stopOnBackground);
-    // Música de fondo SAMURAI (mismo patrón que Slot Mafia).
-    const audio = setBackgroundTrack(samuraiBgmUrl, { volume: 0.08, loop: true });
-    if (!audio) {
-      return () => {
-        window.removeEventListener("pagehide", stopOnBackground);
-        window.removeEventListener("blur", stopOnBackground);
-        document.removeEventListener("visibilitychange", stopOnBackground);
-        clearBackgroundTrack();
-        stopReelLoop();
-        window.removeEventListener(AUDIO_STOP_ALL_EVENT, onStopAll);
-      };
-    }
+
+    const BGM_VOLUME = 0.072; // 10 % más bajo que el anterior 0.08
+    const startBgm = () => {
+      bgmRef.current?.stop();
+      bgmRef.current = playSound(samuraiBgmUrl, {
+        volume: isMuted() ? 0 : BGM_VOLUME,
+        loop: true,
+        fadeInMs: 300,
+        pauseOnHidden: true,
+      });
+    };
+
     const onFirst = () => {
-      audio.play().catch(() => {});
+      startBgm();
       window.removeEventListener("pointerdown", onFirst);
       window.removeEventListener("keydown", onFirst);
     };
     window.addEventListener("pointerdown", onFirst);
     window.addEventListener("keydown", onFirst);
+
     return () => {
       window.removeEventListener("pointerdown", onFirst);
       window.removeEventListener("keydown", onFirst);
       window.removeEventListener("pagehide", stopOnBackground);
       window.removeEventListener("blur", stopOnBackground);
       document.removeEventListener("visibilitychange", stopOnBackground);
-      clearBackgroundTrack();
+      bgmRef.current?.stop();
       stopReelLoop();
       window.removeEventListener(AUDIO_STOP_ALL_EVENT, onStopAll);
     };
   }, []);
   useEffect(() => {
-    const audio = getBackgroundTrack();
-    if (!audio) return;
-    audio.muted = muted;
-    if (muted) audio.pause();
-    else audio.play().catch(() => {});
+    setAudioMuted(muted);
+    if (!bgmRef.current) return;
+    bgmRef.current.setVolume(muted ? 0 : 0.072, 0);
   }, [muted]);
   // Pre-decode todas las imágenes de símbolos al montar para evitar
   // "icono fantasma" durante el primer giro en iOS/Android. Una vez
