@@ -6,7 +6,7 @@ import { PromoPopup } from "@/components/PromoPopup";
 import { MascotFloater } from "@/components/MascotFloater";
 import { BrandLoader } from "@/components/BrandLoader";
 import { SkeletonImage } from "@/components/SkeletonImage";
-import { stopAllGameAudio } from "@/lib/gameAudio";
+import { stopAllGameAudio, getCtx } from "@/lib/gameAudio";
 import { playSound } from "@/lib/webAudioPlayer";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { NotificationBell } from "@/components/admin/NotificationBell";
