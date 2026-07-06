@@ -591,8 +591,9 @@ function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boole
         boxShadow: highlight
           ? `inset 0 0 0 ${ringWidth}px rgba(${glow},0.95), ${outerShadow}`
           : undefined,
-        transition: "box-shadow 200ms ease, background 200ms ease",
+        transition: highlight ? "box-shadow 200ms ease" : undefined,
         overflow: "hidden",
+        contain: "paint",
       }}
     >
       {/* Llamas realistas detrás del símbolo */}
@@ -613,10 +614,17 @@ function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boole
           width: "88%",
           height: "88%",
           objectFit: "contain",
-          transform: scale !== 1 ? `scale(${scale})` : undefined,
-          filter: highlight
-            ? `drop-shadow(0 0 10px rgba(${glow},0.95)) drop-shadow(0 0 20px rgba(${glow},0.7))`
-            : `drop-shadow(0 4px 6px rgba(0,0,0,0.55)) drop-shadow(0 0 8px rgba(${sym.glow},0.25))`,
+          transform: `translateZ(0)${scale !== 1 ? ` scale(${scale})` : ""}`,
+          // En Android usamos un solo drop-shadow simple: los dobles
+          // drop-shadow se rasterizan en CPU cuadro a cuadro y provocan
+          // el "5 fps" durante el giro.
+          filter: ANDROID
+            ? (highlight
+                ? `drop-shadow(0 0 8px rgba(${glow},0.9))`
+                : `drop-shadow(0 3px 4px rgba(0,0,0,0.55))`)
+            : (highlight
+                ? `drop-shadow(0 0 10px rgba(${glow},0.95)) drop-shadow(0 0 20px rgba(${glow},0.7))`
+                : `drop-shadow(0 4px 6px rgba(0,0,0,0.55)) drop-shadow(0 0 8px rgba(${sym.glow},0.25))`),
           animation: animName,
         }}
       />
