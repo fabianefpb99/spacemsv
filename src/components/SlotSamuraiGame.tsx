@@ -974,29 +974,8 @@ export function SlotSamuraiGame() {
     window.addEventListener("pagehide", stopOnBackground);
     window.addEventListener("blur", stopOnBackground);
     document.addEventListener("visibilitychange", stopOnBackground);
-    const audio = setBackgroundTrack(samuraiBgmUrl, { volume: 0.42, loop: true });
-    if (!audio) return;
-    audio.preload = "auto";
-    // Intento inmediato: si el usuario acaba de venir de otra pantalla con
-    // un click (navegación), el gesto sigue vigente y play() se resuelve.
-    audio.play().catch(() => {});
-    const onFirst = () => {
-      audio.play().then(() => {
-        window.removeEventListener("pointerdown", onFirst);
-        window.removeEventListener("touchstart", onFirst);
-        window.removeEventListener("click", onFirst);
-        window.removeEventListener("keydown", onFirst);
-      }).catch(() => {});
-    };
-    window.addEventListener("pointerdown", onFirst);
-    window.addEventListener("touchstart", onFirst);
-    window.addEventListener("click", onFirst);
-    window.addEventListener("keydown", onFirst);
+    // Sin música de fondo en SAMURAI (removida por preferencia del usuario).
     return () => {
-      window.removeEventListener("pointerdown", onFirst);
-      window.removeEventListener("touchstart", onFirst);
-      window.removeEventListener("click", onFirst);
-      window.removeEventListener("keydown", onFirst);
       window.removeEventListener("pagehide", stopOnBackground);
       window.removeEventListener("blur", stopOnBackground);
       document.removeEventListener("visibilitychange", stopOnBackground);
@@ -1006,11 +985,7 @@ export function SlotSamuraiGame() {
     };
   }, []);
   useEffect(() => {
-    const audio = getBackgroundTrack();
-    if (!audio) return;
-    audio.muted = muted;
-    if (muted) audio.pause();
-    else audio.play().catch(() => {});
+    // Sin música de fondo: nada que silenciar aquí.
   }, [muted]);
   // Pre-decode todas las imágenes de símbolos al montar para evitar
   // "icono fantasma" durante el primer giro en iOS/Android. Una vez
