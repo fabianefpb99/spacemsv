@@ -96,6 +96,7 @@ const TIER_GLOW: Record<WinTier, string> = {
 
 /* Weighted random fillers for the spinning strip */
 const SPIN_FILLER_COUNT = 18; // tiles above the final 3
+const BGM_VOLUME = 0.0648; // dos rebajas de 10 % respecto al original 0.08
 function pickRandomFillers(n: number): string[] {
   const totalWeight = SYMBOLS.reduce((a, s) => a + s.weight, 0);
   const out: string[] = [];
@@ -999,7 +1000,7 @@ export function SlotSamuraiGame() {
     window.addEventListener("blur", stopOnBackground);
     document.addEventListener("visibilitychange", stopOnBackground);
 
-    const BGM_VOLUME = 0.072; // 10 % más bajo que el anterior 0.08
+    
     const startBgm = () => {
       bgmRef.current?.stop();
       bgmRef.current = playSound(samuraiBgmUrl, {
@@ -1032,7 +1033,7 @@ export function SlotSamuraiGame() {
   useEffect(() => {
     setAudioMuted(muted);
     if (!bgmRef.current) return;
-    bgmRef.current.setVolume(muted ? 0 : 0.072, 0);
+    bgmRef.current.setVolume(muted ? 0 : BGM_VOLUME, 0);
   }, [muted]);
   // Pre-decode todas las imágenes de símbolos al montar para evitar
   // "icono fantasma" durante el primer giro en iOS/Android. Una vez
