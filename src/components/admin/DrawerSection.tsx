@@ -10,6 +10,7 @@ import {
   type DrawerSettings,
 } from "@/lib/admin/drawer-content.functions";
 import { adminUploadHomeImage } from "@/lib/admin/home-content.functions";
+import { compressImageFile } from "@/lib/admin/image-compress";
 import { Panel } from "./shared";
 
 async function fileToBase64(file: File) {
@@ -56,7 +57,8 @@ export function DrawerSection() {
   async function handleUpload(file: File) {
     if (!draft) return;
     try {
-      const { base64, type, name } = await fileToBase64(file);
+      const compressed = await compressImageFile(file);
+      const { base64, type, name } = await fileToBase64(compressed);
       const res = await uploadFn({
         data: { filename: name, content_type: type, data_base64: base64 },
       });
