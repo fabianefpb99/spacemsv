@@ -2114,6 +2114,7 @@ export type Database = {
           invited: number
         }[]
       }
+      get_round_server_seed: { Args: { _round_id: string }; Returns: string }
       get_today_top_arena: {
         Args: { p_limit?: number }
         Returns: {
