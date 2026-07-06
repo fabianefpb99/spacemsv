@@ -538,7 +538,11 @@ function Reel({
       <div
         ref={innerRef}
         className="absolute inset-x-0 top-0 flex flex-col will-change-transform"
-        style={{ transform: "translateY(0)" }}
+        style={{
+          transform: "translate3d(0,0,0)",
+          contain: "layout paint size",
+          backfaceVisibility: "hidden",
+        }}
       >
         {strip.map((sid, i) => {
           const s = SYMBOLS[SYMBOL_INDEX.get(sid)!];
