@@ -978,6 +978,9 @@ export function SlotSamuraiGame() {
     document.addEventListener("visibilitychange", stopOnBackground);
     const audio = setBackgroundTrack(samuraiBgmUrl, { volume: 0.14, loop: true });
     if (!audio) return;
+    // Intento inmediato: si el usuario acaba de venir de otra pantalla con
+    // un click (navegación), el gesto sigue vigente y play() se resuelve.
+    audio.play().catch(() => {});
     const onFirst = () => {
       audio.play().catch(() => {});
       window.removeEventListener("pointerdown", onFirst);
