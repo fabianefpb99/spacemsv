@@ -590,7 +590,6 @@ export function HomePage() {
 
     const onGesture = () => {
       start();
-      cleanupListeners();
     };
     const cleanupListeners = () => {
       window.removeEventListener("pointerdown", onGesture);

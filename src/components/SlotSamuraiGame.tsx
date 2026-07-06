@@ -982,11 +982,12 @@ export function SlotSamuraiGame() {
     // un click (navegación), el gesto sigue vigente y play() se resuelve.
     audio.play().catch(() => {});
     const onFirst = () => {
-      audio.play().catch(() => {});
-      window.removeEventListener("pointerdown", onFirst);
-      window.removeEventListener("touchstart", onFirst);
-      window.removeEventListener("click", onFirst);
-      window.removeEventListener("keydown", onFirst);
+      audio.play().then(() => {
+        window.removeEventListener("pointerdown", onFirst);
+        window.removeEventListener("touchstart", onFirst);
+        window.removeEventListener("click", onFirst);
+        window.removeEventListener("keydown", onFirst);
+      }).catch(() => {});
     };
     window.addEventListener("pointerdown", onFirst);
     window.addEventListener("touchstart", onFirst);
