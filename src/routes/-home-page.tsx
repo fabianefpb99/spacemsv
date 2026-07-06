@@ -536,81 +536,38 @@ export function HomePage() {
     plays = plays.filter((t) => now - t < ONE_HOUR);
     if (plays.length >= MAX_PER_HOUR) return;
 
-    const TARGET_VOLUME = 0.45;
+    const TARGET_VOLUME = 0.15;
     const STOP_AT_MS = 12300;
     const JS_FADE_MS = 6000; // 5s nativo del archivo + 1s adelantado por JS
     const FADE_START_MS = STOP_AT_MS - JS_FADE_MS;
 
-    let audio: HTMLAudioElement | null = null;
-    let tFade: ReturnType<typeof setTimeout> | null = null;
-    let tStop: ReturnType<typeof setTimeout> | null = null;
-    let raf: number | null = null;
-    let started = false;
-    let disposed = false;
+    // Web Audio: respeta volumen en iOS (HTMLAudio lo ignora).
+    const handle = playSound(casinoIntro.url, {
+      volume: TARGET_VOLUME,
+      pauseOnHidden: true,
+    });
 
-    const stopAudio = (fadeMs = 450) => {
-      const a = audio;
-      if (!a) return;
-      if (raf) cancelAnimationFrame(raf);
-      const from = a.volume;
-      const startAt = performance.now();
-      const tick = (ts: number) => {
-        const p = Math.min(1, (ts - startAt) / fadeMs);
-        a.volume = Math.max(0, from * (1 - p));
-        if (p < 1) raf = requestAnimationFrame(tick);
-        else {
-          try { a.pause(); a.currentTime = 0; a.src = ""; } catch { /* ignore */ }
-        }
-      };
-      raf = requestAnimationFrame(tick);
-    };
+    // Marcamos consumo en cuanto disparamos: si el usuario cierra la pestaña
+    // igual cuenta como una reproducción dentro de la hora.
+    try {
+      const stored = JSON.parse(localStorage.getItem(KEY) || "[]");
+      const arr = Array.isArray(stored) ? stored : [];
+      arr.push(Date.now());
+      localStorage.setItem(KEY, JSON.stringify(arr));
+    } catch { /* ignore */ }
 
-    const start = () => {
-      if (started || disposed) return;
-      started = true;
-      const a = new Audio(casinoIntroUrl);
-      a.preload = "auto";
-      a.volume = TARGET_VOLUME;
-      audio = a;
-      a.play().then(() => {
-        if (disposed) { stopAudio(0); return; }
-        // Solo consumimos cuota cuando el navegador confirma reproducción.
-        try {
-          const stored = JSON.parse(localStorage.getItem(KEY) || "[]");
-          const arr = Array.isArray(stored) ? stored : [];
-          arr.push(Date.now());
-          localStorage.setItem(KEY, JSON.stringify(arr));
-        } catch { /* ignore */ }
-        tFade = setTimeout(() => stopAudio(JS_FADE_MS), Math.max(0, FADE_START_MS));
-        tStop = setTimeout(() => stopAudio(0), STOP_AT_MS);
-      }).catch(() => {
-        started = false;
-        audio = null;
-      });
-    };
-
-    const onGesture = () => {
-      start();
-    };
-    const cleanupListeners = () => {
-      window.removeEventListener("pointerdown", onGesture);
-      window.removeEventListener("touchstart", onGesture);
-      window.removeEventListener("click", onGesture);
-      window.removeEventListener("keydown", onGesture);
-    };
-    start();
-    window.addEventListener("pointerdown", onGesture, { once: true });
-    window.addEventListener("touchstart", onGesture, { once: true });
-    window.addEventListener("click", onGesture, { once: true });
-    window.addEventListener("keydown", onGesture, { once: true });
+    const tFade = setTimeout(() => {
+      handle.setVolume(0, JS_FADE_MS);
+    }, Math.max(0, FADE_START_MS));
+    const tStop = setTimeout(() => {
+      handle.stop();
+    }, STOP_AT_MS);
 
     return () => {
-      disposed = true;
-      cleanupListeners();
-      if (tFade) clearTimeout(tFade);
-      if (tStop) clearTimeout(tStop);
+      clearTimeout(tFade);
+      clearTimeout(tStop);
       // Fade-out suave al desmontar para evitar cortes abruptos.
-      stopAudio(450);
+      handle.stop(450);
     };
   }, []);
 
