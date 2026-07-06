@@ -1647,7 +1647,7 @@ function SamuraiHero({
       >
         {!showEvent && (
           <div
-            className="flex w-full items-center justify-center gap-3 px-4"
+            className="grid w-full grid-cols-2 place-items-center gap-x-4 gap-y-1 px-4"
             style={{
               opacity: showPreview ? 1 : 0,
               transition: "opacity 0.45s ease",
@@ -1655,19 +1655,24 @@ function SamuraiHero({
             }}
             aria-hidden="true"
           >
-            {(["win", "big", "super", "mega"] as const).map((k) => (
-              <img
-                key={k}
-                src={WIN_LOGOS[k]}
-                alt=""
-                className="h-[54px] w-auto select-none"
-                style={{
-                  filter:
-                    "drop-shadow(0 2px 5px rgba(0,0,0,0.75)) drop-shadow(0 0 6px rgba(255,90,30,0.35))",
-                }}
-                draggable={false}
-              />
-            ))}
+            {([
+              ["win", "big"],
+              ["super", "mega"],
+            ] as const).map((row) =>
+              row.map((k) => (
+                <img
+                  key={k}
+                  src={WIN_LOGOS[k]}
+                  alt=""
+                  className="h-[40px] w-auto max-w-[48%] select-none"
+                  style={{
+                    filter:
+                      "drop-shadow(0 2px 5px rgba(0,0,0,0.75)) drop-shadow(0 0 6px rgba(255,90,30,0.35))",
+                  }}
+                  draggable={false}
+                />
+              ))
+            )}
           </div>
         )}
         {showEvent && (
