@@ -1602,6 +1602,13 @@ function SamuraiHero({
 }) {
   const tier = spinning ? "idle" : classifySamuraiEvent(lastWin, bet);
   const showEvent = tier !== "idle" && lastWin > 0;
+  // Preview de los 4 logos WIN antes de la primera girada. Se desvanece
+  // en cuanto el usuario dispara el primer spin. Si cierra el juego y
+  // vuelve (componente re-monta), vuelve a mostrarse.
+  const [showPreview, setShowPreview] = useState(true);
+  useEffect(() => {
+    if (spinning || lastWin > 0) setShowPreview(false);
+  }, [spinning, lastWin]);
   // Pre-decodifica los 4 logos de tier al montar el hero. Sin esto, Android
   // gama baja decodifica el WebP en el momento del primer BIG/MEGA/SUPER y
   // eso genera un delay perceptible antes de que el logo aparezca.
@@ -1638,6 +1645,31 @@ function SamuraiHero({
         className="-mt-6 flex h-[98px] w-full flex-col items-center justify-start"
         aria-hidden={!showEvent}
       >
+        {!showEvent && (
+          <div
+            className="flex w-full items-center justify-center gap-3 px-4"
+            style={{
+              opacity: showPreview ? 1 : 0,
+              transition: "opacity 0.45s ease",
+              pointerEvents: "none",
+            }}
+            aria-hidden="true"
+          >
+            {(["win", "big", "super", "mega"] as const).map((k) => (
+              <img
+                key={k}
+                src={WIN_LOGOS[k]}
+                alt=""
+                className="h-[54px] w-auto select-none"
+                style={{
+                  filter:
+                    "drop-shadow(0 2px 5px rgba(0,0,0,0.75)) drop-shadow(0 0 6px rgba(255,90,30,0.35))",
+                }}
+                draggable={false}
+              />
+            ))}
+          </div>
+        )}
         {showEvent && (
           <div
             className="flex flex-col items-center"
