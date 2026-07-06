@@ -14,6 +14,7 @@ import gameBlackjackVipAsset from "@/assets/game-blackjack-vip.png.asset.json";
 import gameRuletaAsset from "@/assets/game-ruleta.png.asset.json";
 import gameArenaAsset from "@/assets/game-arena.png.asset.json";
 import chickenLoadAsset from "@/assets/game-chicken.webp.asset.json";
+import gameSamuraiAsset from "@/assets/samurai/samurai-bg.webp.asset.json";
 const gameSpaceman = gameSpacemanAsset.url;
 const gameSlotMafia = gameSlotMafiaAsset.url;
 const gameMines = gameMinesAsset.url;
@@ -23,6 +24,7 @@ const gameBlackjackVip = gameBlackjackVipAsset.url;
 const gameRuleta = gameRuletaAsset.url;
 const gameArena = gameArenaAsset.url;
 const gameChicken = chickenLoadAsset.url;
+const gameSamurai = gameSamuraiAsset.url;
 
 const ASSETS: { src: string; type: "image" | "audio" }[] = [
   { src: bgImage, type: "image" },
@@ -59,7 +61,7 @@ function preloadAsset(asset: { src: string; type: "image" | "audio" }): Promise<
   });
 }
 
-export function LoadingScreen({ children, variant = "rocket" }: { children: React.ReactNode; variant?: "rocket" | "mine" | "slot" | "dice" | "blackjack" | "blackjack_vip" | "roulette" | "arena" | "chicken" }) {
+export function LoadingScreen({ children, variant = "rocket" }: { children: React.ReactNode; variant?: "rocket" | "mine" | "slot" | "samurai" | "dice" | "blackjack" | "blackjack_vip" | "roulette" | "arena" | "chicken" }) {
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
   const [targetProgress, setTargetProgress] = useState(0);
@@ -74,6 +76,7 @@ export function LoadingScreen({ children, variant = "rocket" }: { children: Reac
     const variantImage =
       variant === "mine" ? gameMines
       : variant === "slot" ? gameSlotMafia
+      : variant === "samurai" ? gameSamurai
       : variant === "dice" ? gameDice
       : variant === "blackjack" ? gameBlackjack
       : variant === "blackjack_vip" ? gameBlackjackVip
@@ -176,6 +179,7 @@ export function LoadingScreen({ children, variant = "rocket" }: { children: Reac
             src={
               variant === "mine" ? gameMines
               : variant === "slot" ? gameSlotMafia
+              : variant === "samurai" ? gameSamurai
               : variant === "dice" ? gameDice
               : variant === "blackjack" ? gameBlackjack
               : variant === "blackjack_vip" ? gameBlackjackVip

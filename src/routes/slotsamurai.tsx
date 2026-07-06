@@ -20,7 +20,7 @@ function Page() {
   useForceDarkTheme();
   return (
     <RequireAuth>
-      <LoadingScreen variant="slot">
+      <LoadingScreen variant="samurai">
         <h1 className="sr-only">Samurai Legend — BETSPACE Casino</h1>
         <SlotSamuraiGame />
       </LoadingScreen>
