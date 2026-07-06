@@ -6,8 +6,7 @@ import { PromoPopup } from "@/components/PromoPopup";
 import { MascotFloater } from "@/components/MascotFloater";
 import { BrandLoader } from "@/components/BrandLoader";
 import { SkeletonImage } from "@/components/SkeletonImage";
-import { stopAllGameAudio, getCtx } from "@/lib/gameAudio";
-import { playSound } from "@/lib/webAudioPlayer";
+import { stopAllGameAudio } from "@/lib/gameAudio";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { NotificationBell } from "@/components/admin/NotificationBell";
 import { useMe } from "@/hooks/useMe";
@@ -81,7 +80,7 @@ import blackjackPromo from "@/assets/blackjack-promo.png.asset.json";
 import blackjackBanner from "@/assets/blackjack-banner.jpg";
 import jackpotBanner from "@/assets/jackpot-banner.jpg";
 import ruletaBanner from "@/assets/ruleta-banner.jpg";
-import casinoIntro from "@/assets/audio/casino-intro.mp3.asset.json";
+import casinoIntroUrl from "@/assets/audio/casino-intro-fixed.mp3";
 import mundialHeroAsset from "@/assets/mundial-hero.webp.asset.json";
 
 function formatCOP(n: number) {
@@ -536,79 +535,81 @@ export function HomePage() {
     plays = plays.filter((t) => now - t < ONE_HOUR);
     if (plays.length >= MAX_PER_HOUR) return;
 
-    const TARGET_VOLUME = 0.15;
+    const TARGET_VOLUME = 0.45;
     const STOP_AT_MS = 12300;
     const JS_FADE_MS = 6000; // 5s nativo del archivo + 1s adelantado por JS
     const FADE_START_MS = STOP_AT_MS - JS_FADE_MS;
 
-    let handle: ReturnType<typeof playSound> | null = null;
+    let audio: HTMLAudioElement | null = null;
     let tFade: ReturnType<typeof setTimeout> | null = null;
     let tStop: ReturnType<typeof setTimeout> | null = null;
+    let raf: number | null = null;
     let started = false;
     let disposed = false;
+
+    const stopAudio = (fadeMs = 450) => {
+      const a = audio;
+      if (!a) return;
+      if (raf) cancelAnimationFrame(raf);
+      const from = a.volume;
+      const startAt = performance.now();
+      const tick = (ts: number) => {
+        const p = Math.min(1, (ts - startAt) / fadeMs);
+        a.volume = Math.max(0, from * (1 - p));
+        if (p < 1) raf = requestAnimationFrame(tick);
+        else {
+          try { a.pause(); a.currentTime = 0; a.src = ""; } catch { /* ignore */ }
+        }
+      };
+      raf = requestAnimationFrame(tick);
+    };
 
     const start = () => {
       if (started || disposed) return;
       started = true;
-      // Web Audio: respeta volumen en iOS (HTMLAudio lo ignora).
-      handle = playSound(casinoIntro.url, {
-        volume: TARGET_VOLUME,
-        pauseOnHidden: true,
+      const a = new Audio(casinoIntroUrl);
+      a.preload = "auto";
+      a.volume = TARGET_VOLUME;
+      audio = a;
+      a.play().then(() => {
+        if (disposed) { stopAudio(0); return; }
+        // Solo consumimos cuota cuando el navegador confirma reproducción.
+        try {
+          const stored = JSON.parse(localStorage.getItem(KEY) || "[]");
+          const arr = Array.isArray(stored) ? stored : [];
+          arr.push(Date.now());
+          localStorage.setItem(KEY, JSON.stringify(arr));
+        } catch { /* ignore */ }
+        tFade = setTimeout(() => stopAudio(JS_FADE_MS), Math.max(0, FADE_START_MS));
+        tStop = setTimeout(() => stopAudio(0), STOP_AT_MS);
+      }).catch(() => {
+        started = false;
+        audio = null;
       });
-      // Solo consumimos cuota cuando realmente arrancamos la reproducción.
-      try {
-        const stored = JSON.parse(localStorage.getItem(KEY) || "[]");
-        const arr = Array.isArray(stored) ? stored : [];
-        arr.push(Date.now());
-        localStorage.setItem(KEY, JSON.stringify(arr));
-      } catch { /* ignore */ }
-      tFade = setTimeout(() => {
-        handle?.setVolume(0, JS_FADE_MS);
-      }, Math.max(0, FADE_START_MS));
-      tStop = setTimeout(() => {
-        handle?.stop();
-      }, STOP_AT_MS);
     };
 
-    // Si el AudioContext ya está corriendo (usuario navegó desde otra pantalla
-    // con gesto previo, o navegador sin restricción de autoplay), arrancamos ya.
-    // Si no, esperamos al primer gesto del usuario en esta pestaña.
-    const ctx = getCtx();
-    if (ctx && ctx.state === "running") {
+    const onGesture = () => {
       start();
-    } else {
-      const onGesture = () => {
-        const c = getCtx();
-        if (c && c.state !== "running") {
-          c.resume().catch(() => {});
-        }
-        start();
-        cleanupListeners();
-      };
-      const cleanupListeners = () => {
-        window.removeEventListener("pointerdown", onGesture);
-        window.removeEventListener("touchstart", onGesture);
-        window.removeEventListener("keydown", onGesture);
-      };
-      window.addEventListener("pointerdown", onGesture, { once: true });
-      window.addEventListener("touchstart", onGesture, { once: true });
-      window.addEventListener("keydown", onGesture, { once: true });
-
-      return () => {
-        disposed = true;
-        cleanupListeners();
-        if (tFade) clearTimeout(tFade);
-        if (tStop) clearTimeout(tStop);
-        handle?.stop(450);
-      };
-    }
+    };
+    const cleanupListeners = () => {
+      window.removeEventListener("pointerdown", onGesture);
+      window.removeEventListener("touchstart", onGesture);
+      window.removeEventListener("click", onGesture);
+      window.removeEventListener("keydown", onGesture);
+    };
+    start();
+    window.addEventListener("pointerdown", onGesture, { once: true });
+    window.addEventListener("touchstart", onGesture, { once: true });
+    window.addEventListener("click", onGesture, { once: true });
+    window.addEventListener("keydown", onGesture, { once: true });
 
     return () => {
       disposed = true;
+      cleanupListeners();
       if (tFade) clearTimeout(tFade);
       if (tStop) clearTimeout(tStop);
       // Fade-out suave al desmontar para evitar cortes abruptos.
-      handle?.stop(450);
+      stopAudio(450);
     };
   }, []);
 
