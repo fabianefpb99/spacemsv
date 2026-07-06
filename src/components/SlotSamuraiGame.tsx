@@ -976,8 +976,28 @@ export function SlotSamuraiGame() {
     window.addEventListener("pagehide", stopOnBackground);
     window.addEventListener("blur", stopOnBackground);
     document.addEventListener("visibilitychange", stopOnBackground);
-    // Sin música de fondo en SAMURAI (removida por preferencia del usuario).
+    // Música de fondo SAMURAI (mismo patrón que Slot Mafia).
+    const audio = setBackgroundTrack(samuraiBgmUrl, { volume: 0.55, loop: true });
+    if (!audio) {
+      return () => {
+        window.removeEventListener("pagehide", stopOnBackground);
+        window.removeEventListener("blur", stopOnBackground);
+        document.removeEventListener("visibilitychange", stopOnBackground);
+        clearBackgroundTrack();
+        stopReelLoop();
+        window.removeEventListener(AUDIO_STOP_ALL_EVENT, onStopAll);
+      };
+    }
+    const onFirst = () => {
+      audio.play().catch(() => {});
+      window.removeEventListener("pointerdown", onFirst);
+      window.removeEventListener("keydown", onFirst);
+    };
+    window.addEventListener("pointerdown", onFirst);
+    window.addEventListener("keydown", onFirst);
     return () => {
+      window.removeEventListener("pointerdown", onFirst);
+      window.removeEventListener("keydown", onFirst);
       window.removeEventListener("pagehide", stopOnBackground);
       window.removeEventListener("blur", stopOnBackground);
       document.removeEventListener("visibilitychange", stopOnBackground);
@@ -987,7 +1007,11 @@ export function SlotSamuraiGame() {
     };
   }, []);
   useEffect(() => {
-    // Sin música de fondo: nada que silenciar aquí.
+    const audio = getBackgroundTrack();
+    if (!audio) return;
+    audio.muted = muted;
+    if (muted) audio.pause();
+    else audio.play().catch(() => {});
   }, [muted]);
   // Pre-decode todas las imágenes de símbolos al montar para evitar
   // "icono fantasma" durante el primer giro en iOS/Android. Una vez
