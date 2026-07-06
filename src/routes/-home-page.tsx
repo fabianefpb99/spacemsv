@@ -81,7 +81,7 @@ import blackjackPromo from "@/assets/blackjack-promo.png.asset.json";
 import blackjackBanner from "@/assets/blackjack-banner.jpg";
 import jackpotBanner from "@/assets/jackpot-banner.jpg";
 import ruletaBanner from "@/assets/ruleta-banner.jpg";
-import casinoIntro from "@/assets/audio/casino-intro.mp3.asset.json";
+import casinoIntroUrl from "@/assets/audio/casino-intro-fixed.mp3";
 import mundialHeroAsset from "@/assets/mundial-hero.webp.asset.json";
 
 function formatCOP(n: number) {
@@ -536,7 +536,7 @@ export function HomePage() {
     plays = plays.filter((t) => now - t < ONE_HOUR);
     if (plays.length >= MAX_PER_HOUR) return;
 
-    const TARGET_VOLUME = 0.15;
+    const TARGET_VOLUME = 0.26;
     const STOP_AT_MS = 12300;
     const JS_FADE_MS = 6000; // 5s nativo del archivo + 1s adelantado por JS
     const FADE_START_MS = STOP_AT_MS - JS_FADE_MS;
@@ -551,7 +551,7 @@ export function HomePage() {
       if (started || disposed) return;
       started = true;
       // Web Audio: respeta volumen en iOS (HTMLAudio lo ignora).
-      handle = playSound(casinoIntro.url, {
+      handle = playSound(casinoIntroUrl, {
         volume: TARGET_VOLUME,
         pauseOnHidden: true,
       });
