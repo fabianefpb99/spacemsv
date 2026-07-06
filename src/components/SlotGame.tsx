@@ -1,6 +1,7 @@
 import { AuthControl } from "@/components/auth/AuthControl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useVisibleInterval } from "@/hooks/useVisibleInterval";
+import { isAndroid } from "@/lib/platform";
 import { FitText } from "@/components/ui/fit-text";
 import { BetAmount } from "@/components/games/BetAmount";
 import { flushSync } from "react-dom";
@@ -80,6 +81,10 @@ const TIER_GLOW: Record<WinTier, string> = {
 
 /* Weighted random fillers for the spinning strip */
 const SPIN_FILLER_COUNT = 18; // tiles above the final 3
+// En Android reducimos la longitud del strip de giro para bajar la
+// presión sobre el compositor (menos tiles a rasterizar por rodillo).
+const ANDROID = isAndroid();
+const ANDROID_FILLER_COUNT = 10;
 function pickRandomFillers(n: number): string[] {
   const totalWeight = SYMBOLS.reduce((a, s) => a + s.weight, 0);
   const out: string[] = [];
@@ -425,7 +430,7 @@ function Reel({
   useEffect(() => {
     if (!spinning) return;
     const token = ++spinTokenRef.current;
-    const fillers = pickRandomFillers(SPIN_FILLER_COUNT);
+    const fillers = pickRandomFillers(ANDROID ? ANDROID_FILLER_COUNT : SPIN_FILLER_COUNT);
     // Start the strip with what's already on screen so the swap is invisible,
     // then fillers, then the new landing symbols.
     const startSyms = displayedRef.current;
@@ -533,7 +538,11 @@ function Reel({
       <div
         ref={innerRef}
         className="absolute inset-x-0 top-0 flex flex-col will-change-transform"
-        style={{ transform: "translateY(0)" }}
+        style={{
+          transform: "translate3d(0,0,0)",
+          contain: "layout paint size",
+          backfaceVisibility: "hidden",
+        }}
       >
         {strip.map((sid, i) => {
           const s = SYMBOLS[SYMBOL_INDEX.get(sid)!];
@@ -575,8 +584,9 @@ function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boole
         boxShadow: highlight
           ? `inset 0 0 0 ${ringWidth}px rgba(${glow},0.95), ${outerShadow}`
           : undefined,
-        transition: "box-shadow 200ms ease, background 200ms ease",
+        transition: highlight ? "box-shadow 200ms ease" : undefined,
         overflow: "hidden",
+        contain: "paint",
       }}
     >
       {/* Llamas realistas detrás del símbolo */}
@@ -597,10 +607,16 @@ function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boole
           width: "96%",
           height: "96%",
           objectFit: "contain",
-          transform: scale !== 1 ? `scale(${scale})` : undefined,
-          filter: highlight
-            ? `drop-shadow(0 0 10px rgba(${glow},0.95)) drop-shadow(0 0 20px rgba(${glow},0.7))`
-            : `drop-shadow(0 4px 6px rgba(0,0,0,0.55)) drop-shadow(0 0 8px rgba(${sym.glow},0.25))`,
+          transform: `translateZ(0)${scale !== 1 ? ` scale(${scale})` : ""}`,
+          // En Android usamos un solo drop-shadow simple: los dobles
+          // drop-shadow se rasterizan en CPU y hunden los FPS del giro.
+          filter: ANDROID
+            ? (highlight
+                ? `drop-shadow(0 0 8px rgba(${glow},0.9))`
+                : `drop-shadow(0 3px 4px rgba(0,0,0,0.55))`)
+            : (highlight
+                ? `drop-shadow(0 0 10px rgba(${glow},0.95)) drop-shadow(0 0 20px rgba(${glow},0.7))`
+                : `drop-shadow(0 4px 6px rgba(0,0,0,0.55)) drop-shadow(0 0 8px rgba(${sym.glow},0.25))`),
           animation: animName,
         }}
       />
