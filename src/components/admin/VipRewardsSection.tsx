@@ -15,6 +15,7 @@ import { VipBadge } from "@/components/vip/VipBadge";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { compressImageFile } from "@/lib/admin/image-compress";
 
 const SUBS: VipSub[] = ["V", "IV", "III", "II", "I"];
 
@@ -114,13 +115,14 @@ function RewardRow({ row }: { row: VipRankRewardRow }) {
 
   async function handleUpload(file: File) {
     if (!user?.id) return toast.error("Sesión no detectada");
-    if (file.size > 2 * 1024 * 1024) return toast.error("Máximo 2 MB. Recomendado 512×512 PNG.");
+    if (file.size > 10 * 1024 * 1024) return toast.error("Máximo 10 MB.");
     setUploading(true);
-    const ext = file.name.split(".").pop() || "png";
+    const compressed = await compressImageFile(file, { maxDimension: 512, quality: 0.85 });
+    const ext = (compressed.name.split(".").pop() || "webp").toLowerCase();
     const path = `${user.id}/${row.rank}-${row.sub_division}-${Date.now()}.${ext}`;
     const { error: upErr } = await supabase.storage
       .from("vip-rewards")
-      .upload(path, file, { contentType: file.type, upsert: false });
+      .upload(path, compressed, { contentType: compressed.type, upsert: false });
     if (upErr) {
       setUploading(false);
       return toast.error(upErr.message);

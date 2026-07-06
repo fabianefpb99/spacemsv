@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Panel } from "./shared";
 import { MISSION_ICONS, getMissionIconUrl, type MissionIconKey } from "@/lib/mission-icons";
 import { useAuth } from "@/hooks/useAuth";
+import { compressImageFile } from "@/lib/admin/image-compress";
 
 type MissionType = "daily" | "weekly" | "special";
 type RewardKind = "bonus" | "spins" | "xp" | "avatar";
@@ -282,16 +283,17 @@ function MissionEditor({
       toast.error("Sesión no detectada");
       return;
     }
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error("Máximo 2 MB. Recomendado 512×512 PNG.");
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Máximo 10 MB.");
       return;
     }
     setUploading(true);
-    const ext = file.name.split(".").pop() || "png";
+    const compressed = await compressImageFile(file, { maxDimension: 512, quality: 0.85 });
+    const ext = (compressed.name.split(".").pop() || "webp").toLowerCase();
     const path = `${userId}/${Date.now()}.${ext}`;
     const { error: upErr } = await supabase.storage
       .from("mission-rewards")
-      .upload(path, file, { contentType: file.type, upsert: false });
+      .upload(path, compressed, { contentType: compressed.type, upsert: false });
     if (upErr) {
       setUploading(false);
       toast.error(upErr.message);
