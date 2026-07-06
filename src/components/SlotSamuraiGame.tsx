@@ -949,6 +949,7 @@ export function SlotSamuraiGame() {
 
   // Sonidos por umbral de premio (HTMLAudio precargado, controlado y silenciable).
   const winSampleRef = useRef<HTMLAudioElement | null>(null);
+  const bgmRef = useRef<SoundHandle | null>(null);
   const stopWinSample = useCallback(() => {
     const a = winSampleRef.current;
     if (!a) return;
