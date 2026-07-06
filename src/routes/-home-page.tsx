@@ -541,33 +541,74 @@ export function HomePage() {
     const JS_FADE_MS = 6000; // 5s nativo del archivo + 1s adelantado por JS
     const FADE_START_MS = STOP_AT_MS - JS_FADE_MS;
 
-    // Web Audio: respeta volumen en iOS (HTMLAudio lo ignora).
-    const handle = playSound(casinoIntro.url, {
-      volume: TARGET_VOLUME,
-      pauseOnHidden: true,
-    });
+    let handle: ReturnType<typeof playSound> | null = null;
+    let tFade: ReturnType<typeof setTimeout> | null = null;
+    let tStop: ReturnType<typeof setTimeout> | null = null;
+    let started = false;
+    let disposed = false;
 
-    // Marcamos consumo en cuanto disparamos: si el usuario cierra la pestaña
-    // igual cuenta como una reproducción dentro de la hora.
-    try {
-      const stored = JSON.parse(localStorage.getItem(KEY) || "[]");
-      const arr = Array.isArray(stored) ? stored : [];
-      arr.push(Date.now());
-      localStorage.setItem(KEY, JSON.stringify(arr));
-    } catch { /* ignore */ }
+    const start = () => {
+      if (started || disposed) return;
+      started = true;
+      // Web Audio: respeta volumen en iOS (HTMLAudio lo ignora).
+      handle = playSound(casinoIntro.url, {
+        volume: TARGET_VOLUME,
+        pauseOnHidden: true,
+      });
+      // Solo consumimos cuota cuando realmente arrancamos la reproducción.
+      try {
+        const stored = JSON.parse(localStorage.getItem(KEY) || "[]");
+        const arr = Array.isArray(stored) ? stored : [];
+        arr.push(Date.now());
+        localStorage.setItem(KEY, JSON.stringify(arr));
+      } catch { /* ignore */ }
+      tFade = setTimeout(() => {
+        handle?.setVolume(0, JS_FADE_MS);
+      }, Math.max(0, FADE_START_MS));
+      tStop = setTimeout(() => {
+        handle?.stop();
+      }, STOP_AT_MS);
+    };
 
-    const tFade = setTimeout(() => {
-      handle.setVolume(0, JS_FADE_MS);
-    }, Math.max(0, FADE_START_MS));
-    const tStop = setTimeout(() => {
-      handle.stop();
-    }, STOP_AT_MS);
+    // Si el AudioContext ya está corriendo (usuario navegó desde otra pantalla
+    // con gesto previo, o navegador sin restricción de autoplay), arrancamos ya.
+    // Si no, esperamos al primer gesto del usuario en esta pestaña.
+    const ctx = getCtx();
+    if (ctx && ctx.state === "running") {
+      start();
+    } else {
+      const onGesture = () => {
+        const c = getCtx();
+        if (c && c.state !== "running") {
+          c.resume().catch(() => {});
+        }
+        start();
+        cleanupListeners();
+      };
+      const cleanupListeners = () => {
+        window.removeEventListener("pointerdown", onGesture);
+        window.removeEventListener("touchstart", onGesture);
+        window.removeEventListener("keydown", onGesture);
+      };
+      window.addEventListener("pointerdown", onGesture, { once: true });
+      window.addEventListener("touchstart", onGesture, { once: true });
+      window.addEventListener("keydown", onGesture, { once: true });
+
+      return () => {
+        disposed = true;
+        cleanupListeners();
+        if (tFade) clearTimeout(tFade);
+        if (tStop) clearTimeout(tStop);
+        handle?.stop(450);
+      };
+    }
 
     return () => {
-      clearTimeout(tFade);
-      clearTimeout(tStop);
+      disposed = true;
+      if (tFade) clearTimeout(tFade);
+      if (tStop) clearTimeout(tStop);
       // Fade-out suave al desmontar para evitar cortes abruptos.
-      handle.stop(450);
+      handle?.stop(450);
     };
   }, []);
 
