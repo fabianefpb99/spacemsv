@@ -538,11 +538,10 @@ function Reel({
       <div
         ref={innerRef}
         className="absolute inset-x-0 top-0 flex flex-col will-change-transform"
-        style={{
+        style={ANDROID ? {
           transform: "translate3d(0,0,0)",
-          contain: "layout paint size",
           backfaceVisibility: "hidden",
-        }}
+        } : undefined}
       >
         {strip.map((sid, i) => {
           const s = SYMBOLS[SYMBOL_INDEX.get(sid)!];
@@ -586,7 +585,7 @@ function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boole
           : undefined,
         transition: highlight ? "box-shadow 200ms ease" : undefined,
         overflow: "hidden",
-        contain: "paint",
+        contain: ANDROID ? "paint" : undefined,
       }}
     >
       {/* Llamas realistas detrás del símbolo */}
@@ -607,7 +606,9 @@ function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boole
           width: "96%",
           height: "96%",
           objectFit: "contain",
-          transform: `translateZ(0)${scale !== 1 ? ` scale(${scale})` : ""}`,
+          transform: ANDROID
+            ? `translateZ(0)${scale !== 1 ? ` scale(${scale})` : ""}`
+            : (scale !== 1 ? `scale(${scale})` : undefined),
           // En Android usamos un solo drop-shadow simple: los dobles
           // drop-shadow se rasterizan en CPU y hunden los FPS del giro.
           filter: ANDROID
