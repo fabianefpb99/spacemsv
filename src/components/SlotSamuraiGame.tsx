@@ -1645,13 +1645,13 @@ function SamuraiHero({
         className="-mt-6 flex h-[98px] w-full flex-col items-center justify-start"
         aria-hidden={!showEvent}
       >
-        {showPreview && !showEvent && (
+        {!showEvent && (
           <div
             className="flex w-full items-center justify-center gap-3 px-4"
             style={{
-              animation: "samurai-preview-out 0.45s ease forwards",
-              animationPlayState: spinning || lastWin > 0 ? "running" : "paused",
-              opacity: spinning || lastWin > 0 ? undefined : 1,
+              opacity: showPreview ? 1 : 0,
+              transition: "opacity 0.45s ease",
+              pointerEvents: "none",
             }}
             aria-hidden="true"
           >
