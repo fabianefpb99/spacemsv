@@ -1642,12 +1642,12 @@ function SamuraiHero({
       </div>
       {/* Espacio reservado bajo el logo — el evento WIN aparece aquí sin empujar el layout */}
       <div
-        className="-mt-6 flex h-[98px] w-full flex-col items-center justify-start"
+        className="-mt-6 flex h-[104px] w-full flex-col items-center justify-start"
         aria-hidden={!showEvent}
       >
         {!showEvent && (
           <div
-            className="grid w-full grid-cols-2 place-items-center gap-x-4 gap-y-1 px-4"
+            className="flex w-full flex-col items-center gap-1 px-4"
             style={{
               opacity: showPreview ? 1 : 0,
               transition: "opacity 0.45s ease",
@@ -1655,24 +1655,50 @@ function SamuraiHero({
             }}
             aria-hidden="true"
           >
-            {([
-              ["win", "big"],
-              ["super", "mega"],
-            ] as const).map((row) =>
-              row.map((k) => (
-                <img
-                  key={k}
-                  src={WIN_LOGOS[k]}
-                  alt=""
-                  className="h-[40px] w-auto max-w-[48%] select-none"
-                  style={{
-                    filter:
-                      "drop-shadow(0 2px 5px rgba(0,0,0,0.75)) drop-shadow(0 0 6px rgba(255,90,30,0.35))",
-                  }}
-                  draggable={false}
-                />
-              ))
-            )}
+            <div className="mt-2 flex items-center justify-center gap-4">
+              <img
+                src={WIN_LOGOS.win}
+                alt=""
+                className="h-[46px] w-auto select-none"
+                style={{
+                  filter:
+                    "drop-shadow(0 2px 5px rgba(0,0,0,0.75)) drop-shadow(0 0 6px rgba(255,90,30,0.35))",
+                }}
+                draggable={false}
+              />
+              <img
+                src={WIN_LOGOS.big}
+                alt=""
+                className="h-[46px] w-auto select-none"
+                style={{
+                  filter:
+                    "drop-shadow(0 2px 5px rgba(0,0,0,0.75)) drop-shadow(0 0 6px rgba(255,90,30,0.35))",
+                }}
+                draggable={false}
+              />
+            </div>
+            <div className="flex items-center justify-center gap-4">
+              <img
+                src={WIN_LOGOS.super}
+                alt=""
+                className="h-[46px] w-auto select-none"
+                style={{
+                  filter:
+                    "drop-shadow(0 2px 5px rgba(0,0,0,0.75)) drop-shadow(0 0 6px rgba(255,90,30,0.35))",
+                }}
+                draggable={false}
+              />
+              <img
+                src={WIN_LOGOS.mega}
+                alt=""
+                className="h-[46px] w-auto select-none"
+                style={{
+                  filter:
+                    "drop-shadow(0 2px 5px rgba(0,0,0,0.75)) drop-shadow(0 0 6px rgba(255,90,30,0.35))",
+                }}
+                draggable={false}
+              />
+            </div>
           </div>
         )}
         {showEvent && (
