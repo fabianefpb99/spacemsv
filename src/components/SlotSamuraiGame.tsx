@@ -1465,16 +1465,13 @@ export function SlotSamuraiGame() {
         @keyframes samurai-legend-neon {
           0%, 100% {
             filter:
-              drop-shadow(0 6px 14px rgba(0,0,0,0.75))
-              drop-shadow(0 0 14px rgba(255,90,120,0.35))
-              drop-shadow(0 0 22px rgba(168,85,247,0.25));
+              drop-shadow(0 6px 12px rgba(0,0,0,0.7))
+              drop-shadow(0 0 14px rgba(255,90,120,0.28));
           }
           50% {
             filter:
-              drop-shadow(0 6px 14px rgba(0,0,0,0.75))
-              drop-shadow(0 0 22px rgba(255,90,120,0.65))
-              drop-shadow(0 0 34px rgba(236,72,153,0.55))
-              drop-shadow(0 0 44px rgba(168,85,247,0.4));
+              drop-shadow(0 6px 12px rgba(0,0,0,0.7))
+              drop-shadow(0 0 22px rgba(236,72,153,0.5));
           }
         }
         .samurai-legend-wrap {
@@ -1483,7 +1480,7 @@ export function SlotSamuraiGame() {
           isolation: isolate;
         }
         .samurai-legend-logo {
-          animation: samurai-legend-neon 3.2s ease-in-out infinite;
+          animation: samurai-legend-neon 5s ease-in-out infinite;
           will-change: filter;
           display: block;
         }
@@ -1502,7 +1499,7 @@ export function SlotSamuraiGame() {
           );
           mix-blend-mode: overlay;
           transform: translateX(-120%);
-          animation: samurai-legend-shine 5s ease-in-out infinite;
+          animation: samurai-legend-shine 8s ease-in-out infinite;
           -webkit-mask-image: var(--samurai-mask);
                   mask-image: var(--samurai-mask);
           -webkit-mask-size: contain;
