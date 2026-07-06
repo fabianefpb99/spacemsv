@@ -1642,7 +1642,7 @@ function SamuraiHero({
       </div>
       {/* Espacio reservado bajo el logo — el evento WIN aparece aquí sin empujar el layout */}
       <div
-        className="-mt-6 flex h-[100px] w-full flex-col items-center justify-start"
+        className="-mt-6 flex h-[104px] w-full flex-col items-center justify-start"
         aria-hidden={!showEvent}
       >
         {!showEvent && (
@@ -1655,7 +1655,7 @@ function SamuraiHero({
             }}
             aria-hidden="true"
           >
-            <div className="mt-1 flex items-center justify-center gap-4">
+            <div className="mt-2 flex items-center justify-center gap-4">
               <img
                 src={WIN_LOGOS.win}
                 alt=""
