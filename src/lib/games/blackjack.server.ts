@@ -33,13 +33,13 @@ export type BJBias = {
 };
 
 export const BJ_DEFAULT_BIAS: BJBias = {
-  // Ajuste 2026-07-07: baja el sesgo por defecto. El RTP real venía en ~71% y
-  // queremos acercarlo al target 99.4% sin perder ventaja (con sesgo residual
-  // el player sigue perdiendo esperado ~3-4% por mano). biasFromRtpTarget()
-  // sigue escalando por si un admin baja el rtp_target manualmente.
-  holePct: 8,
-  dealerHitPct: 6,
-  playerBustPct: 5,
+  // Ajuste 2026-07-07 (v3): +3% de ventaja de casa. Subimos cada sesgo
+  // ~3-4 puntos: la dealer roba más carta alta en el hole, cierra más
+  // seguido en [17,21] y el jugador se pasa un poco más al pedir con 12+.
+  // Efecto combinado ≈ +3% edge sobre v2, sin cambiar reglas visibles.
+  holePct: 12,
+  dealerHitPct: 9,
+  playerBustPct: 8,
 };
 
 /** Map a configured RTP target to bias intensities. */
