@@ -33,9 +33,13 @@ export type BJBias = {
 };
 
 export const BJ_DEFAULT_BIAS: BJBias = {
-  holePct: 18,
-  dealerHitPct: 14,
-  playerBustPct: 12,
+  // Ajuste 2026-07-07: baja el sesgo por defecto. El RTP real venía en ~71% y
+  // queremos acercarlo al target 99.4% sin perder ventaja (con sesgo residual
+  // el player sigue perdiendo esperado ~3-4% por mano). biasFromRtpTarget()
+  // sigue escalando por si un admin baja el rtp_target manualmente.
+  holePct: 8,
+  dealerHitPct: 6,
+  playerBustPct: 5,
 };
 
 /** Map a configured RTP target to bias intensities. */
