@@ -572,20 +572,33 @@ export const adminGetDashboardKpis = createServerFn({ method: "GET" })
 export const adminGetHighWinners = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    z.object({ threshold: z.number().min(1).max(10_000_000).default(50000) }).parse(input)
+    z
+      .object({
+        threshold: z.number().min(1).max(10_000_000).default(20000),
+        top_limit: z.number().int().min(1).max(50).default(10),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     const supabaseAdmin = await getSupabaseAdmin();
     await assertAdmin(context.userId);
 
     // Paginate transactions to avoid PostgREST row cap.
-    type TxRow = { user_id: string; type: string; amount: number | string | null };
-    const perUser: Record<string, { bet: number; win: number }> = {};
+    type TxRow = {
+      user_id: string;
+      type: string;
+      amount: number | string | null;
+      game: string | null;
+    };
+    const perUser: Record<
+      string,
+      { bet: number; win: number; games: Record<string, { bet: number; win: number }> }
+    > = {};
     const pageSize = 1000;
     for (let start = 0; ; start += pageSize) {
       const { data: page, error } = await supabaseAdmin
         .from("transactions")
-        .select("user_id, type, amount")
+        .select("user_id, type, amount, game")
         .in("type", ["bet", "win"])
         .order("created_at", { ascending: true })
         .range(start, start + pageSize - 1);
@@ -593,24 +606,46 @@ export const adminGetHighWinners = createServerFn({ method: "POST" })
       if (!page || page.length === 0) break;
       for (const t of page as TxRow[]) {
         if (!t.user_id) continue;
-        perUser[t.user_id] ??= { bet: 0, win: 0 };
+        perUser[t.user_id] ??= { bet: 0, win: 0, games: {} };
         const a = Number(t.amount) || 0;
-        if (t.type === "bet") perUser[t.user_id].bet += Math.abs(a);
-        else if (t.type === "win") perUser[t.user_id].win += a;
+        const g = t.game ?? "otros";
+        perUser[t.user_id].games[g] ??= { bet: 0, win: 0 };
+        if (t.type === "bet") {
+          perUser[t.user_id].bet += Math.abs(a);
+          perUser[t.user_id].games[g].bet += Math.abs(a);
+        } else if (t.type === "win") {
+          perUser[t.user_id].win += a;
+          perUser[t.user_id].games[g].win += a;
+        }
       }
       if (page.length < pageSize) break;
       if (start > 500_000) break;
     }
 
-    const winners = Object.entries(perUser)
-      .map(([user_id, v]) => ({ user_id, bet: v.bet, win: v.win, net: v.win - v.bet }))
-      .filter((u) => u.net >= data.threshold)
-      .sort((a, b) => b.net - a.net)
-      .slice(0, 50);
+    const allNet = Object.entries(perUser)
+      .map(([user_id, v]) => ({
+        user_id,
+        bet: v.bet,
+        win: v.win,
+        net: v.win - v.bet,
+        games: v.games,
+      }))
+      .sort((a, b) => b.net - a.net);
 
-    if (winners.length === 0) return { winners: [] };
+    const winners = allNet.filter((u) => u.net >= data.threshold).slice(0, 50);
+    const topPositive = allNet.filter((u) => u.net > 0).slice(0, data.top_limit);
 
-    const ids = winners.map((w) => w.user_id);
+    // Union of ids we need profile/balance data for.
+    const idSet = new Set<string>([
+      ...winners.map((w) => w.user_id),
+      ...topPositive.map((w) => w.user_id),
+    ]);
+    const ids = Array.from(idSet);
+
+    if (ids.length === 0) {
+      return { winners: [], top: [], threshold: data.threshold };
+    }
+
     const [{ data: profs }, { data: bals }] = await Promise.all([
       supabaseAdmin.from("profiles").select("id, username, email").in("id", ids),
       supabaseAdmin.from("user_balances").select("user_id, balance, bonus_balance").in("user_id", ids),
@@ -620,12 +655,26 @@ export const adminGetHighWinners = createServerFn({ method: "POST" })
     const balMap: Record<string, { balance: number; bonus_balance: number }> = {};
     for (const b of bals ?? []) balMap[b.user_id] = { balance: Number(b.balance ?? 0), bonus_balance: Number(b.bonus_balance ?? 0) };
 
-    return {
-      winners: winners.map((w) => ({
-        ...w,
+    const decorate = (w: (typeof allNet)[number]) => {
+      const perGame = Object.entries(w.games)
+        .map(([game, gv]) => ({ game, bet: gv.bet, win: gv.win, net: gv.win - gv.bet }))
+        .filter((g) => g.bet > 0 || g.win > 0)
+        .sort((a, b) => b.net - a.net);
+      return {
+        user_id: w.user_id,
+        bet: w.bet,
+        win: w.win,
+        net: w.net,
         username: profMap[w.user_id]?.username ?? null,
         email: profMap[w.user_id]?.email ?? null,
         balance: balMap[w.user_id]?.balance ?? 0,
-      })),
+        top_game: perGame[0] ?? null,
+      };
+    };
+
+    return {
+      threshold: data.threshold,
+      winners: winners.map(decorate),
+      top: topPositive.map(decorate),
     };
   });
