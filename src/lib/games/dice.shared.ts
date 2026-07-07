@@ -19,14 +19,16 @@ export type DiceMult = (typeof DICE_MULTS)[number];
  * RTP = winProb * mult. Keep client & server reading the SAME values.
  */
 export const DICE_WIN_PROB: Record<number, number> = {
-  // Ajuste 2026-07-07: baja de win-prob para reducir RTP real (~50% → ~35%)
-  // manteniendo la sensación de victoria frecuente en el multiplicador bajo.
-  1.15: 0.44,
-  1.42: 0.32,
-  1.9:  0.18,
-  2.85: 0.09,
-  4.75: 0.045,
-  9.5:  0.022,
+  // Ajuste 2026-07-07 (v2): subimos win-prob en mults bajos/medios para
+  // acercarnos —sin igualar— a la sensación de ganar del rojo/negro de la
+  // ruleta (~46.75%). Mults altos siguen siendo raros para preservar
+  // ventaja de casa global (~30–35% edge).
+  1.15: 0.52,   // RTP 59.8%
+  1.42: 0.42,   // RTP 59.6%
+  1.9:  0.40,   // RTP 76.0%  (< 46.75% win-prob de ruleta, pero paga casi 2x)
+  2.85: 0.17,   // RTP 48.5%
+  4.75: 0.08,   // RTP 38.0%
+  9.5:  0.035,  // RTP 33.3%
 };
 
 export function diceWinProb(mult: number): number {
