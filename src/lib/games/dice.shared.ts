@@ -23,7 +23,7 @@ export const DICE_WIN_PROB: Record<number, number> = {
   // acercarnos —sin igualar— a la sensación de ganar del rojo/negro de la
   // ruleta (~46.75%). Mults altos siguen siendo raros para preservar
   // ventaja de casa global (~30–35% edge).
-  1.15: 0.52,   // RTP 59.8%
+  1.15: 0.441,  // RTP 50.7%  (tope seguro para no desequilibrar la casa)
   1.42: 0.42,   // RTP 59.6%
   1.9:  0.40,   // RTP 76.0%  (< 46.75% win-prob de ruleta, pero paga casi 2x)
   2.85: 0.17,   // RTP 48.5%
