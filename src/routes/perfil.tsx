@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import {
   ArrowLeft,
@@ -29,6 +30,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { supabase } from "@/integrations/supabase/client";
+import { getPerfilStats } from "@/lib/perfil-stats.functions";
 import { AvatarPickerDialog } from "@/components/profile/AvatarPickerDialog";
 import { UserAvatar } from "@/components/UserAvatar";
 import { useUnlockedAvatars } from "@/hooks/useUnlockedAvatars";
@@ -80,32 +82,12 @@ function shortId(id: string) {
 }
 
 function useStats(userId: string | undefined) {
+  const fn = useServerFn(getPerfilStats);
   return useQuery({
     queryKey: ["perfil-stats", userId ?? null],
     enabled: !!userId,
     staleTime: 30_000,
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("transactions")
-        .select("type, amount, game")
-        .eq("user_id", userId!)
-        .limit(1000);
-      const rows = data ?? [];
-      let bets = 0;
-      let won = 0;
-      let withdrawn = 0;
-      const gameCounts: Record<string, number> = {};
-      for (const r of rows) {
-        if (r.type === "bet") {
-          bets++;
-          if (r.game) gameCounts[r.game] = (gameCounts[r.game] ?? 0) + 1;
-        }
-        if (r.type === "win") won += Number(r.amount) || 0;
-        if (r.type === "withdrawal") withdrawn += Math.abs(Number(r.amount) || 0);
-      }
-      const favorite = Object.entries(gameCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "—";
-      return { bets, won, withdrawn, favorite };
-    },
+    queryFn: () => fn(),
   });
 }
 
