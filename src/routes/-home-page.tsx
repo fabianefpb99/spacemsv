@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import { Menu, ChevronRight, ChevronLeft, Gift, Home, Star, Wallet, User, Trophy } from "lucide-react";
+import { Menu, ChevronRight, ChevronLeft, Gift, Home, Star, Wallet, User, Trophy, Instagram } from "lucide-react";
 import { type PointerEvent, useEffect, useRef, useState } from "react";
 import { PromoPopup } from "@/components/PromoPopup";
 import { MascotFloater } from "@/components/MascotFloater";
@@ -173,10 +173,11 @@ function OnlineRotator({ online, username, onClick, clickable }: { online: numbe
             target="_blank"
             rel="noopener noreferrer"
             key={`${phraseIdx}-${exiting ? "out" : "in"}`}
-            className={`text-[15px] font-semibold tracking-wide text-white light-text-dark whitespace-nowrap ${exiting ? "animate-cube-out" : "animate-cube-in"}`}
+            className={`inline-flex items-center gap-1 text-[15px] font-semibold tracking-wide text-white light-text-dark whitespace-nowrap ${exiting ? "animate-cube-out" : "animate-cube-in"}`}
             style={{ transformOrigin: "center center", backfaceVisibility: "hidden" }}
           >
             {renderPhrase(currentRaw)}
+            <Instagram className="h-4 w-4" />
           </a>
         ) : (
           <span
