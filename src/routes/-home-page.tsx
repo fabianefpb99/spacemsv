@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import { Menu, ChevronRight, ChevronLeft, Gift, Home, Star, Wallet, User, Trophy } from "lucide-react";
+import { Menu, ChevronRight, ChevronLeft, Gift, Home, Star, Wallet, User, Trophy, Instagram } from "lucide-react";
 import { type PointerEvent, useEffect, useRef, useState } from "react";
 import { PromoPopup } from "@/components/PromoPopup";
 import { MascotFloater } from "@/components/MascotFloater";
