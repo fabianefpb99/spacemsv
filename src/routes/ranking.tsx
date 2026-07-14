@@ -21,9 +21,9 @@ import {
 export const Route = createFileRoute("/ranking")({
   head: () => ({
     meta: [
-      { title: "Ranking de ganadores del día | BETSPACE" },
+      { title: "Ranking Ganadores del Día | BETSPACE Casino Colombia" },
       { name: "description", content: "Top ganadores del día en BETSPACE Casino: ranking general y arena." },
-      { property: "og:title", content: "Ranking de ganadores del día | BETSPACE" },
+      { property: "og:title", content: "Ranking Ganadores del Día | BETSPACE Casino Colombia" },
       { property: "og:description", content: "Top ganadores del día en BETSPACE Casino: ranking general y arena." },
     ],
   }),

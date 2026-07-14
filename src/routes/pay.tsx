@@ -17,9 +17,9 @@ import { useVisibleInterval } from "@/hooks/useVisibleInterval";
 export const Route = createFileRoute("/pay")({
   head: () => ({
     meta: [
-      { title: "Recargar saldo | BETSPACE" },
+      { title: "Recargar Saldo Nequi y Bancolombia | BETSPACE Casino" },
       { name: "description", content: "Recarga tu saldo en BETSPACE Casino con Nequi, Daviplata, Bancolombia o tarjeta de débito." },
-      { property: "og:title", content: "Recargar saldo | BETSPACE" },
+      { property: "og:title", content: "Recargar Saldo Nequi y Bancolombia | BETSPACE Casino" },
       { property: "og:description", content: "Recarga tu saldo en BETSPACE Casino con Nequi, Daviplata, Bancolombia o tarjeta de débito." },
       { name: "robots", content: "noindex, nofollow" },
     ],

@@ -7,7 +7,7 @@ import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
 export const Route = createFileRoute("/spaceman")({
   head: () => ({
     meta: [
-      { title: "BETSPACE | Spaceman Crash Casino Online" },
+      { title: "Spaceman Crash | Juego Casino Online BETSPACE" },
       { name: "description", content: "Juega Spaceman en vivo en BETSPACE Casino." },
       { property: "og:title", content: "BETSPACE | Spaceman Crash Casino Online" },
       { property: "og:description", content: "Juega Spaceman en vivo en BETSPACE Casino." },

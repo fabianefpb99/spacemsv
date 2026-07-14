@@ -9,7 +9,7 @@ const SUPPORT_EMAIL = "support@betspace.app";
 export const Route = createFileRoute("/soporte")({
   head: () => ({
     meta: [
-      { title: "Soporte y ayuda | BETSPACE" },
+      { title: "Soporte y Ayuda 24/7 | BETSPACE Casino Colombia" },
       { name: "description", content: "Contacta al equipo de soporte de BETSPACE Casino." },
     ],
   }),

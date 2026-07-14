@@ -20,7 +20,7 @@ export const Route = createFileRoute("/pay_/breb")({
   },
   head: () => ({
     meta: [
-      { title: "Confirmar depósito BRE-B | BETSPACE" },
+      { title: "Confirmar Depósito BRE-B | BETSPACE Casino Online" },
       { name: "description", content: "Sigue las instrucciones para completar tu depósito de forma segura." },
       { name: "robots", content: "noindex, nofollow" },
     ],

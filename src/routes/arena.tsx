@@ -7,7 +7,7 @@ import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
 export const Route = createFileRoute("/arena")({
   head: () => ({
     meta: [
-      { title: "BETSPACE | Arena PvP Casino y Apuesta de Pelea" },
+      { title: "Arena PvP | Apuestas de Pelea Casino BETSPACE" },
       {
         name: "description",
         content:

@@ -7,7 +7,7 @@ import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
 export const Route = createFileRoute("/slot")({
   head: () => ({
     meta: [
-      { title: "BETSPACE | Juegos de Tragamonedas Online Casino" },
+      { title: "Slot Mafia Tragamonedas Online | BETSPACE Casino" },
       { name: "description", content: "Tragamonedas estilo gánsters de los años 20 en BETSPACE Casino." },
       { property: "og:title", content: "BETSPACE | Juegos de Tragamonedas Online Casino" },
       { property: "og:description", content: "Tragamonedas estilo gánsters de los años 20 en BETSPACE Casino." },

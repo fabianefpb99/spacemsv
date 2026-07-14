@@ -7,7 +7,7 @@ import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
 export const Route = createFileRoute("/dados")({
   head: () => ({
     meta: [
-      { title: "BETSPACE | Juego de Dados Online" },
+      { title: "Dados Dice | Juego Casino Online BETSPACE Colombia" },
       { name: "description", content: "Lanza dados 3D en BETSPACE Casino. Apuesta BAJO o ALTO y multiplica tus ganancias." },
       { property: "og:title", content: "BETSPACE | Juego de Dados Online" },
       { property: "og:description", content: "Lanza dados 3D en BETSPACE Casino. Apuesta BAJO o ALTO y multiplica tus ganancias." },

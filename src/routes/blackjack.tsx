@@ -7,7 +7,7 @@ import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
 export const Route = createFileRoute("/blackjack")({
   head: () => ({
     meta: [
-      { title: "BETSPACE | Blackjack Casino" },
+      { title: "Blackjack Online | Casino BETSPACE Colombia" },
       { name: "description", content: "Juega Blackjack en BETSPACE Casino. Blackjack paga 3 a 2." },
       { property: "og:title", content: "BETSPACE | Blackjack Casino" },
       { property: "og:description", content: "Juega Blackjack en BETSPACE Casino. Blackjack paga 3 a 2." },

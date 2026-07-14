@@ -7,7 +7,7 @@ import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
 export const Route = createFileRoute("/slotsamurai")({
   head: () => ({
     meta: [
-      { title: "BETSPACE | Samurai Legend — Tragamonedas 5x3 Online Casino" },
+      { title: "Samurai Legend Tragamonedas | BETSPACE Casino Online" },
       { name: "description", content: "Samurai Legend, tragamonedas 5x3 con temática samurái en BETSPACE Casino." },
       { property: "og:title", content: "BETSPACE | Samurai Legend Slot" },
       { property: "og:description", content: "Tragamonedas 5x3 estilo samurái en BETSPACE Casino." },

@@ -7,7 +7,7 @@ import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
 export const Route = createFileRoute("/ruleta")({
   head: () => ({
     meta: [
-      { title: "BETSPACE | Ruleta Juego En linea" },
+      { title: "Ruleta Online en Vivo | Casino BETSPACE Colombia" },
       { name: "description", content: "Juega Ruleta en BETSPACE Casino. Apuesta a rojo, negro o verde y multiplica tu saldo." },
       { property: "og:title", content: "BETSPACE | Ruleta Juego En linea" },
       { property: "og:description", content: "Juega Ruleta en BETSPACE Casino. Apuesta a rojo, negro o verde y multiplica tu saldo." },
