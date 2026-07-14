@@ -38,10 +38,11 @@ const MIN_WITHDRAW = 20_000;
 export const Route = createFileRoute("/retiros")({
   head: () => ({
     meta: [
-      { title: "BETSPACE | Casino Online y Apuestas Deportivas Colombia" },
+      { title: "Retiros | BETSPACE" },
       { name: "description", content: "Solicita el retiro de tus ganancias a Nequi o BRE-B de forma rápida y segura." },
-      { property: "og:title", content: "BETSPACE | Casino Online y Apuestas Deportivas Colombia" },
+      { property: "og:title", content: "Retiros | BETSPACE" },
       { property: "og:description", content: "Solicita el retiro de tus ganancias a Nequi o BRE-B de forma rápida y segura." },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: RetirosGated,
