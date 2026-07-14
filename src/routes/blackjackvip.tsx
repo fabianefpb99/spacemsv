@@ -7,7 +7,7 @@ import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
 export const Route = createFileRoute("/blackjackvip")({
   head: () => ({
     meta: [
-      { title: "BETSPACE | Blackjack VIP Casino" },
+      { title: "Blackjack VIP High Roller | Casino BETSPACE Online" },
       { name: "description", content: "Blackjack VIP de alto rodaje en BETSPACE Casino. Apuestas premium, mismo motor justo." },
       { property: "og:title", content: "BETSPACE | Blackjack VIP Casino" },
       { property: "og:description", content: "Blackjack VIP de alto rodaje en BETSPACE Casino. Apuestas premium, mismo motor justo." },

@@ -33,13 +33,13 @@ import type { MeData } from "@/hooks/useMe";
 export const Route = createFileRoute("/vip")({
   head: () => ({
     meta: [
-      { title: "Programa VIP: 100 niveles de prestigio | BETSPACE" },
+      { title: "Programa VIP BETSPACE | Casino Online Colombia" },
       {
         name: "description",
         content:
           "100 niveles de prestigio en BETSPACE Casino. Sube de Bronce a Leyenda apostando en tus juegos favoritos.",
       },
-      { property: "og:title", content: "Programa VIP: 100 niveles de prestigio | BETSPACE" },
+      { property: "og:title", content: "Programa VIP BETSPACE | Casino Online Colombia" },
       {
         property: "og:description",
         content:

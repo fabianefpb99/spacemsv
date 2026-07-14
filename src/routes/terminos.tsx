@@ -10,7 +10,7 @@ import {
 export const Route = createFileRoute("/terminos")({
   head: () => ({
     meta: [
-      { title: "Términos y condiciones | BETSPACE" },
+      { title: "Términos y Condiciones | BETSPACE Casino Colombia" },
       { name: "description", content: "Términos y condiciones de uso y política de tratamiento de datos." },
     ],
   }),

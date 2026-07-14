@@ -9,7 +9,7 @@ import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
 export const Route = createFileRoute("/transacciones")({
   head: () => ({
     meta: [
-      { title: "Mis transacciones | BETSPACE" },
+      { title: "Mis Transacciones | BETSPACE Casino Colombia" },
       { name: "description", content: "Todos tus movimientos: depósitos, retiros, apuestas, ganancias y bonos." },
       { name: "robots", content: "noindex, nofollow" },
     ],

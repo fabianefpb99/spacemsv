@@ -40,9 +40,9 @@ import { notifyMissionComplete } from "@/components/MissionCompleteFloater";
 export const Route = createFileRoute("/eventos")({
   head: () => ({
     meta: [
-      { title: "Misiones y desafíos diarios | BETSPACE" },
+      { title: "Misiones y Bonos Diarios | BETSPACE Casino Colombia" },
       { name: "description", content: "Completa desafíos diarios y semanales y gana saldo bonus, free spins y avatares exclusivos." },
-      { property: "og:title", content: "Misiones y desafíos diarios | BETSPACE" },
+      { property: "og:title", content: "Misiones y Bonos Diarios | BETSPACE Casino Colombia" },
       { property: "og:description", content: "Completa desafíos diarios y semanales y gana saldo bonus, free spins y avatares exclusivos." },
     ],
   }),

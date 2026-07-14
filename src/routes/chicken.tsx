@@ -7,7 +7,7 @@ import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
 export const Route = createFileRoute("/chicken")({
   head: () => ({
     meta: [
-      { title: "BETSPACE | Chicken Space Crash" },
+      { title: "Chicken Road | Juego Casino Crash BETSPACE Online" },
       {
         name: "description",
         content:
