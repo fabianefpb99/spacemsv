@@ -17,10 +17,11 @@ import { useVisibleInterval } from "@/hooks/useVisibleInterval";
 export const Route = createFileRoute("/pay")({
   head: () => ({
     meta: [
-      { title: "BETSPACE | Casino Online y Apuestas Deportivas Colombia" },
+      { title: "Recargar saldo | BETSPACE" },
       { name: "description", content: "Recarga tu saldo en BETSPACE Casino con Nequi, Daviplata, Bancolombia o tarjeta de débito." },
-      { property: "og:title", content: "BETSPACE | Casino Online y Apuestas Deportivas Colombia" },
+      { property: "og:title", content: "Recargar saldo | BETSPACE" },
       { property: "og:description", content: "Recarga tu saldo en BETSPACE Casino con Nequi, Daviplata, Bancolombia o tarjeta de débito." },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: PayPageGated,

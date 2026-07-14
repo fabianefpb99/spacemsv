@@ -20,8 +20,9 @@ export const Route = createFileRoute("/pay_/breb")({
   },
   head: () => ({
     meta: [
-      { title: "BETSPACE | Casino Online y Apuestas Deportivas Colombia" },
+      { title: "Confirmar depósito BRE-B | BETSPACE" },
       { name: "description", content: "Sigue las instrucciones para completar tu depósito de forma segura." },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: PayBrebGated,
