@@ -1655,7 +1655,7 @@ function SamuraiHero({
             }}
             aria-hidden="true"
           >
-            <div className="mt-2 flex items-center justify-center gap-4">
+            <div className="-mt-1 flex items-center justify-center gap-4">
               <img
                 src={WIN_LOGOS.win}
                 alt=""
