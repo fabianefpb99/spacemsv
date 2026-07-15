@@ -1640,9 +1640,9 @@ function SamuraiHero({
           draggable={false}
         />
       </div>
-      {/* Espacio reservado bajo el logo — el evento WIN aparece aquí sin empujar el layout */}
+      {/* Espacio compacto bajo el logo: recupera la altura añadida al logo SAMURAI */}
       <div
-        className="mt-0 flex h-[104px] w-full flex-col items-center justify-start"
+        className="mt-0 flex h-[98px] w-full flex-col items-center justify-start"
         aria-hidden={!showEvent}
       >
         {!showEvent && (
