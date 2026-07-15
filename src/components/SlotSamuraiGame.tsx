@@ -1627,12 +1627,10 @@ function SamuraiHero({
       aria-label="Samurai Legend"
     >
       {/* Logo integrado sobre el fondo global — sin card, sin borde.
-          Antes del primer giro ocupa todo el banner; después vuelve a su tamaño normal
-          para dejar el espacio inferior a los logos de WIN. */}
+          El alto del logo y el espacio WIN quedan fijos para no mover el layout. */}
       <div
         className={
-          "samurai-legend-wrap flex max-w-[95%] items-center justify-center transition-[height] duration-700 ease-out" +
-          (showPreview ? " h-[150px]" : " h-[124px]")
+          "samurai-legend-wrap flex h-[124px] max-w-[95%] items-center justify-center overflow-visible"
         }
         style={{
           ["--samurai-mask" as string]: `url(${samuraiLegendLogo})`,
@@ -1642,20 +1640,15 @@ function SamuraiHero({
           src={samuraiLegendLogo}
           alt="Samurai Legend"
           className={
-            "samurai-legend-logo w-auto select-none transition-[height,transform] duration-700 ease-out" +
-            (showPreview ? " h-[150px]" : " h-[124px]")
+            "samurai-legend-logo h-[124px] w-auto select-none transition-transform duration-700 ease-out" +
+            (showPreview ? " scale-[1.12]" : " scale-100")
           }
           draggable={false}
         />
       </div>
-      {/* Espacio reservado bajo el logo — el evento WIN aparece aquí sin empujar el layout.
-          Antes del primer giro se colapsa suavemente para que el logo respire. */}
+      {/* Espacio reservado bajo el logo: siempre mide lo mismo; antes del giro queda vacío. */}
       <div
-        className="mt-0 flex w-full flex-col items-center justify-start overflow-hidden transition-[height,opacity] duration-700 ease-out"
-        style={{
-          height: showPreview ? 0 : 104,
-          opacity: showPreview ? 0 : 1,
-        }}
+        className="mt-0 flex h-[104px] w-full flex-col items-center justify-start overflow-visible"
         aria-hidden={showPreview || !showEvent}
       >
           {showEvent && !showPreview && (
