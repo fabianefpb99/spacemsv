@@ -1647,7 +1647,7 @@ function SamuraiHero({
       >
         {!showEvent && (
           <div
-            className="flex w-full flex-col items-center gap-1 px-4"
+            className="flex w-full flex-col items-center gap-0 px-4"
             style={{
               opacity: showPreview ? 1 : 0,
               transition: "opacity 0.45s ease",
@@ -1677,7 +1677,7 @@ function SamuraiHero({
                 draggable={false}
               />
             </div>
-            <div className="flex items-center justify-center gap-4">
+            <div className="-mt-2 flex items-center justify-center gap-4">
               <img
                 src={WIN_LOGOS.super}
                 alt=""
