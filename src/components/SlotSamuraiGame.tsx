@@ -1626,12 +1626,10 @@ function SamuraiHero({
       className="relative mt-0 flex flex-col items-center justify-center"
       aria-label="Samurai Legend"
     >
-      {/* Logo integrado sobre el fondo global — sin card, sin borde.
-          El alto del logo y el espacio WIN quedan fijos para no mover el layout. */}
+      {/* Caja fija del banner: 124px logo + 104px WIN. Nada interno participa en layout. */}
+      <div className="relative h-[228px] w-full shrink-0 overflow-hidden">
       <div
-        className={
-          "samurai-legend-wrap flex h-[124px] max-w-[95%] items-center justify-center overflow-visible"
-        }
+        className="samurai-legend-wrap absolute left-1/2 top-0 flex h-[124px] max-w-[95%] -translate-x-1/2 items-center justify-center overflow-visible"
         style={{
           ["--samurai-mask" as string]: `url(${samuraiLegendLogo})`,
         }}
@@ -1641,14 +1639,14 @@ function SamuraiHero({
           alt="Samurai Legend"
           className={
             "samurai-legend-logo h-[124px] w-auto select-none transition-transform duration-700 ease-out" +
-            (showPreview ? " scale-[1.12]" : " scale-100")
+            (showPreview ? " scale-[1.08]" : " scale-100")
           }
           draggable={false}
         />
       </div>
       {/* Espacio reservado bajo el logo: siempre mide lo mismo; antes del giro queda vacío. */}
       <div
-        className="mt-0 flex h-[104px] w-full flex-col items-center justify-start overflow-visible"
+        className="absolute left-0 top-[124px] flex h-[104px] w-full flex-col items-center justify-start overflow-hidden"
         aria-hidden={showPreview || !showEvent}
       >
           {showEvent && !showPreview && (
@@ -1678,6 +1676,7 @@ function SamuraiHero({
               </div>
             </div>
           )}
+      </div>
       </div>
     </section>
   );
