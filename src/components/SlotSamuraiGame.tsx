@@ -1626,9 +1626,14 @@ function SamuraiHero({
       className="relative mt-0 flex flex-col items-center justify-center"
       aria-label="Samurai Legend"
     >
-      {/* Logo integrado sobre el fondo global — sin card, sin borde */}
+      {/* Logo integrado sobre el fondo global — sin card, sin borde.
+          Antes del primer giro ocupa todo el banner; después vuelve a su tamaño normal
+          para dejar el espacio inferior a los logos de WIN. */}
       <div
-        className="samurai-legend-wrap max-w-[95%]"
+        className={
+          "samurai-legend-wrap max-w-[95%] transition-all duration-[450ms] ease-in-out" +
+          (showPreview ? " flex h-[210px] items-center justify-center" : "")
+        }
         style={{
           ["--samurai-mask" as string]: `url(${samuraiLegendLogo})`,
         }}
@@ -1636,99 +1641,49 @@ function SamuraiHero({
         <img
           src={samuraiLegendLogo}
           alt="Samurai Legend"
-          className="samurai-legend-logo h-[124px] w-auto select-none"
+          className={
+            "samurai-legend-logo w-auto select-none transition-all duration-[450ms] ease-in-out" +
+            (showPreview ? " h-[210px]" : " h-[124px]")
+          }
           draggable={false}
         />
       </div>
-      {/* Espacio reservado bajo el logo — el evento WIN aparece aquí sin empujar el layout */}
-      <div
-        className="mt-0 flex h-[104px] w-full flex-col items-center justify-start"
-        aria-hidden={!showEvent}
-      >
-        {!showEvent && (
-          <div
-            className="flex w-full flex-col items-center gap-1 px-4"
-            style={{
-              opacity: showPreview ? 1 : 0,
-              transition: "opacity 0.45s ease",
-              pointerEvents: "none",
-            }}
-            aria-hidden="true"
-          >
-            <div className="mt-0 flex items-center justify-center gap-4">
-              <img
-                src={WIN_LOGOS.win}
-                alt=""
-                className="h-[46px] w-auto select-none"
-                style={{
-                  filter:
-                    "drop-shadow(0 2px 5px rgba(0,0,0,0.75)) drop-shadow(0 0 6px rgba(255,90,30,0.35))",
-                }}
-                draggable={false}
-              />
-              <img
-                src={WIN_LOGOS.big}
-                alt=""
-                className="h-[46px] w-auto select-none"
-                style={{
-                  filter:
-                    "drop-shadow(0 2px 5px rgba(0,0,0,0.75)) drop-shadow(0 0 6px rgba(255,90,30,0.35))",
-                }}
-                draggable={false}
-              />
-            </div>
-            <div className="flex items-center justify-center gap-4">
-              <img
-                src={WIN_LOGOS.super}
-                alt=""
-                className="h-[46px] w-auto select-none"
-                style={{
-                  filter:
-                    "drop-shadow(0 2px 5px rgba(0,0,0,0.75)) drop-shadow(0 0 6px rgba(255,90,30,0.35))",
-                }}
-                draggable={false}
-              />
-              <img
-                src={WIN_LOGOS.mega}
-                alt=""
-                className="h-[46px] w-auto select-none"
-                style={{
-                  filter:
-                    "drop-shadow(0 2px 5px rgba(0,0,0,0.75)) drop-shadow(0 0 6px rgba(255,90,30,0.35))",
-                }}
-                draggable={false}
-              />
-            </div>
-          </div>
-        )}
-        {showEvent && (
-          <div
-            className="flex flex-col items-center"
-            style={{ animation: "scale-in 0.14s cubic-bezier(0.2,0.9,0.3,1.2)" }}
-          >
-            <img
-              src={WIN_LOGOS[tier as "win" | "big" | "mega" | "super" | "jackpot"]}
-              alt={EVENT_LABEL[tier]}
-              className="h-[74px] w-auto select-none"
-              style={{
-                filter:
-                  "drop-shadow(0 3px 8px rgba(0,0,0,0.85)) drop-shadow(0 0 10px rgba(255,90,30,0.55))",
-              }}
-              draggable={false}
-            />
+      {/* Espacio reservado bajo el logo — el evento WIN aparece aquí sin empujar el layout.
+          Se oculta antes del primer giro, cuando el logo grande ocupa todo el banner. */}
+      {!showPreview && (
+        <div
+          className="mt-0 flex h-[104px] w-full flex-col items-center justify-start"
+          aria-hidden={!showEvent}
+        >
+          {showEvent && (
             <div
-              className="-mt-[2px] font-display text-[24px] font-black tracking-wide leading-none"
-              style={{
-                color: "#fef08a",
-                textShadow:
-                  "0 0 10px rgba(253,224,71,0.85), 0 2px 4px rgba(0,0,0,0.95)",
-              }}
+              className="flex flex-col items-center"
+              style={{ animation: "scale-in 0.14s cubic-bezier(0.2,0.9,0.3,1.2)" }}
             >
-              +{formatCOP(displayedWin)} COP
+              <img
+                src={WIN_LOGOS[tier as "win" | "big" | "mega" | "super" | "jackpot"]}
+                alt={EVENT_LABEL[tier]}
+                className="h-[74px] w-auto select-none"
+                style={{
+                  filter:
+                    "drop-shadow(0 3px 8px rgba(0,0,0,0.85)) drop-shadow(0 0 10px rgba(255,90,30,0.55))",
+                }}
+                draggable={false}
+              />
+              <div
+                className="-mt-[2px] font-display text-[24px] font-black tracking-wide leading-none"
+                style={{
+                  color: "#fef08a",
+                  textShadow:
+                    "0 0 10px rgba(253,224,71,0.85), 0 2px 4px rgba(0,0,0,0.95)",
+                }}
+              >
+                +{formatCOP(displayedWin)} COP
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </section>
   );
 }
