@@ -1626,10 +1626,9 @@ function SamuraiHero({
       className="relative mt-0 flex flex-col items-center justify-center"
       aria-label="Samurai Legend"
     >
-      {/* Caja fija del banner: 124px logo + 104px WIN. Nada interno participa en layout. */}
-      <div className="relative h-[228px] w-full shrink-0 overflow-hidden">
+      {/* Logo integrado sobre el fondo global — sin card, sin borde */}
       <div
-        className="samurai-legend-wrap absolute left-1/2 top-0 flex h-[124px] max-w-[95%] -translate-x-1/2 items-center justify-center overflow-visible"
+        className="samurai-legend-wrap max-w-[95%]"
         style={{
           ["--samurai-mask" as string]: `url(${samuraiLegendLogo})`,
         }}
@@ -1637,46 +1636,98 @@ function SamuraiHero({
         <img
           src={samuraiLegendLogo}
           alt="Samurai Legend"
-          className={
-            "samurai-legend-logo h-[124px] w-auto select-none transition-transform duration-700 ease-out" +
-            (showPreview ? " scale-[1.08]" : " scale-100")
-          }
+          className="samurai-legend-logo h-[124px] w-auto select-none"
           draggable={false}
         />
       </div>
-      {/* Espacio reservado bajo el logo: siempre mide lo mismo; antes del giro queda vacío. */}
+      {/* Espacio reservado bajo el logo — el evento WIN aparece aquí sin empujar el layout */}
       <div
-        className="absolute left-0 top-[124px] flex h-[104px] w-full flex-col items-center justify-start overflow-hidden"
-        aria-hidden={showPreview || !showEvent}
+        className="mt-0 flex h-[104px] w-full flex-col items-center justify-start"
+        aria-hidden={!showEvent}
       >
-          {showEvent && !showPreview && (
-            <div
-              className="flex flex-col items-center"
-              style={{ animation: "scale-in 0.14s cubic-bezier(0.2,0.9,0.3,1.2)" }}
-            >
+        {!showEvent && (
+          <div
+            className="flex w-full flex-col items-center gap-1 px-4"
+            style={{
+              opacity: showPreview ? 1 : 0,
+              transition: "opacity 0.45s ease",
+              pointerEvents: "none",
+            }}
+            aria-hidden="true"
+          >
+            <div className="mt-0 flex items-center justify-center gap-4">
               <img
-                src={WIN_LOGOS[tier as "win" | "big" | "mega" | "super" | "jackpot"]}
-                alt={EVENT_LABEL[tier]}
-                className="h-[74px] w-auto select-none"
+                src={WIN_LOGOS.win}
+                alt=""
+                className="h-[46px] w-auto select-none"
                 style={{
                   filter:
-                    "drop-shadow(0 3px 8px rgba(0,0,0,0.85)) drop-shadow(0 0 10px rgba(255,90,30,0.55))",
+                    "drop-shadow(0 2px 5px rgba(0,0,0,0.75)) drop-shadow(0 0 6px rgba(255,90,30,0.35))",
                 }}
                 draggable={false}
               />
-              <div
-                className="-mt-[2px] font-display text-[24px] font-black tracking-wide leading-none"
+              <img
+                src={WIN_LOGOS.big}
+                alt=""
+                className="h-[46px] w-auto select-none"
                 style={{
-                  color: "#fef08a",
-                  textShadow:
-                    "0 0 10px rgba(253,224,71,0.85), 0 2px 4px rgba(0,0,0,0.95)",
+                  filter:
+                    "drop-shadow(0 2px 5px rgba(0,0,0,0.75)) drop-shadow(0 0 6px rgba(255,90,30,0.35))",
                 }}
-              >
-                +{formatCOP(displayedWin)} COP
-              </div>
+                draggable={false}
+              />
             </div>
-          )}
-      </div>
+            <div className="flex items-center justify-center gap-4">
+              <img
+                src={WIN_LOGOS.super}
+                alt=""
+                className="h-[46px] w-auto select-none"
+                style={{
+                  filter:
+                    "drop-shadow(0 2px 5px rgba(0,0,0,0.75)) drop-shadow(0 0 6px rgba(255,90,30,0.35))",
+                }}
+                draggable={false}
+              />
+              <img
+                src={WIN_LOGOS.mega}
+                alt=""
+                className="h-[46px] w-auto select-none"
+                style={{
+                  filter:
+                    "drop-shadow(0 2px 5px rgba(0,0,0,0.75)) drop-shadow(0 0 6px rgba(255,90,30,0.35))",
+                }}
+                draggable={false}
+              />
+            </div>
+          </div>
+        )}
+        {showEvent && (
+          <div
+            className="flex flex-col items-center"
+            style={{ animation: "scale-in 0.14s cubic-bezier(0.2,0.9,0.3,1.2)" }}
+          >
+            <img
+              src={WIN_LOGOS[tier as "win" | "big" | "mega" | "super" | "jackpot"]}
+              alt={EVENT_LABEL[tier]}
+              className="h-[74px] w-auto select-none"
+              style={{
+                filter:
+                  "drop-shadow(0 3px 8px rgba(0,0,0,0.85)) drop-shadow(0 0 10px rgba(255,90,30,0.55))",
+              }}
+              draggable={false}
+            />
+            <div
+              className="-mt-[2px] font-display text-[24px] font-black tracking-wide leading-none"
+              style={{
+                color: "#fef08a",
+                textShadow:
+                  "0 0 10px rgba(253,224,71,0.85), 0 2px 4px rgba(0,0,0,0.95)",
+              }}
+            >
+              +{formatCOP(displayedWin)} COP
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
