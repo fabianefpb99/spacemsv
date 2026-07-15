@@ -1636,7 +1636,7 @@ function SamuraiHero({
         <img
           src={samuraiLegendLogo}
           alt="Samurai Legend"
-          className="samurai-legend-logo h-[124px] w-auto select-none"
+          className="samurai-legend-logo h-[130px] w-auto select-none"
           draggable={false}
         />
       </div>
