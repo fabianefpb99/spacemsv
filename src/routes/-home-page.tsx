@@ -520,10 +520,9 @@ export function HomePage() {
 
   const slides = slidesList.length;
   const arrowsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // Solo arrancamos visible la PRIMERA visita (sin cache previo). Si ya hay
-  // contenido cacheado en este navegador, no parpadeamos el loader al volver
-  // desde un juego. El efecto de abajo confirma/cierra según cuota.
-  const [showBrandLoader, setShowBrandLoader] = useState(false);
+  // El loader del HOME debe ser la primera instancia visible: arranca activo
+  // desde el primer render y se apaga después del tiempo mínimo.
+  const [showBrandLoader, setShowBrandLoader] = useState(true);
 
   // Ambient casino intro — máximo 5 veces por hora.
   // Audio file ya incluye fade-in (1.5s) y fade-out (5s) — 12s totales.
@@ -572,58 +571,13 @@ export function HomePage() {
     };
   }, []);
 
-  // Regla del BrandLoader:
-  //  - Máximo 2 ejecuciones por hora.
-  //  - Se omite si ya cargamos el home con éxito antes en esta sesión.
-  //  - Se fuerza si alguna query del home falló (datos no disponibles).
+  // HOME: siempre mostrar el BrandLoader primero. No depende de cache,
+  // sessionStorage ni cuotas, para evitar que se vea el contenido antes.
   useEffect(() => {
-    const KEY = "betspaceman:brand-loader:last-shown";
-    const READY_KEY = "betspaceman:home:ready";
-    const ONE_HOUR = 60 * 60 * 1000;
-    const MAX_PER_HOUR = 2;
-
-    let alreadyReady = false;
-    try { alreadyReady = !!sessionStorage.getItem(READY_KEY); } catch { /* ignore */ }
-    const hasError = !!(slidesQ.error || featuredQ.error);
-
-    // Si tenemos data en cache y no hay error, no mostramos loader al volver.
-    if (alreadyReady && !hasError) {
-      setShowBrandLoader(false);
-      return;
-    }
-
-    let shows: number[] = [];
-    try {
-      const parsed = JSON.parse(localStorage.getItem(KEY) || "[]");
-      shows = Array.isArray(parsed) ? parsed : [];
-    } catch { shows = []; }
-    const now = Date.now();
-    shows = shows.filter((t) => now - t < ONE_HOUR);
-
-    // Cuota agotada y no hay error → no mostramos.
-    if (shows.length >= MAX_PER_HOUR && !hasError) {
-      setShowBrandLoader(false);
-      return;
-    }
-
-    // Solo gastamos cuota si realmente vamos a mostrarlo.
-    if (!hasError) {
-      shows.push(now);
-      try { localStorage.setItem(KEY, JSON.stringify(shows)); } catch { /* ignore */ }
-    }
     setShowBrandLoader(true);
     const t = setTimeout(() => setShowBrandLoader(false), 1900);
     return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Marca el home como "listo" en sessionStorage en cuanto las queries
-  // principales devuelven datos. Esto permite saltarse el loader al volver.
-  useEffect(() => {
-    if (slidesQ.data && featuredQ.data) {
-      try { sessionStorage.setItem("betspaceman:home:ready", "1"); } catch { /* ignore */ }
-    }
-  }, [slidesQ.data, featuredQ.data]);
 
   // Al entrar al home, cualquier juego previo queda completamente cerrado.
   useEffect(() => { stopAllGameAudio(); }, []);
