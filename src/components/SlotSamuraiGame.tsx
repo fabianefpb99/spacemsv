@@ -1631,8 +1631,8 @@ function SamuraiHero({
           para dejar el espacio inferior a los logos de WIN. */}
       <div
         className={
-          "samurai-legend-wrap max-w-[95%] transition-all duration-[450ms] ease-in-out" +
-          (showPreview ? " flex h-[210px] items-center justify-center" : "")
+          "samurai-legend-wrap flex max-w-[95%] items-center justify-center transition-[height] duration-700 ease-out" +
+          (showPreview ? " h-[150px]" : " h-[124px]")
         }
         style={{
           ["--samurai-mask" as string]: `url(${samuraiLegendLogo})`,
@@ -1642,20 +1642,23 @@ function SamuraiHero({
           src={samuraiLegendLogo}
           alt="Samurai Legend"
           className={
-            "samurai-legend-logo w-auto select-none transition-all duration-[450ms] ease-in-out" +
-            (showPreview ? " h-[210px]" : " h-[124px]")
+            "samurai-legend-logo w-auto select-none transition-[height,transform] duration-700 ease-out" +
+            (showPreview ? " h-[150px]" : " h-[124px]")
           }
           draggable={false}
         />
       </div>
       {/* Espacio reservado bajo el logo — el evento WIN aparece aquí sin empujar el layout.
-          Se oculta antes del primer giro, cuando el logo grande ocupa todo el banner. */}
-      {!showPreview && (
-        <div
-          className="mt-0 flex h-[104px] w-full flex-col items-center justify-start"
-          aria-hidden={!showEvent}
-        >
-          {showEvent && (
+          Antes del primer giro se colapsa suavemente para que el logo respire. */}
+      <div
+        className="mt-0 flex w-full flex-col items-center justify-start overflow-hidden transition-[height,opacity] duration-700 ease-out"
+        style={{
+          height: showPreview ? 0 : 104,
+          opacity: showPreview ? 0 : 1,
+        }}
+        aria-hidden={showPreview || !showEvent}
+      >
+          {showEvent && !showPreview && (
             <div
               className="flex flex-col items-center"
               style={{ animation: "scale-in 0.14s cubic-bezier(0.2,0.9,0.3,1.2)" }}
@@ -1682,8 +1685,7 @@ function SamuraiHero({
               </div>
             </div>
           )}
-        </div>
-      )}
+      </div>
     </section>
   );
 }
