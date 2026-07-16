@@ -1602,13 +1602,6 @@ function SamuraiHero({
 }) {
   const tier = spinning ? "idle" : classifySamuraiEvent(lastWin, bet);
   const showEvent = tier !== "idle" && lastWin > 0;
-  // Preview de los 4 logos WIN antes de la primera girada. Se desvanece
-  // en cuanto el usuario dispara el primer spin. Si cierra el juego y
-  // vuelve (componente re-monta), vuelve a mostrarse.
-  const [showPreview, setShowPreview] = useState(true);
-  useEffect(() => {
-    if (spinning || lastWin > 0) setShowPreview(false);
-  }, [spinning, lastWin]);
   // Pre-decodifica los 4 logos de tier al montar el hero. Sin esto, Android
   // gama baja decodifica el WebP en el momento del primer BIG/MEGA/SUPER y
   // eso genera un delay perceptible antes de que el logo aparezca.
@@ -1642,68 +1635,36 @@ function SamuraiHero({
       </div>
       {/* Espacio compacto bajo el logo: recupera la altura añadida al logo SAMURAI */}
       <div
-        className="mt-0 flex h-[98px] w-full flex-col items-center justify-start"
+        className="relative mt-0 h-[98px] w-full"
         aria-hidden={!showEvent}
       >
-        {!showEvent && (
-          <div
-            className="flex w-full flex-col items-center gap-0 px-4"
+        {/* Mensaje decorativo persistente con dragones — baja de opacidad cuando hay evento */}
+        <div
+          className="absolute inset-0 flex items-center justify-center gap-3 px-4"
+          style={{
+            opacity: showEvent ? 0.15 : 1,
+            transition: "opacity 0.35s ease",
+            pointerEvents: "none",
+          }}
+          aria-hidden="true"
+        >
+          <DragonOrnament />
+          <span
+            className="font-display font-black uppercase tracking-[0.18em] leading-none whitespace-nowrap"
             style={{
-              opacity: showPreview ? 1 : 0,
-              transition: "opacity 0.45s ease",
-              pointerEvents: "none",
+              fontSize: 13.5,
+              color: "#fde68a",
+              textShadow:
+                "0 0 8px rgba(220, 38, 38, 0.55), 0 0 14px rgba(251, 191, 36, 0.35), 0 2px 3px rgba(0,0,0,0.9)",
             }}
-            aria-hidden="true"
           >
-            <div className="mt-0 flex items-center justify-center gap-4">
-              <img
-                src={WIN_LOGOS.win}
-                alt=""
-                className="h-[46px] w-auto select-none"
-                style={{
-                  filter:
-                    "drop-shadow(0 2px 5px rgba(0,0,0,0.75)) drop-shadow(0 0 6px rgba(255,90,30,0.35))",
-                }}
-                draggable={false}
-              />
-              <img
-                src={WIN_LOGOS.big}
-                alt=""
-                className="h-[46px] w-auto select-none"
-                style={{
-                  filter:
-                    "drop-shadow(0 2px 5px rgba(0,0,0,0.75)) drop-shadow(0 0 6px rgba(255,90,30,0.35))",
-                }}
-                draggable={false}
-              />
-            </div>
-            <div className="-mt-2 flex items-center justify-center gap-4">
-              <img
-                src={WIN_LOGOS.super}
-                alt=""
-                className="h-[46px] w-auto select-none"
-                style={{
-                  filter:
-                    "drop-shadow(0 2px 5px rgba(0,0,0,0.75)) drop-shadow(0 0 6px rgba(255,90,30,0.35))",
-                }}
-                draggable={false}
-              />
-              <img
-                src={WIN_LOGOS.mega}
-                alt=""
-                className="h-[46px] w-auto select-none"
-                style={{
-                  filter:
-                    "drop-shadow(0 2px 5px rgba(0,0,0,0.75)) drop-shadow(0 0 6px rgba(255,90,30,0.35))",
-                }}
-                draggable={false}
-              />
-            </div>
-          </div>
-        )}
+            El Dragón trae suerte
+          </span>
+          <DragonOrnament flip />
+        </div>
         {showEvent && (
           <div
-            className="flex flex-col items-center"
+            className="absolute inset-0 flex flex-col items-center justify-center"
             style={{ animation: "scale-in 0.14s cubic-bezier(0.2,0.9,0.3,1.2)" }}
           >
             <img
@@ -1730,6 +1691,59 @@ function SamuraiHero({
         )}
       </div>
     </section>
+  );
+}
+
+/* ============================================================
+   DragonOrnament — SVG premium (dragón oriental estilizado)
+   Usado como acento a cada lado del texto "El Dragón trae suerte".
+   ============================================================ */
+function DragonOrnament({ flip = false }: { flip?: boolean }) {
+  const gradId = flip ? "samurai-dragon-grad-r" : "samurai-dragon-grad-l";
+  const glowId = flip ? "samurai-dragon-glow-r" : "samurai-dragon-glow-l";
+  return (
+    <svg
+      viewBox="0 0 72 40"
+      width="46"
+      height="26"
+      aria-hidden="true"
+      style={{
+        transform: flip ? "scaleX(-1)" : undefined,
+        filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.75))",
+        flexShrink: 0,
+      }}
+    >
+      <defs>
+        <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#fde68a" />
+          <stop offset="45%" stopColor="#f59e0b" />
+          <stop offset="100%" stopColor="#b91c1c" />
+        </linearGradient>
+        <filter id={glowId} x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="0.6" result="b" />
+          <feMerge>
+            <feMergeNode in="b" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      <g fill={`url(#${gradId})`} filter={`url(#${glowId})`}>
+        {/* Cuerpo serpentino */}
+        <path d="M4 22 C 12 10, 22 32, 30 20 C 36 11, 44 28, 52 18 C 58 11, 62 18, 60 24 C 58 29, 52 27, 50 23 C 49 21, 47 22, 47 24 C 48 28, 55 32, 60 30 L 62 32 C 55 36, 46 34, 44 28 C 43 25, 40 26, 40 29 C 41 33, 46 36, 50 36 L 46 38 C 38 38, 33 33, 33 28 C 33 24, 29 23, 28 27 C 27 31, 22 32, 18 30 L 20 27 C 24 28, 26 26, 25 23 C 23 18, 16 21, 12 27 L 8 26 C 8 25, 6 24, 4 22 Z" />
+        {/* Cabeza */}
+        <path d="M64 18 C 70 16, 71 22, 68 25 C 66 27, 62 26, 61 23 C 60 21, 61 19, 64 18 Z" />
+        {/* Cuerno trasero */}
+        <path d="M67 15 L 71 10 L 70 16 Z" />
+        {/* Melena / cresta */}
+        <path d="M62 16 L 60 12 L 61 17 Z" opacity="0.85" />
+        <path d="M59 17 L 57 13 L 58.5 18 Z" opacity="0.7" />
+        {/* Bigote */}
+        <path d="M60 24 C 56 26, 52 27, 48 27" stroke={`url(#${gradId})`} strokeWidth="0.5" fill="none" opacity="0.85" />
+      </g>
+      {/* Ojo */}
+      <circle cx="66.2" cy="22" r="0.9" fill="#0f0a05" />
+      <circle cx="66.5" cy="21.7" r="0.35" fill="#fde68a" />
+    </svg>
   );
 }
 
