@@ -712,7 +712,7 @@ export function ChickenGame() {
                 type="button"
                 onClick={startGame}
                 disabled={!canStart}
-                className="btn-primary-green btn-primary-action flex h-12 w-full items-center justify-center gap-2 rounded-xl font-display text-base font-black uppercase tracking-widest disabled:opacity-50"
+                className="btn-primary-green btn-primary-action chicken-action-button chicken-action-static flex h-12 w-full items-center justify-center gap-2 rounded-xl font-display text-base font-black uppercase tracking-widest disabled:opacity-50"
               >
                 JUGAR
               </button>
@@ -722,7 +722,7 @@ export function ChickenGame() {
                 type="button"
                 onClick={jump}
                 disabled={phase !== "playing"}
-                className="btn-primary-green btn-primary-action saltar-morph-in saltar-pulse-loop relative overflow-hidden flex h-12 w-full items-center justify-center gap-2 rounded-xl font-display text-base font-black uppercase tracking-widest disabled:opacity-50"
+                className="btn-primary-green btn-primary-action chicken-action-button saltar-morph-in saltar-pulse-loop relative overflow-hidden flex h-12 w-full items-center justify-center gap-2 rounded-xl font-display text-base font-black uppercase tracking-widest disabled:opacity-50"
               >
                 <span className="saltar-shine" aria-hidden="true" />
                 <span className="relative z-[1]">SALTAR</span>
@@ -743,7 +743,7 @@ export function ChickenGame() {
                   type="button"
                   onClick={jump}
                   disabled={phase !== "playing"}
-                  className="btn-primary-green btn-primary-action saltar-pulse-loop relative overflow-hidden flex h-12 w-full items-center justify-center gap-2 rounded-xl font-display text-base font-black uppercase tracking-widest disabled:opacity-50"
+                  className="btn-primary-green btn-primary-action chicken-action-button saltar-pulse-loop relative overflow-hidden flex h-12 w-full items-center justify-center gap-2 rounded-xl font-display text-base font-black uppercase tracking-widest disabled:opacity-50"
                 >
                   <span className="saltar-shine" aria-hidden="true" />
                   <span className="relative z-[1]">SALTAR</span>
@@ -754,7 +754,7 @@ export function ChickenGame() {
               <button
                 type="button"
                 onClick={resetToIdle}
-                className="btn-primary-green btn-primary-action flex h-12 w-full items-center justify-center gap-2 rounded-xl font-display text-base font-black uppercase tracking-widest"
+                className="btn-primary-green btn-primary-action chicken-action-button chicken-action-static flex h-12 w-full items-center justify-center gap-2 rounded-xl font-display text-base font-black uppercase tracking-widest"
               >
                 JUGAR DE NUEVO
               </button>
@@ -763,7 +763,7 @@ export function ChickenGame() {
               <button
                 type="button"
                 onClick={resetToIdle}
-                className="btn-primary-green btn-primary-action flex h-12 w-full items-center justify-center gap-2 rounded-xl font-display text-base font-black uppercase tracking-widest"
+                className="btn-primary-green btn-primary-action chicken-action-button chicken-action-static flex h-12 w-full items-center justify-center gap-2 rounded-xl font-display text-base font-black uppercase tracking-widest"
               >
                 JUGAR DE NUEVO
               </button>
