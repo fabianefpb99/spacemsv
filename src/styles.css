@@ -3908,14 +3908,14 @@ html.light .profile-page .profile-quickbar-tab.is-active {
 .chicken-prejump-msg-c { animation-delay: 6s; }
 .chicken-prejump-msg-d { animation-delay: 9s; }
 
-/* Transición JUGAR -> SALTAR: morph pop + brillo recurrente que invita a pulsar */
-@keyframes saltarMorphIn {
-  0%   { transform: scale(0.6) rotate(-6deg); opacity: 0; filter: blur(6px) brightness(1.6); }
-  55%  { transform: scale(1.12) rotate(2deg);  opacity: 1; filter: blur(0)   brightness(1.35); }
-  100% { transform: scale(1)    rotate(0);     opacity: 1; filter: blur(0)   brightness(1); }
+/* Transición JUGAR -> SALTAR: slide limpio desde la derecha + brillo recurrente */
+@keyframes saltarSlideIn {
+  0%   { transform: translateX(110%); opacity: 0; }
+  60%  { opacity: 1; }
+  100% { transform: translateX(0);    opacity: 1; }
 }
 .saltar-morph-in {
-  animation: saltarMorphIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: saltarSlideIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 @keyframes saltarPulseGlow {
   0%, 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.55), 0 0 18px 0 rgba(74, 222, 128, 0.35); }
@@ -3926,8 +3926,8 @@ html.light .profile-page .profile-quickbar-tab.is-active {
 }
 .saltar-morph-in.saltar-pulse-loop {
   animation:
-    saltarMorphIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) both,
-    saltarPulseGlow 1.8s ease-in-out 0.55s infinite;
+    saltarSlideIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both,
+    saltarPulseGlow 1.8s ease-in-out 0.5s infinite;
 }
 .saltar-shine {
   position: absolute;
