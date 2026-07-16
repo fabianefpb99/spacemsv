@@ -1651,17 +1651,19 @@ function SamuraiHero({
         >
           <DragonOrnament />
           <div
-            className="relative flex items-center justify-center px-4 py-2"
+            className="relative flex items-center justify-center py-2"
             style={{
               background:
-                "radial-gradient(ellipse at center, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.45) 55%, rgba(0,0,0,0) 100%)",
+                "radial-gradient(ellipse at center, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.5) 55%, rgba(0,0,0,0) 100%)",
             }}
           >
             {/* Línea dorada superior */}
             <span
               aria-hidden="true"
-              className="absolute left-0 right-0 top-0 h-px"
+              className="absolute top-0 h-px"
               style={{
+                left: "-14px",
+                right: "-14px",
                 background:
                   "linear-gradient(to right, rgba(251,191,36,0) 0%, rgba(251,191,36,0.85) 20%, #fde68a 50%, rgba(251,191,36,0.85) 80%, rgba(251,191,36,0) 100%)",
                 boxShadow:
@@ -1671,8 +1673,10 @@ function SamuraiHero({
             {/* Línea dorada inferior */}
             <span
               aria-hidden="true"
-              className="absolute left-0 right-0 bottom-0 h-px"
+              className="absolute bottom-0 h-px"
               style={{
+                left: "-14px",
+                right: "-14px",
                 background:
                   "linear-gradient(to right, rgba(251,191,36,0) 0%, rgba(251,191,36,0.85) 20%, #fde68a 50%, rgba(251,191,36,0.85) 80%, rgba(251,191,36,0) 100%)",
                 boxShadow:
