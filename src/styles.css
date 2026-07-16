@@ -3907,6 +3907,58 @@ html.light .profile-page .profile-quickbar-tab.is-active {
 .chicken-prejump-msg-b { animation-delay: 3s; }
 .chicken-prejump-msg-c { animation-delay: 6s; }
 .chicken-prejump-msg-d { animation-delay: 9s; }
+
+/* Transición JUGAR -> SALTAR: morph pop + brillo recurrente que invita a pulsar */
+@keyframes saltarMorphIn {
+  0%   { transform: scale(0.6) rotate(-6deg); opacity: 0; filter: blur(6px) brightness(1.6); }
+  55%  { transform: scale(1.12) rotate(2deg);  opacity: 1; filter: blur(0)   brightness(1.35); }
+  100% { transform: scale(1)    rotate(0);     opacity: 1; filter: blur(0)   brightness(1); }
+}
+.saltar-morph-in {
+  animation: saltarMorphIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes saltarPulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.55), 0 0 18px 0 rgba(74, 222, 128, 0.35); }
+  50%      { box-shadow: 0 0 0 8px rgba(74, 222, 128, 0),   0 0 28px 6px rgba(74, 222, 128, 0.65); }
+}
+.saltar-pulse-loop {
+  animation: saltarPulseGlow 1.8s ease-in-out infinite;
+}
+.saltar-morph-in.saltar-pulse-loop {
+  animation:
+    saltarMorphIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) both,
+    saltarPulseGlow 1.8s ease-in-out 0.55s infinite;
+}
+.saltar-shine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.55) 48%,
+    rgba(255, 255, 255, 0.85) 50%,
+    rgba(255, 255, 255, 0.55) 52%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+  animation: saltarShineSweep 2.4s ease-in-out infinite;
+  animation-delay: 0.6s;
+  mix-blend-mode: screen;
+}
+@keyframes saltarShineSweep {
+  0%   { transform: translateX(-120%); }
+  55%  { transform: translateX(120%); }
+  100% { transform: translateX(120%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .saltar-morph-in,
+  .saltar-pulse-loop,
+  .saltar-morph-in.saltar-pulse-loop,
+  .saltar-shine { animation: none; }
+  .saltar-shine { display: none; }
+}
+
 @keyframes chickenPreJumpSwap {
   0%     { opacity: 0; transform: translateX(-50%) translateY(6px); }
   4%     { opacity: 1; transform: translateX(-50%) translateY(0); }
