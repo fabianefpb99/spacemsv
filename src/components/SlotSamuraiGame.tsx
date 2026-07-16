@@ -1719,11 +1719,6 @@ function DragonOrnament({ flip = false }: { flip?: boolean }) {
     />
   );
 }
-      <circle cx="60" cy="27" r="1.6" fill="#1a0505" />
-      <circle cx="60.4" cy="26.6" r="0.6" fill="#fde68a" />
-    </svg>
-  );
-}
 
 function seedHistory(): HistoryItem[] {
   const now = Date.now();
