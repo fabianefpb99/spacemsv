@@ -1704,8 +1704,8 @@ function DragonOrnament({ flip = false }: { flip?: boolean }) {
   return (
     <svg
       viewBox="0 0 100 100"
-      width="42"
-      height="42"
+      width="54"
+      height="54"
       aria-hidden="true"
       style={{
         transform: flip ? "scaleX(-1)" : undefined,
