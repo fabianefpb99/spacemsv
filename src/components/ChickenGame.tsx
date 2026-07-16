@@ -722,9 +722,10 @@ export function ChickenGame() {
                 type="button"
                 onClick={jump}
                 disabled={phase !== "playing"}
-                className="btn-primary-green btn-primary-action flex h-12 w-full items-center justify-center gap-2 rounded-xl font-display text-base font-black uppercase tracking-widest disabled:opacity-50"
+                className="btn-primary-green btn-primary-action saltar-morph-in saltar-pulse-loop relative overflow-hidden flex h-12 w-full items-center justify-center gap-2 rounded-xl font-display text-base font-black uppercase tracking-widest disabled:opacity-50"
               >
-                SALTAR
+                <span className="saltar-shine" aria-hidden="true" />
+                <span className="relative z-[1]">SALTAR</span>
               </button>
             )}
             {(phase === "playing" || phase === "jumping") && step >= 1 && (
@@ -742,9 +743,10 @@ export function ChickenGame() {
                   type="button"
                   onClick={jump}
                   disabled={phase !== "playing"}
-                  className="btn-primary-green btn-primary-action flex h-12 w-full items-center justify-center gap-2 rounded-xl font-display text-base font-black uppercase tracking-widest disabled:opacity-50"
+                  className="btn-primary-green btn-primary-action saltar-pulse-loop relative overflow-hidden flex h-12 w-full items-center justify-center gap-2 rounded-xl font-display text-base font-black uppercase tracking-widest disabled:opacity-50"
                 >
-                  SALTAR
+                  <span className="saltar-shine" aria-hidden="true" />
+                  <span className="relative z-[1]">SALTAR</span>
                 </button>
               </div>
             )}
