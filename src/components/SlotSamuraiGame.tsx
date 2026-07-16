@@ -1713,7 +1713,7 @@ function SamuraiHero({
               draggable={false}
             />
             <div
-              className="-mt-[14px] font-display text-[24px] font-black tracking-wide leading-none"
+              className="-mt-[6px] font-display text-[24px] font-black tracking-wide leading-none"
               style={{
                 color: "#fef08a",
                 textShadow:
