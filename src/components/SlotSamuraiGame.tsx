@@ -1703,46 +1703,83 @@ function DragonOrnament({ flip = false }: { flip?: boolean }) {
   const glowId = flip ? "samurai-dragon-glow-r" : "samurai-dragon-glow-l";
   return (
     <svg
-      viewBox="0 0 72 40"
-      width="46"
-      height="26"
+      viewBox="0 0 100 100"
+      width="54"
+      height="54"
       aria-hidden="true"
       style={{
         transform: flip ? "scaleX(-1)" : undefined,
-        filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.75))",
+        filter:
+          "drop-shadow(0 0 4px rgba(239,68,68,0.55)) drop-shadow(0 1px 2px rgba(0,0,0,0.9))",
         flexShrink: 0,
       }}
     >
       <defs>
-        <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="1">
+        <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#fde68a" />
-          <stop offset="45%" stopColor="#f59e0b" />
-          <stop offset="100%" stopColor="#b91c1c" />
+          <stop offset="35%" stopColor="#fb923c" />
+          <stop offset="70%" stopColor="#ef4444" />
+          <stop offset="100%" stopColor="#7f1d1d" />
         </linearGradient>
-        <filter id={glowId} x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="0.6" result="b" />
+        <filter id={glowId} x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="1.1" result="b" />
           <feMerge>
             <feMergeNode in="b" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
       </defs>
-      <g fill={`url(#${gradId})`} filter={`url(#${glowId})`}>
-        {/* Cuerpo serpentino */}
-        <path d="M4 22 C 12 10, 22 32, 30 20 C 36 11, 44 28, 52 18 C 58 11, 62 18, 60 24 C 58 29, 52 27, 50 23 C 49 21, 47 22, 47 24 C 48 28, 55 32, 60 30 L 62 32 C 55 36, 46 34, 44 28 C 43 25, 40 26, 40 29 C 41 33, 46 36, 50 36 L 46 38 C 38 38, 33 33, 33 28 C 33 24, 29 23, 28 27 C 27 31, 22 32, 18 30 L 20 27 C 24 28, 26 26, 25 23 C 23 18, 16 21, 12 27 L 8 26 C 8 25, 6 24, 4 22 Z" />
-        {/* Cabeza */}
-        <path d="M64 18 C 70 16, 71 22, 68 25 C 66 27, 62 26, 61 23 C 60 21, 61 19, 64 18 Z" />
-        {/* Cuerno trasero */}
-        <path d="M67 15 L 71 10 L 70 16 Z" />
-        {/* Melena / cresta */}
-        <path d="M62 16 L 60 12 L 61 17 Z" opacity="0.85" />
-        <path d="M59 17 L 57 13 L 58.5 18 Z" opacity="0.7" />
-        {/* Bigote */}
-        <path d="M60 24 C 56 26, 52 27, 48 27" stroke={`url(#${gradId})`} strokeWidth="0.5" fill="none" opacity="0.85" />
+      <g
+        filter={`url(#${glowId})`}
+        stroke={`url(#${gradId})`}
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {/* Cuerpo — línea sinuosa que baja en S/coil */}
+        <path
+          d="M 68 28 C 82 34, 82 52, 62 56 C 42 60, 30 74, 42 86 C 50 94, 66 92, 70 84"
+          strokeWidth="5.5"
+        />
+        {/* Sombra interna del cuerpo para dar volumen */}
+        <path
+          d="M 68 28 C 82 34, 82 52, 62 56 C 42 60, 30 74, 42 86 C 50 94, 66 92, 70 84"
+          strokeWidth="2"
+          stroke="#fde68a"
+          opacity="0.55"
+        />
+        {/* Cresta dorsal — pequeños ganchos a lo largo del lomo */}
+        <path d="M 74 36 L 78 30" strokeWidth="1.8" />
+        <path d="M 78 46 L 84 44" strokeWidth="1.8" />
+        <path d="M 74 56 L 80 58" strokeWidth="1.8" />
+        <path d="M 46 66 L 40 62" strokeWidth="1.8" />
+        <path d="M 36 78 L 30 78" strokeWidth="1.8" />
+        {/* Cabeza — perfil abierto (mandíbula superior + inferior) */}
+        <path
+          d="M 66 22 Q 54 18, 50 28 Q 48 34, 54 36 L 68 34"
+          strokeWidth="3.5"
+        />
+        <path
+          d="M 54 34 Q 50 40, 58 42 L 66 38"
+          strokeWidth="3"
+        />
+        {/* Cuernos — dos trazos hacia atrás/arriba */}
+        <path d="M 66 22 Q 76 12, 82 6" strokeWidth="3" />
+        <path d="M 62 22 Q 66 12, 68 6" strokeWidth="2.2" />
+        {/* Melena / mechones detrás del cuerno */}
+        <path d="M 70 26 Q 78 22, 84 24" strokeWidth="1.8" opacity="0.85" />
+        <path d="M 72 32 Q 82 32, 88 36" strokeWidth="1.5" opacity="0.75" />
+        {/* Bigotes largos flotantes */}
+        <path d="M 52 32 Q 36 40, 30 56 Q 28 66, 34 68" strokeWidth="1.4" opacity="0.9" />
+        <path d="M 58 42 Q 48 54, 46 70" strokeWidth="1.2" opacity="0.8" />
+        {/* Garra */}
+        <path d="M 72 72 L 76 78" strokeWidth="1.8" />
+        <path d="M 76 72 L 80 78" strokeWidth="1.8" />
+        <path d="M 80 72 L 84 78" strokeWidth="1.8" />
       </g>
       {/* Ojo */}
-      <circle cx="66.2" cy="22" r="0.9" fill="#0f0a05" />
-      <circle cx="66.5" cy="21.7" r="0.35" fill="#fde68a" />
+      <circle cx="60" cy="27" r="1.6" fill="#1a0505" />
+      <circle cx="60.4" cy="26.6" r="0.6" fill="#fde68a" />
     </svg>
   );
 }
