@@ -1602,13 +1602,6 @@ function SamuraiHero({
 }) {
   const tier = spinning ? "idle" : classifySamuraiEvent(lastWin, bet);
   const showEvent = tier !== "idle" && lastWin > 0;
-  // Preview de los 4 logos WIN antes de la primera girada. Se desvanece
-  // en cuanto el usuario dispara el primer spin. Si cierra el juego y
-  // vuelve (componente re-monta), vuelve a mostrarse.
-  const [showPreview, setShowPreview] = useState(true);
-  useEffect(() => {
-    if (spinning || lastWin > 0) setShowPreview(false);
-  }, [spinning, lastWin]);
   // Pre-decodifica los 4 logos de tier al montar el hero. Sin esto, Android
   // gama baja decodifica el WebP en el momento del primer BIG/MEGA/SUPER y
   // eso genera un delay perceptible antes de que el logo aparezca.
