@@ -588,6 +588,26 @@ export function ChickenGame() {
             </div>
           )}
 
+          {/* Motivación mientras espera el primer SALTAR */}
+          {phase === "playing" && displayedStep === 0 && (
+            <div className="chicken-motivation-banner px-6">
+              <div className="chicken-prejump-rotator max-w-[20rem] text-center">
+                <span className="chicken-prejump-msg chicken-prejump-msg-a font-display text-2xl font-black uppercase leading-tight tracking-tight text-white sm:text-3xl">
+                  ¡Vamos a saltar!
+                </span>
+                <span className="chicken-prejump-msg chicken-prejump-msg-b font-display text-2xl font-black uppercase leading-tight tracking-tight text-white sm:text-3xl">
+                  ¿Qué esperas? ¡Saltemos!
+                </span>
+                <span className="chicken-prejump-msg chicken-prejump-msg-c font-display text-2xl font-black uppercase leading-tight tracking-tight text-white sm:text-3xl">
+                  Tengo fe, ¡una más!
+                </span>
+                <span className="chicken-prejump-msg chicken-prejump-msg-d font-display text-2xl font-black uppercase leading-tight tracking-tight text-white sm:text-3xl">
+                  ¡Dale al botón, campeón!
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* Micro-banner motivacional tras cada salto exitoso */}
           {displayedStep >= 1 &&
             (phase === "playing" ||
