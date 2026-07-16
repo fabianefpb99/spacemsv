@@ -1650,17 +1650,47 @@ function SamuraiHero({
           aria-hidden="true"
         >
           <DragonOrnament />
-          <span
-            className="font-display font-black uppercase tracking-[0.18em] leading-none whitespace-nowrap"
+          <div
+            className="relative flex items-center justify-center px-4 py-2"
             style={{
-              fontSize: 13.5,
-              color: "#fde68a",
-              textShadow:
-                "0 0 8px rgba(220, 38, 38, 0.55), 0 0 14px rgba(251, 191, 36, 0.35), 0 2px 3px rgba(0,0,0,0.9)",
+              background:
+                "radial-gradient(ellipse at center, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.45) 55%, rgba(0,0,0,0) 100%)",
             }}
           >
-            El Dragón trae suerte
-          </span>
+            {/* Línea dorada superior */}
+            <span
+              aria-hidden="true"
+              className="absolute left-0 right-0 top-0 h-px"
+              style={{
+                background:
+                  "linear-gradient(to right, rgba(251,191,36,0) 0%, rgba(251,191,36,0.85) 20%, #fde68a 50%, rgba(251,191,36,0.85) 80%, rgba(251,191,36,0) 100%)",
+                boxShadow:
+                  "0 0 6px rgba(251,191,36,0.7), 0 0 12px rgba(251,191,36,0.35)",
+              }}
+            />
+            {/* Línea dorada inferior */}
+            <span
+              aria-hidden="true"
+              className="absolute left-0 right-0 bottom-0 h-px"
+              style={{
+                background:
+                  "linear-gradient(to right, rgba(251,191,36,0) 0%, rgba(251,191,36,0.85) 20%, #fde68a 50%, rgba(251,191,36,0.85) 80%, rgba(251,191,36,0) 100%)",
+                boxShadow:
+                  "0 0 6px rgba(251,191,36,0.7), 0 0 12px rgba(251,191,36,0.35)",
+              }}
+            />
+            <span
+              className="font-display font-black uppercase tracking-[0.18em] leading-none whitespace-nowrap"
+              style={{
+                fontSize: 13.5,
+                color: "#fde68a",
+                textShadow:
+                  "0 0 8px rgba(220, 38, 38, 0.55), 0 0 14px rgba(251, 191, 36, 0.35), 0 2px 3px rgba(0,0,0,0.9)",
+              }}
+            >
+              El Dragón trae suerte
+            </span>
+          </div>
           <DragonOrnament flip />
         </div>
         {showEvent && (
