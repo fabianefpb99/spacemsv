@@ -1537,6 +1537,25 @@ button img,
   animation: btn-shine 3.2s cubic-bezier(.22,.61,.36,1) infinite;
 }
 
+/* Chicken Space: JUGAR / JUGAR DE NUEVO must stay visually stable.
+   Only SALTAR gets the directional slide + light pulse below. */
+.chicken-action-button {
+  transform-origin: center;
+  rotate: 0deg;
+}
+.chicken-action-static,
+.chicken-action-static:hover,
+.chicken-action-static:focus-visible,
+.chicken-action-static:disabled {
+  animation: none !important;
+  transform: translateX(0) translateY(0) rotate(0deg) scale(1) !important;
+}
+.chicken-action-static::before,
+.chicken-action-static::after {
+  animation: none !important;
+  transform: translateX(-120%) rotate(0deg) !important;
+}
+
 /* Pop when entering the RETIRAR (cashout) state */
 .btn-pop-in {
   animation: btn-pop 360ms cubic-bezier(.34,1.56,.64,1);
