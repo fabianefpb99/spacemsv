@@ -18,6 +18,7 @@ import { Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "luc
 import { setMuted as setAudioMuted, playCashoutSound, playCoinsSound, isMuted, stopAllGameAudio, getCtx, getMasterGain, AUDIO_STOP_ALL_EVENT } from "@/lib/gameAudio";
 import { playSound, type SoundHandle } from "@/lib/webAudioPlayer";
 import samuraiBgmAsset from "@/assets/samurai/samurai-bgm.mp3.asset.json";
+import dragonOrnament from "@/assets/samurai/dragon-ornament.png";
 const samuraiBgmUrl = samuraiBgmAsset.url;
 import samuraiBgAsset from "@/assets/samurai/samurai-bg.webp.asset.json";
 import samuraiLegendLogoAsset from "@/assets/samurai/samurai-legend-logo.webp.asset.json";
