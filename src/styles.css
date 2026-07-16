@@ -3882,6 +3882,39 @@ html.light .profile-page .profile-quickbar-tab.is-active {
 @media (prefers-reduced-motion: reduce) {
   .chicken-ready-title { animation: none; }
 }
+
+/* Rotador motivacional pre-primer-salto (4 mensajes, 3s c/u = 12s) */
+.chicken-prejump-rotator {
+  position: relative;
+  display: inline-block;
+  min-height: 2.4em;
+}
+.chicken-prejump-msg {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%) translateY(6px);
+  white-space: nowrap;
+  opacity: 0;
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.85), 0 0 18px rgba(168, 85, 247, 0.35);
+  animation: chickenPreJumpSwap 12s ease-in-out infinite;
+}
+.chicken-prejump-msg-a { animation-delay: 0s; }
+.chicken-prejump-msg-b { animation-delay: 3s; }
+.chicken-prejump-msg-c { animation-delay: 6s; }
+.chicken-prejump-msg-d { animation-delay: 9s; }
+@keyframes chickenPreJumpSwap {
+  0%     { opacity: 0; transform: translateX(-50%) translateY(6px); }
+  4%     { opacity: 1; transform: translateX(-50%) translateY(0); }
+  22%    { opacity: 1; transform: translateX(-50%) translateY(0); }
+  25%    { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+  100%   { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chicken-prejump-msg { animation: none; }
+  .chicken-prejump-msg-a { opacity: 1; transform: translateX(-50%); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .chicken-cluck-title,
   .chicken-cluck-title::before,
