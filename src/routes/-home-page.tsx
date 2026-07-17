@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import { Menu, ChevronRight, ChevronLeft, Gift, Home, Star, Wallet, User, Trophy, Instagram } from "lucide-react";
+import { Menu, ChevronRight, ChevronLeft, Gift, Home, Star, Wallet, User, Trophy, Instagram, ShieldCheck, Lock, Headphones } from "lucide-react";
 import { type PointerEvent, useEffect, useRef, useState } from "react";
 import { PromoPopup } from "@/components/PromoPopup";
 import { MascotFloater } from "@/components/MascotFloater";
@@ -1267,6 +1267,43 @@ export function HomePage() {
           <button className="home-invite-btn rounded-md bg-purple-600 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-purple-900/50 hover:bg-purple-500">
             Invitar
           </button>
+        </section>
+
+        {/* Juego responsable */}
+        <section className="mt-5">
+          <div className="relative flex items-center justify-center">
+            <div className="absolute inset-x-0 top-1/2 h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
+            <div className="relative rounded-full border border-purple-500/30 bg-[#0c0620] p-1.5">
+              <ShieldCheck className="h-4 w-4 text-purple-300" />
+            </div>
+          </div>
+
+          <div className="mt-4 grid grid-cols-[1.4fr_auto_auto_auto] items-start gap-3 sm:gap-4">
+            <div className="flex items-start gap-2.5">
+              <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-purple-300" />
+              <div className="min-w-0">
+                <div className="font-display text-[11px] font-black uppercase tracking-wider text-white leading-tight">
+                  Juega responsablemente
+                </div>
+                <p className="mt-1 text-[10px] leading-snug text-purple-200/70">
+                  Apuesta con control. Establece límites de tiempo y dinero.
+                </p>
+              </div>
+            </div>
+
+            <ResponsibleBadge
+              icon={<span className="font-display text-[11px] font-black leading-none">18+</span>}
+              label={"Solo para\nmayores\nde 18 años"}
+            />
+            <ResponsibleBadge
+              icon={<Lock className="h-3.5 w-3.5" />}
+              label={"Tus datos\nestán\nprotegidos"}
+            />
+            <ResponsibleBadge
+              icon={<Headphones className="h-3.5 w-3.5" />}
+              label={"Soporte\n24/7"}
+            />
+          </div>
         </section>
 
         {/* Spacer for bottom nav */}
