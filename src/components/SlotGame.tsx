@@ -20,6 +20,21 @@ import { setMuted as setAudioMuted, playCashoutSound, playCoinsSound, isMuted, s
 import pageBg from "@/assets/mines-page-bg.png";
 import mafiaJazzUrl from "@/assets/mafia-jazz.mp3";
 import dragonOrnament from "@/assets/samurai/dragon-ornament.png";
+import samuraiBgAsset from "@/assets/samurai/samurai-bg.webp.asset.json";
+import samuraiLegendLogoAsset from "@/assets/samurai/samurai-legend-logo.webp.asset.json";
+import winWinAsset from "@/assets/samurai/win-win.webp.asset.json";
+import winBigAsset from "@/assets/samurai/win-big.webp.asset.json";
+import winMegaAsset from "@/assets/samurai/win-mega.webp.asset.json";
+import winSuperAsset from "@/assets/samurai/win-super.webp.asset.json";
+const samuraiBg = samuraiBgAsset.url;
+const samuraiLegendLogo = samuraiLegendLogoAsset.url;
+const WIN_LOGOS: Record<"win" | "big" | "mega" | "super" | "jackpot", string> = {
+  win: winWinAsset.url,
+  big: winBigAsset.url,
+  mega: winMegaAsset.url,
+  super: winSuperAsset.url,
+  jackpot: winSuperAsset.url,
+};
 
 import bossImg from "@/assets/slot/boss.png";
 import hatImg from "@/assets/slot/hat.png";
