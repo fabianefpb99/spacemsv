@@ -328,10 +328,8 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
                       setOpen(false);
                       navigate({ to: currentSlide.cta_link });
                     }}
-                    className={`group relative mt-4 block aspect-[16/10] w-full overflow-hidden rounded-2xl border text-left transition ${
-                      isGold
-                        ? "border-amber-400/40 bg-[#1a1206] shadow-[0_0_24px_rgba(212,175,55,0.28)] hover:shadow-[0_0_32px_rgba(212,175,55,0.5)]"
-                        : "border-fuchsia-500/30 bg-[#1a0a3a] shadow-[0_0_24px_rgba(168,85,247,0.25)] hover:shadow-[0_0_32px_rgba(217,70,239,0.45)]"
+                    className={`group relative mt-4 block aspect-[16/8] w-full overflow-hidden rounded-2xl border border-purple-500/20 text-left transition ${
+                      isGold ? "bg-[#1a1206]" : "bg-[#1a0a3a]"
                     }`}
                     aria-label={`Promoción ${currentSlide.title}`}
                     hidden={!promoActive}
@@ -341,6 +339,7 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
                       alt=""
                       aria-hidden
                       decoding="async"
+                      data-no-smooth-image
                       className="pointer-events-none absolute inset-0 h-full w-full object-cover object-right"
                     />
                     <div
