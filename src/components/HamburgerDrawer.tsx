@@ -334,14 +334,18 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
                     aria-label={`Promoción ${currentSlide.title}`}
                     hidden={!promoActive}
                   >
-                    <img
-                      src={currentSlide.image}
-                      alt=""
-                      aria-hidden
-                      decoding="async"
-                      data-no-smooth-image
-                      className="pointer-events-none absolute inset-0 h-full w-full object-cover object-right"
-                    />
+                    {promoSlides.map((s, i) => (
+                      <img
+                        key={s.image}
+                        src={s.image}
+                        alt=""
+                        aria-hidden
+                        decoding="async"
+                        data-no-smooth-image
+                        className="pointer-events-none absolute inset-0 h-full w-full object-cover object-right"
+                        style={{ visibility: i === slideIdx ? "visible" : "hidden" }}
+                      />
+                    ))}
                     <div
                       aria-hidden
                       className="absolute inset-0"
