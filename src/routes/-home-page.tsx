@@ -152,15 +152,24 @@ function OnlineRotator({ online, username, onClick, clickable }: { online: numbe
     <div className="relative mt-[10px] h-6 overflow-hidden" style={{ perspective: "600px" }}>
       {mode === "online" && (
         <div
-          className={`absolute inset-0 flex items-center justify-start gap-2 pl-1 animate-fade-in ${clickable ? "cursor-pointer" : ""}`}
+          className={`absolute inset-0 flex items-center justify-between gap-2 px-1 animate-fade-in ${clickable ? "cursor-pointer" : ""}`}
           onClick={clickable ? onClick : undefined}
           role={clickable ? "button" : undefined}
         >
-          <span className="relative inline-flex h-2 w-2">
-            <span className="home-online-dot absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-80" />
-            <span className="home-online-dot relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+          <span className="inline-flex items-center gap-2">
+            <span className="relative inline-flex h-2 w-2">
+              <span className="home-online-dot absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-80" />
+              <span className="home-online-dot relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+            </span>
+            <span className="home-online-text text-xs font-semibold text-white/90">{online} ONLINE</span>
           </span>
-          <span className="home-online-text text-xs font-semibold text-white/90">{online} ONLINE</span>
+          <span className="home-online-text inline-flex items-center gap-1 text-xs font-semibold text-white/90">
+            Authentic Games
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-3.5 w-3.5 text-emerald-500" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" fill="currentColor" />
+              <path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </span>
         </div>
       )}
       <div
