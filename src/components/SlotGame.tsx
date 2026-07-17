@@ -619,8 +619,8 @@ function SymbolTile({ sym, highlight, tier }: { sym: SymbolDef; highlight: boole
         decoding="sync"
         className="select-none pointer-events-none relative z-10"
         style={{
-          width: "96%",
-          height: "96%",
+          width: "88%",
+          height: "88%",
           objectFit: "contain",
           transform: ANDROID
             ? `translateZ(0)${scale !== 1 ? ` scale(${scale})` : ""}`
