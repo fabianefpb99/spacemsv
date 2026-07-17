@@ -1226,7 +1226,7 @@ export function SlotGame() {
       <div className="relative mx-auto flex h-full max-w-md flex-col px-2.5 pb-1.5 pt-3 sm:max-w-lg sm:px-4">
         {/* Header */}
         <header
-          className="flex items-center justify-between bg-[#060210]/80 backdrop-blur-sm border-b border-purple-500/20 pb-2 px-3 -mx-3 -mt-3"
+          className="flex items-center justify-between bg-[#060210]/80 backdrop-blur-sm border-b border-amber-500/25 pb-2 px-3 -mx-3 -mt-3"
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <div className="flex items-center gap-1">
@@ -1237,7 +1237,7 @@ export function SlotGame() {
           </div>
           <div className="flex items-center gap-2">
             <div className="text-right">
-              <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
+              <div className="text-[9px] uppercase tracking-wider text-amber-200/80">Balance</div>
               <div className="font-display text-[11px] font-bold sm:text-xs text-white">
                 <span className="neon-green mr-0.5">$</span>{balanceReady ? formatCOP(balance) : "—"} COP
               </div>
@@ -1257,7 +1257,7 @@ export function SlotGame() {
           </div>
           <button
             onClick={() => setMuted((m) => !m)}
-            className="rounded-md p-1 text-purple-200/80 hover:bg-white/5"
+            className="rounded-md p-1 text-amber-200/80 hover:bg-white/5"
             aria-label={muted ? "Activar sonido" : "Silenciar"}
           >
             {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
@@ -1288,10 +1288,10 @@ export function SlotGame() {
               clipPath:
                 "polygon(16px 0, calc(100% - 16px) 0, 100% 16px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 16px 100%, 0 calc(100% - 16px), 0 16px)",
               background:
-                "linear-gradient(135deg, #a855f7 0%, #7c3aed 50%, #c084fc 100%)",
+                "linear-gradient(135deg, #fde68a 0%, #b45309 50%, #fbbf24 100%)",
               padding: "2px",
               filter:
-                "drop-shadow(0 0 10px rgba(168,85,247,0.55)) drop-shadow(0 0 22px rgba(168,85,247,0.28))",
+                "drop-shadow(0 0 10px rgba(251,191,36,0.55)) drop-shadow(0 0 22px rgba(217,119,6,0.28))",
             }}
           >
             <div
@@ -1324,9 +1324,9 @@ export function SlotGame() {
                         className="absolute right-0 top-0 h-full w-px"
                         style={{
                           background:
-                            "linear-gradient(180deg, transparent 0%, rgba(168,85,247,0.85) 15%, rgba(192,132,252,0.95) 50%, rgba(168,85,247,0.85) 85%, transparent 100%)",
+                            "linear-gradient(180deg, transparent 0%, rgba(251,191,36,0.85) 15%, rgba(253,224,71,0.95) 50%, rgba(251,191,36,0.85) 85%, transparent 100%)",
                           boxShadow:
-                            "0 0 6px rgba(168,85,247,0.85), 0 0 12px rgba(168,85,247,0.5)",
+                            "0 0 6px rgba(251,191,36,0.85), 0 0 12px rgba(217,119,6,0.5)",
                         }}
                       />
                     )}
@@ -1347,7 +1347,7 @@ export function SlotGame() {
             {SYMBOLS.map((s) => (
               <div
                 key={s.id}
-                className="flex flex-col items-center rounded-lg border border-purple-500/25 bg-[#0c0620]/70 px-1.5 py-1 shrink-0"
+                className="flex flex-col items-center rounded-lg border border-amber-500/30 bg-[#1a0f04]/70 px-1.5 py-1 shrink-0"
               >
                 <div className="flex items-center">
                   <img
@@ -1378,14 +1378,14 @@ export function SlotGame() {
           <div className="flex gap-2">
             {/* Left: bet controls */}
             <div className="flex-1">
-              <div className="text-[9px] uppercase tracking-widest text-purple-200/70 text-center">APUESTA (COP)</div>
+              <div className="text-[9px] uppercase tracking-widest text-amber-200/80 text-center">APUESTA (COP)</div>
               <div className="mt-0.5 flex items-center gap-1.5">
                 <button
                   onClick={() => setBet((b) => Math.max(MIN_BET, b - BET_STEP))}
                   disabled={spinning}
                   className="flex h-9 w-10 items-center justify-center rounded-xl btn-bet disabled:opacity-40"
                 ><Minus className="h-5 w-5" /></button>
-                <div className="flex h-9 min-w-0 flex-1 items-center rounded-xl border border-purple-500/40 bg-[#0c0620] px-2 font-display text-base font-bold tabular-nums text-white">
+                <div className="flex h-9 min-w-0 flex-1 items-center rounded-xl border border-amber-500/50 bg-[#1a0f04] px-2 font-display text-base font-bold tabular-nums text-white">
                   <BetAmount
                     bet={bet}
                     bonusBalance={bonusBalance}
@@ -1431,24 +1431,24 @@ export function SlotGame() {
                 className={`h-8 rounded-xl font-display font-black uppercase tracking-[0.2em] text-xs transition-all disabled:opacity-40 disabled:cursor-not-allowed border ${
                   autoSpin
                     ? "bg-gradient-to-b from-amber-300 to-amber-500 text-[#1a0a02] border-amber-200 shadow-[0_0_18px_rgba(251,191,36,0.55)]"
-                    : "bg-[#1a0f33] text-purple-100 border-purple-500/50 hover:border-purple-400 hover:bg-[#221347] shadow-[0_0_10px_rgba(168,85,247,0.25)]"
+                    : "bg-[#1a0f04] text-amber-100 border-amber-500/50 hover:border-amber-400 hover:bg-[#241704] shadow-[0_0_10px_rgba(251,191,36,0.25)]"
                 }`}
               >
                 {autoSpin ? "AUTO ON" : "AUTO"}
               </button>
             </div>
           </div>
-          <div className="mt-1 text-center text-[9px] leading-none text-purple-200/60">
+          <div className="mt-1 text-center text-[9px] leading-none text-amber-200/60">
             MÍNIMO: {formatCOP(MIN_BET)} COP · MÁXIMO: {formatCOP(MAX_BET)} COP
           </div>
         </section>
 
         {/* Last wins ticker */}
-        <section className="mt-1.5 rounded-xl border border-purple-500/30 bg-[#0c0620]/80 p-1.5">
+        <section className="mt-1.5 rounded-xl border border-amber-500/30 bg-[#1a0f04]/80 p-1.5">
           <div className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-purple-300" />
+            <TrendingUp className="h-4 w-4 text-amber-300" />
             <h3 className="font-display text-[10px] font-bold uppercase tracking-widest text-white">Últimas ganancias</h3>
-            <Trophy className="ml-auto h-4 w-4 text-purple-300/70" />
+            <Trophy className="ml-auto h-4 w-4 text-amber-300/70" />
           </div>
           <ul className="mt-1.5 flex gap-1.5 overflow-x-auto hide-scrollbar pb-0.5">
             {history.slice(0, 8).map((w) => {
@@ -1463,9 +1463,9 @@ export function SlotGame() {
                        style={{ filter: `drop-shadow(0 0 4px rgba(${sym.glow},0.5))` }} />
                   <div className="leading-tight">
                     <div className="font-display text-[10px] font-bold neon-green">{w.multiplier.toFixed(2)}x</div>
-                    <div className="text-[8px] font-semibold text-purple-100/80">{formatCOP(w.amount)} COP</div>
+                  <div className="text-[8px] font-semibold text-amber-100/80">{formatCOP(w.amount)} COP</div>
                   </div>
-                  <span className="text-[7px] uppercase tracking-wider text-purple-300/60 ml-0.5">
+                  <span className="text-[7px] uppercase tracking-wider text-amber-300/60 ml-0.5">
                     {w.user} · {relativeTime(w.ts, now)}
                   </span>
                 </li>
