@@ -1272,9 +1272,9 @@ export function HomePage() {
         {/* Juego responsable */}
         <section className="home-responsible mt-5">
           <div className="relative flex items-center justify-center">
-            <div className="absolute inset-x-0 top-1/2 h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
-            <div className="home-responsible-shield relative rounded-full border border-purple-500/30 bg-[#0c0620] p-1.5">
-              <ShieldCheck className="h-4 w-4 text-purple-300" />
+            <div className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
+            <div className="home-responsible-shield relative flex h-10 w-10 items-center justify-center rounded-full border border-purple-500/30 bg-[#0c0620]">
+              <ShieldCheck className="h-6 w-6 text-purple-300" />
             </div>
           </div>
 
