@@ -1411,18 +1411,13 @@ export function SlotSamuraiGame() {
                   className="flex h-9 w-10 items-center justify-center rounded-xl btn-bet disabled:opacity-40"
                 ><Plus className="h-5 w-5" /></button>
               </div>
-              <div className="mt-1 grid grid-cols-5 gap-1">
-                <button
-                  onClick={() => setBet((b) => Math.min(MAX_BET, Math.max(MIN_BET, b * 2)))}
-                  disabled={spinning}
-                  className="rounded-md btn-bet py-0.5 text-[10px] font-bold disabled:opacity-40"
-                >X2</button>
+              <div className="mt-1 grid grid-cols-4 gap-1.5">
                 {QUICK_BETS.map((q) => (
                   <button
                     key={q}
                     onClick={() => setBet((b) => Math.min(MAX_BET, b + q))}
                     disabled={spinning}
-                    className="rounded-md btn-bet py-0.5 text-[10px] font-bold disabled:opacity-40"
+                    className="rounded-md btn-bet py-0.5 text-[11px] font-bold disabled:opacity-40"
                   >+{q >= 1000 ? `${q / 1000}K` : q}</button>
                 ))}
               </div>
