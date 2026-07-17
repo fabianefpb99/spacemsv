@@ -1213,30 +1213,20 @@ export function SlotGame() {
 
   return (
     <div
-      className="relative min-h-screen text-white"
+      className="relative h-[100dvh] overflow-hidden text-white"
       style={{
-        backgroundColor: "#060210",
-        backgroundImage: `url(${pageBg})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center top",
-        backgroundRepeat: "no-repeat",
-        backgroundAttachment: "fixed",
+        backgroundColor: "#0a0416",
+        backgroundImage: `linear-gradient(180deg, rgba(10,4,22,0.15) 0%, rgba(10,4,22,0.35) 45%, rgba(10,4,22,0.75) 100%), url(${samuraiBg})`,
+        backgroundSize: "cover, cover",
+        backgroundPosition: "center top, center top",
+        backgroundRepeat: "no-repeat, no-repeat",
+        backgroundAttachment: "fixed, fixed",
       }}
     >
-      <div className="pointer-events-none fixed inset-0 bg-stars opacity-40" aria-hidden />
-      <div
-        className="pointer-events-none fixed inset-0"
-        aria-hidden
-        style={{
-          background:
-            "radial-gradient(60% 50% at 50% 0%, rgba(120,40,200,0.28) 0%, transparent 60%), radial-gradient(40% 30% at 50% 100%, rgba(46,255,161,0.10) 0%, transparent 70%)",
-        }}
-      />
-
-      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-4 pt-4 sm:max-w-lg sm:px-4">
+      <div className="relative mx-auto flex h-full max-w-md flex-col px-2.5 pb-1.5 pt-3 sm:max-w-lg sm:px-4">
         {/* Header */}
         <header
-          className="flex items-center justify-between bg-[#060210]/80 backdrop-blur-sm border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
+          className="flex items-center justify-between bg-[#060210]/80 backdrop-blur-sm border-b border-purple-500/20 pb-2 px-3 -mx-3 -mt-3"
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
         >
           <div className="flex items-center gap-1">
@@ -1257,7 +1247,7 @@ export function SlotGame() {
         </header>
 
         {/* Online + mute */}
-        <div className="mt-2 flex items-center justify-between">
+        <div className="mt-1 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="relative inline-flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
@@ -1274,11 +1264,11 @@ export function SlotGame() {
           </button>
         </div>
 
-        {/* Hero — MAFIA ROYALE integrado sobre el fondo + banner con dragones (mirror de Samurai) */}
-        <MafiaHero lastWin={lastWin} displayedWin={displayedWin} spinning={spinning} />
+        {/* Hero — reutiliza logo + tiers de Samurai + banner con dragones */}
+        <MafiaHero lastWin={lastWin} displayedWin={displayedWin} bet={bet} spinning={spinning} />
 
         {/* Reels frame wrapper — labels sit on the neon border edge */}
-        <section className="relative mt-3">
+        <section className="relative mt-1">
           {/* Lines side labels — OUTSIDE the frame, in the gutter */}
           <div className="pointer-events-none absolute left-0 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2 -rotate-90">
             <span className="font-display text-[9px] font-bold tracking-[0.32em] neon-green whitespace-nowrap">
@@ -1305,14 +1295,14 @@ export function SlotGame() {
             }}
           >
             <div
-              className="relative p-2 sm:p-2.5"
+              className="relative p-1.5 sm:p-2"
               style={{
                 clipPath:
                   "polygon(15px 0, calc(100% - 15px) 0, 100% 15px, 100% calc(100% - 15px), calc(100% - 15px) 100%, 15px 100%, 0 calc(100% - 15px), 0 15px)",
                 background: "#0a041c",
               }}
             >
-          <div className="relative pt-3">
+          <div className="relative pt-0.5">
             <div className="grid grid-cols-5 gap-0">
               {grid.map((reel, ri) => (
                 <Reel
@@ -1349,26 +1339,15 @@ export function SlotGame() {
             </div>
           </div>
 
-          {/* Big win banner — OUTSIDE clip so it isn't cut */}
-          {lastWin > 0 && !spinning && (
-            <div
-              className="absolute inset-x-0 -bottom-3 z-30 mx-auto w-fit rounded-full border border-emerald-400/60 bg-[#062014]/95 px-4 py-1 backdrop-blur"
-              style={{ boxShadow: "0 0 24px rgba(46,255,161,0.55)", animation: "scale-in 0.3s ease-out" }}
-            >
-              <span className="font-display text-xs font-bold uppercase tracking-widest text-emerald-300">
-                ¡Ganaste! <span className="neon-green ml-1">${formatCOP(displayedWin)}</span>
-              </span>
-            </div>
-          )}
         </section>
 
         {/* Pay table preview — horizontal scroll carousel */}
-        <section className="mt-4 -mx-3 px-3 overflow-x-auto hide-scrollbar">
+        <section className="mt-1.5 -mx-2.5 px-2.5 overflow-x-auto hide-scrollbar">
           <div className="flex gap-1.5 w-max">
             {SYMBOLS.map((s) => (
               <div
                 key={s.id}
-                className="flex flex-col items-center rounded-lg border border-purple-500/25 bg-[#0c0620]/70 px-1.5 py-1.5 shrink-0"
+                className="flex flex-col items-center rounded-lg border border-purple-500/25 bg-[#0c0620]/70 px-1.5 py-1 shrink-0"
               >
                 <div className="flex items-center">
                   <img
@@ -1376,37 +1355,37 @@ export function SlotGame() {
                     alt=""
                     aria-hidden
                     loading="lazy"
-                    className="h-11 w-11 object-contain"
+                    className="h-9 w-9 object-contain"
                     style={{
                       filter: `drop-shadow(0 2px 3px rgba(0,0,0,0.7)) drop-shadow(0 0 6px rgba(${s.glow},0.55))`,
                     }}
                   />
                   <span
-                    className="-ml-1 font-display text-[11px] font-bold leading-none text-emerald-300"
+                    className="-ml-1 font-display text-[10px] font-bold leading-none text-emerald-300"
                     style={{ textShadow: "0 0 6px rgba(46,255,161,0.7), 0 1px 2px rgba(0,0,0,0.8)" }}
                   >
                     x5
                   </span>
                 </div>
-                <span className="mt-1 font-display text-[11px] font-bold neon-green leading-none">{s.pay[2]}.00x</span>
+                <span className="mt-0.5 font-display text-[10px] font-bold neon-green leading-none">{s.pay[2]}.00x</span>
               </div>
             ))}
           </div>
         </section>
 
         {/* Bet panel */}
-        <section className="mt-3 rounded-2xl glass-panel p-3">
-          <div className="flex gap-2.5">
+        <section className="mt-1.5 rounded-2xl glass-panel p-2">
+          <div className="flex gap-2">
             {/* Left: bet controls */}
             <div className="flex-1">
-              <div className="text-[10px] uppercase tracking-widest text-purple-200/70 text-center">APUESTA (COP)</div>
-              <div className="mt-1 flex items-center gap-1.5">
+              <div className="text-[9px] uppercase tracking-widest text-purple-200/70 text-center">APUESTA (COP)</div>
+              <div className="mt-0.5 flex items-center gap-1.5">
                 <button
                   onClick={() => setBet((b) => Math.max(MIN_BET, b - BET_STEP))}
                   disabled={spinning}
-                  className="flex h-11 w-11 items-center justify-center rounded-xl btn-bet disabled:opacity-40"
+                  className="flex h-9 w-10 items-center justify-center rounded-xl btn-bet disabled:opacity-40"
                 ><Minus className="h-5 w-5" /></button>
-                <div className="flex h-11 min-w-0 flex-1 items-center rounded-xl border border-purple-500/40 bg-[#0c0620] px-2 font-display text-base font-bold tabular-nums text-white">
+                <div className="flex h-9 min-w-0 flex-1 items-center rounded-xl border border-purple-500/40 bg-[#0c0620] px-2 font-display text-base font-bold tabular-nums text-white">
                   <BetAmount
                     bet={bet}
                     bonusBalance={bonusBalance}
@@ -1419,29 +1398,29 @@ export function SlotGame() {
                 <button
                   onClick={() => setBet((b) => Math.min(MAX_BET, b + BET_STEP))}
                   disabled={spinning}
-                  className="flex h-11 w-11 items-center justify-center rounded-xl btn-bet disabled:opacity-40"
+                  className="flex h-9 w-10 items-center justify-center rounded-xl btn-bet disabled:opacity-40"
                 ><Plus className="h-5 w-5" /></button>
               </div>
-              <div className="mt-1.5 grid grid-cols-4 gap-1.5">
+              <div className="mt-1 grid grid-cols-4 gap-1.5">
                 {QUICK_BETS.map((q) => (
                   <button
                     key={q}
                     onClick={() => setBet((b) => Math.min(MAX_BET, b + q))}
                     disabled={spinning}
-                    className="rounded-md btn-bet py-1 text-[11px] font-bold disabled:opacity-40"
+                    className="rounded-md btn-bet py-0.5 text-[11px] font-bold disabled:opacity-40"
                   >+{q >= 1000 ? `${q / 1000}K` : q}</button>
                 ))}
               </div>
             </div>
 
             {/* Right: GIRAR + AUTO */}
-            <div className="flex w-[42%] flex-col gap-1.5" style={{ minHeight: 102 }}>
+            <div className="flex w-[42%] flex-col gap-1" style={{ minHeight: 82 }}>
               <button
                 onClick={spin}
                 disabled={!canSpin}
                 className="flex-1 rounded-2xl btn-primary-green btn-primary-action flex items-center justify-center font-display font-black uppercase disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <span className={`${spinning ? "text-sm tracking-[0.1em]" : "text-xl tracking-[0.15em]"} whitespace-nowrap leading-none`}>
+                <span className={`${spinning ? "text-xs tracking-[0.1em]" : "text-lg tracking-[0.15em]"} whitespace-nowrap leading-none`}>
                   {spinning ? "GIRANDO…" : "GIRAR"}
                 </span>
               </button>
@@ -1449,7 +1428,7 @@ export function SlotGame() {
                 onClick={() => setAutoSpin((a) => !a)}
                 disabled={bet < MIN_BET || bet > balance}
                 aria-pressed={autoSpin}
-                className={`h-9 rounded-xl font-display font-black uppercase tracking-[0.2em] text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed border ${
+                className={`h-8 rounded-xl font-display font-black uppercase tracking-[0.2em] text-xs transition-all disabled:opacity-40 disabled:cursor-not-allowed border ${
                   autoSpin
                     ? "bg-gradient-to-b from-amber-300 to-amber-500 text-[#1a0a02] border-amber-200 shadow-[0_0_18px_rgba(251,191,36,0.55)]"
                     : "bg-[#1a0f33] text-purple-100 border-purple-500/50 hover:border-purple-400 hover:bg-[#221347] shadow-[0_0_10px_rgba(168,85,247,0.25)]"
@@ -1459,34 +1438,34 @@ export function SlotGame() {
               </button>
             </div>
           </div>
-          <div className="mt-2 text-center text-[10px] text-purple-200/60">
+          <div className="mt-1 text-center text-[9px] leading-none text-purple-200/60">
             MÍNIMO: {formatCOP(MIN_BET)} COP · MÁXIMO: {formatCOP(MAX_BET)} COP
           </div>
         </section>
 
         {/* Last wins ticker */}
-        <section className="mt-3 rounded-xl border border-purple-500/30 bg-[#0c0620]/80 p-2.5">
+        <section className="mt-1.5 rounded-xl border border-purple-500/30 bg-[#0c0620]/80 p-1.5">
           <div className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-purple-300" />
-            <h3 className="font-display text-[11px] font-bold uppercase tracking-widest text-white">Últimas ganancias</h3>
+            <h3 className="font-display text-[10px] font-bold uppercase tracking-widest text-white">Últimas ganancias</h3>
             <Trophy className="ml-auto h-4 w-4 text-purple-300/70" />
           </div>
-          <ul className="mt-2 flex gap-2 overflow-x-auto hide-scrollbar pb-1">
+          <ul className="mt-1.5 flex gap-1.5 overflow-x-auto hide-scrollbar pb-0.5">
             {history.slice(0, 8).map((w) => {
               const sym = SYMBOLS[SYMBOL_INDEX.get(w.symbolId)!];
               return (
                 <li
                   key={w.id}
-                  className="flex shrink-0 items-center gap-2 rounded-full border border-emerald-400/30 bg-[#08221a]/70 px-2.5 py-1"
+                  className="flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-400/30 bg-[#08221a]/70 px-2 py-0.5"
                   style={{ boxShadow: "0 0 10px rgba(46,255,161,0.18) inset" }}
                 >
-                  <img src={sym.img} alt="" aria-hidden loading="lazy" className="h-5 w-5 object-contain"
+                  <img src={sym.img} alt="" aria-hidden loading="lazy" className="h-4 w-4 object-contain"
                        style={{ filter: `drop-shadow(0 0 4px rgba(${sym.glow},0.5))` }} />
                   <div className="leading-tight">
-                    <div className="font-display text-[11px] font-bold neon-green">{w.multiplier.toFixed(2)}x</div>
-                    <div className="text-[9px] font-semibold text-purple-100/80">{formatCOP(w.amount)} COP</div>
+                    <div className="font-display text-[10px] font-bold neon-green">{w.multiplier.toFixed(2)}x</div>
+                    <div className="text-[8px] font-semibold text-purple-100/80">{formatCOP(w.amount)} COP</div>
                   </div>
-                  <span className="text-[8px] uppercase tracking-wider text-purple-300/60 ml-1">
+                  <span className="text-[7px] uppercase tracking-wider text-purple-300/60 ml-0.5">
                     {w.user} · {relativeTime(w.ts, now)}
                   </span>
                 </li>
