@@ -42,12 +42,20 @@ export function BrandLoader({ active, minMs = 1060 }: { active: boolean; minMs?:
         pointerEvents: fading ? "none" : undefined,
       }}
     >
-      <img
-        src={logo}
-        alt="BetSpace"
-        className="w-36 max-w-[40vw] select-none brand-loader-reveal"
-        draggable={false}
-      />
+      <div className="flex flex-col items-center gap-2">
+        <img
+          src={logo}
+          alt="BetSpace"
+          className="w-36 max-w-[40vw] select-none brand-loader-reveal"
+          draggable={false}
+        />
+        <span className="brand-loader-reveal inline-flex items-center gap-1 text-[10px] font-medium tracking-wide text-white/80">
+          <span className="font-bold">Authentic</span> Games
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-3 w-3" aria-hidden="true">
+            <path d="M5 12.5l4 4 10-10.5" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
+      </div>
       <style>{`
         .brand-loader-reveal {
           -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.15) 35%, #000 50%, rgba(0,0,0,0.15) 65%, rgba(0,0,0,0.15) 100%);
