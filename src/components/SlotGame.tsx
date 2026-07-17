@@ -1508,15 +1508,15 @@ function HudCell({
 }) {
   const cls =
     accent === "green"  ? "neon-green" :
-    accent === "purple" ? "text-purple-300" :
-    accent === "muted"  ? "text-purple-300/50" :
+    accent === "purple" ? "text-amber-300" :
+    accent === "muted"  ? "text-amber-300/50" :
     "text-white";
   return (
     <div className="text-center">
-      <div className="text-[8px] uppercase tracking-widest text-purple-200/70">{label}</div>
+      <div className="text-[8px] uppercase tracking-widest text-amber-200/70">{label}</div>
       <div
-        className="mt-1 rounded-lg border border-purple-500/30 bg-[#160830]/70 py-1.5"
-        style={{ boxShadow: "inset 0 0 8px rgba(168,85,247,0.18)" }}
+        className="mt-1 rounded-lg border border-amber-500/30 bg-[#1a0f04]/70 py-1.5"
+        style={{ boxShadow: "inset 0 0 8px rgba(251,191,36,0.18)" }}
       >
         <span className={`font-display ${wide ? "text-[11px]" : "text-xs"} font-bold ${cls}`}>{value}</span>
       </div>
