@@ -1,0 +1,1 @@
+UPDATE public.jackpot_state SET amount = 70000, updated_at = now() WHERE id = 't';
