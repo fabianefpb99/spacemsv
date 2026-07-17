@@ -1270,10 +1270,10 @@ export function HomePage() {
         </section>
 
         {/* Juego responsable */}
-        <section className="mt-5">
+        <section className="home-responsible mt-5">
           <div className="relative flex items-center justify-center">
             <div className="absolute inset-x-0 top-1/2 h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
-            <div className="relative rounded-full border border-purple-500/30 bg-[#0c0620] p-1.5">
+            <div className="home-responsible-shield relative rounded-full border border-purple-500/30 bg-[#0c0620] p-1.5">
               <ShieldCheck className="h-4 w-4 text-purple-300" />
             </div>
           </div>
@@ -1282,10 +1282,10 @@ export function HomePage() {
             <div className="flex items-start gap-2.5">
               <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-purple-300" />
               <div className="min-w-0">
-                <div className="font-display text-[11px] font-black uppercase tracking-wider text-white leading-tight">
+                <div className="home-responsible-title font-display text-[11px] font-black uppercase tracking-wider text-white leading-tight">
                   Juega responsablemente
                 </div>
-                <p className="mt-1 text-[10px] leading-snug text-purple-200/70">
+                <p className="home-responsible-desc mt-1 text-[10px] leading-snug text-purple-200/70">
                   Apuesta con control. Establece límites de tiempo y dinero.
                 </p>
               </div>
@@ -1293,11 +1293,11 @@ export function HomePage() {
 
             <ResponsibleBadge
               icon={<span className="font-display text-[11px] font-black leading-none">18+</span>}
-              label={"Solo para\nmayores\nde 18 años"}
+              label={"Solo\nmayores"}
             />
             <ResponsibleBadge
               icon={<Lock className="h-3.5 w-3.5" />}
-              label={"Tus datos\nestán\nprotegidos"}
+              label={"Datos\nseguros"}
             />
             <ResponsibleBadge
               icon={<Headphones className="h-3.5 w-3.5" />}
@@ -1347,11 +1347,11 @@ function BottomItem({ icon, label, active, to }: { icon: React.ReactNode; label:
 
 function ResponsibleBadge({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
-    <div className="flex flex-col items-center gap-1.5 text-center">
-      <div className="flex h-8 w-8 items-center justify-center rounded-full border border-purple-500/40 bg-[#0c0620] text-purple-200">
+    <div className="home-responsible-badge flex flex-col items-center gap-1.5 text-center">
+      <div className="home-responsible-badge-icon flex h-8 w-8 items-center justify-center rounded-full border border-purple-500/40 bg-[#0c0620] text-purple-200">
         {icon}
       </div>
-      <span className="whitespace-pre-line text-[8.5px] font-bold uppercase leading-[1.15] tracking-wide text-purple-200/70">
+      <span className="home-responsible-badge-label whitespace-pre-line text-[9px] font-bold uppercase leading-[1.15] tracking-wide text-purple-200/70">
         {label}
       </span>
     </div>
