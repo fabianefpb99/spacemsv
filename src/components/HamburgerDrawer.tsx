@@ -409,7 +409,32 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
                   </button>
                 </nav>
 
-                <div className="mt-2 mb-2 flex items-center gap-2 px-4">
+                {socials.length > 0 && (
+                  <div className="mt-3 flex items-center justify-between gap-3 px-4">
+                    <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-purple-300/70">
+                      Síguenos
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {socials.map((s) => {
+                        const Icon = SOCIAL_ICONS[s.platform] ?? Hash;
+                        return (
+                          <a
+                            key={s.id}
+                            href={s.url}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            aria-label={s.platform}
+                            className="flex h-8 w-8 items-center justify-center rounded-full border border-purple-500/30 bg-[#150830] text-fuchsia-200 transition hover:border-fuchsia-400/60 hover:bg-fuchsia-500/15 hover:text-white"
+                          >
+                            <Icon className="h-4 w-4" strokeWidth={2.2} />
+                          </a>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                <div className="mt-3 flex items-center gap-2 px-4">
                   <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-purple-300" />
                   <div className="min-w-0">
                     <div className="font-display text-[10px] font-black uppercase tracking-wider leading-tight text-white">
@@ -420,31 +445,6 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
                     </p>
                   </div>
                 </div>
-
-                {socials.length > 0 && (
-                  <div className="border-t border-purple-500/15 px-4 pb-3 pt-3">
-                    <div className="mb-2 text-[9px] font-bold uppercase tracking-[0.18em] text-purple-300/70">
-                      Síguenos
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      {socials.map((s) => {
-                        const Icon = SOCIAL_ICONS[s.platform] ?? Hash;
-                        return (
-                          <a
-                            key={s.id}
-                            href={s.url}
-                            target="_blank"
-                            rel="noreferrer noopener"
-                            aria-label={s.platform}
-                            className="flex h-9 w-9 items-center justify-center rounded-full border border-purple-500/30 bg-[#150830] text-fuchsia-200 transition hover:border-fuchsia-400/60 hover:bg-fuchsia-500/15 hover:text-white"
-                          >
-                            <Icon className="h-4 w-4" strokeWidth={2.2} />
-                          </a>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
 
                 <div className="border-t border-purple-500/15 px-4 py-3" style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 0.75rem)" }}>
                   <button
