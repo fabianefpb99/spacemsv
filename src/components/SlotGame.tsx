@@ -20,7 +20,7 @@ import { setMuted as setAudioMuted, playCashoutSound, playCoinsSound, isMuted, s
 import pageBg from "@/assets/mines-page-bg.png";
 import mafiaJazzUrl from "@/assets/mafia-jazz.mp3";
 import dragonOrnament from "@/assets/samurai/dragon-ornament.png";
-import mafiaBgAsset from "@/assets/mafia-bg.png.asset.json";
+import mafiaBgAsset from "@/assets/mafia-bg.webp.asset.json";
 import samuraiLegendLogoAsset from "@/assets/samurai/samurai-legend-logo.webp.asset.json";
 import winWinAsset from "@/assets/samurai/win-win.webp.asset.json";
 import winBigAsset from "@/assets/samurai/win-big.webp.asset.json";
