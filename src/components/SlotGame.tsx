@@ -21,13 +21,13 @@ import pageBg from "@/assets/mines-page-bg.png";
 import mafiaJazzUrl from "@/assets/mafia-jazz.mp3";
 import dragonOrnament from "@/assets/samurai/dragon-ornament.png";
 import mafiaBgAsset from "@/assets/mafia-bg.webp.asset.json";
-import samuraiLegendLogoAsset from "@/assets/samurai/samurai-legend-logo.webp.asset.json";
+import mafiaRoyaleLogoAsset from "@/assets/mafia/mafia-royale-logo.webp.asset.json";
 import winWinAsset from "@/assets/samurai/win-win.webp.asset.json";
 import winBigAsset from "@/assets/samurai/win-big.webp.asset.json";
 import winMegaAsset from "@/assets/samurai/win-mega.webp.asset.json";
 import winSuperAsset from "@/assets/samurai/win-super.webp.asset.json";
 const samuraiBg = mafiaBgAsset.url;
-const samuraiLegendLogo = samuraiLegendLogoAsset.url;
+const samuraiLegendLogo = mafiaRoyaleLogoAsset.url;
 const WIN_LOGOS: Record<"win" | "big" | "mega" | "super" | "jackpot", string> = {
   win: winWinAsset.url,
   big: winBigAsset.url,
