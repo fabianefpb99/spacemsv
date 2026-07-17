@@ -1480,6 +1480,59 @@ export function SlotGame() {
           0%, 100% { transform: scale(1); }
           50%      { transform: scale(1.10); }
         }
+        @keyframes mafia-royale-logo-neon {
+          0%, 100% {
+            filter:
+              drop-shadow(0 6px 12px rgba(0,0,0,0.7))
+              drop-shadow(0 0 14px rgba(245,158,11,0.28));
+          }
+          50% {
+            filter:
+              drop-shadow(0 6px 12px rgba(0,0,0,0.7))
+              drop-shadow(0 0 22px rgba(251,191,36,0.5));
+          }
+        }
+        .mafia-royale-logo-wrap {
+          position: relative;
+          display: inline-block;
+          isolation: isolate;
+        }
+        .mafia-royale-logo {
+          animation: mafia-royale-logo-neon 5s ease-in-out infinite;
+          will-change: filter;
+          display: block;
+        }
+        .mafia-royale-logo-wrap::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          background: linear-gradient(
+            115deg,
+            transparent 40%,
+            rgba(255,255,255,0.55) 49%,
+            rgba(255,232,170,0.85) 50%,
+            rgba(255,255,255,0.55) 51%,
+            transparent 60%
+          );
+          mix-blend-mode: overlay;
+          transform: translateX(-120%);
+          animation: mafia-royale-logo-shine 8s ease-in-out infinite;
+          -webkit-mask-image: var(--mafia-logo-mask);
+                  mask-image: var(--mafia-logo-mask);
+          -webkit-mask-size: contain;
+                  mask-size: contain;
+          -webkit-mask-repeat: no-repeat;
+                  mask-repeat: no-repeat;
+          -webkit-mask-position: center;
+                  mask-position: center;
+        }
+        @keyframes mafia-royale-logo-shine {
+          0%   { transform: translateX(-120%); opacity: 0; }
+          10%  { opacity: 1; }
+          35%  { transform: translateX(120%); opacity: 1; }
+          36%, 100% { transform: translateX(120%); opacity: 0; }
+        }
       `}</style>
       {spinError && (
         <div
@@ -1578,14 +1631,18 @@ function MafiaHero({
       className="relative mt-0 flex flex-col items-center justify-center"
       aria-label="Mafia Royale"
     >
-      {/* Logo Samurai reutilizado temporalmente sobre el fondo — sin card, sin borde */}
-      <div className="max-w-[95%] select-none" style={{ display: "inline-block" }}>
+      {/* Logo integrado sobre el fondo global — mismas reglas de tamaño que Samurai */}
+      <div
+        className="mafia-royale-logo-wrap max-w-[95%]"
+        style={{
+          ["--mafia-logo-mask" as string]: `url(${samuraiLegendLogo})`,
+        }}
+      >
         <img
           src={samuraiLegendLogo}
           alt="Mafia Royale"
-          className="h-[130px] w-auto"
+          className="mafia-royale-logo h-[130px] w-auto select-none"
           draggable={false}
-          style={{ filter: "drop-shadow(0 6px 12px rgba(0,0,0,0.7)) drop-shadow(0 0 14px rgba(236,72,153,0.35))" }}
         />
       </div>
       <div
