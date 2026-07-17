@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import { Menu, ChevronRight, ChevronLeft, Gift, Home, Star, Wallet, User, Trophy, Instagram, ShieldCheck, Lock, Headphones } from "lucide-react";
+import { Menu, ChevronRight, ChevronLeft, Gift, Home, Star, Wallet, User, Trophy, Instagram, ShieldCheck, Lock } from "lucide-react";
 import { type PointerEvent, useEffect, useRef, useState } from "react";
 import { PromoPopup } from "@/components/PromoPopup";
 import { MascotFloater } from "@/components/MascotFloater";
@@ -1278,7 +1278,7 @@ export function HomePage() {
             </div>
           </div>
 
-          <div className="mt-4 grid grid-cols-[1.4fr_auto_auto_auto] items-start gap-3 sm:gap-4">
+          <div className="mt-4 grid grid-cols-[1fr_auto_auto] items-start gap-4 sm:gap-5">
             <div className="flex items-start gap-2.5">
               <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-purple-300" />
               <div className="min-w-0">
@@ -1298,10 +1298,6 @@ export function HomePage() {
             <ResponsibleBadge
               icon={<Lock className="h-3.5 w-3.5" />}
               label={"Datos\nseguros"}
-            />
-            <ResponsibleBadge
-              icon={<Headphones className="h-3.5 w-3.5" />}
-              label={"Soporte\n24/7"}
             />
           </div>
         </section>
