@@ -163,8 +163,8 @@ function OnlineRotator({ online, username, onClick, clickable }: { online: numbe
             </span>
             <span className="home-online-text text-xs font-semibold text-white/90">{online} ONLINE</span>
           </span>
-          <span className="home-online-text inline-flex items-center gap-1 text-xs font-semibold text-white/90">
-            Authentic Games
+          <span className="home-online-text inline-flex items-center gap-1 text-xs font-medium text-white/90">
+            <span className="font-bold">Authentic</span> Games
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-3.5 w-3.5 text-emerald-500" aria-hidden="true">
               <path d="M5 12.5l4 4 10-10.5" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
