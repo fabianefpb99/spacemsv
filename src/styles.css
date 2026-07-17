@@ -125,6 +125,32 @@ html.light .home-invite-card .home-invite-btn {
   color: #ffffff !important;
   box-shadow: none !important;
 }
+/* Juego responsable — modo claro */
+html.light .home-responsible .home-responsible-title {
+  color: #3b1468 !important;
+  text-shadow: none !important;
+}
+html.light .home-responsible .home-responsible-desc {
+  color: #4b286d !important;
+  opacity: 1 !important;
+}
+html.light .home-responsible svg {
+  color: #6d28d9 !important;
+}
+html.light .home-responsible .home-responsible-shield,
+html.light .home-responsible .home-responsible-badge-icon {
+  background: #ffffff !important;
+  border-color: #a855f7 !important;
+  color: #6d28d9 !important;
+  box-shadow: none !important;
+}
+html.light .home-responsible .home-responsible-badge-icon span {
+  color: #6d28d9 !important;
+}
+html.light .home-responsible .home-responsible-badge-label {
+  color: #4b286d !important;
+  opacity: 1 !important;
+}
 html.light .home-win-row :is(.home-win-user, .home-win-amount, .home-win-amount .text-white) {
   color: #3b1468 !important;
 }
