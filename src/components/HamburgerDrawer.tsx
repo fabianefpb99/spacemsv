@@ -17,6 +17,7 @@ import {
   Music2,
   Hash,
   Gamepad2,
+  ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
 
