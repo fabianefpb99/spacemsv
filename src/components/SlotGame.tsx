@@ -19,6 +19,7 @@ import { Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "luc
 import { setMuted as setAudioMuted, playCashoutSound, playCoinsSound, isMuted, setBackgroundTrack, clearBackgroundTrack, getBackgroundTrack, stopAllGameAudio, getCtx, getMasterGain, AUDIO_STOP_ALL_EVENT } from "@/lib/gameAudio";
 import pageBg from "@/assets/mines-page-bg.png";
 import mafiaJazzUrl from "@/assets/mafia-jazz.mp3";
+import dragonOrnament from "@/assets/samurai/dragon-ornament.png";
 
 import bossImg from "@/assets/slot/boss.png";
 import hatImg from "@/assets/slot/hat.png";
@@ -1258,41 +1259,11 @@ export function SlotGame() {
           </button>
         </div>
 
-        {/* HUD (matches reference) */}
-        <section className="mt-2 grid grid-cols-4 gap-1.5 rounded-2xl glass-panel p-1.5 sm:p-2">
-          <HudCell label="LÍNEAS" value={String(LINES)} />
-          <HudCell label="PREMIO TOTAL" value={lastWin > 0 ? `${formatCOP(displayedWin)} COP` : "—"} accent="green" wide />
-          <HudCell label="TIRADAS GRATIS" value="--" accent="muted" />
-          <HudCell label="MULTIPLICADOR" value={`x${winMult >= 10 ? winMult.toFixed(1) : winMult.toFixed(2).replace(/\.?0+$/, "")}`} accent="purple" />
-        </section>
+        {/* Hero — MAFIA ROYALE integrado sobre el fondo + banner con dragones (mirror de Samurai) */}
+        <MafiaHero lastWin={lastWin} displayedWin={displayedWin} spinning={spinning} />
 
         {/* Reels frame wrapper — labels sit on the neon border edge */}
         <section className="relative mt-3">
-          {/* Title badge on frame — OUTSIDE clip so it isn't cut */}
-          <div className="absolute left-1/2 -top-3 z-30 -translate-x-1/2">
-            <div
-              className="flex items-center gap-2 rounded-full px-4 py-1"
-              style={{
-                background: "linear-gradient(180deg, rgba(20,8,42,0.95), rgba(8,2,18,0.95))",
-                border: "1px solid rgba(168,85,247,0.65)",
-                boxShadow: "0 0 18px rgba(168,85,247,0.55), inset 0 0 8px rgba(168,85,247,0.25)",
-              }}
-            >
-              <span className="text-[10px]">✦</span>
-              <span
-                className="font-display text-sm font-black tracking-[0.18em]"
-                style={{
-                  background: "linear-gradient(180deg,#c084fc 0%,#7c3aed 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  filter: "drop-shadow(0 0 8px rgba(168,85,247,0.7))",
-                }}
-              >MAFIA</span>
-              <span className="font-display text-sm font-black tracking-[0.18em] neon-green">ROYALE</span>
-              <span className="text-[10px]">✦</span>
-            </div>
-          </div>
-
           {/* Lines side labels — OUTSIDE the frame, in the gutter */}
           <div className="pointer-events-none absolute left-0 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2 -rotate-90">
             <span className="font-display text-[9px] font-bold tracking-[0.32em] neon-green whitespace-nowrap">
@@ -1570,4 +1541,174 @@ function seedHistory(): HistoryItem[] {
     { id: id++, user: "DonLuca",   symbolId: "watch", multiplier: 1.6,  amount: 32000,  ts: now - 110_000 },
     { id: id++, user: "MissFox",   symbolId: "chip",  multiplier: 1.2,  amount: 24000,  ts: now - 160_000 },
   ];
+}
+
+/* ============================================================
+   MafiaHero — layout superior alineado con Samurai Legend.
+   Logo MAFIA ROYALE integrado sobre el fondo (sin cápsula) +
+   banner con dragones y mensaje "LA FAMILIA TRAE FORTUNA".
+   ============================================================ */
+function MafiaHero({
+  lastWin,
+  displayedWin,
+  spinning,
+}: {
+  lastWin: number;
+  displayedWin: number;
+  spinning: boolean;
+}) {
+  const showEvent = lastWin > 0 && !spinning;
+  return (
+    <section
+      className="relative mt-2 flex flex-col items-center justify-center"
+      aria-label="Mafia Royale"
+    >
+      {/* Logo MAFIA ROYALE integrado sobre el fondo — sin card, sin borde */}
+      <div
+        className="flex items-baseline gap-2 select-none"
+        style={{ height: 130, alignItems: "center" }}
+      >
+        <span
+          className="font-display font-black tracking-[0.14em] leading-none"
+          style={{
+            fontSize: 40,
+            background: "linear-gradient(180deg,#e9d5ff 0%,#a855f7 55%,#6b21a8 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            filter:
+              "drop-shadow(0 0 10px rgba(168,85,247,0.65)) drop-shadow(0 2px 3px rgba(0,0,0,0.9))",
+          }}
+        >
+          MAFIA
+        </span>
+        <span
+          className="font-display font-black tracking-[0.14em] leading-none neon-green"
+          style={{
+            fontSize: 40,
+            filter: "drop-shadow(0 2px 3px rgba(0,0,0,0.9))",
+          }}
+        >
+          ROYALE
+        </span>
+      </div>
+
+      {/* Banner reservado (misma altura que Samurai) */}
+      <div
+        className="relative mt-0 h-[98px] w-full"
+        aria-hidden={!showEvent}
+      >
+        {/* Mensaje decorativo persistente con dragones */}
+        <div
+          className="absolute inset-0 flex items-center justify-center gap-3 px-4"
+          style={{
+            opacity: showEvent ? 0.15 : 1,
+            transition: "opacity 0.35s ease",
+            pointerEvents: "none",
+          }}
+          aria-hidden="true"
+        >
+          <MafiaDragon />
+          <div
+            className="relative flex items-center justify-center py-2"
+            style={{
+              background:
+                "radial-gradient(ellipse at center, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.5) 55%, rgba(0,0,0,0) 100%)",
+            }}
+          >
+            <span
+              aria-hidden="true"
+              className="absolute top-0 h-px"
+              style={{
+                left: "-14px",
+                right: "-14px",
+                background:
+                  "linear-gradient(to right, rgba(251,191,36,0) 0%, rgba(251,191,36,0.85) 20%, #fde68a 50%, rgba(251,191,36,0.85) 80%, rgba(251,191,36,0) 100%)",
+                boxShadow:
+                  "0 0 6px rgba(251,191,36,0.7), 0 0 12px rgba(251,191,36,0.35)",
+              }}
+            />
+            <span
+              aria-hidden="true"
+              className="absolute bottom-0 h-px"
+              style={{
+                left: "-14px",
+                right: "-14px",
+                background:
+                  "linear-gradient(to right, rgba(251,191,36,0) 0%, rgba(251,191,36,0.85) 20%, #fde68a 50%, rgba(251,191,36,0.85) 80%, rgba(251,191,36,0) 100%)",
+                boxShadow:
+                  "0 0 6px rgba(251,191,36,0.7), 0 0 12px rgba(251,191,36,0.35)",
+              }}
+            />
+            <span
+              className="font-display font-black uppercase tracking-[0.18em] leading-none whitespace-nowrap"
+              style={{
+                fontSize: 13.5,
+                color: "#fde68a",
+                textShadow:
+                  "0 0 8px rgba(220, 38, 38, 0.55), 0 0 14px rgba(251, 191, 36, 0.35), 0 2px 3px rgba(0,0,0,0.9)",
+              }}
+            >
+              La familia trae fortuna
+            </span>
+          </div>
+          <MafiaDragon flip />
+        </div>
+
+        {/* Evento de victoria (mientras no haya logos WIN/BIG dedicados) */}
+        {showEvent && (
+          <div
+            className="absolute inset-0 flex items-center justify-center"
+            style={{ animation: "scale-in 0.2s cubic-bezier(0.2,0.9,0.3,1.2)" }}
+          >
+            <div className="flex flex-col items-center leading-none">
+              <span
+                className="font-display font-black uppercase tracking-[0.22em]"
+                style={{
+                  fontSize: 22,
+                  color: "#fde68a",
+                  textShadow:
+                    "0 0 10px rgba(220,38,38,0.7), 0 0 16px rgba(251,191,36,0.5), 0 2px 4px rgba(0,0,0,0.95)",
+                }}
+              >
+                ¡Ganaste!
+              </span>
+              <span
+                className="mt-1 font-display font-black tracking-wide"
+                style={{
+                  fontSize: 26,
+                  color: "#fef08a",
+                  textShadow:
+                    "0 0 10px rgba(253,224,71,0.85), 0 2px 4px rgba(0,0,0,0.95)",
+                }}
+              >
+                +${formatCOP(displayedWin)} COP
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function MafiaDragon({ flip = false }: { flip?: boolean }) {
+  return (
+    <img
+      src={dragonOrnament}
+      alt=""
+      width={56}
+      height={56}
+      draggable={false}
+      aria-hidden="true"
+      style={{
+        transform: flip ? "scaleX(-1)" : "scaleX(1)",
+        filter:
+          "drop-shadow(0 0 6px rgba(239,68,68,0.65)) drop-shadow(0 0 12px rgba(251,146,60,0.35)) drop-shadow(0 2px 3px rgba(0,0,0,0.9))",
+        flexShrink: 0,
+        userSelect: "none",
+        objectFit: "contain",
+        display: "block",
+      }}
+    />
+  );
 }
