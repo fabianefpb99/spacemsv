@@ -409,19 +409,15 @@ export function HamburgerDrawer({ trigger }: { trigger: ReactNode }) {
                   </button>
                 </nav>
 
-                <div className="mt-3 px-4">
-                  <div className="flex items-center gap-2.5 rounded-lg border border-purple-500/20 bg-[#0c0620] px-3 py-2">
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-purple-500/30 bg-[#150830]">
-                      <ShieldCheck className="h-3.5 w-3.5 text-purple-300" />
+                <div className="mt-3 flex items-center gap-2 px-4">
+                  <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-purple-300" />
+                  <div className="min-w-0">
+                    <div className="font-display text-[10px] font-black uppercase tracking-wider leading-tight text-white">
+                      Juega responsablemente
                     </div>
-                    <div className="min-w-0">
-                      <div className="font-display text-[10px] font-black uppercase tracking-wider leading-tight text-white">
-                        Juega responsablemente
-                      </div>
-                      <p className="mt-0.5 text-[9px] leading-snug text-purple-200/60">
-                        Apuesta con control. Establece límites.
-                      </p>
-                    </div>
+                    <p className="mt-0.5 text-[9px] leading-snug text-purple-200/60">
+                      Apuesta con control. Establece límites.
+                    </p>
                   </div>
                 </div>
 
