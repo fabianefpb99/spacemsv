@@ -1213,7 +1213,7 @@ export function SlotGame() {
 
   return (
     <div
-      className="relative h-[100dvh] overflow-hidden text-white"
+      className="mafia-scope relative h-[100dvh] overflow-hidden text-white"
       style={{
         backgroundColor: "#0a0416",
         backgroundImage: `linear-gradient(180deg, rgba(10,4,22,0.15) 0%, rgba(10,4,22,0.35) 45%, rgba(10,4,22,0.75) 100%), url(${samuraiBg})`,
