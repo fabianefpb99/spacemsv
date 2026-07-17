@@ -1542,51 +1542,52 @@ function seedHistory(): HistoryItem[] {
    Logo MAFIA ROYALE integrado sobre el fondo (sin cápsula) +
    banner con dragones y mensaje "LA FAMILIA TRAE FORTUNA".
    ============================================================ */
+type MafiaEventTier = "idle" | "win" | "big" | "mega" | "super" | "jackpot";
+function classifyMafiaEvent(total: number, bet: number): MafiaEventTier {
+  if (total <= 0 || bet <= 0) return "idle";
+  const m = total / bet;
+  if (m >= 20) return "jackpot";
+  if (m >= 8)  return "super";
+  if (m >= 3)  return "mega";
+  if (m >= 1)  return "big";
+  return "win";
+}
+
 function MafiaHero({
   lastWin,
   displayedWin,
+  bet,
   spinning,
 }: {
   lastWin: number;
   displayedWin: number;
+  bet: number;
   spinning: boolean;
 }) {
-  const showEvent = lastWin > 0 && !spinning;
+  const tier = spinning ? "idle" : classifyMafiaEvent(lastWin, bet);
+  const showEvent = tier !== "idle" && lastWin > 0;
+  useEffect(() => {
+    (Object.values(WIN_LOGOS) as string[]).forEach((src) => {
+      const img = new Image();
+      img.src = src;
+      if (typeof img.decode === "function") img.decode().catch(() => {});
+    });
+  }, []);
   return (
     <section
-      className="relative mt-2 flex flex-col items-center justify-center"
+      className="relative mt-0 flex flex-col items-center justify-center"
       aria-label="Mafia Royale"
     >
-      {/* Logo MAFIA ROYALE integrado sobre el fondo — sin card, sin borde */}
-      <div
-        className="flex items-baseline gap-2 select-none"
-        style={{ height: 130, alignItems: "center" }}
-      >
-        <span
-          className="font-display font-black tracking-[0.14em] leading-none"
-          style={{
-            fontSize: 40,
-            background: "linear-gradient(180deg,#e9d5ff 0%,#a855f7 55%,#6b21a8 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            filter:
-              "drop-shadow(0 0 10px rgba(168,85,247,0.65)) drop-shadow(0 2px 3px rgba(0,0,0,0.9))",
-          }}
-        >
-          MAFIA
-        </span>
-        <span
-          className="font-display font-black tracking-[0.14em] leading-none neon-green"
-          style={{
-            fontSize: 40,
-            filter: "drop-shadow(0 2px 3px rgba(0,0,0,0.9))",
-          }}
-        >
-          ROYALE
-        </span>
+      {/* Logo Samurai reutilizado temporalmente sobre el fondo — sin card, sin borde */}
+      <div className="max-w-[95%] select-none" style={{ display: "inline-block" }}>
+        <img
+          src={samuraiLegendLogo}
+          alt="Mafia Royale"
+          className="h-[130px] w-auto"
+          draggable={false}
+          style={{ filter: "drop-shadow(0 6px 12px rgba(0,0,0,0.7)) drop-shadow(0 0 14px rgba(236,72,153,0.35))" }}
+        />
       </div>
-
-      {/* Banner reservado (misma altura que Samurai) */}
       <div
         className="relative mt-0 h-[98px] w-full"
         aria-hidden={!showEvent}
@@ -1648,35 +1649,30 @@ function MafiaHero({
           <MafiaDragon flip />
         </div>
 
-        {/* Evento de victoria (mientras no haya logos WIN/BIG dedicados) */}
         {showEvent && (
           <div
-            className="absolute inset-0 flex items-center justify-center"
-            style={{ animation: "scale-in 0.2s cubic-bezier(0.2,0.9,0.3,1.2)" }}
+            className="absolute inset-0 flex flex-col items-center justify-center"
+            style={{ animation: "scale-in 0.14s cubic-bezier(0.2,0.9,0.3,1.2)" }}
           >
-            <div className="flex flex-col items-center leading-none">
-              <span
-                className="font-display font-black uppercase tracking-[0.22em]"
-                style={{
-                  fontSize: 22,
-                  color: "#fde68a",
-                  textShadow:
-                    "0 0 10px rgba(220,38,38,0.7), 0 0 16px rgba(251,191,36,0.5), 0 2px 4px rgba(0,0,0,0.95)",
-                }}
-              >
-                ¡Ganaste!
-              </span>
-              <span
-                className="mt-1 font-display font-black tracking-wide"
-                style={{
-                  fontSize: 26,
-                  color: "#fef08a",
-                  textShadow:
-                    "0 0 10px rgba(253,224,71,0.85), 0 2px 4px rgba(0,0,0,0.95)",
-                }}
-              >
-                +${formatCOP(displayedWin)} COP
-              </span>
+            <img
+              src={WIN_LOGOS[tier as "win" | "big" | "mega" | "super" | "jackpot"]}
+              alt=""
+              className="h-[74px] w-auto select-none"
+              style={{
+                filter:
+                  "drop-shadow(0 3px 8px rgba(0,0,0,0.85)) drop-shadow(0 0 10px rgba(255,90,30,0.55))",
+              }}
+              draggable={false}
+            />
+            <div
+              className="-mt-[6px] -translate-y-[5px] font-display text-[24px] font-black tracking-wide leading-none"
+              style={{
+                color: "#fef08a",
+                textShadow:
+                  "0 0 10px rgba(253,224,71,0.85), 0 2px 4px rgba(0,0,0,0.95)",
+              }}
+            >
+              +{formatCOP(displayedWin)} COP
             </div>
           </div>
         )}
