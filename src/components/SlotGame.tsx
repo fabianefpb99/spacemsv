@@ -1258,41 +1258,11 @@ export function SlotGame() {
           </button>
         </div>
 
-        {/* HUD (matches reference) */}
-        <section className="mt-2 grid grid-cols-4 gap-1.5 rounded-2xl glass-panel p-1.5 sm:p-2">
-          <HudCell label="LÍNEAS" value={String(LINES)} />
-          <HudCell label="PREMIO TOTAL" value={lastWin > 0 ? `${formatCOP(displayedWin)} COP` : "—"} accent="green" wide />
-          <HudCell label="TIRADAS GRATIS" value="--" accent="muted" />
-          <HudCell label="MULTIPLICADOR" value={`x${winMult >= 10 ? winMult.toFixed(1) : winMult.toFixed(2).replace(/\.?0+$/, "")}`} accent="purple" />
-        </section>
+        {/* Hero — MAFIA ROYALE integrado sobre el fondo + banner con dragones (mirror de Samurai) */}
+        <MafiaHero lastWin={lastWin} displayedWin={displayedWin} spinning={spinning} />
 
         {/* Reels frame wrapper — labels sit on the neon border edge */}
         <section className="relative mt-3">
-          {/* Title badge on frame — OUTSIDE clip so it isn't cut */}
-          <div className="absolute left-1/2 -top-3 z-30 -translate-x-1/2">
-            <div
-              className="flex items-center gap-2 rounded-full px-4 py-1"
-              style={{
-                background: "linear-gradient(180deg, rgba(20,8,42,0.95), rgba(8,2,18,0.95))",
-                border: "1px solid rgba(168,85,247,0.65)",
-                boxShadow: "0 0 18px rgba(168,85,247,0.55), inset 0 0 8px rgba(168,85,247,0.25)",
-              }}
-            >
-              <span className="text-[10px]">✦</span>
-              <span
-                className="font-display text-sm font-black tracking-[0.18em]"
-                style={{
-                  background: "linear-gradient(180deg,#c084fc 0%,#7c3aed 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  filter: "drop-shadow(0 0 8px rgba(168,85,247,0.7))",
-                }}
-              >MAFIA</span>
-              <span className="font-display text-sm font-black tracking-[0.18em] neon-green">ROYALE</span>
-              <span className="text-[10px]">✦</span>
-            </div>
-          </div>
-
           {/* Lines side labels — OUTSIDE the frame, in the gutter */}
           <div className="pointer-events-none absolute left-0 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2 -rotate-90">
             <span className="font-display text-[9px] font-bold tracking-[0.32em] neon-green whitespace-nowrap">
