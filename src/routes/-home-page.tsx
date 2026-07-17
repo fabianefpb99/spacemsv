@@ -1328,6 +1328,24 @@ export function HomePage() {
 }
 
 function BottomItem({ icon, label, active, to }: { icon: React.ReactNode; label: string; active?: boolean; to?: string }) {
+  void 0;
+  return _BottomItemImpl({ icon, label, active, to });
+}
+
+function ResponsibleBadge({ icon, label }: { icon: React.ReactNode; label: string }) {
+  return (
+    <div className="flex flex-col items-center gap-1.5 text-center">
+      <div className="flex h-8 w-8 items-center justify-center rounded-full border border-purple-500/40 bg-[#0c0620] text-purple-200">
+        {icon}
+      </div>
+      <span className="whitespace-pre-line text-[8.5px] font-bold uppercase leading-[1.15] tracking-wide text-purple-200/70">
+        {label}
+      </span>
+    </div>
+  );
+}
+
+function _BottomItemImpl({ icon, label, active, to }: { icon: React.ReactNode; label: string; active?: boolean; to?: string }) {
   const className = `home-bottom-item flex w-14 flex-col items-center gap-1 ${active ? "home-bottom-item--active text-emerald-400" : "text-purple-300/70 hover:text-purple-200"}`;
   if (to) {
     return (
