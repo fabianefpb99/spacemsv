@@ -202,7 +202,7 @@ export function LoadingScreen({ children, variant = "rocket" }: { children: Reac
           </div>
           <span className="absolute bottom-8 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 text-[10px] font-medium tracking-wide text-white/80">
             <span className="font-bold">Authentic</span> Games
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-3 w-3 text-fuchsia-400" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-3 w-3" aria-hidden="true">
               <path d="M5 12.5l4 4 10-10.5" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </span>
