@@ -540,7 +540,7 @@ function Reel({
       style={{
         height: TILE_H * visibleRows,
         background:
-          "linear-gradient(180deg, rgba(8,3,22,0.92) 0%, rgba(18,8,42,0.85) 50%, rgba(8,3,22,0.92) 100%)",
+          "linear-gradient(180deg, rgba(22,12,4,0.92) 0%, rgba(42,22,8,0.85) 50%, rgba(22,12,4,0.92) 100%)",
         boxShadow:
           "inset 0 8px 14px rgba(0,0,0,0.55), inset 0 -8px 14px rgba(0,0,0,0.55)",
       }}
