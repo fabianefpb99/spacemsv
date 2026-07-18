@@ -171,7 +171,7 @@ export function LoadingScreen({ children, variant = "rocket" }: { children: Reac
       {loading && (
         <div
           className="fixed inset-0 z-[9999] flex flex-col items-center justify-center"
-          style={{ backgroundColor: "#14082a" }}
+          style={{ backgroundColor: "#060210" }}
           aria-live="polite"
           aria-busy="true"
         >
