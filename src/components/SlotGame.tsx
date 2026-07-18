@@ -1651,7 +1651,7 @@ function MafiaHero({
       >
         {/* Mensaje decorativo persistente con dragones */}
         <div
-          className="absolute inset-0 flex items-center justify-center gap-3 px-4"
+          className="absolute inset-0 flex items-center justify-center gap-1 px-4"
           style={{
             opacity: showEvent ? 0.15 : 1,
             transition: "opacity 0.35s ease",
@@ -1748,7 +1748,10 @@ function MafiaDragon({ flip = false }: { flip?: boolean }) {
       draggable={false}
       aria-hidden="true"
       style={{
-        transform: flip ? "scaleX(-1)" : "scaleX(1)",
+        transform: flip
+          ? "scaleX(-1) rotate(-22deg)"
+          : "rotate(-22deg)",
+        transformOrigin: "center",
         filter:
           "drop-shadow(0 0 6px rgba(232,184,74,0.75)) drop-shadow(0 0 14px rgba(212,132,42,0.5)) drop-shadow(0 2px 3px rgba(0,0,0,0.9))",
         flexShrink: 0,
