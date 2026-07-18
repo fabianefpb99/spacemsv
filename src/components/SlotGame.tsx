@@ -36,14 +36,14 @@ const WIN_LOGOS: Record<"win" | "big" | "mega" | "super" | "jackpot", string> = 
   jackpot: winSuperAsset.url,
 };
 
-import bossImg from "@/assets/slot/boss.png";
-import hatImg from "@/assets/slot/hat.png";
-import briefcaseImg from "@/assets/slot/briefcase.png";
-import watchImg from "@/assets/slot/watch.png";
-import goldImg from "@/assets/slot/gold.png";
-import carImg from "@/assets/slot/car.png";
-import chipImg from "@/assets/slot/chip.png";
-import cardImg from "@/assets/slot/card.png";
+import bossImg from "@/assets/mafia/sym-boss.png";
+import hatImg from "@/assets/mafia/sym-hat.png";
+import briefcaseImg from "@/assets/mafia/sym-brief.png";
+import watchImg from "@/assets/mafia/sym-watch.png";
+import goldImg from "@/assets/mafia/sym-gold.png";
+import carImg from "@/assets/mafia/sym-car.png";
+import chipImg from "@/assets/mafia/sym-chip.png";
+import cardImg from "@/assets/mafia/sym-femme.png";
 
 import bonusMegaAsset from "@/assets/audio/slot-win/bonus-1.mp3.asset.json";
 import bonusBigAsset from "@/assets/audio/slot-win/bonus-2.mp3.asset.json";
@@ -64,14 +64,14 @@ type SymbolDef = {
 };
 
 const SYMBOLS: SymbolDef[] = [
-  { id: "boss",  img: bossImg,      label: "EL PADRINO", pay: [55, 240, 1100], weight: 2,  glow: "168,85,247"  },
-  { id: "car",   img: carImg,       label: "CADILLAC",   pay: [34, 130, 440],  weight: 3,  glow: "180,180,255" },
-  { id: "brief", img: briefcaseImg, label: "MALETÍN $",  pay: [24, 72, 240],   weight: 4,  glow: "46,255,161"  },
-  { id: "gold",  img: goldImg,      label: "LINGOTE",    pay: [19, 50, 165],   weight: 5,  glow: "255,210,80"  },
-  { id: "watch", img: watchImg,     label: "RELOJ ORO",  pay: [13, 32, 95],    weight: 6,  glow: "255,200,80"  },
-  { id: "chip",  img: chipImg,      label: "FICHA",      pay: [10, 24, 68],    weight: 8,  glow: "168,85,247"  },
-  { id: "hat",   img: hatImg,       label: "SOMBRERO",   pay: [8, 18, 50],     weight: 10, glow: "200,120,255" },
-  { id: "card",  img: cardImg,      label: "AS",         pay: [7, 14, 32],     weight: 12, glow: "255,180,80"  },
+  { id: "boss",  img: bossImg,      label: "EL DON",         pay: [55, 240, 1100], weight: 2,  glow: "212,132,42"  },
+  { id: "car",   img: carImg,       label: "AUTO CLÁSICO",   pay: [34, 130, 440],  weight: 3,  glow: "232,184,74"  },
+  { id: "brief", img: briefcaseImg, label: "MALETÍN",        pay: [24, 72, 240],   weight: 4,  glow: "212,132,42"  },
+  { id: "gold",  img: goldImg,      label: "DIAMANTE NEGRO", pay: [19, 50, 165],   weight: 5,  glow: "255,210,80"  },
+  { id: "watch", img: watchImg,     label: "WHISKY & PURO",  pay: [13, 32, 95],    weight: 6,  glow: "232,184,74"  },
+  { id: "chip",  img: chipImg,      label: "TOMMY GUN",      pay: [10, 24, 68],    weight: 8,  glow: "212,132,42"  },
+  { id: "hat",   img: hatImg,       label: "FEDORA",         pay: [8, 18, 50],     weight: 10, glow: "232,184,74"  },
+  { id: "card",  img: cardImg,      label: "FEMME FATALE",   pay: [7, 14, 32],     weight: 12, glow: "212,132,42"  },
 ];
 
 const SYMBOL_INDEX = new Map(SYMBOLS.map((s, i) => [s.id, i]));
