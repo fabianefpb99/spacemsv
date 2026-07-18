@@ -1739,7 +1739,7 @@ function MafiaHero({
 }
 
 function MafiaDragon({ flip = false }: { flip?: boolean }) {
-  const orientation = flip ? "rotate(68deg)" : "rotate(112deg)";
+  const orientation = flip ? "rotate(68deg)" : "scaleX(-1) rotate(68deg)";
 
   return (
     <img
