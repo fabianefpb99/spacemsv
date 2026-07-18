@@ -1739,6 +1739,10 @@ function MafiaHero({
 }
 
 function MafiaDragon({ flip = false }: { flip?: boolean }) {
+  const orientation = flip
+    ? "scaleX(-1) scaleY(-1) rotate(-65deg)"
+    : "scaleY(-1) rotate(-65deg)";
+
   return (
     <img
       src={tommyOrnament.url}
@@ -1748,9 +1752,7 @@ function MafiaDragon({ flip = false }: { flip?: boolean }) {
       draggable={false}
       aria-hidden="true"
       style={{
-        transform: flip
-          ? "scaleX(-1) rotate(-65deg)"
-          : "rotate(-65deg)",
+        transform: orientation,
         transformOrigin: "center",
         filter:
           "drop-shadow(0 0 6px rgba(232,184,74,0.75)) drop-shadow(0 0 14px rgba(212,132,42,0.5)) drop-shadow(0 2px 3px rgba(0,0,0,0.9))",
