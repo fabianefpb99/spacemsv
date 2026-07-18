@@ -1299,7 +1299,7 @@ export function SlotGame() {
               style={{
                 clipPath:
                   "polygon(15px 0, calc(100% - 15px) 0, 100% 15px, 100% calc(100% - 15px), calc(100% - 15px) 100%, 15px 100%, 0 calc(100% - 15px), 0 15px)",
-                background: "#0a041c",
+                background: "#1a0f04",
               }}
             >
           <div className="relative pt-0.5">
