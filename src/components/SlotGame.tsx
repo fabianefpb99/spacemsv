@@ -19,7 +19,7 @@ import { Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "luc
 import { setMuted as setAudioMuted, playCashoutSound, playCoinsSound, isMuted, setBackgroundTrack, clearBackgroundTrack, getBackgroundTrack, stopAllGameAudio, getCtx, getMasterGain, AUDIO_STOP_ALL_EVENT } from "@/lib/gameAudio";
 import pageBg from "@/assets/mines-page-bg.png";
 import mafiaJazzUrl from "@/assets/mafia-jazz.mp3";
-import dragonOrnament from "@/assets/samurai/dragon-ornament.png";
+import tommyOrnament from "@/assets/mafia/tommy-ornament.webp.asset.json";
 import mafiaBgAsset from "@/assets/mafia-bg.webp.asset.json";
 import mafiaRoyaleLogoAsset from "@/assets/mafia/mafia-royale-logo.webp.asset.json";
 import winWinAsset from "@/assets/samurai/win-win.webp.asset.json";
@@ -1741,16 +1741,16 @@ function MafiaHero({
 function MafiaDragon({ flip = false }: { flip?: boolean }) {
   return (
     <img
-      src={dragonOrnament}
+      src={tommyOrnament.url}
       alt=""
-      width={56}
-      height={56}
+      width={72}
+      height={40}
       draggable={false}
       aria-hidden="true"
       style={{
         transform: flip ? "scaleX(-1)" : "scaleX(1)",
         filter:
-          "drop-shadow(0 0 6px rgba(239,68,68,0.65)) drop-shadow(0 0 12px rgba(251,146,60,0.35)) drop-shadow(0 2px 3px rgba(0,0,0,0.9))",
+          "drop-shadow(0 0 6px rgba(232,184,74,0.75)) drop-shadow(0 0 14px rgba(212,132,42,0.5)) drop-shadow(0 2px 3px rgba(0,0,0,0.9))",
         flexShrink: 0,
         userSelect: "none",
         objectFit: "contain",
