@@ -262,10 +262,9 @@ export function GamesPage() {
             ))}
           </div>
         )}
-      </main>
-
-      <FiltersSheet open={filtersOpen} onClose={() => setFiltersOpen(false)} value={filters} onChange={setFilters} />
         </main>
+
+        <FiltersSheet open={filtersOpen} onClose={() => setFiltersOpen(false)} value={filters} onChange={setFilters} />
       </div>
     </div>
   );
