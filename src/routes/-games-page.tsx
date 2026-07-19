@@ -6,6 +6,7 @@ import { GameCard } from "@/components/games/GameCard";
 import { CategoryPill } from "@/components/games/CategoryPill";
 import { FiltersSheet, countActiveFilters, type GamesFilters } from "@/components/games/FiltersSheet";
 import { HamburgerDrawer } from "@/components/HamburgerDrawer";
+import { HomeBottomNav } from "@/components/HomeBottomNav";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { NotificationBell } from "@/components/admin/NotificationBell";
 import { AuthDialog } from "@/components/auth/AuthDialog";
@@ -272,7 +273,9 @@ export function GamesPage() {
         </main>
 
         <FiltersSheet open={filtersOpen} onClose={() => setFiltersOpen(false)} value={filters} onChange={setFilters} />
+        <div className="h-24" />
       </div>
+      <HomeBottomNav />
     </div>
   );
 }
