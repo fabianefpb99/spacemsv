@@ -19,6 +19,63 @@ html.light body {
   color: #1f1530;
 }
 
+/* ------------------------------------------------------------------
+ * /games catalog — light mode overrides
+ * ------------------------------------------------------------------ */
+html.light .games-scope {
+  background-color: #faf9f6 !important;
+}
+html.light .games-scope header.bg-\[\#060210\] {
+  background-color: #ffffff !important;
+  border-bottom-color: rgba(124, 58, 237, 0.18) !important;
+}
+html.light .games-scope header .text-white {
+  color: #1f1530 !important;
+}
+html.light .games-scope header .text-purple-200\/70 {
+  color: #7c3aed !important;
+}
+/* Search, filters, sort, view toggle surfaces */
+html.light .games-scope .bg-\[\#0c0620\]\/70,
+html.light .games-scope .bg-\[\#0c0620\]\/60 {
+  background-color: #ffffff !important;
+  border-color: rgba(124, 58, 237, 0.25) !important;
+}
+html.light .games-scope input[type="search"],
+html.light .games-scope select,
+html.light .games-scope button.bg-\[\#0c0620\]\/70,
+html.light .games-scope .bg-\[\#0c0620\]\/70 button {
+  color: #1f1530 !important;
+}
+html.light .games-scope input[type="search"]::placeholder {
+  color: #6b5f85 !important;
+}
+html.light .games-scope .text-purple-200\/60,
+html.light .games-scope .text-purple-200\/70,
+html.light .games-scope .text-purple-200\/50 {
+  color: #6b5f85 !important;
+}
+/* Category pills */
+html.light .games-scope .category-pill-inactive {
+  background-color: #ffffff !important;
+  border-color: rgba(124, 58, 237, 0.22) !important;
+  color: #4c1d95 !important;
+}
+html.light .games-scope .category-pill-active {
+  background-color: #7c3aed !important;
+  border-color: #7c3aed !important;
+  color: #ffffff !important;
+}
+/* View toggle inactive icons */
+html.light .games-scope .inline-flex.overflow-hidden button:not(.bg-purple-500) {
+  color: #6b5f85 !important;
+}
+/* Empty state */
+html.light .games-scope .border-dashed {
+  border-color: rgba(124, 58, 237, 0.3) !important;
+  color: #6b5f85 !important;
+}
+
 /* Page-level outer wrappers */
 html.light .bg-\[\#060210\]:not(header):not(nav):not(.theme-dark-fixed) {
   background-color: #faf9f6 !important;
