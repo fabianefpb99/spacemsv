@@ -64,67 +64,67 @@ export function AuthControl({ className }: { className?: string }) {
         align="end"
         sideOffset={8}
         collisionPadding={12}
-        className="auth-popover auth-pop-v2 z-50 w-[min(18rem,calc(100vw-1.5rem))] max-w-[calc(100vw-1.5rem)] rounded-2xl border p-0"
+        className="auth-popover auth-pop-v2 z-50 w-[min(15rem,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] rounded-2xl border p-0"
       >
         {/* Header: avatar + name/email */}
-        <div className="ap-header flex items-center gap-3 px-4 pb-4 pt-4">
-          <div className="relative h-12 w-12 shrink-0">
-            <div className="ap-avatar h-12 w-12 overflow-hidden rounded-full">
+        <div className="ap-header flex items-center gap-2.5 px-3 pb-3 pt-3">
+          <div className="relative h-10 w-10 shrink-0">
+            <div className="ap-avatar h-10 w-10 overflow-hidden rounded-full">
               <UserAvatar avatarKey={me.data?.profile?.avatar_key} alt="" />
             </div>
             {vipProgress && (
               <img
                 src={RANK_ART[vipProgress.rank]}
                 alt=""
-                className="pointer-events-none absolute -bottom-1 -right-1 h-5 w-5 object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.7)]"
+                className="pointer-events-none absolute -bottom-1 -right-1 h-4 w-4 object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.7)]"
                 draggable={false}
               />
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <div className="ap-name truncate text-[15px] font-semibold leading-tight">
+            <div className="ap-name truncate text-[13px] font-semibold leading-tight">
               {me.data?.profile?.username ?? user.email?.split("@")[0]}
             </div>
-            <div className="ap-email truncate text-[12px] leading-tight">{user.email}</div>
+            <div className="ap-email truncate text-[11px] leading-tight">{user.email}</div>
           </div>
         </div>
 
         <div className="ap-divider" />
 
         {/* Balance row */}
-        <div className="flex items-center gap-3 px-4 py-3">
+        <div className="flex items-center gap-2.5 px-3 py-2.5">
           <div className="min-w-0 flex-1">
-            <div className="ap-label text-[11px] font-bold uppercase tracking-wider">
+            <div className="ap-label text-[10px] font-bold uppercase tracking-wider">
               SALDO
             </div>
-            <div className="ap-balance mt-0.5 text-[20px] font-extrabold leading-tight">
+            <div className="ap-balance mt-0.5 text-[17px] font-extrabold leading-tight">
               ${balanceText} <span className="ap-currency">COP</span>
             </div>
             {bonusText && me.data!.bonus_balance > 0 && (
-              <div className="ap-bonus mt-0.5 text-[11px] font-medium">
+              <div className="ap-bonus mt-0.5 text-[10px] font-medium">
                 BONUS ${bonusText} COP
               </div>
             )}
             {me.isError && (
-              <div className="mt-1 text-[11px] text-rose-400">
+              <div className="mt-1 text-[10px] text-rose-400">
                 No se pudo cargar el saldo.
               </div>
             )}
           </div>
-          <div className="ap-wallet flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
-            <Wallet className="h-5 w-5" />
+          <div className="ap-wallet flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
+            <Wallet className="h-4 w-4" />
           </div>
         </div>
 
         <div className="ap-divider" />
 
         {/* Ver perfil */}
-        <Link to="/perfil" className="ap-row flex w-full items-center gap-3 px-4 py-3">
-          <UserIcon className="ap-row-icon h-[18px] w-[18px]" />
-          <span className="ap-row-label flex-1 text-left text-[14px] font-medium">
+        <Link to="/perfil" className="ap-row flex w-full items-center gap-2.5 px-3 py-2.5">
+          <UserIcon className="ap-row-icon h-4 w-4" />
+          <span className="ap-row-label flex-1 text-left text-[13px] font-medium">
             Ver perfil
           </span>
-          <ChevronRight className="ap-row-chev h-4 w-4" />
+          <ChevronRight className="ap-row-chev h-3.5 w-3.5" />
         </Link>
 
         <div className="ap-divider" />
@@ -147,10 +147,10 @@ function LogoutButton() {
         setLoading(false);
       }}
       disabled={loading}
-      className="ap-row ap-row-danger flex w-full items-center gap-3 px-4 py-3 disabled:opacity-60"
+      className="ap-row ap-row-danger flex w-full items-center gap-2.5 px-3 py-2.5 disabled:opacity-60"
     >
-      <LogOut className="h-[18px] w-[18px]" />
-      <span className="flex-1 text-left text-[14px] font-medium">Cerrar sesión</span>
+      <LogOut className="h-4 w-4" />
+      <span className="flex-1 text-left text-[13px] font-medium">Cerrar sesión</span>
     </button>
   );
 }
