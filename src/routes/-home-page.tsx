@@ -927,10 +927,17 @@ export function HomePage() {
 
         {/* Featured games */}
         <section className="mt-5">
-          <div className="flex items-end justify-between">
+          <div className="flex items-end justify-between gap-3">
             <h3 className="font-display text-sm font-bold uppercase tracking-widest text-white light-text-dark">
               Juegos destacados
             </h3>
+            <Link
+              to="/games"
+              className="inline-flex items-center gap-1 rounded-full border border-purple-400/40 bg-purple-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-purple-200 transition hover:bg-purple-500/20 hover:text-white light-text-dark"
+            >
+              Ver todos
+              <ChevronRight className="h-3 w-3" />
+            </Link>
           </div>
           <div className="relative">
             <button
