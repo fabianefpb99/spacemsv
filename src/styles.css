@@ -4628,3 +4628,15 @@ html.light .auth-pop-v2 .ap-row-danger svg { color: #dc2626 !important; }
   .liquid-ring::before,
   .liquid-ring::after { animation: none; }
 }
+
+/* "Ver todos" pill — reconstruido para modo claro */
+html.light .ver-todos-btn:not(.theme-dark-fixed):not(.theme-dark-fixed *) {
+  background-color: #f3ecff !important;
+  border-color: #c9b3f5 !important;
+  color: #5b21b6 !important;
+  box-shadow: 0 1px 2px rgba(91, 33, 182, 0.08);
+}
+html.light .ver-todos-btn:not(.theme-dark-fixed):not(.theme-dark-fixed *):hover {
+  background-color: #e9dcff !important;
+  color: #4c1d95 !important;
+}
