@@ -8,8 +8,14 @@ import { FiltersSheet, countActiveFilters, type GamesFilters } from "@/component
 import { HamburgerDrawer } from "@/components/HamburgerDrawer";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { NotificationBell } from "@/components/admin/NotificationBell";
-import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { AuthDialog } from "@/components/auth/AuthDialog";
+import { useMe } from "@/hooks/useMe";
+import { useAuth } from "@/hooks/useAuth";
 import betspaceLogo from "@/assets/betspace-logo.svg";
+
+function formatCOP(n: number) {
+  return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.max(0, Math.floor(n)));
+}
 
 function FootballIcon({ className }: { className?: string }) {
   return (
@@ -57,7 +63,10 @@ export function GamesPage() {
     hideComingSoon: false,
   });
   const [favs, setFavs] = useState<Set<string>>(new Set());
-  const { data: isAdmin } = useIsAdmin();
+  const me = useMe();
+  const { user, loading: authLoading } = useAuth();
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const balanceText = me.data ? formatCOP(me.data.balance + me.data.bonus_balance) : "—";
 
   useEffect(() => {
     setFavs(readFavs());
@@ -97,31 +106,61 @@ export function GamesPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-white/5 bg-background/85 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-3 py-2.5">
-          <HamburgerDrawer
-            trigger={
-              <button
-                type="button"
-                aria-label="Abrir menú"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-foreground hover:bg-muted"
-              >
-                <Menu className="h-5 w-5" strokeWidth={2.4} />
-              </button>
-            }
-          />
-          <Link to="/" className="flex items-center gap-2">
-            <img src={betspaceLogo} alt="BETSPACE" className="h-6" />
-          </Link>
-          <div className="flex items-center gap-1.5">
-            {isAdmin ? <NotificationBell /> : null}
-            <AuthControl />
+      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4 lg:max-w-3xl lg:px-6">
+        {/* Header — idéntico al del home */}
+        <header
+          className="flex flex-col items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
+          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
+        >
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-1">
+              <div className="lg:hidden">
+                <HamburgerDrawer
+                  trigger={
+                    <button
+                      type="button"
+                      aria-label="Abrir menú"
+                      className="rounded-md p-2 text-white hover:bg-white/10"
+                    >
+                      <Menu className="h-7 w-7" strokeWidth={3} />
+                    </button>
+                  }
+                />
+              </div>
+              <Link to="/" className="logo-shine">
+                <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto sm:h-7 translate-y-px" />
+                <img src={betspaceLogo} alt="" aria-hidden="true" className="logo-shine-overlay h-6 w-auto sm:h-7 translate-y-px" />
+              </Link>
+            </div>
+            <div className="flex items-center gap-2">
+              {user ? (
+                <>
+                  <div className="text-right">
+                    <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
+                    <div className="font-display text-[11px] font-bold sm:text-xs text-white">
+                      <span className="neon-green mr-0.5">$</span>{balanceText} COP
+                    </div>
+                  </div>
+                  <AuthControl />
+                  <NotificationBell />
+                </>
+              ) : authLoading ? (
+                <div className="h-7 w-24 animate-pulse rounded-md bg-white/5" />
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setAuthDialogOpen(true)}
+                  className="inline-flex items-center rounded-md border border-fuchsia-400/60 bg-gradient-to-r from-fuchsia-500 to-purple-600 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-white shadow-[0_0_14px_-4px_rgba(217,70,239,0.85)] transition hover:from-fuchsia-400 hover:to-purple-500 sm:text-[11px]"
+                >
+                  Login / Registro
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
+        <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
 
-      <main className="mx-auto max-w-6xl px-3 pb-24 pt-4">
+        <main className="pt-4">
         <h1 className="sr-only">Juegos BETSPACE</h1>
 
         {/* Search */}
@@ -226,6 +265,8 @@ export function GamesPage() {
       </main>
 
       <FiltersSheet open={filtersOpen} onClose={() => setFiltersOpen(false)} value={filters} onChange={setFilters} />
+        </main>
+      </div>
     </div>
   );
 }
