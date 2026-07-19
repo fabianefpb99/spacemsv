@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Menu, Search, SlidersHorizontal, LayoutGrid, List, ChevronDown, Rocket, Dices, Grid2X2, Spade, Trophy } from "lucide-react";
 import { CATALOG, GAME_CATEGORIES, type GameCategory } from "@/lib/games/catalog";
 import { GameCard } from "@/components/games/GameCard";
@@ -54,6 +54,7 @@ function readFavs(): Set<string> {
 export function GamesPage() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<GameCategory | "all">("all");
+  const navigate = useNavigate();
   const [sort, setSort] = useState<SortOption>("popular");
   const [view, setView] = useState<"grid" | "list">("grid");
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -182,7 +183,13 @@ export function GamesPage() {
               <CategoryPill
                 key={c.id}
                 active={category === c.id}
-                onClick={() => setCategory(c.id)}
+                onClick={() => {
+                  if (c.id === "deportes") {
+                    navigate({ to: "/deportes" });
+                    return;
+                  }
+                  setCategory(c.id);
+                }}
                 icon={CATEGORY_ICONS[c.id] ?? <Trophy className="h-5 w-5" />}
                 label={c.label}
               />
