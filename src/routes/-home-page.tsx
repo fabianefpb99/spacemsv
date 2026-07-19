@@ -933,7 +933,7 @@ export function HomePage() {
             </h3>
             <Link
               to="/games"
-              className="inline-flex items-center gap-1 rounded-full border border-purple-400/40 bg-purple-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-purple-200 transition hover:bg-purple-500/20 hover:text-white light-text-dark"
+              className="ver-todos-btn inline-flex items-center gap-1 rounded-full border border-purple-400/40 bg-purple-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-purple-200 transition hover:bg-purple-500/20 hover:text-white"
             >
               Ver todos
               <ChevronRight className="h-3 w-3" />
