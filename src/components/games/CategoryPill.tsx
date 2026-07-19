@@ -19,8 +19,8 @@ export function CategoryPill({
         "flex shrink-0 flex-col items-center justify-center gap-1 rounded-xl px-3 py-2 text-[11px] font-semibold transition-all",
         "min-w-[72px] border",
         active
-          ? "border-primary/60 bg-primary/20 text-foreground shadow-[0_0_16px_-6px_hsl(var(--primary)/0.8)]"
-          : "border-white/5 bg-card/50 text-muted-foreground hover:border-white/10 hover:text-foreground",
+          ? "border-purple-400/60 bg-purple-500/20 text-white shadow-[0_0_16px_-6px_rgba(168,85,247,0.85)]"
+          : "border-purple-500/15 bg-[#0c0620]/60 text-purple-200/70 hover:border-purple-400/40 hover:text-white",
       ].join(" ")}
     >
       <span className="inline-flex h-6 w-6 items-center justify-center">{icon}</span>
