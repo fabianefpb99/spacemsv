@@ -4640,3 +4640,7 @@ html.light .ver-todos-btn:not(.theme-dark-fixed):not(.theme-dark-fixed *):hover 
   background-color: #e9dcff !important;
   color: #4c1d95 !important;
 }
+html.light .ver-todos-btn:not(.theme-dark-fixed):not(.theme-dark-fixed *) svg {
+  color: #5b21b6 !important;
+  stroke: #5b21b6 !important;
+}
