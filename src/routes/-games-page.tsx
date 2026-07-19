@@ -105,7 +105,7 @@ export function GamesPage() {
   const activeFilterCount = countActiveFilters(filters);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#060210]">
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4 lg:max-w-3xl lg:px-6">
         {/* Header — idéntico al del home */}
         <header
@@ -171,7 +171,7 @@ export function GamesPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar juegos..."
-            className="w-full rounded-xl border border-white/5 bg-card/60 py-3 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-colors focus:border-primary/50"
+            className="w-full rounded-xl border border-purple-500/20 bg-[#0c0620]/70 py-3 pl-9 pr-3 text-sm text-white placeholder:text-purple-200/50 outline-none transition-colors focus:border-purple-400/60"
           />
         </div>
 
@@ -195,12 +195,12 @@ export function GamesPage() {
           <button
             type="button"
             onClick={() => setFiltersOpen(true)}
-            className="relative inline-flex items-center gap-2 rounded-xl border border-white/10 bg-card/60 px-3 py-2 text-sm font-semibold hover:border-primary/40"
+            className="relative inline-flex items-center gap-2 rounded-xl border border-purple-500/20 bg-[#0c0620]/70 px-3 py-2 text-sm font-semibold text-white hover:border-purple-400/60"
           >
             <SlidersHorizontal className="h-4 w-4" />
             Filtros
             {activeFilterCount > 0 && (
-              <span className="ml-1 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground">
+              <span className="ml-1 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-purple-500 px-1.5 text-[10px] font-bold text-white">
                 {activeFilterCount}
               </span>
             )}
@@ -210,21 +210,21 @@ export function GamesPage() {
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value as SortOption)}
-              className="w-full appearance-none rounded-xl border border-white/10 bg-card/60 px-3 py-2 pr-8 text-sm font-semibold text-foreground hover:border-primary/40 focus:outline-none"
+              className="w-full appearance-none rounded-xl border border-purple-500/20 bg-[#0c0620]/70 px-3 py-2 pr-8 text-sm font-semibold text-white hover:border-purple-400/60 focus:outline-none"
             >
               <option value="popular">Más populares</option>
               <option value="new">Más nuevos</option>
               <option value="az">A – Z</option>
             </select>
-            <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-purple-200/60" />
           </div>
 
-          <div className="inline-flex overflow-hidden rounded-xl border border-white/10 bg-card/60">
+          <div className="inline-flex overflow-hidden rounded-xl border border-purple-500/20 bg-[#0c0620]/70">
             <button
               type="button"
               onClick={() => setView("grid")}
               aria-label="Vista cuadrícula"
-              className={`inline-flex h-9 w-9 items-center justify-center transition-colors ${view === "grid" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              className={`inline-flex h-9 w-9 items-center justify-center transition-colors ${view === "grid" ? "bg-purple-500 text-white" : "text-purple-200/70 hover:text-white"}`}
             >
               <LayoutGrid className="h-4 w-4" />
             </button>
@@ -232,7 +232,7 @@ export function GamesPage() {
               type="button"
               onClick={() => setView("list")}
               aria-label="Vista lista"
-              className={`inline-flex h-9 w-9 items-center justify-center transition-colors ${view === "list" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              className={`inline-flex h-9 w-9 items-center justify-center transition-colors ${view === "list" ? "bg-purple-500 text-white" : "text-purple-200/70 hover:text-white"}`}
             >
               <List className="h-4 w-4" />
             </button>
@@ -240,13 +240,13 @@ export function GamesPage() {
         </div>
 
         {/* Result count */}
-        <div className="mt-4 text-xs text-muted-foreground">
+        <div className="mt-4 text-xs text-purple-200/60">
           {filtered.length} {filtered.length === 1 ? "juego" : "juegos"}
         </div>
 
         {/* Grid / List */}
         {filtered.length === 0 ? (
-          <div className="mt-10 rounded-2xl border border-dashed border-white/10 py-14 text-center text-sm text-muted-foreground">
+          <div className="mt-10 rounded-2xl border border-dashed border-purple-500/20 py-14 text-center text-sm text-purple-200/60">
             No encontramos juegos que coincidan con tu búsqueda.
           </div>
         ) : view === "grid" ? (
