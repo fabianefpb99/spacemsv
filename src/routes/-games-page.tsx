@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
-import { Search, SlidersHorizontal, LayoutGrid, List, ChevronDown, Rocket, Dices, Grid2X2, Spade, Trophy } from "lucide-react";
+import { Menu, Search, SlidersHorizontal, LayoutGrid, List, ChevronDown, Rocket, Dices, Grid2X2, Spade, Trophy } from "lucide-react";
 import { CATALOG, GAME_CATEGORIES, type GameCategory } from "@/lib/games/catalog";
 import { GameCard } from "@/components/games/GameCard";
 import { CategoryPill } from "@/components/games/CategoryPill";
@@ -46,7 +46,6 @@ function readFavs(): Set<string> {
 }
 
 export function GamesPage() {
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<GameCategory | "all">("all");
   const [sort, setSort] = useState<SortOption>("popular");
@@ -101,14 +100,17 @@ export function GamesPage() {
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-white/5 bg-background/85 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-3 py-2.5">
-          <button
-            type="button"
-            onClick={() => setDrawerOpen(true)}
-            aria-label="Abrir menú"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-foreground hover:bg-muted"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-          </button>
+          <HamburgerDrawer
+            trigger={
+              <button
+                type="button"
+                aria-label="Abrir menú"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-foreground hover:bg-muted"
+              >
+                <Menu className="h-5 w-5" strokeWidth={2.4} />
+              </button>
+            }
+          />
           <Link to="/" className="flex items-center gap-2">
             <img src={betspaceLogo} alt="BETSPACE" className="h-6" />
           </Link>
@@ -224,7 +226,6 @@ export function GamesPage() {
       </main>
 
       <FiltersSheet open={filtersOpen} onClose={() => setFiltersOpen(false)} value={filters} onChange={setFilters} />
-      <HamburgerDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
     </div>
   );
 }
