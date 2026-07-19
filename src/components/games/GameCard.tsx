@@ -36,8 +36,8 @@ export function GameCard({
   const content = (
     <div
       className={[
-        "group relative overflow-hidden rounded-2xl border border-white/5 bg-card/60 shadow-sm transition-all",
-        "hover:border-primary/40 hover:shadow-[0_0_20px_-8px_hsl(var(--primary)/0.6)]",
+        "group relative overflow-hidden rounded-xl border border-purple-500/15 bg-[#0c0620]/70 shadow-sm transition-all",
+        "hover:border-purple-400/50 hover:shadow-[0_0_18px_-8px_rgba(168,85,247,0.7)]",
         disabled ? "opacity-70 grayscale-[0.2]" : "",
         isList ? "flex items-center gap-3 p-2" : "",
       ].join(" ")}
@@ -45,7 +45,7 @@ export function GameCard({
       <div
         className={[
           "relative overflow-hidden",
-          isList ? "h-16 w-16 shrink-0 rounded-xl" : "aspect-[3/4] w-full",
+          isList ? "h-16 w-16 shrink-0 rounded-lg" : "aspect-square w-full",
         ].join(" ")}
       >
         <img
@@ -80,20 +80,20 @@ export function GameCard({
         </button>
       </div>
 
-      <div className={isList ? "min-w-0 flex-1" : "p-2.5"}>
+      <div className={isList ? "min-w-0 flex-1" : "px-2 pb-2 pt-1.5"}>
         <div
           className={[
-            "truncate text-[13px] font-extrabold tracking-wide",
+            "truncate text-[12px] font-extrabold tracking-wide",
             isList ? "text-foreground" : "text-white light-text-dark",
           ].join(" ")}
         >
           {game.name}
         </div>
         {game.badge && (
-          <div className="mt-1.5">
+          <div className="mt-1">
             <span
               className={[
-                "inline-block rounded-md px-2 py-0.5 text-[10px] font-bold tracking-wide",
+                "inline-block rounded px-1.5 py-0.5 text-[9px] font-bold tracking-wide",
                 badgeClass(game.badge),
               ].join(" ")}
             >
