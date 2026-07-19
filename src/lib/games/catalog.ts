@@ -44,7 +44,6 @@ export const CATALOG: CatalogGame[] = [
   { slug: "chicken", name: "CHICKEN ROAD", category: "crash", badge: "NUEVO", to: "/chicken", image: gameChickenAsset.url, rank: 8 },
   { slug: "dados", name: "DADOS", category: "mesa", badge: "MESA", to: "/dados", image: gameDiceAsset.url, rank: 9 },
   { slug: "arena", name: "ARENA", category: "casino", badge: null, to: "/arena", image: gameArenaAsset.url, rank: 10 },
-  { slug: "deportes", name: "DEPORTES", category: "deportes", badge: null, to: "/deportes", image: gameArenaAsset.url, rank: 11 },
   // Próximamente (fillers)
   { slug: "aviator", name: "AVIATOR", category: "crash", badge: "PRÓXIMAMENTE", to: null, image: gameSpacemanAsset.url, comingSoon: true, rank: 90 },
   { slug: "sweet_bonanza", name: "SWEET BONANZA", category: "tragamonedas", badge: "PRÓXIMAMENTE", to: null, image: gameSlotMafiaAsset.url, comingSoon: true, rank: 91 },
