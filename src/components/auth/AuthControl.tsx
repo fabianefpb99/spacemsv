@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Settings, LogOut, User as UserIcon } from "lucide-react";
+import { Settings, LogOut, User as UserIcon, Wallet, ChevronRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
 import { AuthDialog } from "./AuthDialog";
@@ -65,11 +64,12 @@ export function AuthControl({ className }: { className?: string }) {
         align="end"
         sideOffset={8}
         collisionPadding={12}
-        className="auth-popover z-50 w-[min(16rem,calc(100vw-1.5rem))] max-w-[calc(100vw-1.5rem)] border-purple-500/40 bg-[#0c0620] text-white"
+        className="auth-popover auth-pop-v2 z-50 w-[min(18rem,calc(100vw-1.5rem))] max-w-[calc(100vw-1.5rem)] rounded-2xl border p-0"
       >
-        <div className="flex items-center gap-2 border-b border-purple-500/20 pb-3">
-          <div className="relative h-10 w-10 shrink-0">
-            <div className="h-10 w-10 overflow-hidden rounded-full border border-fuchsia-400/40 bg-purple-900/40 ring-1 ring-purple-400/30">
+        {/* Header: avatar + name/email */}
+        <div className="ap-header flex items-center gap-3 px-4 pb-4 pt-4">
+          <div className="relative h-12 w-12 shrink-0">
+            <div className="ap-avatar h-12 w-12 overflow-hidden rounded-full">
               <UserAvatar avatarKey={me.data?.profile?.avatar_key} alt="" />
             </div>
             {vipProgress && (
@@ -81,39 +81,54 @@ export function AuthControl({ className }: { className?: string }) {
               />
             )}
           </div>
-          <div className="min-w-0">
-            <div className="truncate text-sm font-semibold">
+          <div className="min-w-0 flex-1">
+            <div className="ap-name truncate text-[15px] font-semibold leading-tight">
               {me.data?.profile?.username ?? user.email?.split("@")[0]}
             </div>
-            <div className="truncate text-[11px] text-purple-200/60">{user.email}</div>
+            <div className="ap-email truncate text-[12px] leading-tight">{user.email}</div>
           </div>
         </div>
-        <div className="pt-3">
-          <div className="text-[10px] uppercase tracking-widest text-purple-200/70">
-            Balance
-          </div>
-          <div className="font-display text-sm font-bold">
-            <span className="auth-money-sign neon-green mr-0.5">$</span>
-            <span className="text-white">{balanceText} COP</span>
-          </div>
-          {bonusText && me.data!.bonus_balance > 0 && (
-            <div className="mt-0.5 text-[10px] font-semibold text-yellow-300">
-              Bono: ${bonusText}
+
+        <div className="ap-divider" />
+
+        {/* Balance row */}
+        <div className="flex items-center gap-3 px-4 py-3">
+          <div className="min-w-0 flex-1">
+            <div className="ap-label text-[11px] font-bold uppercase tracking-wider">
+              SALDO
             </div>
-          )}
-          {me.isError && (
-            <div className="mt-1 text-[10px] text-rose-300/90">
-              No se pudo cargar el saldo.
+            <div className="ap-balance mt-0.5 text-[20px] font-extrabold leading-tight">
+              ${balanceText} <span className="ap-currency">COP</span>
             </div>
-          )}
+            {bonusText && me.data!.bonus_balance > 0 && (
+              <div className="ap-bonus mt-0.5 text-[11px] font-medium">
+                BONUS ${bonusText} COP
+              </div>
+            )}
+            {me.isError && (
+              <div className="mt-1 text-[11px] text-rose-400">
+                No se pudo cargar el saldo.
+              </div>
+            )}
+          </div>
+          <div className="ap-wallet flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
+            <Wallet className="h-5 w-5" />
+          </div>
         </div>
-        <Link
-          to="/perfil"
-          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md border border-purple-500/40 bg-transparent px-3 py-2 text-sm font-medium text-purple-100 transition hover:bg-purple-500/10 hover:text-white"
-        >
-          <UserIcon className="h-4 w-4" />
-          Ver perfil
+
+        <div className="ap-divider" />
+
+        {/* Ver perfil */}
+        <Link to="/perfil" className="ap-row flex w-full items-center gap-3 px-4 py-3">
+          <UserIcon className="ap-row-icon h-[18px] w-[18px]" />
+          <span className="ap-row-label flex-1 text-left text-[14px] font-medium">
+            Ver perfil
+          </span>
+          <ChevronRight className="ap-row-chev h-4 w-4" />
         </Link>
+
+        <div className="ap-divider" />
+
         <LogoutButton />
       </PopoverContent>
     </Popover>
@@ -124,18 +139,18 @@ function LogoutButton() {
   const { signOut } = useAuth();
   const [loading, setLoading] = useState(false);
   return (
-    <Button
+    <button
+      type="button"
       onClick={async () => {
         setLoading(true);
         await signOut();
         setLoading(false);
       }}
       disabled={loading}
-      variant="outline"
-      className="mt-3 w-full border-purple-500/40 bg-transparent text-purple-100 hover:bg-purple-500/10 hover:text-white"
+      className="ap-row ap-row-danger flex w-full items-center gap-3 px-4 py-3 disabled:opacity-60"
     >
-      <LogOut className="h-4 w-4" />
-      Cerrar sesión
-    </Button>
+      <LogOut className="h-[18px] w-[18px]" />
+      <span className="flex-1 text-left text-[14px] font-medium">Cerrar sesión</span>
+    </button>
   );
 }
