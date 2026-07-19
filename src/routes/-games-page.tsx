@@ -165,19 +165,19 @@ export function GamesPage() {
 
         {/* Search */}
         <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-purple-200/60" />
           <input
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar juegos..."
-            className="w-full rounded-xl border border-purple-500/20 bg-[#0c0620]/70 py-3 pl-9 pr-3 text-sm text-white placeholder:text-purple-200/50 outline-none transition-colors focus:border-purple-400/60"
+            className="w-full rounded-lg border border-purple-500/20 bg-[#0c0620]/70 py-1.5 pl-8 pr-3 text-[13px] text-white placeholder:text-purple-200/50 outline-none transition-colors focus:border-purple-400/60"
           />
         </div>
 
         {/* Categories */}
-        <div className="mt-4 -mx-3 overflow-x-auto px-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <div className="flex gap-2">
+        <div className="mt-2.5 -mx-3 overflow-x-auto px-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex gap-1.5">
             {GAME_CATEGORIES.map((c) => (
               <CategoryPill
                 key={c.id}
@@ -191,16 +191,16 @@ export function GamesPage() {
         </div>
 
         {/* Controls */}
-        <div className="mt-4 flex items-center gap-2">
+        <div className="mt-2.5 flex items-center gap-1.5">
           <button
             type="button"
             onClick={() => setFiltersOpen(true)}
-            className="relative inline-flex items-center gap-2 rounded-xl border border-purple-500/20 bg-[#0c0620]/70 px-3 py-2 text-sm font-semibold text-white hover:border-purple-400/60"
+            className="relative inline-flex items-center gap-1.5 rounded-lg border border-purple-500/20 bg-[#0c0620]/70 px-2.5 py-1.5 text-[12px] font-semibold text-white hover:border-purple-400/60"
           >
-            <SlidersHorizontal className="h-4 w-4" />
+            <SlidersHorizontal className="h-3.5 w-3.5" />
             Filtros
             {activeFilterCount > 0 && (
-              <span className="ml-1 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-purple-500 px-1.5 text-[10px] font-bold text-white">
+              <span className="ml-0.5 inline-flex h-4 min-w-[16px] items-center justify-center rounded-full bg-purple-500 px-1 text-[9px] font-bold text-white">
                 {activeFilterCount}
               </span>
             )}
@@ -210,37 +210,37 @@ export function GamesPage() {
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value as SortOption)}
-              className="w-full appearance-none rounded-xl border border-purple-500/20 bg-[#0c0620]/70 px-3 py-2 pr-8 text-sm font-semibold text-white hover:border-purple-400/60 focus:outline-none"
+              className="w-full appearance-none rounded-lg border border-purple-500/20 bg-[#0c0620]/70 px-2.5 py-1.5 pr-7 text-[12px] font-semibold text-white hover:border-purple-400/60 focus:outline-none"
             >
               <option value="popular">Más populares</option>
               <option value="new">Más nuevos</option>
               <option value="az">A – Z</option>
             </select>
-            <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-purple-200/60" />
+            <ChevronDown className="pointer-events-none absolute right-1.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-purple-200/60" />
           </div>
 
-          <div className="inline-flex overflow-hidden rounded-xl border border-purple-500/20 bg-[#0c0620]/70">
+          <div className="inline-flex overflow-hidden rounded-lg border border-purple-500/20 bg-[#0c0620]/70">
             <button
               type="button"
               onClick={() => setView("grid")}
               aria-label="Vista cuadrícula"
-              className={`inline-flex h-9 w-9 items-center justify-center transition-colors ${view === "grid" ? "bg-purple-500 text-white" : "text-purple-200/70 hover:text-white"}`}
+              className={`inline-flex h-7 w-7 items-center justify-center transition-colors ${view === "grid" ? "bg-purple-500 text-white" : "text-purple-200/70 hover:text-white"}`}
             >
-              <LayoutGrid className="h-4 w-4" />
+              <LayoutGrid className="h-3.5 w-3.5" />
             </button>
             <button
               type="button"
               onClick={() => setView("list")}
               aria-label="Vista lista"
-              className={`inline-flex h-9 w-9 items-center justify-center transition-colors ${view === "list" ? "bg-purple-500 text-white" : "text-purple-200/70 hover:text-white"}`}
+              className={`inline-flex h-7 w-7 items-center justify-center transition-colors ${view === "list" ? "bg-purple-500 text-white" : "text-purple-200/70 hover:text-white"}`}
             >
-              <List className="h-4 w-4" />
+              <List className="h-3.5 w-3.5" />
             </button>
           </div>
         </div>
 
         {/* Result count */}
-        <div className="mt-4 text-xs text-purple-200/60">
+        <div className="mt-2.5 text-[11px] text-purple-200/60">
           {filtered.length} {filtered.length === 1 ? "juego" : "juegos"}
         </div>
 
