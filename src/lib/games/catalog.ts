@@ -43,7 +43,7 @@ export const CATALOG: CatalogGame[] = [
   { slug: "mines", name: "MINAS", category: "casino", badge: "POPULAR", to: "/mines", image: gameMinesAsset.url, rank: 7 },
   { slug: "chicken", name: "CHICKEN ROAD", category: "crash", badge: "NUEVO", to: "/chicken", image: gameChickenAsset.url, rank: 8 },
   { slug: "dados", name: "DADOS", category: "mesa", badge: "MESA", to: "/dados", image: gameDiceAsset.url, rank: 9 },
-  { slug: "arena", name: "ARENA", category: "casino", badge: null, to: "/arena", image: gameArenaAsset.url, rank: 10 },
+  { slug: "arena", name: "ARENA", category: "casino", badge: "NUEVO", to: "/arena", image: gameArenaAsset.url, rank: 10 },
   // Próximamente (fillers)
   { slug: "aviator", name: "AVIATOR", category: "crash", badge: "PRÓXIMAMENTE", to: null, image: gameSpacemanAsset.url, comingSoon: true, rank: 90 },
   { slug: "sweet_bonanza", name: "SWEET BONANZA", category: "tragamonedas", badge: "PRÓXIMAMENTE", to: null, image: gameSlotMafiaAsset.url, comingSoon: true, rank: 91 },
