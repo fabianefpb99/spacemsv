@@ -70,7 +70,7 @@ const ITEMS: Item[] = [
 ];
 
 const PRIMARY_ITEMS: { label: string; icon: React.ComponentType<{ className?: string; strokeWidth?: number }>; to: string; accent: "fuchsia" | "cyan" }[] = [
-  { label: "Juegos", icon: Gamepad2, to: "/", accent: "fuchsia" },
+  { label: "Juegos", icon: Gamepad2, to: "/games", accent: "fuchsia" },
   { label: "Deportes", icon: FootballIcon, to: "/deportes", accent: "cyan" },
 ];
 
