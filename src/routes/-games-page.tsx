@@ -106,7 +106,7 @@ export function GamesPage() {
   const activeFilterCount = countActiveFilters(filters);
 
   return (
-    <div className="min-h-screen bg-[#060210]">
+    <div className="games-scope min-h-screen bg-[#060210]">
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4 lg:max-w-3xl lg:px-6">
         {/* Header — idéntico al del home */}
         <header
