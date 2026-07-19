@@ -1218,7 +1218,7 @@ export function SlotSamuraiGame() {
 
   return (
     <div
-      className="relative h-[100dvh] overflow-hidden text-white"
+      className="relative h-[100dvh] overflow-hidden text-white [@media(max-height:720px)]:h-auto [@media(max-height:720px)]:min-h-[100dvh] [@media(max-height:720px)]:overflow-y-auto"
       style={{
         backgroundColor: "#0a0416",
         backgroundImage: `linear-gradient(180deg, rgba(10,4,22,0.15) 0%, rgba(10,4,22,0.35) 45%, rgba(10,4,22,0.75) 100%), url(${samuraiBg})`,
