@@ -36,10 +36,10 @@ export function GameCard({
   const content = (
     <div
       className={[
-        "group relative overflow-hidden rounded-xl border border-purple-500/15 bg-[#0c0620]/70 shadow-sm transition-all",
+        "group relative overflow-hidden rounded-xl border border-purple-500/15 shadow-sm transition-all",
         "hover:border-purple-400/50 hover:shadow-[0_0_18px_-8px_rgba(168,85,247,0.7)]",
         disabled ? "opacity-70 grayscale-[0.2]" : "",
-        isList ? "flex items-center gap-3 p-2" : "",
+        isList ? "flex items-center gap-3 bg-[#0c0620]/70 p-2" : "bg-black",
       ].join(" ")}
     >
       <div
@@ -58,7 +58,7 @@ export function GameCard({
           ].join(" ")}
         />
         {!isList && (
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
         )}
         <button
           type="button"
@@ -78,30 +78,44 @@ export function GameCard({
             strokeWidth={2}
           />
         </button>
-      </div>
-
-      <div className={isList ? "min-w-0 flex-1" : "px-2 pb-2 pt-1.5"}>
-        <div
-          className={[
-            "truncate text-[12px] font-extrabold tracking-wide",
-            isList ? "text-foreground" : "text-white light-text-dark",
-          ].join(" ")}
-        >
-          {game.name}
-        </div>
-        {game.badge && (
-          <div className="mt-1">
-            <span
-              className={[
-                "inline-block rounded px-1.5 py-0.5 text-[9px] font-bold tracking-wide",
-                badgeClass(game.badge),
-              ].join(" ")}
-            >
-              {game.badge}
-            </span>
+        {!isList && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-start gap-1 p-2">
+            <div className="w-full truncate text-left text-[12px] font-extrabold tracking-wide text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+              {game.name}
+            </div>
+            {game.badge && (
+              <span
+                className={[
+                  "inline-block rounded px-1.5 py-0.5 text-[9px] font-bold tracking-wide shadow-md",
+                  badgeClass(game.badge),
+                ].join(" ")}
+              >
+                {game.badge}
+              </span>
+            )}
           </div>
         )}
       </div>
+
+      {isList && (
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-[12px] font-extrabold tracking-wide text-foreground">
+            {game.name}
+          </div>
+          {game.badge && (
+            <div className="mt-1">
+              <span
+                className={[
+                  "inline-block rounded px-1.5 py-0.5 text-[9px] font-bold tracking-wide",
+                  badgeClass(game.badge),
+                ].join(" ")}
+              >
+                {game.badge}
+              </span>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 
