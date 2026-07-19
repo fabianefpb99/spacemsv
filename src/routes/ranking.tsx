@@ -431,17 +431,19 @@ function PodiumSlot({
         {/* Avatar grande dentro de la tarjeta */}
         <div className="absolute inset-x-0 top-2 flex items-center justify-center">
           <div
-            className="flex items-center justify-center overflow-hidden rounded-full bg-[#150830] ring-2 ring-white/10"
+            className="liquid-ring relative"
             style={{
               height: isFirst ? "5.1rem" : "4.08rem",
               width: isFirst ? "5.1rem" : "4.08rem",
             }}
           >
-            {loading || !entry ? (
-              <div className="h-full w-full animate-pulse bg-white/5" />
-            ) : (
-              <UserAvatar avatarKey={entry.avatar_key} avatarUrl={entry.avatar_url} alt={entry.username} />
-            )}
+            <div className="liquid-ring__inner flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-[#150830]">
+              {loading || !entry ? (
+                <div className="h-full w-full animate-pulse bg-white/5" />
+              ) : (
+                <UserAvatar avatarKey={entry.avatar_key} avatarUrl={entry.avatar_url} alt={entry.username} />
+              )}
+            </div>
           </div>
         </div>
 
