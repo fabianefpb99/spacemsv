@@ -165,6 +165,15 @@ export function GamesPage() {
         <main className="pt-4">
         <h1 className="sr-only">Juegos BETSPACE</h1>
 
+        <div className="mb-3">
+          <h2 className="games-title font-display text-xl font-extrabold tracking-tight text-white sm:text-2xl">
+            Todos los juegos
+          </h2>
+          <p className="games-subtitle mt-0.5 text-[12px] text-purple-200/70 sm:text-[13px]">
+            Encuentra el indicado y empieza a ganar
+          </p>
+        </div>
+
         {/* Search */}
         <div className="relative">
           <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-purple-200/60" />
