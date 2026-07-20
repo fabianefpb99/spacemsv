@@ -376,8 +376,9 @@ html.light header.bg-\[\#060210\] {
 }
 /* Invert the white-fill SVG logo to dark inside light-mode headers */
 html.light header.bg-\[\#060210\] .logo-shine img {
-  /* Brand dark-purple (#2a1d4d) tint instead of flat black */
-  filter: brightness(0) saturate(100%) invert(11%) sepia(58%) saturate(2400%) hue-rotate(245deg) brightness(92%) contrast(108%);
+  /* Brand dark-purple (#2a1d4d) tint — hue-rotate 245°+ derivaba a fucsia,
+     bajamos a 232° con saturación moderada para caer en indigo profundo. */
+  filter: brightness(0) saturate(100%) invert(10%) sepia(60%) saturate(1800%) hue-rotate(232deg) brightness(85%) contrast(105%);
 }
 
 /* Home brand loader overlay — base (dark) + light theme override.
@@ -390,7 +391,7 @@ html.light .brand-loader-overlay {
   background-color: #ffffff;
 }
 html.light .brand-loader-overlay .brand-loader-reveal {
-  filter: brightness(0) saturate(100%) invert(13%) sepia(85%) saturate(3500%) hue-rotate(258deg) brightness(85%) contrast(115%);
+  filter: brightness(0) saturate(100%) invert(10%) sepia(60%) saturate(1800%) hue-rotate(232deg) brightness(85%) contrast(105%);
 }
 /* Header text/labels readable on white */
 html.light header.bg-\[\#060210\] .text-white,
