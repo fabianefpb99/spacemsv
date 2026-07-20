@@ -169,7 +169,7 @@ export function GamesPage() {
           <h2 className="games-title font-display text-xl font-extrabold uppercase tracking-tight text-white sm:text-2xl">
             TODOS LOS <span className="games-title-accent text-purple-400">JUEGOS</span>
           </h2>
-          <p className="games-subtitle mt-0.5 text-[12px] text-purple-200/70 sm:text-[13px]">
+          <p className="games-subtitle font-body font-semibold mt-0.5 text-[12px] text-purple-200/70 sm:text-[13px]">
             Encuentra el indicado y empieza a ganar
           </p>
         </div>

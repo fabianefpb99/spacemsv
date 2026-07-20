@@ -44,6 +44,10 @@ html.light .games-scope .games-title-accent {
 html.light .games-scope .games-subtitle {
   color: #6d28d9 !important;
 }
+.games-subtitle {
+  font-family: 'Manrope', 'Inter', system-ui, sans-serif;
+  font-weight: 600;
+}
 /* Search, filters, sort, view toggle surfaces */
 html.light .games-scope .bg-\[\#0c0620\]\/70,
 html.light .games-scope .bg-\[\#0c0620\]\/60 {
