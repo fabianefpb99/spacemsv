@@ -35,6 +35,12 @@ html.light .games-scope header .text-white {
 html.light .games-scope header .text-purple-200\/70 {
   color: #7c3aed !important;
 }
+html.light .games-scope .games-title {
+  color: #1f1530 !important;
+}
+html.light .games-scope .games-subtitle {
+  color: #6d28d9 !important;
+}
 /* Search, filters, sort, view toggle surfaces */
 html.light .games-scope .bg-\[\#0c0620\]\/70,
 html.light .games-scope .bg-\[\#0c0620\]\/60 {
