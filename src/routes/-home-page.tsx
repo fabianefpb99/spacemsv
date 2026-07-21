@@ -1136,10 +1136,19 @@ export function HomePage() {
         </button>
 
         {/* Últimas ganancias */}
-        <section className="home-wins-panel mt-5 rounded-xl border border-purple-500/30 bg-[#0c0620] p-3 sm:p-4">
+        <div className="home-wins-header mt-5 px-1">
+          <div className="font-display text-sm font-black uppercase tracking-widest text-white">
+            Actividad en vivo
+          </div>
+          <div className="mt-0.5 text-xs font-medium text-purple-200/80">
+            La comunidad sigue jugando y ganando
+          </div>
+        </div>
+        <section className="home-wins-panel mt-2 rounded-xl border border-purple-500/30 bg-[#0c0620] p-3 sm:p-4">
           <h3 className="home-wins-heading font-display text-xs font-bold uppercase tracking-widest text-white">
             Últimas ganancias
           </h3>
+
           <div
             className="home-wins-viewport relative mt-3 overflow-hidden"
             style={{
