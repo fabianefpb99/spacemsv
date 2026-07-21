@@ -199,7 +199,7 @@ export function GamesPage() {
         </div>
 
         {/* Categories */}
-        <div className="mt-2.5 -mx-3 overflow-x-auto px-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <div className="mt-1.5 -mx-3 overflow-x-auto px-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <div className="flex gap-1.5">
             {GAME_CATEGORIES.map((c) => (
               <CategoryPill
@@ -220,7 +220,7 @@ export function GamesPage() {
         </div>
 
         {/* Controls */}
-        <div className="mt-2.5 flex items-center gap-1.5">
+        <div className="mt-1.5 flex items-center gap-1.5">
           <button
             type="button"
             onClick={() => setFiltersOpen(true)}
