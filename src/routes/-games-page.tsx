@@ -13,6 +13,7 @@ import { AuthDialog } from "@/components/auth/AuthDialog";
 import { useMe } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
 import betspaceLogo from "@/assets/betspace-logo.svg";
+import gamesHeroBg from "@/assets/games-hero-bg.webp.asset.json";
 
 function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.max(0, Math.floor(n)));
@@ -165,7 +166,10 @@ export function GamesPage() {
         <main className="pt-4">
         <h1 className="sr-only">Juegos BETSPACE</h1>
 
-        <div className="games-hero mb-3">
+        <div
+          className="games-hero mb-3"
+          style={{ backgroundImage: `url(${gamesHeroBg.url})` }}
+        >
           <div className="games-hero-shine" aria-hidden="true" />
           <div className="games-hero-inner">
             <div className="games-hero-icon" aria-hidden="true">

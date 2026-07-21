@@ -57,10 +57,10 @@ html.light .games-scope .games-subtitle {
   overflow: hidden;
   border-radius: 14px;
   padding: 14px 16px;
-  background:
-    radial-gradient(120% 180% at 0% 0%, rgba(168, 85, 247, 0.35), transparent 55%),
-    radial-gradient(120% 180% at 100% 100%, rgba(217, 70, 239, 0.28), transparent 55%),
-    linear-gradient(135deg, #1a0930 0%, #0c0620 55%, #060210 100%);
+  background-color: #060210;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   border: 1px solid rgba(168, 85, 247, 0.35);
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.04) inset,
@@ -108,13 +108,10 @@ html.light .games-scope .games-subtitle {
 }
 .games-hero .games-subtitle { color: rgba(233, 213, 255, 0.85); }
 
-/* Light mode variant */
+/* Light mode variant — keep the same image, soften with an overlay tint */
 html.light .games-scope .games-hero {
-  background:
-    radial-gradient(120% 180% at 0% 0%, rgba(196, 181, 253, 0.55), transparent 55%),
-    radial-gradient(120% 180% at 100% 100%, rgba(216, 180, 254, 0.5), transparent 55%),
-    linear-gradient(135deg, #ffffff 0%, #f5f0ff 55%, #ede4ff 100%);
-  border-color: rgba(124, 58, 237, 0.35);
+  background-color: #1a0930;
+  border-color: rgba(124, 58, 237, 0.45);
   box-shadow:
     0 0 0 1px rgba(124, 58, 237, 0.06) inset,
     0 10px 24px -14px rgba(124, 58, 237, 0.45);
