@@ -1030,7 +1030,7 @@ export function HomePage() {
               <div className="promo-banner__title mt-0.5 font-display text-2xl font-black leading-none tracking-wide text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] sm:text-3xl">
                 BlackJack
               </div>
-              <div className="promo-banner__tag mt-1 inline-block rounded-sm bg-fuchsia-600/80 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white shadow-[0_0_8px_rgba(217,70,239,0.6)]">
+              <div className="promo-banner__tag mt-1 inline-block rounded-sm bg-purple-600/80 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white shadow-[0_0_8px_rgba(168,85,247,0.6)]">
                 Paga 3 a 2
               </div>
             </div>
@@ -1093,7 +1093,7 @@ export function HomePage() {
               <div className="promo-banner__title mt-0.5 font-display text-2xl font-black leading-none tracking-wide text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] sm:text-3xl">
                 Arena
               </div>
-              <div className="promo-banner__tag mt-1 inline-block rounded-sm bg-fuchsia-600/80 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white shadow-[0_0_8px_rgba(217,70,239,0.6)]">
+              <div className="promo-banner__tag mt-1 inline-block rounded-sm bg-purple-600/80 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white shadow-[0_0_8px_rgba(168,85,247,0.6)]">
                 Paga hasta 8.0x
               </div>
             </div>
