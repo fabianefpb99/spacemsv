@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
-import comboImg from "@/assets/combo-starter.png";
+import comboImg from "@/assets/combo-starter.webp";
 
 const STORAGE_KEY = "betspaceman:promo-starter:deadline";
 const SHOWS_KEY = "betspaceman:promo-starter:shows";

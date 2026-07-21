@@ -10,7 +10,7 @@ import { setMuted as setAudioMuted, playCrashSound, playCashoutSound, isMuted, s
 import coinRevealSfx from "@/assets/sfx/coin-reveal.mp3";
 import victorySfx from "@/assets/sfx/victory.mp3";
 import gameOverSfx from "@/assets/sfx/game-over.mp3";
-import minesBg from "@/assets/mines-page-bg.png";
+import minesBg from "@/assets/mines-page-bg.webp";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMe, type MeData } from "@/hooks/useMe";

@@ -33,11 +33,11 @@ import { getActiveUsersCount, getActiveUsersList, type ActiveUser } from "@/lib/
 import { getHourlyOnlineBase } from "@/lib/online-base";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
-import heroImg from "@/assets/home-hero.jpg";
+import heroImg from "@/assets/home-hero.webp";
 import heroMinesImg from "@/assets/home-hero-mines.jpg";
-import heroSlotImg from "@/assets/home-hero-slot.jpg";
-import heroDiceImg from "@/assets/home-hero-dice.jpg";
-import heroBlackjackImg from "@/assets/home-hero-blackjack.jpg";
+import heroSlotImg from "@/assets/home-hero-slot.webp";
+import heroDiceImg from "@/assets/home-hero-dice.webp";
+import heroBlackjackImg from "@/assets/home-hero-blackjack.webp";
 import heroRuletaImg from "@/assets/home-hero-ruleta.jpg";
 import heroArenaImg from "@/assets/home-hero-arena.png.asset.json";
 import heroChickenImg from "@/assets/home-hero-chicken.webp.asset.json";

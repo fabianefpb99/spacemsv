@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import bgImage from "@/assets/space-bg-full.png";
+import bgImage from "@/assets/space-bg-full.webp";
 import astronautIdle from "@/assets/astronaut-idle.svg";
-import astronautFlying from "@/assets/astronaut-flying.png";
+import astronautFlying from "@/assets/astronaut-flying.webp";
 import meteor from "@/assets/asteroid.svg";
 import bgMusic from "@/assets/bg-music.mp3";
 import astronautRocket from "@/assets/astronaut-rocket.svg";

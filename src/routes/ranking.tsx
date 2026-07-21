@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import spaceBg from "@/assets/space-bg.png";
+import spaceBg from "@/assets/space-bg.webp";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { NotificationBell } from "@/components/admin/NotificationBell";
 import { AuthDialog } from "@/components/auth/AuthDialog";

@@ -9,7 +9,7 @@ import { confirmDeposit, getMyDeposit, cancelMyDeposit } from "@/lib/deposits/de
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { RequireAuth } from "@/components/auth/RequireAuth";
-import nequiAstronaut from "@/assets/nequi-astronaut-wide.png";
+import nequiAstronaut from "@/assets/nequi-astronaut-wide.webp";
 import nequiLogo from "@/assets/nequi.svg";
 import brebLogo from "@/assets/bre-b.svg";
 

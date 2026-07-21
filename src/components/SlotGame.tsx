@@ -17,7 +17,7 @@ import { AuthDialog } from "@/components/auth/AuthDialog";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "lucide-react";
 import { setMuted as setAudioMuted, playCashoutSound, playCoinsSound, isMuted, setBackgroundTrack, clearBackgroundTrack, getBackgroundTrack, stopAllGameAudio, getCtx, getMasterGain, AUDIO_STOP_ALL_EVENT } from "@/lib/gameAudio";
-import pageBg from "@/assets/mines-page-bg.png";
+import pageBg from "@/assets/mines-page-bg.webp";
 import mafiaJazzUrl from "@/assets/mafia-jazz.mp3";
 import tommyOrnament from "@/assets/mafia/tommy-ornament.webp.asset.json";
 import mafiaBgAsset from "@/assets/mafia-bg.webp.asset.json";

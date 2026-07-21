@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "lucide-react";
 import { setMuted as setAudioMuted, playCashoutSound, isMuted } from "@/lib/gameAudio";
-import pageBg from "@/assets/mines-page-bg.png";
+import pageBg from "@/assets/mines-page-bg.webp";
 
 import bossImg from "@/assets/slot/boss.png";
 import hatImg from "@/assets/slot/hat.png";
