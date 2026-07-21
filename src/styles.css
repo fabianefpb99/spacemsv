@@ -110,26 +110,27 @@ html.light .games-scope .games-subtitle {
 
 /* Light mode variant — keep the same image, soften with an overlay tint */
 html.light .games-scope .games-hero {
-  background-color: #1a0930;
-  border-color: rgba(124, 58, 237, 0.45);
+  background-color: #0b0320;
+  border-color: rgba(124, 58, 237, 0.55);
   box-shadow:
-    0 0 0 1px rgba(124, 58, 237, 0.06) inset,
-    0 10px 24px -14px rgba(124, 58, 237, 0.45);
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+    0 10px 26px -12px rgba(124, 58, 237, 0.55),
+    0 0 20px -8px rgba(217, 70, 239, 0.35);
 }
 html.light .games-scope .games-hero-icon {
-  color: #6d28d9;
-  background: linear-gradient(135deg, rgba(196,181,253,0.75), rgba(216,180,254,0.6));
-  border-color: rgba(124, 58, 237, 0.45);
+  color: #f5d0fe;
+  background: linear-gradient(135deg, rgba(168,85,247,0.45), rgba(217,70,239,0.35));
+  border-color: rgba(232, 121, 249, 0.55);
   box-shadow:
-    0 0 14px -4px rgba(124, 58, 237, 0.4),
-    inset 0 0 10px rgba(196, 181, 253, 0.6);
+    0 0 18px -2px rgba(217, 70, 239, 0.55),
+    inset 0 0 12px rgba(168, 85, 247, 0.4);
 }
-html.light .games-scope .games-hero .games-title { color: #1f1530 !important; }
+html.light .games-scope .games-hero .games-title { color: #ffffff !important; letter-spacing: 0.5px; }
 html.light .games-scope .games-hero .games-title-accent {
-  color: #7c3aed !important;
-  text-shadow: none;
+  color: #e879f9 !important;
+  text-shadow: 0 0 12px rgba(232, 121, 249, 0.55);
 }
-html.light .games-scope .games-hero .games-subtitle { color: #6d28d9 !important; }
+html.light .games-scope .games-hero .games-subtitle { color: rgba(233, 213, 255, 0.9) !important; }
 /* Search, filters, sort, view toggle surfaces */
 html.light .games-scope .bg-\[\#0c0620\]\/70,
 html.light .games-scope .bg-\[\#0c0620\]\/60 {
