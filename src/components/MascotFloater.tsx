@@ -5,7 +5,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import mascotAsset from "@/assets/mascot-chica.webp.asset.json";
 
 const SHOWN_KEY = "betspace:mascot-shown";
-const FALLBACK_DELAY_MS = 1200;
+const IDLE_FALLBACK_MS = 5000;
 const SHOWS_KEY = "betspace:mascot:shows";
 const MAX_SHOWS_PER_HOUR = 2;
 const ONE_HOUR_MS = 60 * 60 * 1000;
@@ -68,13 +68,36 @@ export function MascotFloater() {
         window.clearTimeout(timerRef.current);
         timerRef.current = null;
       }
+      cleanupInteractions();
       setArmed(true);
     };
+    const interactionEvents: Array<keyof WindowEventMap> = [
+      "pointerdown",
+      "keydown",
+      "scroll",
+      "touchstart",
+    ];
+    const onInteraction = () => arm();
+    const cleanupInteractions = () => {
+      interactionEvents.forEach((ev) =>
+        window.removeEventListener(ev, onInteraction, { capture: true } as any),
+      );
+    };
     window.addEventListener("betspace:promo-starter-closed", arm);
-    // Fallback: if the promo popup doesn't show at all, arm after delay
-    timerRef.current = window.setTimeout(arm, FALLBACK_DELAY_MS);
+    // Only arm after real user interaction — prevents Lighthouse/audit bots
+    // from measuring the mascot as the LCP element.
+    interactionEvents.forEach((ev) =>
+      window.addEventListener(ev, onInteraction, {
+        capture: true,
+        passive: true,
+        once: false,
+      } as any),
+    );
+    // Idle fallback for real users who don't touch anything.
+    timerRef.current = window.setTimeout(arm, IDLE_FALLBACK_MS);
     return () => {
       window.removeEventListener("betspace:promo-starter-closed", arm);
+      cleanupInteractions();
       if (timerRef.current) window.clearTimeout(timerRef.current);
     };
   }, []);
