@@ -61,7 +61,7 @@ const gameBlackjackVip = gameBlackjackVipAsset.url;
 const gameArena = gameArenaAsset.url;
 const gameRuleta = gameRuletaAsset.url;
 const gameChicken = gameChickenAsset.url;
-import gift3d from "@/assets/gift-3d.png";
+import gift3d from "@/assets/gift-3d.webp";
 
 function prettyGameName(g: string): string {
   const k = (g || "").toLowerCase();
