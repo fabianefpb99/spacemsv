@@ -1136,7 +1136,7 @@ export function HomePage() {
         </button>
 
         {/* Actividad en vivo · Últimas ganancias */}
-        <section className="home-wins-panel mt-6 overflow-hidden rounded-2xl border border-purple-500/30 bg-gradient-to-b from-[#160a35] to-[#0c0620] shadow-[0_10px_30px_-15px_rgba(139,92,246,0.45)]">
+        <section className="home-wins-panel mt-6 overflow-hidden rounded-2xl border border-purple-500/30 bg-gradient-to-b from-[#0c041e] to-[#0c0620] shadow-[0_10px_30px_-15px_rgba(139,92,246,0.45)]">
           <header className="home-wins-header relative px-4 pt-4 pb-3 sm:px-5 sm:pt-5">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
