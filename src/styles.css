@@ -391,17 +391,30 @@ html.light .home-game-card {
   color: #ffffff !important;
 }
 html.light .home-wins-panel {
-  background-color: #ffffff !important;
+  background: #ffffff !important;
+  background-image: none !important;
   border-color: rgba(59, 20, 104, 0.16) !important;
-  box-shadow: none !important;
+  box-shadow: 0 6px 20px -12px rgba(59, 20, 104, 0.25) !important;
   color: #3b1468 !important;
 }
+html.light .home-wins-title,
 html.light .home-wins-heading,
 html.light .home-win-user,
 html.light .home-win-amount,
 html.light .home-win-amount .text-white {
   color: #3b1468 !important;
   text-shadow: none !important;
+}
+html.light .home-wins-sub {
+  color: rgba(59, 20, 104, 0.65) !important;
+}
+html.light .home-wins-chip {
+  background-color: rgba(139, 92, 246, 0.1) !important;
+  border-color: rgba(139, 92, 246, 0.3) !important;
+  color: #4c1d95 !important;
+}
+html.light .home-wins-divider {
+  background: linear-gradient(to right, transparent, rgba(139, 92, 246, 0.35), transparent) !important;
 }
 html.light .home-win-row {
   background-color: #faf9f6 !important;
