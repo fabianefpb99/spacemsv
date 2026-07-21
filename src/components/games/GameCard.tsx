@@ -5,15 +5,15 @@ import type { CatalogGame } from "@/lib/games/catalog";
 function badgeClass(badge: CatalogGame["badge"]) {
   switch (badge) {
     case "POPULAR":
-      return "bg-primary/90 text-primary-foreground";
+      return "bg-purple-600 text-white border border-purple-400";
     case "NUEVO":
-      return "bg-emerald-500/90 text-white";
+      return "bg-emerald-600 text-white border border-emerald-400";
     case "VIP":
-      return "bg-amber-400/90 text-black";
+      return "bg-amber-500 text-black border border-amber-300";
     case "MESA":
-      return "bg-muted text-foreground";
+      return "bg-rose-600 text-white border border-rose-400";
     case "PRÓXIMAMENTE":
-      return "bg-primary/25 text-primary-foreground border border-primary/40";
+      return "bg-purple-500/25 text-white border border-purple-400/50";
     default:
       return "";
   }
@@ -86,7 +86,7 @@ export function GameCard({
             {game.badge && (
               <span
                 className={[
-                  "inline-block rounded px-1.5 py-0.5 text-[9px] font-bold tracking-wide shadow-md",
+                  "inline-block rounded-full px-2 py-[2px] text-[9px] font-bold uppercase tracking-wide shadow-md leading-none",
                   badgeClass(game.badge),
                 ].join(" ")}
               >
@@ -106,7 +106,7 @@ export function GameCard({
             <div className="mt-1">
               <span
                 className={[
-                  "inline-block rounded px-1.5 py-0.5 text-[9px] font-bold tracking-wide",
+                  "inline-block rounded-full px-2 py-[2px] text-[9px] font-bold uppercase tracking-wide leading-none",
                   badgeClass(game.badge),
                 ].join(" ")}
               >
