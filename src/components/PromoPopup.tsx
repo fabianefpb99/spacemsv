@@ -80,7 +80,7 @@ export function PromoPopup() {
       setImgLoaded(true);
       shows.push(Date.now());
       localStorage.setItem(SHOWS_KEY, JSON.stringify(shows));
-      window.setTimeout(() => setOpen(true), 1500);
+      window.setTimeout(() => setOpen(true), 3000);
     };
     if (img.complete && img.naturalWidth > 0) {
       handleReady();
@@ -136,6 +136,9 @@ export function PromoPopup() {
             alt="Combo Starter Apuesta"
             className="block h-auto w-full select-none"
             draggable={false}
+            loading="lazy"
+            decoding="async"
+            fetchPriority="low"
           />
 
           {/* Overlay con el contador real, posicionado sobre el reloj de la imagen */}
