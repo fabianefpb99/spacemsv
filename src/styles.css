@@ -2,6 +2,15 @@
 @source "../src";
 @import "tw-animate-css";
 
+/* Self-hosted fonts (replaces Google Fonts <link> — eliminates render-blocking
+ * request and ~750ms roundtrip. Cached by Cloudflare edge + browser. */
+@import "@fontsource/cinzel/600.css";
+@import "@fontsource/cinzel/700.css";
+@import "@fontsource/cinzel/900.css";
+@import "@fontsource-variable/orbitron";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/manrope";
+
 @custom-variant dark (&:is(.dark *));
 
 /* ------------------------------------------------------------------
