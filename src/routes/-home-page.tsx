@@ -1142,12 +1142,12 @@ export function HomePage() {
           <header className="home-wins-header relative px-4 pt-4 pb-3 sm:px-5 sm:pt-5">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <div className="home-wins-live-badge flex items-center gap-2 rounded-full border border-transparent">
-                  <span className="home-wins-live-dot relative inline-flex h-2 w-2">
+                <div className="home-wins-live-badge mt-1 flex shrink-0 items-center gap-1.5 rounded-full border border-transparent px-2 py-1">
+                  <span className="home-wins-live-dot relative inline-flex h-2 w-2 shrink-0">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-500 opacity-70" />
                     <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.9)]" />
                   </span>
-                  <span className="home-wins-live text-[10px] font-bold uppercase tracking-[0.2em] text-rose-300">
+                  <span className="home-wins-live text-[9px] font-bold uppercase tracking-widest text-rose-300">
                     En vivo
                   </span>
                 </div>
