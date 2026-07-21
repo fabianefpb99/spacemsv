@@ -8,8 +8,6 @@ const SHOWS_KEY = "betspaceman:promo-starter:shows";
 const MAX_SHOWS_PER_HOUR = 2;
 const ONE_HOUR_MS = 60 * 60 * 1000;
 const DURATION_MS = 60 * 60 * 1000; // 1 hora
-const IMAGE_IDLE_LOAD_DELAY_MS = 4500;
-const SHOW_AFTER_INTERACTION_MS = 900;
 
 function pad(n: number) {
   return n.toString().padStart(2, "0");
@@ -76,76 +74,26 @@ export function PromoPopup() {
     };
     document.addEventListener("visibilitychange", onVisibility);
 
-    let disposed = false;
-    let userInteracted = false;
-    let imageReady = false;
-    let imageStarted = false;
-    let img: HTMLImageElement | null = null;
-    let openTimer: number | null = null;
-
-    const removeInteractionListeners = () => {
-      window.removeEventListener("pointerdown", handleInteraction);
-      window.removeEventListener("keydown", handleInteraction);
-      window.removeEventListener("scroll", handleInteraction);
-      window.removeEventListener("touchstart", handleInteraction);
-    };
-
-    const scheduleOpen = () => {
-      if (disposed || !userInteracted || !imageReady || openTimer != null) return;
-      openTimer = window.setTimeout(() => {
-        if (disposed) return;
-        shows.push(Date.now());
-        localStorage.setItem(SHOWS_KEY, JSON.stringify(shows));
-        setOpen(true);
-      }, SHOW_AFTER_INTERACTION_MS);
-    };
-
-    const markImageReady = () => {
-      imageReady = true;
+    const img = new Image();
+    img.src = comboImg;
+    const handleReady = () => {
       setImgLoaded(true);
-      scheduleOpen();
+      shows.push(Date.now());
+      localStorage.setItem(SHOWS_KEY, JSON.stringify(shows));
+      window.setTimeout(() => setOpen(true), 500);
     };
-
-    const startImageLoad = () => {
-      if (disposed || imageStarted) return;
-      imageStarted = true;
-      img = new Image();
-      img.decoding = "async";
-      img.fetchPriority = "low";
-      img.src = comboImg;
-      if (img.complete && img.naturalWidth > 0) {
-        markImageReady();
-      } else {
-        img.onload = markImageReady;
-        img.onerror = () => {};
-      }
-    };
-
-    function handleInteraction() {
-      userInteracted = true;
-      removeInteractionListeners();
-      startImageLoad();
-      scheduleOpen();
+    if (img.complete && img.naturalWidth > 0) {
+      handleReady();
+    } else {
+      img.onload = handleReady;
+      img.onerror = () => {};
     }
-
-    window.addEventListener("pointerdown", handleInteraction, { passive: true });
-    window.addEventListener("keydown", handleInteraction, { passive: true });
-    window.addEventListener("scroll", handleInteraction, { passive: true });
-    window.addEventListener("touchstart", handleInteraction, { passive: true });
-
-    const imageIdleTimer = window.setTimeout(startImageLoad, IMAGE_IDLE_LOAD_DELAY_MS);
 
     return () => {
       document.removeEventListener("visibilitychange", onVisibility);
       if (id != null) window.clearInterval(id);
-      disposed = true;
-      removeInteractionListeners();
-      window.clearTimeout(imageIdleTimer);
-      if (openTimer != null) window.clearTimeout(openTimer);
-      if (img) {
-        img.onload = null;
-        img.onerror = null;
-      }
+      img.onload = null;
+      img.onerror = null;
     };
   }, []);
 
@@ -188,9 +136,6 @@ export function PromoPopup() {
             alt="Combo Starter Apuesta"
             className="block h-auto w-full select-none"
             draggable={false}
-            loading="lazy"
-            decoding="async"
-            fetchPriority="low"
           />
 
           {/* Overlay con el contador real, posicionado sobre el reloj de la imagen */}
