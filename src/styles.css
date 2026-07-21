@@ -7,9 +7,18 @@
 @import "@fontsource/cinzel/600.css";
 @import "@fontsource/cinzel/700.css";
 @import "@fontsource/cinzel/900.css";
-@import "@fontsource-variable/orbitron";
-@import "@fontsource-variable/inter";
-@import "@fontsource-variable/manrope";
+@import "@fontsource/orbitron/500.css";
+@import "@fontsource/orbitron/700.css";
+@import "@fontsource/orbitron/900.css";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
+@import "@fontsource/manrope/300.css";
+@import "@fontsource/manrope/400.css";
+@import "@fontsource/manrope/500.css";
+@import "@fontsource/manrope/600.css";
+@import "@fontsource/manrope/700.css";
+@import "@fontsource/manrope/800.css";
 
 @custom-variant dark (&:is(.dark *));
 
