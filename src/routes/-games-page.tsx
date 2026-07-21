@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Menu, Search, SlidersHorizontal, LayoutGrid, List, ChevronDown, Rocket, Dices, Grid2X2, Spade, Trophy } from "lucide-react";
+import { Menu, Search, SlidersHorizontal, LayoutGrid, List, ChevronDown, Rocket, Dices, Grid2X2, Spade, Trophy, Gamepad2 } from "lucide-react";
 import { CATALOG, GAME_CATEGORIES, type GameCategory } from "@/lib/games/catalog";
 import { GameCard } from "@/components/games/GameCard";
 import { CategoryPill } from "@/components/games/CategoryPill";
@@ -165,13 +165,21 @@ export function GamesPage() {
         <main className="pt-4">
         <h1 className="sr-only">Juegos BETSPACE</h1>
 
-        <div className="mb-3">
-          <h2 className="games-title font-display text-xl font-extrabold uppercase tracking-tight text-white sm:text-2xl">
-            TODOS LOS <span className="games-title-accent text-purple-400">JUEGOS</span>
-          </h2>
-          <p className="games-subtitle font-body font-semibold mt-0.5 text-[12px] text-purple-200/70 sm:text-[13px]">
-            Encuentra el indicado y empieza a ganar
-          </p>
+        <div className="games-hero mb-3">
+          <div className="games-hero-shine" aria-hidden="true" />
+          <div className="games-hero-inner">
+            <div className="games-hero-icon" aria-hidden="true">
+              <Gamepad2 className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={2.4} />
+            </div>
+            <div className="games-hero-text">
+              <h2 className="games-title font-display text-2xl font-black uppercase leading-none tracking-tight sm:text-3xl">
+                TODOS LOS <span className="games-title-accent">JUEGOS</span>
+              </h2>
+              <p className="games-subtitle mt-1 text-[11px] sm:text-[12px]">
+                Encuentra el indicado y empieza a ganar
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Search */}
