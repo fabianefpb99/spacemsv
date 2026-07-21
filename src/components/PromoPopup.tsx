@@ -80,7 +80,7 @@ export function PromoPopup() {
       setImgLoaded(true);
       shows.push(Date.now());
       localStorage.setItem(SHOWS_KEY, JSON.stringify(shows));
-      window.setTimeout(() => setOpen(true), 500);
+      window.setTimeout(() => setOpen(true), 1500);
     };
     if (img.complete && img.naturalWidth > 0) {
       handleReady();
