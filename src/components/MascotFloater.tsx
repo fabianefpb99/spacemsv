@@ -299,9 +299,9 @@ export function MascotFloater() {
             handleDismiss();
           }}
           aria-label="Ocultar personaje"
-          className="pointer-events-auto absolute -left-1 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white/90 ring-1 ring-white/20 backdrop-blur transition hover:bg-black/80"
+          className="pointer-events-auto absolute -left-2 top-1 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-black/60 text-white/90 ring-1 ring-white/20 backdrop-blur transition hover:bg-black/80"
         >
-          <X className="h-3.5 w-3.5" strokeWidth={2.5} />
+          <X className="h-4 w-4" strokeWidth={2.5} />
         </button>
 
         {/* Soft purple shadow behind the mascot */}
