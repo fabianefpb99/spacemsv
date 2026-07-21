@@ -408,6 +408,12 @@ html.light .home-win-row {
   border-color: rgba(59, 20, 104, 0.14) !important;
   box-shadow: none !important;
 }
+html.light .home-wins-header .text-white,
+html.light .home-wins-header .text-purple-200\/80 {
+  color: #3b1468 !important;
+  text-shadow: none !important;
+}
+
 
 /* Invita y gana — fondo oscuro sólido, textos blancos en modo claro */
 html.light .home-invite-card {
