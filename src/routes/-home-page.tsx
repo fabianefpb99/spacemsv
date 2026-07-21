@@ -474,20 +474,22 @@ export function HomePage() {
       }))
     : SLIDES;
 
-  const gamesListBase = (featuredQ.data && featuredQ.data.length > 0)
-    ? featuredQ.data.map((g) => ({
-        name: g.name,
-        img: g.image_url,
-        tag: g.tag ?? "POPULAR",
-        tagCls: TAG_CLS[g.tag_color ?? "purple"] ?? TAG_CLS.purple,
-        to: (g.link ?? "/") as "/",
-      }))
-    : GAMES;
-  // Aseguramos que TODOS los juegos del catálogo aparezcan en el deslizable,
-  // incluso si el admin solo configuró un subconjunto en la BD.
-  const existingRoutes = new Set(gamesListBase.map((g) => g.to));
-  const missing = GAMES.filter((g) => !existingRoutes.has(g.to as string));
-  const gamesList = [...gamesListBase, ...missing];
+  // El admin es la única fuente de verdad para el orden/posición de juegos
+  // destacados. Mientras la query está cargando NO mostramos la lista
+  // estática (evita el flicker de posiciones viejas, ej. SLOT MAFIA
+  // apareciendo un instante en el slot de SAMURAI). Solo si el backend
+  // resolvió y devolvió vacío usamos el fallback estático.
+  const gamesList = featuredQ.data
+    ? featuredQ.data.length > 0
+      ? featuredQ.data.map((g) => ({
+          name: g.name,
+          img: g.image_url,
+          tag: g.tag ?? "POPULAR",
+          tagCls: TAG_CLS[g.tag_color ?? "purple"] ?? TAG_CLS.purple,
+          to: (g.link ?? "/") as "/",
+        }))
+      : GAMES
+    : [];
 
   // Tus favoritos: top 4 juegos más jugados por el usuario (solo si jugó >=4)
   const fetchFavorites = useServerFn(getMyFavoriteGames);
