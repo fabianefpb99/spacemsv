@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { HomePage } from "./-home-page";
 import heroArenaAsset from "@/assets/home-hero-arena.png.asset.json";
-import comboStarterImg from "@/assets/combo-starter.webp";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -26,12 +25,6 @@ export const Route = createFileRoute("/")({
         rel: "preload",
         as: "image",
         href: heroArenaAsset.url,
-        fetchpriority: "high",
-      },
-      {
-        rel: "preload",
-        as: "image",
-        href: comboStarterImg,
         fetchpriority: "high",
       },
     ],
