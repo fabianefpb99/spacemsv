@@ -136,6 +136,9 @@ export function PromoPopup() {
             alt="Combo Starter Apuesta"
             className="block h-auto w-full select-none"
             draggable={false}
+            loading="lazy"
+            decoding="async"
+            fetchPriority="low"
           />
 
           {/* Overlay con el contador real, posicionado sobre el reloj de la imagen */}
