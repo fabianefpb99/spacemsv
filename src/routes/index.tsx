@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { HomePage } from "./-home-page";
+import heroArenaAsset from "@/assets/home-hero-arena.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -18,7 +19,15 @@ export const Route = createFileRoute("/")({
       },
       { property: "og:url", content: "https://betspace.app/" },
     ],
-    links: [{ rel: "canonical", href: "https://betspace.app/" }],
+    links: [
+      { rel: "canonical", href: "https://betspace.app/" },
+      {
+        rel: "preload",
+        as: "image",
+        href: heroArenaAsset.url,
+        fetchpriority: "high",
+      },
+    ],
   }),
   component: HomePage,
 });
