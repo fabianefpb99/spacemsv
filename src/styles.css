@@ -413,6 +413,19 @@ html.light .home-wins-chip {
   border-color: rgba(139, 92, 246, 0.3) !important;
   color: #4c1d95 !important;
 }
+html.light .home-wins-live-badge {
+  background-color: rgba(139, 92, 246, 0.1) !important;
+  border-color: rgba(139, 92, 246, 0.3) !important;
+  color: #4c1d95 !important;
+}
+html.light .home-wins-live {
+  color: #4c1d95 !important;
+}
+html.light .home-wins-live-dot .bg-rose-500,
+html.light .home-wins-live-dot .absolute {
+  background-color: #e11d48 !important;
+  box-shadow: none !important;
+}
 html.light .home-wins-divider {
   background: linear-gradient(to right, transparent, rgba(139, 92, 246, 0.35), transparent) !important;
 }
