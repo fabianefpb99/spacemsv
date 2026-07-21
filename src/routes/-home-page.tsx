@@ -1135,22 +1135,37 @@ export function HomePage() {
           </div>
         </button>
 
-        {/* Últimas ganancias */}
-        <div className="home-wins-header mt-5 px-1">
-          <div className="font-display text-sm font-black uppercase tracking-widest text-white">
-            Actividad en vivo
-          </div>
-          <div className="mt-0.5 text-xs font-medium text-purple-200/80">
-            La comunidad sigue jugando y ganando
-          </div>
-        </div>
-        <section className="home-wins-panel mt-2 rounded-xl border border-purple-500/30 bg-[#0c0620] p-3 sm:p-4">
-          <h3 className="home-wins-heading font-display text-xs font-bold uppercase tracking-widest text-white">
-            Últimas ganancias
-          </h3>
+        {/* Actividad en vivo · Últimas ganancias */}
+        <section className="home-wins-panel mt-6 overflow-hidden rounded-2xl border border-purple-500/30 bg-gradient-to-b from-[#160a35] to-[#0c0620] shadow-[0_10px_30px_-15px_rgba(139,92,246,0.45)]">
+          <header className="home-wins-header relative px-4 pt-4 pb-3 sm:px-5 sm:pt-5">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="relative inline-flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-500 opacity-70" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.9)]" />
+                  </span>
+                  <span className="home-wins-live text-[10px] font-bold uppercase tracking-[0.2em] text-rose-300">
+                    En vivo
+                  </span>
+                </div>
+                <h2 className="home-wins-title mt-1.5 font-display text-lg font-black uppercase leading-none tracking-wide text-white sm:text-xl">
+                  Actividad en vivo
+                </h2>
+                <p className="home-wins-sub mt-1.5 text-[11px] font-medium leading-tight text-purple-200/70 sm:text-xs">
+                  La comunidad sigue jugando y ganando
+                </p>
+              </div>
+              <span className="home-wins-chip mt-1 shrink-0 rounded-full border border-purple-400/30 bg-purple-500/10 px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest text-purple-200">
+                Últimas ganancias
+              </span>
+            </div>
+            <div className="home-wins-divider mt-4 h-px w-full bg-gradient-to-r from-transparent via-purple-500/40 to-transparent" />
+          </header>
 
+          <div className="px-3 pb-3 sm:px-4 sm:pb-4">
           <div
-            className="home-wins-viewport relative mt-3 overflow-hidden"
+            className="home-wins-viewport relative overflow-hidden"
             style={{
               height: "calc(4 * 52px)",
             }}
@@ -1181,6 +1196,7 @@ export function HomePage() {
                 </li>
               ))}
             </ul>
+          </div>
           </div>
           <style>{`
             @keyframes wins-scroll {
