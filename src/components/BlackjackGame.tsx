@@ -336,6 +336,36 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
     else startBlackjackAmbient();
   }, [muted]);
 
+  // Aplausos suaves de gala cuando el jugador gana la mano. Usamos Web Audio
+  // (playSound) para que el volumen se respete igual en iOS y Android, como
+  // en Samurai.
+  const applauseRef = useRef<SoundHandle | null>(null);
+  useEffect(() => {
+    if (phase !== "result") return;
+    if (outcome !== "win" && outcome !== "blackjack") return;
+    if (isMuted()) return;
+    try { applauseRef.current?.stop(); } catch {}
+    applauseRef.current = playSound(applauseAsset.url, {
+      volume: outcome === "blackjack" ? 0.32 : 0.24,
+      fadeInMs: 120,
+    });
+  }, [phase, outcome]);
+  useEffect(() => {
+    const stop = () => { try { applauseRef.current?.stop(200); } catch {} };
+    window.addEventListener(AUDIO_STOP_ALL_EVENT, stop);
+    window.addEventListener("pagehide", stop);
+    window.addEventListener("blur", stop);
+    document.addEventListener("visibilitychange", stop);
+    return () => {
+      window.removeEventListener(AUDIO_STOP_ALL_EVENT, stop);
+      window.removeEventListener("pagehide", stop);
+      window.removeEventListener("blur", stop);
+      document.removeEventListener("visibilitychange", stop);
+      stop();
+    };
+  }, []);
+  useEffect(() => { if (muted) { try { applauseRef.current?.stop(150); } catch {} } }, [muted]);
+
   // Push the server-confirmed balance into the useMe cache so the header
   // updates instantly without waiting for a refetch.
   const applyBalance = useCallback(
