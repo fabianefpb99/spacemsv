@@ -42,7 +42,6 @@ import { Route as PayBrebRouteImport } from './routes/pay_.breb'
 import { Route as DeportesMatchIdRouteImport } from './routes/deportes_.$matchId'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
-import { Route as ApiPublicGenApplauseRouteImport } from './routes/api/public/gen-applause'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
@@ -216,11 +215,6 @@ const Char91DotmcpChar93ListToolsRoute =
     path: '/.mcp/list-tools',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicGenApplauseRoute = ApiPublicGenApplauseRouteImport.update({
-  id: '/api/public/gen-applause',
-  path: '/api/public/gen-applause',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
     id: '/.mcp/invoke-tool/$tool',
@@ -284,7 +278,6 @@ export interface FileRoutesByFullPath {
   '/deportes/$matchId': typeof DeportesMatchIdRoute
   '/pay/breb': typeof PayBrebRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
-  '/api/public/gen-applause': typeof ApiPublicGenApplauseRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -325,7 +318,6 @@ export interface FileRoutesByTo {
   '/deportes/$matchId': typeof DeportesMatchIdRoute
   '/pay/breb': typeof PayBrebRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
-  '/api/public/gen-applause': typeof ApiPublicGenApplauseRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -367,7 +359,6 @@ export interface FileRoutesById {
   '/deportes_/$matchId': typeof DeportesMatchIdRoute
   '/pay_/breb': typeof PayBrebRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
-  '/api/public/gen-applause': typeof ApiPublicGenApplauseRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -410,7 +401,6 @@ export interface FileRouteTypes {
     | '/deportes/$matchId'
     | '/pay/breb'
     | '/.mcp/invoke-tool/$tool'
-    | '/api/public/gen-applause'
     | '/api/public/img/$'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -451,7 +441,6 @@ export interface FileRouteTypes {
     | '/deportes/$matchId'
     | '/pay/breb'
     | '/.mcp/invoke-tool/$tool'
-    | '/api/public/gen-applause'
     | '/api/public/img/$'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -492,7 +481,6 @@ export interface FileRouteTypes {
     | '/deportes_/$matchId'
     | '/pay_/breb'
     | '/.mcp/invoke-tool/$tool'
-    | '/api/public/gen-applause'
     | '/api/public/img/$'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -534,7 +522,6 @@ export interface RootRouteChildren {
   DeportesMatchIdRoute: typeof DeportesMatchIdRoute
   PayBrebRoute: typeof PayBrebRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
-  ApiPublicGenApplauseRoute: typeof ApiPublicGenApplauseRoute
   ApiPublicImgSplatRoute: typeof ApiPublicImgSplatRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -774,13 +761,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/gen-applause': {
-      id: '/api/public/gen-applause'
-      path: '/api/public/gen-applause'
-      fullPath: '/api/public/gen-applause'
-      preLoaderRoute: typeof ApiPublicGenApplauseRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/.mcp/invoke-tool/$tool': {
       id: '/.mcp/invoke-tool/$tool'
       path: '/.mcp/invoke-tool/$tool'
@@ -855,7 +835,6 @@ const rootRouteChildren: RootRouteChildren = {
   DeportesMatchIdRoute: DeportesMatchIdRoute,
   PayBrebRoute: PayBrebRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
-  ApiPublicGenApplauseRoute: ApiPublicGenApplauseRoute,
   ApiPublicImgSplatRoute: ApiPublicImgSplatRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
