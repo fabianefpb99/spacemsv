@@ -53,13 +53,16 @@ export function PersonalDataDialog({
         aria-hidden="true"
       />
       <div
-        className="personal-data-dialog-scroll relative flex h-dvh w-full items-start justify-center overflow-y-auto overflow-x-hidden overscroll-contain px-4 sm:px-6"
-        style={{
-          paddingTop: "max(1rem, calc(env(safe-area-inset-top) + 0.75rem))",
-          paddingBottom: "max(1.25rem, calc(env(safe-area-inset-bottom) + 1rem))",
-        }}
+        className="personal-data-dialog-scroll relative h-dvh w-full overflow-y-auto overflow-x-hidden overscroll-contain"
       >
-        <div className="personal-data-dialog-panel relative box-border w-full max-w-md rounded-lg border border-purple-500/40 bg-[#0c0620] p-4 text-white shadow-2xl sm:p-6">
+        <div
+          className="flex min-h-full w-full items-center justify-center px-4 sm:px-6"
+          style={{
+            paddingTop: "max(1.25rem, calc(env(safe-area-inset-top) + 1rem))",
+            paddingBottom: "max(1.5rem, calc(env(safe-area-inset-bottom) + 1.25rem))",
+          }}
+        >
+        <div className="personal-data-dialog-panel relative box-border w-full max-w-md rounded-2xl border border-purple-500/40 bg-[#0c0620] p-5 text-white shadow-2xl sm:p-6 mx-auto animate-scale-in">
           <button
             type="button"
             onClick={() => onOpenChange(false)}
@@ -83,6 +86,7 @@ export function PersonalDataDialog({
               }}
             />
           </div>
+        </div>
         </div>
       </div>
     </div>,
