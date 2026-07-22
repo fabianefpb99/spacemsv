@@ -1140,28 +1140,26 @@ export function HomePage() {
         {/* Actividad en vivo · Últimas ganancias */}
         <section className="home-wins-panel mt-6 overflow-hidden rounded-2xl border border-purple-500/30 bg-gradient-to-b from-[#0c041e] to-[#0c0620] shadow-[0_10px_30px_-15px_rgba(139,92,246,0.45)]">
           <header className="home-wins-header relative px-4 pt-4 pb-3 sm:px-5 sm:pt-5">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="home-wins-live-badge mt-1 flex shrink-0 items-center gap-1.5 rounded-full border border-transparent px-2 py-1">
-                  <span className="home-wins-live-dot relative inline-flex h-2 w-2 shrink-0">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-500 opacity-70" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.9)]" />
-                  </span>
-                  <span className="home-wins-live text-[9px] font-bold uppercase tracking-widest text-rose-300">
-                    En vivo
-                  </span>
-                </div>
-                <h2 className="home-wins-title mt-1.5 font-display text-lg font-black uppercase leading-none tracking-wide text-white sm:text-xl">
-                  Actividad en vivo
-                </h2>
-                <p className="home-wins-sub mt-1.5 text-[11px] font-medium leading-tight text-purple-200/70 sm:text-xs">
-                  La comunidad sigue jugando y ganando
-                </p>
+            <div className="flex items-center justify-between gap-3">
+              <div className="home-wins-live-badge flex shrink-0 items-center gap-1.5 rounded-full border border-transparent px-2 py-1">
+                <span className="home-wins-live-dot relative inline-flex h-2 w-2 shrink-0">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-500 opacity-70" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.9)]" />
+                </span>
+                <span className="home-wins-live text-[9px] font-bold uppercase tracking-widest text-rose-300">
+                  En vivo
+                </span>
               </div>
-              <span className="home-wins-chip mt-1 shrink-0 rounded-full border border-purple-400/30 bg-purple-500/10 px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest text-purple-200">
+              <span className="home-wins-chip shrink-0 rounded-full border border-purple-400/30 bg-purple-500/10 px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest text-purple-200">
                 Últimas ganancias
               </span>
             </div>
+            <h2 className="home-wins-title mt-2 font-display text-lg font-black uppercase leading-none tracking-wide text-white sm:text-xl">
+              Actividad en vivo
+            </h2>
+            <p className="home-wins-sub mt-1.5 text-[11px] font-medium leading-tight text-purple-200/70 sm:text-xs">
+              La comunidad sigue jugando y ganando
+            </p>
             <div className="home-wins-divider mt-4 h-px w-full bg-gradient-to-r from-transparent via-purple-500/40 to-transparent" />
           </header>
 
