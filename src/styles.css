@@ -4388,6 +4388,12 @@ html.light .profile-page .profile-quickbar-tab.is-active {
 
 .auth-scope { color-scheme: dark light; }
 
+.auth-scope .auth-modal-scroll {
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  scrollbar-gutter: stable;
+}
+
 .auth-backdrop {
   background-color: rgba(4, 2, 14, 0.72);
   backdrop-filter: blur(8px);
@@ -4465,6 +4471,25 @@ html.light .profile-page .profile-quickbar-tab.is-active {
 }
 .auth-scope .auth-eye { color: #b8a0e6; }
 .auth-scope .auth-eye:hover { color: #ffffff; background: rgba(168,85,247,0.14); }
+
+.auth-scope .personal-data-form input:not([type="checkbox"]),
+.auth-scope .personal-data-form .personal-data-select-trigger {
+  min-height: 0;
+  height: 34px;
+  border-radius: 10px;
+  padding-top: 0;
+  padding-bottom: 0;
+  font-size: 12px;
+}
+
+.auth-scope .personal-data-form .personal-data-select-trigger {
+  padding-left: 10px;
+  padding-right: 8px;
+}
+
+.auth-scope .personal-data-form .personal-data-submit {
+  min-height: 0;
+}
 
 /* Messages */
 .auth-scope .auth-error { color: #fda4af; }
