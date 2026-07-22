@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
 import { Loader2, Mail, User as UserIcon, Lock, Ticket, Eye, EyeOff, X, Rocket, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { PersonalDataForm } from "@/components/profile/PersonalDataForm";
+import { requestPostSignupPersonalDataPrompt } from "@/lib/auth/post-signup-personal-data";
 
 type Mode = "signin" | "signup";
 
@@ -314,6 +315,7 @@ function SignInForm({ onSuccess, onSwitch }: { onSuccess: () => void; onSwitch: 
 
 function SignUpForm({ onSuccess, onSwitch }: { onSuccess: () => void; onSwitch: () => void }) {
   const { refreshSession } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -321,8 +323,6 @@ function SignUpForm({ onSuccess, onSwitch }: { onSuccess: () => void; onSwitch: 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
-  const [step, setStep] = useState<1 | 2>(1);
-  const [userId, setUserId] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -350,7 +350,7 @@ function SignUpForm({ onSuccess, onSwitch }: { onSuccess: () => void; onSwitch: 
     setLoading(false);
     if (error) return setError(error.message);
     if (data.session) {
-      await refreshSession();
+      const session = await refreshSession();
       if (cleanReferral) {
         const { error: refError } = await supabase.rpc("redeem_referral", { p_code: cleanReferral });
         if (refError) {
@@ -364,27 +364,13 @@ function SignUpForm({ onSuccess, onSwitch }: { onSuccess: () => void; onSwitch: 
           setInfo("¡Código aplicado! Recibiste $2.000 de saldo bonus.");
         }
       }
-      if (data.user) {
-        setUserId(data.user.id);
-        setStep(2);
-      } else onSuccess();
+      const signedUpUserId = data.user?.id ?? session?.user?.id;
+      if (signedUpUserId) requestPostSignupPersonalDataPrompt(signedUpUserId);
+      await navigate({ to: "/", replace: true });
+      onSuccess();
     } else {
       setInfo("Cuenta creada. Revisa tu email para confirmarla y luego inicia sesión.");
     }
-  }
-
-  if (step === 2 && userId) {
-    return (
-      <div className="space-y-3">
-        <div className="auth-success rounded-xl px-3 py-2 text-xs">
-          ¡Cuenta creada! Completa tus datos para finalizar.
-        </div>
-        <PersonalDataForm userId={userId} onSaved={onSuccess} submitLabel="Finalizar registro" />
-        <button type="button" onClick={onSuccess} className="auth-skip w-full text-center text-[11px]">
-          Completar después
-        </button>
-      </div>
-    );
   }
 
   return (
