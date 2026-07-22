@@ -16,7 +16,11 @@ import {
   setMuted as setAudioMuted,
   isMuted as getAudioMuted,
   stopAllGameAudio,
+  isMuted,
+  AUDIO_STOP_ALL_EVENT,
 } from "@/lib/gameAudio";
+import { playSound, type SoundHandle } from "@/lib/webAudioPlayer";
+import applauseAsset from "@/assets/audio/blackjack/polite-applause.mp3.asset.json";
 import { useMe, type MeData } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
 import { toFriendlyError } from "@/lib/friendly-error";
