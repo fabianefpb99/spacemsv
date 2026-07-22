@@ -64,7 +64,7 @@ export function VipLevelUpToast() {
 
   const close = () => {
     setDismissed(true);
-    markSeen.mutate();
+    markSeen.mutate({ level: showLevel });
   };
 
   return (
