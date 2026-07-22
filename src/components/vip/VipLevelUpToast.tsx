@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { X, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMarkVipLevelSeen, useVip } from "@/hooks/useVip";
+import { useAuth } from "@/hooks/useAuth";
 import {
   rankForLevel,
   rankLabel,
@@ -13,6 +14,23 @@ import { RANK_ART } from "@/lib/vip/vip-art";
 import coinRevealSfx from "@/assets/sfx/coin-reveal.mp3";
 import { isMuted } from "@/lib/gameAudio";
 
+const LS_KEY = (uid: string) => `vip_seen_level_${uid}`;
+function readLocalSeen(uid: string | null | undefined): number {
+  if (!uid || typeof window === "undefined") return 0;
+  try {
+    const v = window.localStorage.getItem(LS_KEY(uid));
+    return v ? Number(v) || 0 : 0;
+  } catch {
+    return 0;
+  }
+}
+function writeLocalSeen(uid: string, level: number) {
+  try {
+    const prev = readLocalSeen(uid);
+    if (level > prev) window.localStorage.setItem(LS_KEY(uid), String(level));
+  } catch {}
+}
+
 /**
  * Mostrar SOLO en /perfil. Compara current_level vs last_seen_level
  * y muestra una animación al subir de nivel. No se monta en juegos
@@ -20,6 +38,7 @@ import { isMuted } from "@/lib/gameAudio";
  */
 export function VipLevelUpToast() {
   const vip = useVip();
+  const { user } = useAuth();
   const markSeen = useMarkVipLevelSeen();
   const [dismissed, setDismissed] = useState(false);
   const [shattered, setShattered] = useState(false);
@@ -28,15 +47,28 @@ export function VipLevelUpToast() {
   const showLevel = useMemo(() => {
     if (!data || !data.user_vip) return null;
     const cur = data.user_vip.current_level ?? 0;
-    const seen = data.last_seen_level ?? 0;
+    const dbSeen = data.last_seen_level ?? 0;
+    const localSeen = readLocalSeen(user?.id);
+    const seen = Math.max(dbSeen, localSeen);
     if (cur <= 0 || cur <= seen) return null;
     return cur;
-  }, [data]);
+  }, [data, user?.id]);
 
   useEffect(() => {
     setDismissed(false);
     setShattered(false);
   }, [showLevel]);
+
+  // Persist immediately on show so the popup never re-triggers for the same
+  // level even if the user closes the tab, loses connection, or the RPC
+  // rejects on rollback. localStorage is the client-side safety net; the
+  // RPC keeps the DB in sync so other devices also stop showing it.
+  useEffect(() => {
+    if (!showLevel || !user?.id) return;
+    writeLocalSeen(user.id, showLevel);
+    markSeen.mutate({ level: showLevel });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showLevel, user?.id]);
 
   // Trigger the shatter + diamond reveal sound shortly after the modal opens.
   useEffect(() => {
@@ -64,6 +96,8 @@ export function VipLevelUpToast() {
 
   const close = () => {
     setDismissed(true);
+    if (user?.id) writeLocalSeen(user.id, showLevel);
+    // Fire again on close as a belt-and-suspenders; onMutate is idempotent.
     markSeen.mutate({ level: showLevel });
   };
 
