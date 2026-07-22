@@ -86,7 +86,13 @@ function AuthDialogContent({ onOpenChange }: { onOpenChange: (v: boolean) => voi
         aria-hidden="true"
       />
 
-      <div className="auth-modal-scroll relative flex min-h-dvh w-full items-center justify-center overflow-y-auto overflow-x-hidden overscroll-contain px-4 py-6 sm:px-6">
+      <div
+        className="auth-modal-scroll relative flex min-h-dvh w-full items-center justify-center overflow-y-auto overflow-x-hidden overscroll-contain px-4 sm:px-6"
+        style={{
+          paddingTop: "max(1.5rem, env(safe-area-inset-top))",
+          paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))",
+        }}
+      >
         <div className="auth-panel relative box-border w-full max-w-[420px] rounded-[22px] p-5 sm:p-7 animate-scale-in">
           <button
             type="button"
