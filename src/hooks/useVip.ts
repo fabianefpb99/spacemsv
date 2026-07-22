@@ -58,12 +58,43 @@ export function useVip() {
 export function useMarkVipLevelSeen() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async (_vars?: { level?: number }) => {
       const { data, error } = await supabase.rpc("mark_vip_level_seen" as never);
       if (error) throw error;
       return data as number;
     },
-    onSuccess: () => {
+    onMutate: async (vars) => {
+      const targetLevel = Number(vars?.level ?? 0);
+      if (targetLevel <= 0) return undefined;
+
+      await qc.cancelQueries({ queryKey: ["vip"] });
+      const snapshots = qc.getQueriesData<VipData | null>({ queryKey: ["vip"] });
+
+      snapshots.forEach(([queryKey, previous]) => {
+        if (!previous) return;
+        qc.setQueryData<VipData | null>(queryKey, {
+          ...previous,
+          last_seen_level: Math.max(previous.last_seen_level ?? 0, targetLevel),
+        });
+      });
+
+      return { snapshots };
+    },
+    onError: (_error, _vars, context) => {
+      context?.snapshots.forEach(([queryKey, previous]) => {
+        qc.setQueryData(queryKey, previous);
+      });
+    },
+    onSuccess: (seenLevel) => {
+      const targetLevel = Number(seenLevel ?? 0);
+      const snapshots = qc.getQueriesData<VipData | null>({ queryKey: ["vip"] });
+      snapshots.forEach(([queryKey, previous]) => {
+        if (!previous) return;
+        qc.setQueryData<VipData | null>(queryKey, {
+          ...previous,
+          last_seen_level: Math.max(previous.last_seen_level ?? 0, targetLevel),
+        });
+      });
       qc.invalidateQueries({ queryKey: ["vip"] });
     },
   });
