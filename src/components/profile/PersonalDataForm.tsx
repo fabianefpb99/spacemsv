@@ -149,8 +149,8 @@ export function PersonalDataForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="personal-data-form space-y-2">
-      <div className="grid grid-cols-2 gap-2">
+    <form onSubmit={onSubmit} className="personal-data-form space-y-1.5 sm:space-y-2">
+      <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
         <Field label="Primer nombre *">
           <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
         </Field>
@@ -190,12 +190,12 @@ export function PersonalDataForm({
           onChange={(e) => setPhone(e.target.value)}
           required
         />
-        <p className="mt-1 text-[10px] text-purple-200/60">
+        <p className="mt-0.5 text-[9px] leading-tight text-purple-200/60">
           Se agregará sin verificar.
         </p>
       </Field>
 
-      <div className="grid grid-cols-[110px_1fr] gap-2">
+      <div className="grid grid-cols-[104px_1fr] gap-1.5 sm:grid-cols-[110px_1fr] sm:gap-2">
         <Field label="Tipo doc. *">
           <Select value={docType} onValueChange={setDocType}>
             <SelectTrigger className="personal-data-select-trigger">
@@ -227,12 +227,12 @@ export function PersonalDataForm({
         />
       </Field>
 
-      <label className="flex items-start gap-2 pt-0.5 text-xs text-purple-100">
+      <label className="flex items-start gap-2 pt-0.5 text-[11px] leading-snug text-purple-100 sm:text-xs">
         <input
           type="checkbox"
           checked={terms}
           onChange={(e) => setTerms(e.target.checked)}
-          className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-purple-500"
+          className="mt-0.5 h-3.5 w-3.5 shrink-0 cursor-pointer accent-purple-500 sm:h-4 sm:w-4"
         />
         <span>
           Acepto los{" "}
@@ -253,7 +253,7 @@ export function PersonalDataForm({
       <Button
         type="submit"
         disabled={loading}
-        className="personal-data-submit w-full bg-purple-600 hover:bg-purple-500"
+        className="personal-data-submit h-9 w-full bg-purple-600 text-sm hover:bg-purple-500 sm:h-10"
       >
         {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : submitLabel}
       </Button>
@@ -263,8 +263,8 @@ export function PersonalDataForm({
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="space-y-1">
-      <Label className="text-[10px] uppercase tracking-wider text-purple-200/80">{label}</Label>
+    <div className="space-y-0.5 sm:space-y-1">
+      <Label className="text-[9px] uppercase tracking-wider text-purple-200/80 sm:text-[10px]">{label}</Label>
       {children}
     </div>
   );
