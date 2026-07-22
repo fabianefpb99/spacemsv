@@ -139,6 +139,14 @@ export function VipLevelUpToast() {
         .vip-pop { animation: vip-pop-in 420ms cubic-bezier(.2,.9,.3,1.2) both; }
         .vip-glow { animation: vip-glow-pulse 2s ease-in-out infinite; filter: blur(40px); }
 
+        html.light body .vip-levelup-toast .vip-levelup-eyebrow,
+        html.light body .vip-levelup-toast .vip-levelup-eyebrow *,
+        html.light body .vip-levelup-toast .vip-levelup-sublevel {
+          color: #ffffff !important;
+          -webkit-text-fill-color: #ffffff !important;
+          text-shadow: 0 1px 2px rgba(0,0,0,0.45) !important;
+        }
+
         /* ---- Shatter reveal ---- */
         .vip-reveal { position: relative; width: 9rem; height: 9rem; }
         .vip-reveal-art {
