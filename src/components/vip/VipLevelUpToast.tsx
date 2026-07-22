@@ -104,13 +104,13 @@ export function VipLevelUpToast() {
             glow={meta.glow}
           />
         </div>
-        <div className="flex items-center justify-center gap-1 text-[10px] font-bold uppercase tracking-widest text-purple-200/80">
+        <div className="vip-levelup-eyebrow flex items-center justify-center gap-1 text-[10px] font-bold uppercase tracking-widest text-purple-200/80">
           <Sparkles className="h-3 w-3" /> Subiste de nivel <Sparkles className="h-3 w-3" />
         </div>
         <div className={cn("font-display mt-2 text-2xl font-black uppercase tracking-wider", meta.text)}>
           {rankLabel(rank, sub)}
         </div>
-        <div className="mt-1 text-xs text-purple-200/80">Nivel {showLevel}</div>
+        <div className="vip-levelup-sublevel mt-1 text-xs text-purple-200/80">Nivel {showLevel}</div>
 
         {isMax && (
           <div className="mt-3 inline-flex items-center gap-1 rounded-full border border-amber-400/60 bg-amber-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-amber-200">

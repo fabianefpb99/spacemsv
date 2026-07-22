@@ -5017,12 +5017,11 @@ html.light .ver-todos-btn:not(.theme-dark-fixed):not(.theme-dark-fixed *) svg {
   min-height: 2.25rem;
 }
 
-/* VipLevelUpToast — modo claro: forzar textos en blanco para contraste
- * sobre el fondo oscuro/marrón (bronce). No afecta modo oscuro. */
-html.light .vip-levelup-toast,
-html.light .vip-levelup-toast * {
+/* VipLevelUpToast — modo claro: forzar los textos morados (eyebrow
+ * "Subiste de nivel" y "Nivel X") a blanco para contraste. NO afecta
+ * el rank label (amber/dorado) ni el modo oscuro. */
+html.light .vip-levelup-toast .vip-levelup-eyebrow,
+html.light .vip-levelup-toast .vip-levelup-eyebrow svg,
+html.light .vip-levelup-toast .vip-levelup-sublevel {
   color: #ffffff !important;
-}
-html.light .vip-levelup-toast button[aria-label="Cerrar"] {
-  color: rgba(255, 255, 255, 0.85) !important;
 }
