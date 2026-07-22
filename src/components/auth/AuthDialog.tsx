@@ -365,9 +365,11 @@ function SignUpForm({ onSuccess, onSwitch }: { onSuccess: () => void; onSwitch: 
         }
       }
       const signedUpUserId = data.user?.id ?? session?.user?.id;
-      if (signedUpUserId) requestPostSignupPersonalDataPrompt(signedUpUserId);
       await navigate({ to: "/", replace: true });
       onSuccess();
+      if (signedUpUserId) {
+        window.setTimeout(() => requestPostSignupPersonalDataPrompt(signedUpUserId), 0);
+      }
     } else {
       setInfo("Cuenta creada. Revisa tu email para confirmarla y luego inicia sesión.");
     }
