@@ -48,16 +48,13 @@ export function AuthDialog({
     const { body, documentElement } = document;
     const prevBody = body.style.overflow;
     const prevHtml = documentElement.style.overflow;
-    const prevTouch = body.style.touchAction;
     body.style.overflow = "hidden";
     documentElement.style.overflow = "hidden";
-    body.style.touchAction = "none";
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onOpenChange(false);
     window.addEventListener("keydown", onKey);
     return () => {
       body.style.overflow = prevBody;
       documentElement.style.overflow = prevHtml;
-      body.style.touchAction = prevTouch;
       window.removeEventListener("keydown", onKey);
     };
   }, [open, onOpenChange]);
@@ -89,8 +86,8 @@ function AuthDialogContent({ onOpenChange }: { onOpenChange: (v: boolean) => voi
         aria-hidden="true"
       />
 
-      <div className="relative flex min-h-dvh items-center justify-center overflow-y-auto overflow-x-hidden px-4 py-6 sm:px-6 pb-[12vh] sm:pb-[10vh]">
-        <div className="auth-panel relative box-border w-full max-w-[420px] rounded-[22px] p-6 sm:p-7 animate-scale-in">
+      <div className="relative h-dvh overflow-y-auto overflow-x-hidden overscroll-contain px-4 py-4 sm:px-6 auth-modal-scroll">
+        <div className="auth-panel relative mx-auto my-3 box-border w-full max-w-[420px] rounded-[22px] p-5 sm:my-6 sm:p-7 animate-scale-in">
           <button
             type="button"
             onClick={() => onOpenChange(false)}
@@ -101,7 +98,7 @@ function AuthDialogContent({ onOpenChange }: { onOpenChange: (v: boolean) => voi
           </button>
 
           {/* Header */}
-          <div className="flex flex-col items-center text-center">
+          <div className="flex flex-col items-center text-center auth-header-block">
             <div className="flex flex-col items-center">
               <span className="auth-welcome text-[11px] font-semibold tracking-[0.18em]">
                 BIENVENIDO a
@@ -110,14 +107,14 @@ function AuthDialogContent({ onOpenChange }: { onOpenChange: (v: boolean) => voi
                 BET<span className="auth-wordmark-accent">SPACE</span>
               </div>
             </div>
-            <h2 className="auth-headline mt-4 font-display text-[22px] font-extrabold leading-tight sm:text-2xl">
+            <h2 className="auth-headline mt-3 font-display text-[21px] font-extrabold leading-tight sm:mt-4 sm:text-2xl">
               {headline}
             </h2>
             <p className="auth-sub mt-1.5 text-[13px] leading-snug">{sub}</p>
           </div>
 
           {/* Tabs */}
-          <div className="auth-tabs mt-5 grid grid-cols-2 gap-1 rounded-full p-1">
+          <div className="auth-tabs mt-4 grid grid-cols-2 gap-1 rounded-full p-1 sm:mt-5">
             <button
               type="button"
               onClick={() => setMode("signin")}
@@ -136,7 +133,7 @@ function AuthDialogContent({ onOpenChange }: { onOpenChange: (v: boolean) => voi
             </button>
           </div>
 
-          <div className="mt-4">
+          <div className="mt-3 sm:mt-4">
             {mode === "signin" ? (
               <SignInForm onSuccess={() => onOpenChange(false)} onSwitch={() => setMode("signup")} />
             ) : (
