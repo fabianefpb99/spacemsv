@@ -77,7 +77,7 @@ export function VipLevelUpToast() {
       <div
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          "vip-pop relative w-full max-w-sm overflow-hidden rounded-2xl border bg-gradient-to-b from-[#1a0b3a] to-[#0c0620] p-6 text-center",
+          "vip-levelup-toast vip-pop relative w-full max-w-sm overflow-hidden rounded-2xl border bg-gradient-to-b from-[#1a0b3a] to-[#0c0620] p-6 text-center",
           meta.border,
         )}
         style={{ boxShadow: `0 0 60px ${meta.glow}` }}
