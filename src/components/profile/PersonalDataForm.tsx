@@ -149,7 +149,7 @@ export function PersonalDataForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="personal-data-form space-y-3">
+    <form onSubmit={onSubmit} className="personal-data-form space-y-2">
       <div className="grid grid-cols-2 gap-2">
         <Field label="Primer nombre *">
           <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
@@ -227,7 +227,7 @@ export function PersonalDataForm({
         />
       </Field>
 
-      <label className="flex items-start gap-2 pt-1 text-xs text-purple-100">
+      <label className="flex items-start gap-2 pt-0.5 text-xs text-purple-100">
         <input
           type="checkbox"
           checked={terms}
@@ -263,8 +263,8 @@ export function PersonalDataForm({
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="space-y-1.5">
-      <Label className="text-[11px] uppercase tracking-wider text-purple-200/80">{label}</Label>
+    <div className="space-y-1">
+      <Label className="text-[10px] uppercase tracking-wider text-purple-200/80">{label}</Label>
       {children}
     </div>
   );
