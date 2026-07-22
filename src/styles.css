@@ -5016,3 +5016,13 @@ html.light .ver-todos-btn:not(.theme-dark-fixed):not(.theme-dark-fixed *) svg {
 .personal-data-form input[type="date"] {
   min-height: 2.25rem;
 }
+
+/* VipLevelUpToast — modo claro: forzar textos en blanco para contraste
+ * sobre el fondo oscuro/marrón (bronce). No afecta modo oscuro. */
+html.light .vip-levelup-toast,
+html.light .vip-levelup-toast * {
+  color: #ffffff !important;
+}
+html.light .vip-levelup-toast button[aria-label="Cerrar"] {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
