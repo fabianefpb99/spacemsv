@@ -3461,6 +3461,11 @@ html.light :not(.theme-dark-fixed) p.ranking-empty-text.text-purple-200\/70 {
   text-shadow: none !important;
   filter: none !important;
 }
+.personal-data-dialog-scroll {
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  scrollbar-gutter: stable;
+}
 .personal-data-dialog-panel {
   color-scheme: dark;
   background-color: #0c0620 !important;
@@ -3483,6 +3488,12 @@ html.light :not(.theme-dark-fixed) p.ranking-empty-text.text-purple-200\/70 {
 }
 .personal-data-dialog-panel input:not([type="checkbox"]),
 .personal-data-dialog-panel .personal-data-select-trigger {
+  min-height: 0 !important;
+  height: 34px !important;
+  border-radius: 10px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  font-size: 12px !important;
   background-color: #16051f !important;
   border-color: #3f1b63 !important;
   color: #ffffff !important;
@@ -3505,6 +3516,9 @@ html.light :not(.theme-dark-fixed) p.ranking-empty-text.text-purple-200\/70 {
 }
 .personal-data-dialog-panel input[type="checkbox"] {
   accent-color: #a855f7 !important;
+}
+.personal-data-dialog-panel .personal-data-submit {
+  min-height: 0 !important;
 }
 .personal-data-dialog-panel a {
   color: #f0abfc !important;
@@ -4471,25 +4485,6 @@ html.light .profile-page .profile-quickbar-tab.is-active {
 }
 .auth-scope .auth-eye { color: #b8a0e6; }
 .auth-scope .auth-eye:hover { color: #ffffff; background: rgba(168,85,247,0.14); }
-
-.auth-scope .personal-data-form input:not([type="checkbox"]),
-.auth-scope .personal-data-form .personal-data-select-trigger {
-  min-height: 0;
-  height: 34px;
-  border-radius: 10px;
-  padding-top: 0;
-  padding-bottom: 0;
-  font-size: 12px;
-}
-
-.auth-scope .personal-data-form .personal-data-select-trigger {
-  padding-left: 10px;
-  padding-right: 8px;
-}
-
-.auth-scope .personal-data-form .personal-data-submit {
-  min-height: 0;
-}
 
 /* Messages */
 .auth-scope .auth-error { color: #fda4af; }

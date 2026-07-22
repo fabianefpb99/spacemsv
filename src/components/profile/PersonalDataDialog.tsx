@@ -10,6 +10,7 @@ export function PersonalDataDialog({
   onSaved,
   title = "Completa tus datos",
   subtitle = "Necesitamos esta información para verificar tu cuenta.",
+  submitLabel = "Guardar",
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
@@ -18,17 +19,22 @@ export function PersonalDataDialog({
   onSaved?: () => void;
   title?: string;
   subtitle?: string;
+  submitLabel?: string;
 }) {
   useEffect(() => {
     if (!open || typeof document === "undefined") return;
-    const prev = document.body.style.overflow;
+    const { body, documentElement } = document;
+    const prevBody = body.style.overflow;
+    const prevHtml = documentElement.style.overflow;
     document.body.style.overflow = "hidden";
+    documentElement.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onOpenChange(false);
     };
     window.addEventListener("keydown", onKey);
     return () => {
-      document.body.style.overflow = prev;
+      body.style.overflow = prevBody;
+      documentElement.style.overflow = prevHtml;
       window.removeEventListener("keydown", onKey);
     };
   }, [open, onOpenChange]);
@@ -46,13 +52,19 @@ export function PersonalDataDialog({
         onClick={() => onOpenChange(false)}
         aria-hidden="true"
       />
-      <div className="relative flex min-h-dvh items-center justify-center overflow-y-auto px-4 py-6">
-        <div className="personal-data-dialog-panel relative box-border max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-lg border border-purple-500/40 bg-[#0c0620] p-4 text-white shadow-2xl sm:p-6">
+      <div
+        className="personal-data-dialog-scroll relative flex h-dvh w-full items-start justify-center overflow-y-auto overflow-x-hidden overscroll-contain px-4 sm:px-6"
+        style={{
+          paddingTop: "max(1rem, calc(env(safe-area-inset-top) + 0.75rem))",
+          paddingBottom: "max(1.25rem, calc(env(safe-area-inset-bottom) + 1rem))",
+        }}
+      >
+        <div className="personal-data-dialog-panel relative box-border w-full max-w-md rounded-lg border border-purple-500/40 bg-[#0c0620] p-4 text-white shadow-2xl sm:p-6">
           <button
             type="button"
             onClick={() => onOpenChange(false)}
             aria-label="Cerrar"
-            className="absolute right-3 top-3 text-purple-200/80 hover:text-white"
+            className="absolute right-2.5 top-2.5 grid h-9 w-9 place-items-center rounded-full text-purple-200/80 hover:text-white"
           >
             ×
           </button>
@@ -64,6 +76,7 @@ export function PersonalDataDialog({
             <PersonalDataForm
               userId={userId}
               initial={initial}
+              submitLabel={submitLabel}
               onSaved={() => {
                 onSaved?.();
                 onOpenChange(false);

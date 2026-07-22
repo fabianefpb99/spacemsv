@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import {
   Outlet,
   Link,
@@ -10,13 +10,18 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
-import { AuthProvider } from "@/hooks/useAuth";
+import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
 import { supabase } from "@/integrations/supabase/client";
 import { MissionCompleteFloater } from "@/components/MissionCompleteFloater";
 import { VipLevelUpFloater } from "@/components/VipLevelUpFloater";
 import { SmoothImageLoader } from "@/components/SmoothImageLoader";
 import { DEFAULT_AVATAR_URL } from "@/lib/avatars";
+import { PersonalDataDialog } from "@/components/profile/PersonalDataDialog";
+import {
+  POST_SIGNUP_PERSONAL_DATA_EVENT,
+  POST_SIGNUP_PERSONAL_DATA_USER_KEY,
+} from "@/lib/auth/post-signup-personal-data";
 
 function NotFoundComponent() {
   return (
@@ -177,10 +182,68 @@ function RootComponent() {
         <AuthProvider>
           <SmoothImageLoader />
           <Outlet />
+          <PostSignupPersonalDataPrompt />
           <MissionCompleteFloater />
           <VipLevelUpFloater />
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
+  );
+}
+
+function PostSignupPersonalDataPrompt() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const [pendingUserId, setPendingUserId] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const syncStoredPrompt = () => {
+      setPendingUserId(window.sessionStorage.getItem(POST_SIGNUP_PERSONAL_DATA_USER_KEY));
+    };
+
+    const handlePrompt = (event: Event) => {
+      const nextUserId = (event as CustomEvent<{ userId?: string }>).detail?.userId;
+      if (nextUserId) setPendingUserId(nextUserId);
+    };
+
+    syncStoredPrompt();
+    window.addEventListener(POST_SIGNUP_PERSONAL_DATA_EVENT, handlePrompt);
+    return () => window.removeEventListener(POST_SIGNUP_PERSONAL_DATA_EVENT, handlePrompt);
+  }, []);
+
+  useEffect(() => {
+    if (user?.id && pendingUserId === user.id) setOpen(true);
+  }, [pendingUserId, user?.id]);
+
+  if (!user || pendingUserId !== user.id) return null;
+
+  const clearPrompt = () => {
+    if (typeof window !== "undefined") {
+      window.sessionStorage.removeItem(POST_SIGNUP_PERSONAL_DATA_USER_KEY);
+    }
+    setOpen(false);
+    setPendingUserId(null);
+  };
+
+  return (
+    <PersonalDataDialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        setOpen(nextOpen);
+        if (!nextOpen) clearPrompt();
+      }}
+      userId={user.id}
+      title="Completa tus datos"
+      subtitle="Esta información será necesaria para retirar tus ganancias. Puedes completarla ahora."
+      submitLabel="Finalizar registro"
+      onSaved={() => {
+        queryClient.invalidateQueries({ queryKey: ["me"] });
+        queryClient.invalidateQueries({ queryKey: ["perfil-full", user.id] });
+        clearPrompt();
+      }}
+    />
   );
 }

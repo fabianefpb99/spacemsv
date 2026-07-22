@@ -1,87 +1,83 @@
-# Plan: Nueva ruta `/games`
+## Error real
 
-## Objetivo
-Crear una vista dedicada `/games` con el catálogo completo de juegos del casino, reutilizando datos reales del proyecto y agregando 3 tarjetas "PRÓXIMAMENTE" para llenar el grid, sin tocar rutas ni lógica existente.
+El error fue mezclar dos flujos distintos dentro del mismo modal:
 
-## Alcance (qué se toca / qué NO)
+1. **Login / registro simple**: email, usuario, contraseña, referido.
+2. **Datos personales**: nombre, cédula, fecha de expedición, teléfono, términos.
 
-**Se crea nuevo:**
-- `src/routes/games.tsx` — ruta con head SEO propio.
-- `src/routes/-games-page.tsx` — componente de la vista.
-- `src/components/games/GameCard.tsx` — tarjeta reutilizable (imagen, título, badge, estrella favorito).
-- `src/components/games/CategoryPill.tsx` — chip de categoría.
-- `src/components/games/FiltersSheet.tsx` — panel de filtros (drawer).
-- `src/lib/games/catalog.ts` — fuente única del catálogo (juegos reales + próximamente).
+Al meter el segundo formulario dentro de `AuthDialog`, heredó cosas que ya no deberían existir ahí: el header grande, el switch “Iniciar sesión / Registrarse”, el centrado del modal corto y las restricciones de altura/scroll pensadas para login. Por eso en iOS termina pegándose al safe area y el scroll se vuelve inconsistente.
 
-**NO se toca:** home, rutas de juegos, lógica de spins, favoritos server-side, header/hamburguesa (excepto agregar link a "Juegos").
+## Plan de corrección
 
-## Catálogo (juegos reales del proyecto)
-Tomados directamente de las rutas existentes con sus assets ya importados en el home:
+### 1. Dejar `AuthDialog` solo para login y registro simple
 
-| Slug | Nombre | Categoría | Badge | Ruta |
-|---|---|---|---|---|
-| spaceman | SPACEMAN | Crash | POPULAR | /spaceman |
-| slot_mafia | MAFIA ROYALE | Tragamonedas | POPULAR | /slot |
-| slot_samurai | SAMURAI LEGEND | Tragamonedas | NUEVO | /slotsamurai |
-| ruleta | RULETA | Mesa | POPULAR | /ruleta |
-| blackjack | BLACKJACK | Mesa | POPULAR | /blackjack |
-| blackjack_vip | BLACKJACK VIP | Mesa | VIP | /blackjackvip |
-| dados | DADOS | Mesa | — | /dados |
-| mines | MINAS | Casino | POPULAR | /mines |
-| chicken | CHICKEN ROAD | Crash | NUEVO | /chicken |
-| arena | ARENA | Casino | — | /arena |
-| deportes | DEPORTES | Deportes | — | /deportes |
+- El modal de login/registro volverá a encargarse únicamente de:
+  - Iniciar sesión.
+  - Crear cuenta con email, usuario, contraseña y referido.
+- Se elimina el paso 2 interno que muestra `PersonalDataForm` dentro de `AuthDialog`.
+- Así desaparece el switch de login/registro cuando el usuario ya está registrado.
 
-**Próximamente (3 fillers, no navegan):**
-- AVIATOR (Crash)
-- SWEET BONANZA (Tragamonedas)
-- FIRE PORTALS (Tragamonedas)
+### 2. Después del registro exitoso, cerrar modal y mandar al Home
 
-Se renderizan atenuados (opacity 60, sin link, badge PRÓXIMAMENTE morado suave).
-
-## Estructura de la vista
+Cuando el usuario termine el registro simple:
 
 ```text
-[Header global BETSPACE]  ← reutilizado, sin cambios
-[Buscador "Buscar juegos..."]
-[Categorías scroll horizontal: Todos | Crash | Casino | Tragamonedas | Mesa | Deportes]
-[Barra: Filtros | Selector orden (Populares/Nuevos/A-Z) | Grid ↔ Lista]
-[Grid 3 columnas móvil / 4-6 desktop]
+Registro simple exitoso
+→ cerrar AuthDialog
+→ refrescar sesión
+→ navegar al Home
+→ activar flotante independiente de datos personales
 ```
 
-## Filtros (drawer lateral con badge de conteo)
-- **Solo favoritos** (checkbox) — consume `getMyFavoriteGames` existente si hay sesión.
-- **Solo nuevos** (checkbox)
-- **Ocultar próximamente** (checkbox, ON por defecto = false para mostrarlos)
+No se quedará dentro del modal de registro.
 
-Contador de badge = filtros activos.
+### 3. Crear un flotante independiente para datos personales
 
-## Ordenamiento
-- Más populares (orden manual del catálogo)
-- Más nuevos (badge NUEVO primero)
-- A–Z (alfabético)
+Usaremos un modal separado para completar los datos personales:
 
-## Estilo visual
-- Fondo negro / gradiente sutil morado.
-- Tarjetas con `rounded-2xl`, borde `border-white/5`, sombra suave.
-- Badges: POPULAR (morado), NUEVO (verde esmeralda), VIP (dorado), MESA (gris-morado), PRÓXIMAMENTE (morado translúcido).
-- Estrella de favorito arriba a la derecha (visual only por ahora, guarda en `localStorage`).
-- Responsive: `grid-cols-3 sm:grid-cols-4 lg:grid-cols-5`.
-- Tokens semánticos existentes (nada de `bg-black`/`text-white` crudo).
+- Título enfocado: “Completa tus datos” o similar.
+- Sin botones de “Iniciar sesión / Registrarse”.
+- Sin logo/header grande de autenticación.
+- Solo la explicación breve y el formulario de datos.
+- Se mantiene como información adicional necesaria para retiros.
 
-## Acceso a la vista
-- Agregar link "Juegos" en `HamburgerDrawer.tsx` apuntando a `/games` (no altera diseño, solo un item más).
-- No se toca el bottom nav (no existe uno global aún; el mockup lo sugiere pero queda fuera de scope para no romper nada).
+### 4. Arreglar el scroll de raíz en ese flotante nuevo
 
-## Reglas de calidad
-- Componentes pequeños y aislados.
-- Sin duplicar lógica: assets y nombres importados una sola vez desde `catalog.ts`.
-- SEO: `head()` con título y descripción propias, `robots: noindex, follow` (coherente con `/home`).
-- Sin hardcodear colores.
-- Tipado estricto.
+El modal de datos personales tendrá una estructura distinta a la de login:
 
-## Detalles técnicos
-- Ruta con `createFileRoute('/games')`, sin loader (data estática + hook de favoritos client-side).
-- `useMemo` para filtrado/orden.
-- `useLocalStorage` pattern inline para favoritos visuales.
-- Búsqueda: `includes` case-insensitive contra `name` y `slug`.
+```text
+Overlay fijo pantalla completa
+└── Contenedor scroll principal con h-dvh / overflow-y-auto
+    └── Panel con padding safe-area top/bottom
+        └── Formulario completo
+```
+
+Puntos clave:
+
+- El scroll será del contenedor principal, no de un panel interno recortado.
+- Se respetará `env(safe-area-inset-top)` y `env(safe-area-inset-bottom)`.
+- En móviles no se centrará verticalmente si el contenido es alto; empezará debajo del safe area y permitirá bajar hasta el botón.
+- En desktop puede verse centrado/limpio si cabe.
+
+### 5. Mantener compacto el formulario, pero sin depender de eso para que funcione
+
+- Se conservan los campos más compactos.
+- Pero el arreglo principal no será “apretar más cosas”, sino separar el flujo y hacer que el scroll funcione aunque el contenido sea alto.
+
+### 6. Reutilizar la lógica existente sin romper perfil/retiros
+
+- `PersonalDataForm` seguirá siendo el formulario base.
+- No se toca la lógica de guardado en la base de datos.
+- No se cambian validaciones de cédula, fecha, teléfono, mayoría de edad o términos.
+- Las pantallas de perfil/retiros que ya usan datos personales no deben romperse.
+
+### 7. Verificación
+
+Voy a verificar en viewport móvil tipo iPhone que:
+
+- Login/registro simple vuelve a verse centrado y normal.
+- Tras registrarse, el usuario queda en Home.
+- El nuevo flotante de datos personales aparece separado.
+- No aparece el switch login/registro en ese flotante.
+- El scroll baja hasta “Finalizar registro”.
+- El panel no queda debajo del notch/safe area.
