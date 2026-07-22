@@ -90,7 +90,7 @@ function AuthDialogContent({ onOpenChange }: { onOpenChange: (v: boolean) => voi
       />
 
       <div className="relative flex min-h-dvh items-center justify-center overflow-y-auto overflow-x-hidden px-4 py-6 sm:px-6 pb-[12vh] sm:pb-[10vh]">
-        <div className="auth-panel relative box-border w-full max-w-[420px] overflow-hidden rounded-[22px] p-6 sm:p-7 max-h-[calc(100dvh-2rem)] animate-scale-in">
+        <div className="auth-panel relative box-border w-full max-w-[420px] rounded-[22px] p-6 sm:p-7 animate-scale-in">
           <button
             type="button"
             onClick={() => onOpenChange(false)}
