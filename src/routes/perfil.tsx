@@ -344,44 +344,44 @@ function PerfilPage() {
                 "profile-sub-hex relative shrink-0",
               )}
             >
-              <svg viewBox="0 0 100 115" width="44" height="50" className="block overflow-visible">
+              <svg viewBox="0 0 115 100" width="52" height="46" className="block overflow-visible">
                 <defs>
                   <linearGradient id="hexGold" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#fff2a8" />
-                    <stop offset="45%" stopColor="#f5c518" />
-                    <stop offset="100%" stopColor="#8a5a06" />
+                    <stop offset="0%" stopColor="#e9b6ff" />
+                    <stop offset="50%" stopColor="#a855f7" />
+                    <stop offset="100%" stopColor="#6d28d9" />
                   </linearGradient>
                   <linearGradient id="hexPurple" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#a855f7" />
-                    <stop offset="55%" stopColor="#6d28d9" />
-                    <stop offset="100%" stopColor="#2e0b5c" />
+                    <stop offset="0%" stopColor="#2a0b4a" />
+                    <stop offset="60%" stopColor="#1a0730" />
+                    <stop offset="100%" stopColor="#0d0320" />
                   </linearGradient>
-                  <radialGradient id="hexShine" cx="0.3" cy="0.2" r="0.7">
-                    <stop offset="0%" stopColor="rgba(255,255,255,0.35)" />
-                    <stop offset="60%" stopColor="rgba(255,255,255,0)" />
+                  <radialGradient id="hexShine" cx="0.5" cy="0.5" r="0.7">
+                    <stop offset="0%" stopColor="rgba(168,85,247,0.25)" />
+                    <stop offset="70%" stopColor="rgba(168,85,247,0)" />
                   </radialGradient>
                 </defs>
                 <polygon
-                  points="50,2 96,28 96,86 50,112 4,86 4,28"
+                  points="30,3 85,3 112,50 85,97 30,97 3,50"
                   fill="url(#hexPurple)"
                   stroke="url(#hexGold)"
-                  strokeWidth="6"
+                  strokeWidth="5"
                   strokeLinejoin="round"
-                  style={{ filter: "drop-shadow(0 0 6px rgba(245,197,24,0.55))" }}
+                  style={{ filter: "drop-shadow(0 0 6px rgba(168,85,247,0.7))" }}
                 />
                 <polygon
-                  points="50,2 96,28 96,86 50,112 4,86 4,28"
+                  points="30,3 85,3 112,50 85,97 30,97 3,50"
                   fill="url(#hexShine)"
                 />
                 <text
-                  x="50"
-                  y="57"
+                  x="57.5"
+                  y="50"
                   textAnchor="middle"
                   dominantBaseline="central"
                   fill="#ffffff"
                   fontFamily="var(--font-display, inherit)"
                   fontWeight="900"
-                  fontSize="42"
+                  fontSize="38"
                   style={{ letterSpacing: "1px", textShadow: "0 2px 3px rgba(0,0,0,0.55)" }}
                 >
                   {vipProgress.sub}
