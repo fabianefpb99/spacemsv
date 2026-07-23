@@ -4744,3 +4744,11 @@ html.light .notif-popover svg.text-rose-300    { color: #dc2626 !important; }
 html.light .notif-popover .bg-rose-400 {
   background: #dc2626 !important;
 }
+
+/* Ranking hero: leve lluvia diagonal de partículas (der → izq) */
+@keyframes rankingParticleFall {
+  0%   { transform: translate3d(0, 0, 0); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translate3d(-80px, 420px, 0); opacity: 0; }
+}
