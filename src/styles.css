@@ -3691,6 +3691,62 @@ html.light .profile-page .profile-quickbar-tab.is-active {
   color: #7C3AED !important;
 }
 
+/* ============================================================
+   Force dark styling inside .profile-page for elements marked
+   .theme-dark-fixed, overriding the many html.light .profile-page
+   rules above. Uses double-class specificity to guarantee wins.
+   ============================================================ */
+html.light .profile-page .profile-vip-progress.theme-dark-fixed,
+html.light .profile-page .profile-balance-card.theme-dark-fixed {
+  background-image: linear-gradient(to bottom, #1a0b3a, #0c0620) !important;
+  background-color: transparent !important;
+  color: #ffffff !important;
+  border-color: rgba(168, 85, 247, 0.4) !important;
+  box-shadow: 0 0 6px rgba(168, 85, 247, 0.18) !important;
+}
+html.light .profile-page .profile-balance-card.theme-dark-fixed.border-amber-400\/60 {
+  background-image: linear-gradient(to bottom, #2a1a05, #0c0620) !important;
+  border-color: rgba(251, 191, 36, 0.6) !important;
+  box-shadow: 0 0 6px rgba(251, 191, 36, 0.22) !important;
+}
+html.light .profile-page .theme-dark-fixed :is(.text-white, .font-display) {
+  color: #ffffff !important;
+}
+html.light .profile-page .theme-dark-fixed .text-purple-200\/80,
+html.light .profile-page .theme-dark-fixed .text-purple-200\/70,
+html.light .profile-page .theme-dark-fixed .text-purple-100\/85 {
+  color: rgba(233, 213, 255, 0.85) !important;
+}
+html.light .profile-page .theme-dark-fixed .text-amber-200\/90,
+html.light .profile-page .theme-dark-fixed .text-amber-200 {
+  color: #fde68a !important;
+}
+html.light .profile-page .theme-dark-fixed .neon-green {
+  color: #34d399 !important;
+  text-shadow: 0 0 6px rgba(52, 211, 153, 0.6) !important;
+}
+html.light .profile-page .profile-balance-card.theme-dark-fixed a[href="/pay"],
+html.light .profile-page .profile-balance-card.theme-dark-fixed.border-purple-500\/40 a {
+  background: #7c3aed !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+html.light .profile-page .profile-balance-card.theme-dark-fixed.border-amber-400\/60 a {
+  background: rgba(251, 191, 36, 0.10) !important;
+  color: #fde68a !important;
+  border: 1px solid rgba(251, 191, 36, 0.6) !important;
+}
+html.light .profile-page .profile-balance-card.theme-dark-fixed .bg-purple-500\/20,
+html.light .profile-page .profile-balance-card.theme-dark-fixed .bg-amber-400\/15 {
+  background-color: rgba(168, 85, 247, 0.2) !important;
+}
+html.light .profile-page .profile-balance-card.theme-dark-fixed.border-amber-400\/60 .bg-amber-400\/15 {
+  background-color: rgba(251, 191, 36, 0.15) !important;
+}
+html.light .profile-page .profile-vip-progress.theme-dark-fixed .bg-purple-500\/20 {
+  background-color: rgba(168, 85, 247, 0.2) !important;
+}
+
 
 /* ============================================================
    CHICKEN ROAD — stage, asteroids, sprite animations
