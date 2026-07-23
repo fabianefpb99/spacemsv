@@ -333,7 +333,7 @@ function PerfilPage() {
           <Link
             to="/vip"
             className={cn(
-              "theme-dark-fixed profile-vip-progress mt-3 flex items-center gap-3 rounded-2xl border bg-gradient-to-r px-3 py-3 transition hover:brightness-110",
+              "profile-vip-progress theme-dark-fixed mt-3 flex items-center gap-3 rounded-2xl border bg-gradient-to-r px-3 py-3 transition hover:brightness-110",
               vipTheme.cardBg,
               vipTheme.borderClass,
             )}
@@ -410,8 +410,8 @@ function PerfilPage() {
         )}
 
         {/* Balances */}
-        <section className="theme-dark-fixed mt-3 grid grid-cols-2 gap-3">
-          <div className="profile-balance-card rounded-2xl border border-purple-500/40 bg-gradient-to-b from-[#1a0b3a] to-[#0c0620] px-3 py-3 shadow-[0_0_6px_rgba(168,85,247,0.14)]">
+        <section className="mt-3 grid grid-cols-2 gap-3">
+          <div className="profile-balance-card theme-dark-fixed rounded-2xl border border-purple-500/40 bg-gradient-to-b from-[#1a0b3a] to-[#0c0620] px-3 py-3 shadow-[0_0_6px_rgba(168,85,247,0.14)]">
             <div className="flex items-center gap-2">
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-purple-500/20 text-purple-200">
                 <WalletIcon className="h-4 w-4" />
