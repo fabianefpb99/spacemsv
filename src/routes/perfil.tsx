@@ -201,32 +201,30 @@ function PerfilPage() {
         >
             {/* Orbital arcs behind avatar */}
             <div className="profile-orbit-wrap relative flex items-center justify-center w-full">
+              {/* Saturn-style orbit rings: back halves behind avatar */}
               <svg
                 aria-hidden
-                viewBox="0 0 420 200"
+                viewBox="0 0 420 120"
                 preserveAspectRatio="xMidYMid meet"
-                className="profile-orbit pointer-events-none absolute left-1/2 top-1/2 h-[200px] w-[min(420px,100vw)] -translate-x-1/2 -translate-y-1/2"
+                className="profile-orbit pointer-events-none absolute left-1/2 top-1/2 z-10 h-[120px] w-[min(420px,100vw)] -translate-x-1/2 -translate-y-1/2"
               >
                 <defs>
                   <linearGradient id="orbitGradA" x1="0" y1="0" x2="1" y2="0">
                     <stop offset="0%" stopColor="rgba(168,85,247,0)" />
-                    <stop offset="50%" stopColor="rgba(217,70,239,0.85)" />
+                    <stop offset="50%" stopColor="rgba(217,70,239,0.9)" />
                     <stop offset="100%" stopColor="rgba(168,85,247,0)" />
                   </linearGradient>
                   <linearGradient id="orbitGradB" x1="0" y1="0" x2="1" y2="0">
                     <stop offset="0%" stopColor="rgba(126,34,206,0)" />
-                    <stop offset="50%" stopColor="rgba(168,85,247,0.55)" />
+                    <stop offset="50%" stopColor="rgba(217,70,239,0.6)" />
                     <stop offset="100%" stopColor="rgba(126,34,206,0)" />
                   </linearGradient>
                 </defs>
-                <ellipse
-                  cx="210" cy="100" rx="205" ry="88"
-                  fill="none" stroke="url(#orbitGradA)" strokeWidth="1.4"
-                />
-                <ellipse
-                  cx="210" cy="100" rx="170" ry="70"
-                  fill="none" stroke="url(#orbitGradB)" strokeWidth="1"
-                />
+                <g transform="rotate(-8 210 60)">
+                  {/* Back halves (top arc of each ellipse) — drawn behind avatar */}
+                  <path d="M 10 60 A 200 42 0 0 1 410 60" fill="none" stroke="url(#orbitGradA)" strokeWidth="1.4" />
+                  <path d="M 50 60 A 160 32 0 0 1 370 60" fill="none" stroke="url(#orbitGradB)" strokeWidth="1" />
+                </g>
               </svg>
 
               <div className="relative z-20">
@@ -248,6 +246,19 @@ function PerfilPage() {
                   />
                 </div>
               </div>
+
+              {/* Front halves (bottom arc of each ellipse) — drawn on top of avatar */}
+              <svg
+                aria-hidden
+                viewBox="0 0 420 120"
+                preserveAspectRatio="xMidYMid meet"
+                className="profile-orbit-front pointer-events-none absolute left-1/2 top-1/2 z-30 h-[120px] w-[min(420px,100vw)] -translate-x-1/2 -translate-y-1/2"
+              >
+                <g transform="rotate(-8 210 60)">
+                  <path d="M 10 60 A 200 42 0 0 0 410 60" fill="none" stroke="url(#orbitGradA)" strokeWidth="1.4" />
+                  <path d="M 50 60 A 160 32 0 0 0 370 60" fill="none" stroke="url(#orbitGradB)" strokeWidth="1" />
+                </g>
+              </svg>
             </div>
 
             <button
