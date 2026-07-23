@@ -19,6 +19,7 @@ import {
 } from "@/lib/gameAudio";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { useMe, type MeData } from "@/hooks/useMe";
 import { useOnlineCount } from "@/hooks/useOnlineCount";
 import { useAuth } from "@/hooks/useAuth";
@@ -129,6 +130,7 @@ export function ChickenGame() {
   const [muted, setMuted] = useState<boolean>(() => (typeof window === "undefined" ? false : isMuted()));
   const [error, setError] = useState<string | null>(null);
   const [isDealing, setIsDealing] = useState(false);
+  const [debitFx, setDebitFx] = useState<number | null>(null);
   const online = useOnlineCount();
 
   const sessionRef = useRef<{ id: string; nonce: number } | null>(null);
@@ -241,6 +243,13 @@ export function ChickenGame() {
     setError(null);
     const prevBalance = balance;
     applyBalance(Math.max(0, balance - bet));
+    // Feedback visual/hover al usuario: se descontó dinero de su saldo.
+    setDebitFx(bet);
+    window.setTimeout(() => setDebitFx((v) => (v === bet ? null : v)), 1400);
+    toast.info(`-$${formatCOP(bet)} COP apostados`, {
+      description: "Salta con cuidado y cobra a tiempo",
+      duration: 2200,
+    });
     try {
       const view = await withTimeout(
         dealFn({ data: { bet, client_action_id: uuid() } }),
