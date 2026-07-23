@@ -259,21 +259,16 @@ function PerfilPage() {
             {/* Avatar centered inside the bowl */}
             <div className="absolute left-1/2 top-[22px] -translate-x-1/2">
               <div
-                className={cn(
-                  "flex h-[88px] w-[88px] items-center justify-center overflow-hidden rounded-full border-2 bg-purple-900/40",
-                  vipTheme ? vipTheme.borderClass : "border-fuchsia-400/70",
-                )}
-                style={{
-                  boxShadow: vipTheme
-                    ? `0 0 14px ${vipTheme.glow}`
-                    : "0 0 14px rgba(217,70,239,0.28)",
-                }}
+                className="liquid-ring"
+                style={{ height: 88, width: 88 }}
               >
-                <UserAvatar
-                  avatarKey={me.data?.profile?.avatar_key}
-                  alt=""
-                  spinnerSize="lg"
-                />
+                <div className="liquid-ring__inner flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-[#150830]">
+                  <UserAvatar
+                    avatarKey={me.data?.profile?.avatar_key}
+                    alt=""
+                    spinnerSize="lg"
+                  />
+                </div>
               </div>
               <button
                 aria-label="Cambiar foto"
