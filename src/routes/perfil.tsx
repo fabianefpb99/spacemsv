@@ -320,41 +320,39 @@ function PerfilPage() {
           <Link
             to="/vip"
             className={cn(
-              "profile-vip-progress mt-3 flex items-center gap-3 rounded-2xl border bg-gradient-to-r px-3 py-3 transition hover:brightness-110",
+              "profile-vip-progress mt-3 block rounded-2xl border bg-gradient-to-r px-3 py-3 transition hover:brightness-110",
               vipTheme.cardBg,
               vipTheme.borderClass,
             )}
             style={{ boxShadow: `0 0 6px ${vipTheme.glow}` }}
           >
-            <div
-              className={cn(
-                "profile-sub-hex flex h-11 w-11 shrink-0 items-center justify-center font-display text-[13px] font-black",
-                vipTheme.accentText,
-              )}
-              style={{
-                background:
-                  "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.25))",
-              }}
-            >
-              {vipProgress.sub}
+            <div className="flex items-center gap-3">
+              <div
+                className={cn(
+                  "profile-sub-hex flex h-11 w-11 shrink-0 items-center justify-center font-display text-[13px] font-black",
+                  vipTheme.accentText,
+                )}
+                style={{
+                  background:
+                    "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.25))",
+                }}
+              >
+                {vipProgress.sub}
+              </div>
+              <div className="font-display text-[15px] font-black uppercase tracking-wider text-white">
+                Nivel {vipProgress.displayLevel}
+              </div>
+              <div className={cn("ml-auto text-[12px] font-bold", vipTheme.accentText)}>
+                {vipProgress.isMax
+                  ? "★ Máximo"
+                  : `${formatXp(vipProgress.xpIntoLevel)} / ${formatXp(vipProgress.xpForNextLevel)} XP`}
+              </div>
             </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-baseline justify-between gap-2">
-                <div className="font-display text-[13px] font-black uppercase tracking-wider text-white">
-                  Nivel {vipProgress.displayLevel}
-                </div>
-                <div className="text-[11px] font-semibold text-purple-100/85">
-                  {vipProgress.isMax
-                    ? "★ Máximo"
-                    : `${formatXp(vipProgress.xpIntoLevel)} / ${formatXp(vipProgress.xpForNextLevel)} XP`}
-                </div>
-              </div>
-              <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-purple-500/20">
-                <div
-                  className={cn("h-full bg-gradient-to-r transition-all", vipTheme.barGradient)}
-                  style={{ width: `${vipProgress.isMax ? 100 : vipProgress.pct.toFixed(1)}%` }}
-                />
-              </div>
+            <div className="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-purple-500/20">
+              <div
+                className={cn("h-full bg-gradient-to-r transition-all", vipTheme.barGradient)}
+                style={{ width: `${vipProgress.isMax ? 100 : vipProgress.pct.toFixed(1)}%` }}
+              />
             </div>
           </Link>
         )}
