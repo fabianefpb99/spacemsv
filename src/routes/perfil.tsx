@@ -25,7 +25,7 @@ import {
   Receipt,
 } from "lucide-react";
 import { Copy, Check, Users, ChevronDown, UserPlus, Wallet } from "lucide-react";
-import { ShieldCheck, ArrowDownUp, CalendarRange, SlidersHorizontal, Sun, Moon } from "lucide-react";
+import { ShieldCheck, ArrowDownUp, CalendarRange, SlidersHorizontal } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useMe } from "@/hooks/useMe";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
@@ -44,7 +44,7 @@ import { PersonalDataDialog } from "@/components/profile/PersonalDataDialog";
 import { ChangePasswordDialog } from "@/components/profile/ChangePasswordDialog";
 import { BrandLoader } from "@/components/BrandLoader";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { useTheme } from "@/hooks/useTheme";
+import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
 
 export const Route = createFileRoute("/perfil")({
   head: () => ({
@@ -105,7 +105,7 @@ function PerfilPage() {
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"seg" | "mov" | "act" | "aju">("seg");
   const [misDatosOpen, setMisDatosOpen] = useState(false);
-  const { theme, toggle: toggleTheme } = useTheme();
+  useForceDarkTheme();
   const [minElapsed, setMinElapsed] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setMinElapsed(true), 1060);
@@ -608,14 +608,6 @@ function PerfilPage() {
           )}
           {activeTab === "aju" && (
             <>
-              <button type="button" onClick={toggleTheme} className="block w-full text-left">
-                <SecurityRow
-                  icon={theme === "dark" ? <Moon className="h-4 w-4 text-purple-200" /> : <Sun className="h-4 w-4 text-amber-300" />}
-                  title="Apariencia"
-                  subtitle={theme === "dark" ? "Modo oscuro" : "Modo claro"}
-                  actionLabel="Cambiar"
-                />
-              </button>
               <button
                 type="button"
                 onClick={async () => {
