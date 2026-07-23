@@ -225,7 +225,25 @@ function PerfilPage() {
                   <stop offset="50%" stopColor="rgba(232,121,249,1)" />
                   <stop offset="100%" stopColor="rgba(168,85,247,0.25)" />
                 </linearGradient>
+                <clipPath id="bowlClip">
+                  <path d="M 0 0 L 0 12 A 260 260 0 0 0 400 12 L 400 0 Z" />
+                </clipPath>
+                <linearGradient id="bowlOverlay" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="rgba(10,3,20,0.55)" />
+                  <stop offset="100%" stopColor="rgba(30,10,60,0.15)" />
+                </linearGradient>
               </defs>
+              <g clipPath="url(#bowlClip)">
+                <image
+                  href={perfilSpaceAsset.url}
+                  x="0"
+                  y="0"
+                  width="400"
+                  height="160"
+                  preserveAspectRatio="xMidYMid slice"
+                />
+                <rect x="0" y="0" width="400" height="160" fill="url(#bowlOverlay)" />
+              </g>
               <path
                 d="M 0 0 L 0 12 A 260 260 0 0 0 400 12 L 400 0 Z"
                 fill="url(#bowlFill)"
