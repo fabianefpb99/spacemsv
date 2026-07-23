@@ -341,10 +341,52 @@ function PerfilPage() {
           >
             <div
               className={cn(
-                "profile-sub-hex flex h-11 w-11 shrink-0 items-center justify-center font-display text-[14px] font-black tracking-wider text-white",
+                "profile-sub-hex relative shrink-0",
               )}
             >
-              {vipProgress.sub}
+              <svg viewBox="0 0 100 115" width="44" height="50" className="block overflow-visible">
+                <defs>
+                  <linearGradient id="hexGold" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#fff2a8" />
+                    <stop offset="45%" stopColor="#f5c518" />
+                    <stop offset="100%" stopColor="#8a5a06" />
+                  </linearGradient>
+                  <linearGradient id="hexPurple" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#a855f7" />
+                    <stop offset="55%" stopColor="#6d28d9" />
+                    <stop offset="100%" stopColor="#2e0b5c" />
+                  </linearGradient>
+                  <radialGradient id="hexShine" cx="0.3" cy="0.2" r="0.7">
+                    <stop offset="0%" stopColor="rgba(255,255,255,0.35)" />
+                    <stop offset="60%" stopColor="rgba(255,255,255,0)" />
+                  </radialGradient>
+                </defs>
+                <polygon
+                  points="50,2 96,28 96,86 50,112 4,86 4,28"
+                  fill="url(#hexPurple)"
+                  stroke="url(#hexGold)"
+                  strokeWidth="6"
+                  strokeLinejoin="round"
+                  style={{ filter: "drop-shadow(0 0 6px rgba(245,197,24,0.55))" }}
+                />
+                <polygon
+                  points="50,2 96,28 96,86 50,112 4,86 4,28"
+                  fill="url(#hexShine)"
+                />
+                <text
+                  x="50"
+                  y="57"
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  fill="#ffffff"
+                  fontFamily="var(--font-display, inherit)"
+                  fontWeight="900"
+                  fontSize="42"
+                  style={{ letterSpacing: "1px", textShadow: "0 2px 3px rgba(0,0,0,0.55)" }}
+                >
+                  {vipProgress.sub}
+                </text>
+              </svg>
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-baseline justify-between gap-2">
