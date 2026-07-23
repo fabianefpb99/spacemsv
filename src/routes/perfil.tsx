@@ -431,7 +431,7 @@ function PerfilPage() {
               + Depositar
             </Link>
           </div>
-          <div className="profile-balance-card rounded-2xl border border-amber-400/60 bg-gradient-to-b from-[#2a1a05] to-[#0c0620] px-3 py-3 shadow-[0_0_6px_rgba(251,191,36,0.18)]">
+          <div className="profile-balance-card theme-dark-fixed rounded-2xl border border-amber-400/60 bg-gradient-to-b from-[#2a1a05] to-[#0c0620] px-3 py-3 shadow-[0_0_6px_rgba(251,191,36,0.18)]">
             <div className="flex items-center gap-2">
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-amber-400/15 text-amber-200">
                 <Gift className="h-4 w-4" />
