@@ -452,11 +452,21 @@ export function ChickenGame() {
             </Link>
           </div>
           <div className="flex items-center gap-2">
-            <div className="text-right">
+            <div className="relative text-right">
               <div className="text-[9px] uppercase tracking-wider text-purple-200/70">Balance</div>
-              <div className="font-display text-[11px] font-bold sm:text-xs text-white">
+              <div
+                className={`font-display text-[11px] font-bold sm:text-xs text-white transition-colors ${debitFx ? "text-rose-300" : ""}`}
+              >
                 <span className="neon-green mr-0.5">$</span>{formatCOP(balance)} COP
               </div>
+              {debitFx != null && (
+                <div
+                  key={debitFx}
+                  className="pointer-events-none absolute -bottom-1 right-0 select-none text-[12px] font-black tabular-nums text-rose-400 drop-shadow-[0_0_8px_rgba(244,63,94,0.65)] chicken-debit-fx"
+                >
+                  -${formatCOP(debitFx)}
+                </div>
+              )}
             </div>
             <AuthControl />
           </div>
