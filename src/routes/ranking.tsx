@@ -174,6 +174,7 @@ function RankingPage() {
             className="absolute inset-0 bg-gradient-to-b from-[#060210]/85 via-[#0a0320]/35 to-transparent"
             aria-hidden="true"
           />
+          <RankingParticles />
 
           <div className="relative px-3 pb-6 pt-5 sm:px-4">
             {/* Título */}
