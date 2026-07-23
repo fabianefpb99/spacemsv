@@ -4648,3 +4648,99 @@ html.light .vip-levelup-toast .vip-levelup-eyebrow svg,
 html.light .vip-levelup-toast .vip-levelup-sublevel {
   color: #ffffff !important;
 }
+
+/* ==================================================================
+ * NOTIFICATION BELL POPOVER — LIGHT MODE
+ * Scoped to .notif-popover so dark mode is untouched.
+ * Uses high-specificity selectors to defeat inline utility colors.
+ * ================================================================ */
+html.light .notif-popover.notif-popover {
+  background: #ffffff !important;
+  background-image: none !important;
+  border-color: #d8c5f5 !important;
+  color: #2a1d4d !important;
+  box-shadow: 0 10px 32px -12px rgba(76, 29, 149, 0.25), 0 2px 6px rgba(76, 29, 149, 0.08) !important;
+}
+html.light .notif-popover [class*="border-purple-500"] {
+  border-color: #ead9ff !important;
+}
+html.light .notif-popover [class*="divide-purple-500"] > * + * {
+  border-color: #ead9ff !important;
+}
+/* Header title + bell icon */
+html.light .notif-popover .text-white {
+  color: #2a1d4d !important;
+}
+html.light .notif-popover svg.text-purple-300,
+html.light .notif-popover svg.text-purple-200 {
+  color: #7c3aed !important;
+}
+/* "sin leer" pill — solid rose on white */
+html.light .notif-popover .bg-rose-500\/20 {
+  background: #fee2e2 !important;
+  color: #b91c1c !important;
+}
+html.light .notif-popover .bg-rose-500\/20.text-rose-300,
+html.light .notif-popover .text-rose-300 {
+  color: #b91c1c !important;
+}
+/* "Marcar todas" button */
+html.light .notif-popover button.text-purple-200 {
+  color: #6d28d9 !important;
+}
+html.light .notif-popover button.text-purple-200:hover {
+  background: #f3ebff !important;
+}
+/* Tabs */
+html.light .notif-popover .bg-purple-600\/20 {
+  background: #ede4ff !important;
+  color: #4c1d95 !important;
+}
+html.light .notif-popover .bg-purple-600\/20.text-white {
+  color: #4c1d95 !important;
+}
+html.light .notif-popover .text-purple-200\/60 {
+  color: #7e6ba6 !important;
+}
+html.light .notif-popover .text-purple-200\/60:hover,
+html.light .notif-popover .hover\:text-purple-100:hover {
+  color: #4c1d95 !important;
+}
+/* Empty / loading states */
+html.light .notif-popover .text-purple-200\/50,
+html.light .notif-popover .text-purple-200\/60 {
+  color: #8a7ab0 !important;
+}
+/* List rows */
+html.light .notif-popover li.bg-purple-500\/\[0\.04\],
+html.light .notif-popover li.group[class*="bg-purple-500"] {
+  background: #f8f3ff !important;
+}
+html.light .notif-popover li:hover {
+  background: #f3ebff !important;
+}
+/* Row icon capsule */
+html.light .notif-popover .bg-purple-900\/30 {
+  background: #ede4ff !important;
+}
+html.light .notif-popover .border-purple-500\/30 {
+  border-color: #d8c5f5 !important;
+}
+/* Row typography */
+html.light .notif-popover li .text-white {
+  color: #1f1240 !important;
+}
+html.light .notif-popover .text-purple-200\/70 {
+  color: #5b4b82 !important;
+}
+html.light .notif-popover .text-purple-300\/60 {
+  color: #8a7ab0 !important;
+}
+/* Row icons — punch up saturation on white */
+html.light .notif-popover svg.text-emerald-300 { color: #059669 !important; }
+html.light .notif-popover svg.text-sky-300     { color: #0284c7 !important; }
+html.light .notif-popover svg.text-rose-300    { color: #dc2626 !important; }
+/* Unread dot */
+html.light .notif-popover .bg-rose-400 {
+  background: #dc2626 !important;
+}

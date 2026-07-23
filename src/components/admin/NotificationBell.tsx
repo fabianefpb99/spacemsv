@@ -151,7 +151,7 @@ function BellInner({ userId }: { userId: string }) {
         align="end"
         sideOffset={8}
         collisionPadding={12}
-        className="z-50 w-[min(22rem,calc(100vw-1rem))] border-purple-500/40 bg-[#0c0620] p-0 text-white"
+        className="notif-popover z-50 w-[min(22rem,calc(100vw-1rem))] border-purple-500/40 bg-[#0c0620] p-0 text-white"
       >
         <div className="flex items-center justify-between border-b border-purple-500/20 px-3 py-2.5">
           <div className="flex items-center gap-2">
