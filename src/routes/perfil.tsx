@@ -203,7 +203,7 @@ function PerfilPage() {
 
         {/* Identity — giant clipped circle header */}
         <section
-          className="theme-dark-fixed relative -mx-3 sm:-mx-4 flex flex-col items-center pb-2"
+          className="relative -mx-3 sm:-mx-4 flex flex-col items-center pb-2"
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.25rem)" }}
         >
           {/* Giant circle: only the bottom portion enters the viewport */}
@@ -333,7 +333,7 @@ function PerfilPage() {
           <Link
             to="/vip"
             className={cn(
-              "profile-vip-progress theme-dark-fixed mt-3 flex items-center gap-3 rounded-2xl border bg-gradient-to-r px-3 py-3 transition hover:brightness-110",
+              "profile-vip-progress mt-3 flex items-center gap-3 rounded-2xl border bg-gradient-to-r px-3 py-3 transition hover:brightness-110",
               vipTheme.cardBg,
               vipTheme.borderClass,
             )}
@@ -411,7 +411,7 @@ function PerfilPage() {
 
         {/* Balances */}
         <section className="mt-3 grid grid-cols-2 gap-3">
-          <div className="profile-balance-card theme-dark-fixed rounded-2xl border border-purple-500/40 bg-gradient-to-b from-[#1a0b3a] to-[#0c0620] px-3 py-3 shadow-[0_0_6px_rgba(168,85,247,0.14)]">
+          <div className="profile-balance-card rounded-2xl border border-purple-500/40 bg-gradient-to-b from-[#1a0b3a] to-[#0c0620] px-3 py-3 shadow-[0_0_6px_rgba(168,85,247,0.14)]">
             <div className="flex items-center gap-2">
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-purple-500/20 text-purple-200">
                 <WalletIcon className="h-4 w-4" />
@@ -431,7 +431,7 @@ function PerfilPage() {
               + Depositar
             </Link>
           </div>
-          <div className="profile-balance-card theme-dark-fixed rounded-2xl border border-amber-400/60 bg-gradient-to-b from-[#2a1a05] to-[#0c0620] px-3 py-3 shadow-[0_0_6px_rgba(251,191,36,0.18)]">
+          <div className="profile-balance-card rounded-2xl border border-amber-400/60 bg-gradient-to-b from-[#2a1a05] to-[#0c0620] px-3 py-3 shadow-[0_0_6px_rgba(251,191,36,0.18)]">
             <div className="flex items-center gap-2">
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-amber-400/15 text-amber-200">
                 <Gift className="h-4 w-4" />
