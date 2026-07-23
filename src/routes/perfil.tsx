@@ -38,6 +38,7 @@ import { VipLevelUpToast } from "@/components/vip/VipLevelUpToast";
 import { useVip } from "@/hooks/useVip";
 import { computeProgress, formatXp, RANK_META, rankLabel } from "@/lib/vip/vip.shared";
 import { VIP_CARD_THEME, RANK_ART } from "@/lib/vip/vip-art";
+import perfilSpaceAsset from "@/assets/perfil-space.jpg.asset.json";
 import { cn } from "@/lib/utils";
 import { PersonalDataDialog } from "@/components/profile/PersonalDataDialog";
 import { ChangePasswordDialog } from "@/components/profile/ChangePasswordDialog";
