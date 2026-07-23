@@ -195,21 +195,10 @@ function PerfilPage() {
         )}
 
         {/* Identity — vertical centered layout */}
-        <div
-          className="vip-frame theme-dark-fixed -mx-3 -mt-4 sm:-mx-4"
-          style={
-            {
-              "--vip-c1": vipTheme?.frameC1 ?? "rgba(217,70,239,0.9)",
-              "--vip-c2": vipTheme?.frameC2 ?? "rgba(168,85,247,0.65)",
-              "--vip-c3": vipTheme?.frameC3 ?? "rgba(126,34,206,0.5)",
-              filter: `drop-shadow(0 0 1.5px ${vipTheme?.glow ?? "rgba(217,70,239,0.08)"})`,
-            } as React.CSSProperties
-          }
+        <section
+          className="relative flex flex-col items-center px-4 pb-4"
+          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 3.25rem)" }}
         >
-          <section
-            className="vip-frame-inner relative flex flex-col items-center px-4 pb-4"
-            style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 3.25rem)" }}
-          >
             {/* Orbital arcs behind avatar */}
             <div className="profile-orbit-wrap relative flex items-center justify-center">
               <svg
@@ -309,8 +298,7 @@ function PerfilPage() {
                 </div>
               </Link>
             )}
-          </section>
-        </div>
+        </section>
 
         {/* Level / XP */}
         {vipProgress && vipMeta && vipTheme && (
