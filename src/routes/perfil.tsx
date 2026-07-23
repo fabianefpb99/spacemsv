@@ -206,7 +206,7 @@ function PerfilPage() {
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.25rem)" }}
         >
           {/* Giant circle: only the bottom portion enters the viewport */}
-          <div className="pointer-events-none relative h-[160px] w-full overflow-hidden">
+          <div className="pointer-events-none relative h-[124px] w-full overflow-hidden">
             <svg
               aria-hidden
               viewBox="0 0 400 160"
@@ -238,7 +238,7 @@ function PerfilPage() {
             </svg>
 
             {/* Avatar centered inside the bowl */}
-            <div className="absolute left-1/2 top-[28px] -translate-x-1/2">
+            <div className="absolute left-1/2 top-[22px] -translate-x-1/2">
               <div
                 className={cn(
                   "flex h-[88px] w-[88px] items-center justify-center overflow-hidden rounded-full border-2 bg-purple-900/40",
@@ -267,7 +267,7 @@ function PerfilPage() {
           </div>
 
           {/* Name + user id */}
-          <div className="mt-1 text-center">
+          <div className="mt-0 text-center">
             <div className="font-display text-[22px] font-black uppercase tracking-wider text-white leading-none">
               {displayName}
             </div>
