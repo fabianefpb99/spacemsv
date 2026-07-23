@@ -147,11 +147,6 @@ function PerfilPage() {
   }
 
   const email = user?.email ?? "";
-  const username =
-    me.data?.profile?.username ??
-    (user?.user_metadata?.full_name as string | undefined) ??
-    email.split("@")[0] ??
-    "Usuario";
   const emailVerified = !!user?.email_confirmed_at;
   const balanceText = me.data ? formatCOP(me.data.balance) : "—";
   const bonusText = me.data ? formatCOP(me.data.bonus_balance) : "—";
@@ -163,13 +158,6 @@ function PerfilPage() {
     : null;
   const vipMeta = vipProgress ? RANK_META[vipProgress.rank] : null;
   const vipTheme = vipProgress ? VIP_CARD_THEME[vipProgress.rank] : null;
-
-  const fullName = [
-    fullProfile.data?.first_name,
-    fullProfile.data?.last_name,
-  ]
-    .filter(Boolean)
-    .join(" ");
 
   // Guard against the "beta flash": until both profile + VIP have loaded we
   // would otherwise render the card with the fallback astronaut avatar and no
