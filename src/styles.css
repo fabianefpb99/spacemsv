@@ -3130,9 +3130,16 @@ html.light .profile-page .profile-avatar-wrap {
 
 /* Hexagonal sub-rank badge on the profile level card */
 .profile-sub-hex {
+  position: relative;
   clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%);
-  border: 1px solid rgba(217, 70, 239, 0.55);
-  box-shadow: inset 0 0 8px rgba(217, 70, 239, 0.25);
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255,255,255,0.35), rgba(255,255,255,0) 55%),
+    linear-gradient(160deg, #8b5cf6 0%, #6d28d9 55%, #4c1d95 100%) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.28),
+    inset 0 -6px 12px rgba(0,0,0,0.35),
+    0 0 14px rgba(168,85,247,0.55);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.45);
 }
 .profile-orbit {
   opacity: 0.9;

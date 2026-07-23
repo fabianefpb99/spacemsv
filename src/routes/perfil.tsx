@@ -341,13 +341,8 @@ function PerfilPage() {
           >
             <div
               className={cn(
-                "profile-sub-hex flex h-11 w-11 shrink-0 items-center justify-center font-display text-[13px] font-black",
-                vipTheme.accentText,
+                "profile-sub-hex flex h-11 w-11 shrink-0 items-center justify-center font-display text-[14px] font-black tracking-wider text-white",
               )}
-              style={{
-                background:
-                  "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.25))",
-              }}
             >
               {vipProgress.sub}
             </div>
