@@ -35,12 +35,10 @@ import { AvatarPickerDialog } from "@/components/profile/AvatarPickerDialog";
 import { UserAvatar } from "@/components/UserAvatar";
 import { useUnlockedAvatars } from "@/hooks/useUnlockedAvatars";
 import { VipLevelUpToast } from "@/components/vip/VipLevelUpToast";
-import { VipBadge } from "@/components/vip/VipBadge";
 import { useVip } from "@/hooks/useVip";
 import { computeProgress, formatXp, RANK_META, rankLabel } from "@/lib/vip/vip.shared";
 import { VIP_CARD_THEME, RANK_ART } from "@/lib/vip/vip-art";
 import { cn } from "@/lib/utils";
-import { Sparkles } from "lucide-react";
 import { PersonalDataDialog } from "@/components/profile/PersonalDataDialog";
 import { ChangePasswordDialog } from "@/components/profile/ChangePasswordDialog";
 import { BrandLoader } from "@/components/BrandLoader";
@@ -147,11 +145,6 @@ function PerfilPage() {
   }
 
   const email = user?.email ?? "";
-  const username =
-    me.data?.profile?.username ??
-    (user?.user_metadata?.full_name as string | undefined) ??
-    email.split("@")[0] ??
-    "Usuario";
   const emailVerified = !!user?.email_confirmed_at;
   const balanceText = me.data ? formatCOP(me.data.balance) : "—";
   const bonusText = me.data ? formatCOP(me.data.bonus_balance) : "—";
@@ -163,13 +156,6 @@ function PerfilPage() {
     : null;
   const vipMeta = vipProgress ? RANK_META[vipProgress.rank] : null;
   const vipTheme = vipProgress ? VIP_CARD_THEME[vipProgress.rank] : null;
-
-  const fullName = [
-    fullProfile.data?.first_name,
-    fullProfile.data?.last_name,
-  ]
-    .filter(Boolean)
-    .join(" ");
 
   // Guard against the "beta flash": until both profile + VIP have loaded we
   // would otherwise render the card with the fallback astronaut avatar and no
@@ -214,7 +200,7 @@ function PerfilPage() {
           )}
         </header>
 
-        {/* Identity card — futuristic HUD frame, rank-themed */}
+        {/* Identity — vertical centered layout */}
         <div
           className="vip-frame theme-dark-fixed mt-4"
           style={
@@ -226,37 +212,46 @@ function PerfilPage() {
             } as React.CSSProperties
           }
         >
-          <section className="vip-frame-inner relative px-4 py-4">
-            {/* Decorative halo behind insignia */}
-            {vipTheme && (
-              <div
+          <section className="vip-frame-inner relative flex flex-col items-center px-4 pb-4 pt-6">
+            {/* Orbital arcs behind avatar */}
+            <div className="profile-orbit-wrap relative flex items-center justify-center">
+              <svg
                 aria-hidden
-                className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full opacity-30 blur-2xl"
-                style={{ background: vipTheme.haloColor }}
-              />
-            )}
-            {/* Top hairline */}
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-x-6 top-0 h-px"
-              style={{
-                background:
-                  "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)",
-              }}
-            />
+                viewBox="0 0 300 140"
+                className="profile-orbit pointer-events-none absolute left-1/2 top-1/2 h-[140px] w-[300px] -translate-x-1/2 -translate-y-1/2"
+              >
+                <defs>
+                  <linearGradient id="orbitGradA" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="rgba(168,85,247,0)" />
+                    <stop offset="50%" stopColor="rgba(217,70,239,0.85)" />
+                    <stop offset="100%" stopColor="rgba(168,85,247,0)" />
+                  </linearGradient>
+                  <linearGradient id="orbitGradB" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="rgba(126,34,206,0)" />
+                    <stop offset="50%" stopColor="rgba(168,85,247,0.55)" />
+                    <stop offset="100%" stopColor="rgba(126,34,206,0)" />
+                  </linearGradient>
+                </defs>
+                <ellipse
+                  cx="150" cy="70" rx="140" ry="60"
+                  fill="none" stroke="url(#orbitGradA)" strokeWidth="1.4"
+                />
+                <ellipse
+                  cx="150" cy="70" rx="120" ry="48"
+                  fill="none" stroke="url(#orbitGradB)" strokeWidth="1"
+                />
+              </svg>
 
-            <div className="relative flex items-center gap-3">
-              {/* Avatar */}
-              <div className="profile-avatar-wrap relative z-20 shrink-0 overflow-visible">
+              <div className="relative z-20">
                 <div
                   className={cn(
-                    "profile-avatar-ring flex h-[69px] w-[69px] items-center justify-center overflow-hidden rounded-full border-2 bg-purple-900/40",
+                    "profile-avatar-ring flex h-[92px] w-[92px] items-center justify-center overflow-hidden rounded-full border-2 bg-purple-900/40",
                     vipTheme ? vipTheme.borderClass : "border-fuchsia-400/70",
                   )}
                   style={{
                     boxShadow: vipTheme
-                      ? `0 0 8px ${vipTheme.glow}`
-                      : "0 0 8px rgba(217,70,239,0.22)",
+                      ? `0 0 14px ${vipTheme.glow}`
+                      : "0 0 14px rgba(217,70,239,0.28)",
                   }}
                 >
                   <UserAvatar
@@ -265,105 +260,100 @@ function PerfilPage() {
                     spinnerSize="lg"
                   />
                 </div>
-                <button
-                  aria-label="Cambiar foto"
-                  onClick={() => setAvatarDialogOpen(true)}
-                  className="profile-avatar-camera absolute -bottom-1.5 -right-1.5 z-50 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 border-white bg-[#2a0f63] text-white shadow transition hover:bg-[#3b1680]"
-                >
-                  <Camera className="h-4 w-4" strokeWidth={2.75} />
-                </button>
               </div>
-
-              {/* Identity text */}
-              <div className="min-w-0 flex-1">
-                <div
-                  className={cn(
-                    "font-display truncate text-sm font-black uppercase tracking-wide sm:text-base",
-                    vipTheme ? vipTheme.accentText : "text-white",
-                  )}
-                  style={{
-                    fontSize: `clamp(0.78rem, ${Math.max(0.6, 1 - Math.max(0, username.length - 10) * 0.04)}rem, 1rem)`,
-                  }}
-                >
-                  {username}
-                </div>
-                {fullName && (
-                  <div className="truncate text-[12px] font-semibold text-white/90">
-                    {fullName}
-                  </div>
-                )}
-                <div className="mt-0.5 truncate text-[10px] text-purple-200/70">
-                  Usuario #{user ? shortId(user.id) : "00000"}
-                  {vipProgress && (
-                    <>
-                      {" • "}
-                      <span className={cn("font-bold", vipTheme?.accentText)}>
-                        {rankLabel(vipProgress.rank, vipProgress.sub)}
-                      </span>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* Rank insignia (right) */}
-              {vipProgress && (
-                <Link
-                  to="/vip"
-                  aria-label="Ver programa VIP"
-                  className="relative shrink-0 transition hover:scale-105"
-                >
-                  <img
-                    src={RANK_ART[vipProgress.rank]}
-                    alt={`Insignia ${RANK_META[vipProgress.rank].label}`}
-                    className="h-20 w-20 object-contain"
-                    style={{
-                    filter: `drop-shadow(0 1px 2px rgba(0,0,0,0.35))`,
-                    }}
-                    draggable={false}
-                  />
-                </Link>
-              )}
             </div>
+
+            <button
+              aria-label="Cambiar foto"
+              onClick={() => setAvatarDialogOpen(true)}
+              className="profile-avatar-camera-btn relative z-30 -mt-3 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-2 border-white bg-[#2a0f63] text-white shadow transition hover:bg-[#3b1680]"
+            >
+              <Camera className="h-4 w-4" strokeWidth={2.75} />
+            </button>
+
+            <div className="mt-3 text-center">
+              <div className="text-[13px] font-semibold tracking-wide text-purple-100/85">
+                Usuario <span className="text-white">#{user ? shortId(user.id) : "00000"}</span>
+              </div>
+            </div>
+
+            {vipProgress && (
+              <Link
+                to="/vip"
+                aria-label="Ver programa VIP"
+                className="mt-4 flex flex-col items-center transition hover:scale-[1.03]"
+              >
+                <img
+                  src={RANK_ART[vipProgress.rank]}
+                  alt={`Insignia ${RANK_META[vipProgress.rank].label}`}
+                  className="h-24 w-24 object-contain"
+                  style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.45))" }}
+                  draggable={false}
+                />
+                <div className="mt-2 flex items-center gap-2">
+                  <span
+                    aria-hidden
+                    className="h-1 w-1 rounded-full bg-purple-400"
+                    style={{ boxShadow: "0 0 6px rgba(217,70,239,0.9)" }}
+                  />
+                  <span
+                    className={cn(
+                      "font-display text-[13px] font-black uppercase tracking-[0.22em]",
+                      vipTheme?.accentText ?? "text-amber-300",
+                    )}
+                  >
+                    {rankLabel(vipProgress.rank, vipProgress.sub)}
+                  </span>
+                  <span
+                    aria-hidden
+                    className="h-1 w-1 rounded-full bg-purple-400"
+                    style={{ boxShadow: "0 0 6px rgba(217,70,239,0.9)" }}
+                  />
+                </div>
+              </Link>
+            )}
           </section>
         </div>
 
-        {/* VIP progress (compact, ties to identity card above) */}
+        {/* Level / XP */}
         {vipProgress && vipMeta && vipTheme && (
           <Link
             to="/vip"
             className={cn(
-              "profile-vip-progress mt-2 flex items-center gap-2.5 rounded-xl border bg-gradient-to-r px-3 py-2 transition hover:brightness-110",
+              "profile-vip-progress mt-3 flex items-center gap-3 rounded-2xl border bg-gradient-to-r px-3 py-3 transition hover:brightness-110",
               vipTheme.cardBg,
               vipTheme.borderClass,
             )}
-            style={{ boxShadow: `0 0 5px ${vipTheme.glow}` }}
+            style={{ boxShadow: `0 0 6px ${vipTheme.glow}` }}
           >
-            <VipBadge rank={vipProgress.rank} sub={vipProgress.sub} size="sm" art />
+            <div
+              className={cn(
+                "profile-sub-hex flex h-11 w-11 shrink-0 items-center justify-center font-display text-[13px] font-black",
+                vipTheme.accentText,
+              )}
+              style={{
+                background:
+                  "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.25))",
+              }}
+            >
+              {vipProgress.sub}
+            </div>
             <div className="min-w-0 flex-1">
-              <div className="flex items-center justify-between gap-2">
-                <div className={cn("font-display truncate text-[11px] font-bold uppercase tracking-wider", vipTheme.accentText)}>
-                  {rankLabel(vipProgress.rank, vipProgress.sub)}
-                </div>
-                <div className="flex items-center gap-1 text-[9px] font-semibold uppercase tracking-widest text-purple-200/70">
-                  <Sparkles className="h-2.5 w-2.5" />
+              <div className="flex items-baseline justify-between gap-2">
+                <div className="font-display text-[13px] font-black uppercase tracking-wider text-white">
                   Nivel {vipProgress.displayLevel}
                 </div>
+                <div className="text-[11px] font-semibold text-purple-100/85">
+                  {vipProgress.isMax
+                    ? "★ Máximo"
+                    : `${formatXp(vipProgress.xpIntoLevel)} / ${formatXp(vipProgress.xpForNextLevel)} XP`}
+                </div>
               </div>
-              <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-purple-500/20">
+              <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-purple-500/20">
                 <div
                   className={cn("h-full bg-gradient-to-r transition-all", vipTheme.barGradient)}
                   style={{ width: `${vipProgress.isMax ? 100 : vipProgress.pct.toFixed(1)}%` }}
                 />
-              </div>
-              <div className="mt-0.5 flex items-center justify-between text-[9px] text-purple-200/70">
-                {vipProgress.isMax ? (
-                  <span className="font-semibold text-amber-300">★ Nivel Máximo</span>
-                ) : (
-                  <span>
-                    {formatXp(vipProgress.xpIntoLevel)} / {formatXp(vipProgress.xpForNextLevel)} XP
-                  </span>
-                )}
-                <span className="font-semibold text-fuchsia-300">Ver VIP →</span>
               </div>
             </div>
           </Link>
@@ -371,34 +361,42 @@ function PerfilPage() {
 
         {/* Balances */}
         <section className="mt-3 grid grid-cols-2 gap-3">
-          <div className="profile-balance-card rounded-2xl border border-purple-500/40 bg-gradient-to-b from-[#1a0b3a] to-[#0c0620] px-3 py-2.5 shadow-[0_0_6px_rgba(168,85,247,0.12)]">
-            <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-purple-200/80">
-              <WalletIcon className="h-3.5 w-3.5" />
-              Balance Principal
+          <div className="profile-balance-card rounded-2xl border border-purple-500/40 bg-gradient-to-b from-[#1a0b3a] to-[#0c0620] px-3 py-3 shadow-[0_0_6px_rgba(168,85,247,0.14)]">
+            <div className="flex items-center gap-2">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-purple-500/20 text-purple-200">
+                <WalletIcon className="h-4 w-4" />
+              </span>
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-purple-200/80">
+                Balance Principal
+              </span>
             </div>
-            <div className="font-display mt-0.5 text-lg font-black leading-tight">
+            <div className="font-display mt-1 text-xl font-black leading-tight">
               <span className="neon-green mr-0.5">$</span>
               <span className="text-white">{balanceText}</span>
             </div>
             <Link
               to="/pay"
-              className="mt-1.5 flex w-full items-center justify-center gap-1 rounded-md bg-purple-600 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white hover:bg-purple-500"
+              className="mt-2 flex w-full items-center justify-center gap-1 rounded-md bg-purple-600 px-2 py-1.5 text-[11px] font-bold uppercase tracking-wider text-white hover:bg-purple-500"
             >
               + Depositar
             </Link>
           </div>
-          <div className="profile-balance-card rounded-2xl border border-amber-400/60 bg-gradient-to-b from-[#2a1a05] to-[#0c0620] px-3 py-2.5 shadow-[0_0_6px_rgba(251,191,36,0.15)]">
-            <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-amber-200/90">
-              <Gift className="h-3.5 w-3.5" />
-              Balance Bonus
+          <div className="profile-balance-card rounded-2xl border border-amber-400/60 bg-gradient-to-b from-[#2a1a05] to-[#0c0620] px-3 py-3 shadow-[0_0_6px_rgba(251,191,36,0.18)]">
+            <div className="flex items-center gap-2">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-amber-400/15 text-amber-200">
+                <Gift className="h-4 w-4" />
+              </span>
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-amber-200/90">
+                Balance Bonus
+              </span>
             </div>
-            <div className="font-display mt-0.5 text-lg font-black leading-tight">
+            <div className="font-display mt-1 text-xl font-black leading-tight">
               <span className="neon-green mr-0.5">$</span>
               <span className="text-white">{bonusText}</span>
             </div>
             <Link
               to="/eventos"
-              className="mt-1.5 flex w-full items-center justify-center gap-1 rounded-md border border-amber-400/60 bg-amber-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-200 hover:bg-amber-500/20"
+              className="mt-2 flex w-full items-center justify-center gap-1 rounded-md border border-amber-400/60 bg-amber-500/10 px-2 py-1.5 text-[11px] font-bold uppercase tracking-wider text-amber-200 hover:bg-amber-500/20"
             >
               Ver eventos
             </Link>

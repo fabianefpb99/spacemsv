@@ -1,83 +1,67 @@
-## Error real
+## Rediseño del bloque superior de `/perfil`
 
-El error fue mezclar dos flujos distintos dentro del mismo modal:
+Reestructuro el bloque de identidad + progreso + balances para que coincida con el boceto. Nada por debajo de "Colección" cambia.
 
-1. **Login / registro simple**: email, usuario, contraseña, referido.
-2. **Datos personales**: nombre, cédula, fecha de expedición, teléfono, términos.
+### 1. Desvincular el nombre del perfil
 
-Al meter el segundo formulario dentro de `AuthDialog`, heredó cosas que ya no deberían existir ahí: el header grande, el switch “Iniciar sesión / Registrarse”, el centrado del modal corto y las restricciones de altura/scroll pensadas para login. Por eso en iOS termina pegándose al safe area y el scroll se vuelve inconsistente.
+Actualmente el bloque de identidad muestra:
+- Username grande (ej. "KRAUZER")
+- Nombre completo real (`first_name + last_name`)
+- `Usuario #16290 · Bronce IV`
 
-## Plan de corrección
+Cambio: **eliminar tanto el username como el nombre completo** de la vista. Solo queda `Usuario #16290` como identificador. El campo `username` sigue existiendo en la BD (lo usan ranking, chat, comentarios, etc.), solo desaparece de la UI del perfil propio.
 
-### 1. Dejar `AuthDialog` solo para login y registro simple
+### 2. Layout vertical centrado (nuevo bloque de identidad)
 
-- El modal de login/registro volverá a encargarse únicamente de:
-  - Iniciar sesión.
-  - Crear cuenta con email, usuario, contraseña y referido.
-- Se elimina el paso 2 interno que muestra `PersonalDataForm` dentro de `AuthDialog`.
-- Así desaparece el switch de login/registro cuando el usuario ya está registrado.
-
-### 2. Después del registro exitoso, cerrar modal y mandar al Home
-
-Cuando el usuario termine el registro simple:
+Reemplazo la "identity card" horizontal (avatar-izquierda, texto-medio, escudo-derecha) por un stack vertical centrado:
 
 ```text
-Registro simple exitoso
-→ cerrar AuthDialog
-→ refrescar sesión
-→ navegar al Home
-→ activar flotante independiente de datos personales
+        ← ┃  MI PERFIL  ┃ ⚙
+        ╭───────────────────╮
+        │ ╭╮  avatar  ╭╮   │   ← arcos morados orbitales decorativos
+        │     [📷]          │   ← botón cámara debajo del avatar
+        │                   │
+        │   Usuario #16290  │   ← único identificador
+        │                   │
+        │      ⬢ escudo ⬢   │   ← insignia grande centrada
+        │   ·  BRONCE IV  · │   ← label del rango en dorado
+        ╰───────────────────╯
 ```
 
-No se quedará dentro del modal de registro.
+- Fondo: mismo `vip-frame` actual, pero altura mayor y padding vertical más generoso.
+- Arcos morados detrás del avatar (dos elipses SVG absolutas, uno por lado, con `stroke` degradado morado — puramente decorativos).
+- Avatar: mismo `UserAvatar` pero centrado, tamaño `88×88`, borde tematizado por rango.
+- Botón cámara: pasa a estar centrado justo debajo del avatar (no en la esquina).
+- Escudo: `RANK_ART[rank]` grande (`96×96`) centrado, con dos puntos morados a los lados (`· BRONCE IV ·`) en el color acento del rango.
 
-### 3. Crear un flotante independiente para datos personales
+### 3. Card de nivel/XP (redistribución)
 
-Usaremos un modal separado para completar los datos personales:
-
-- Título enfocado: “Completa tus datos” o similar.
-- Sin botones de “Iniciar sesión / Registrarse”.
-- Sin logo/header grande de autenticación.
-- Solo la explicación breve y el formulario de datos.
-- Se mantiene como información adicional necesaria para retiros.
-
-### 4. Arreglar el scroll de raíz en ese flotante nuevo
-
-El modal de datos personales tendrá una estructura distinta a la de login:
+Reemplazo la card horizontal actual `profile-vip-progress` por la del boceto:
 
 ```text
-Overlay fijo pantalla completa
-└── Contenedor scroll principal con h-dvh / overflow-y-auto
-    └── Panel con padding safe-area top/bottom
-        └── Formulario completo
+┌──────────────────────────────────────┐
+│ ⬢ IV │  NIVEL 5           104/125 XP │
+│      │  ▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░ │
+└──────────────────────────────────────┘
 ```
 
-Puntos clave:
+- Hexágono a la izquierda con la sub-división romana (I/II/III/IV) en el color del rango.
+- "NIVEL 5" en tipografía display, XP a la derecha.
+- Barra degradada `purple → amber` (ya existe en `VIP_CARD_THEME[rank].barGradient`).
+- Sigue siendo `<Link to="/vip">`.
 
-- El scroll será del contenedor principal, no de un panel interno recortado.
-- Se respetará `env(safe-area-inset-top)` y `env(safe-area-inset-bottom)`.
-- En móviles no se centrará verticalmente si el contenido es alto; empezará debajo del safe area y permitirá bajar hasta el botón.
-- En desktop puede verse centrado/limpio si cabe.
+### 4. Cards de balance (retoque)
 
-### 5. Mantener compacto el formulario, pero sin depender de eso para que funcione
+Las dos cards ya existen; solo ajusto proporciones para que respiren igual que el boceto:
+- Iconos más grandes (`wallet` morado, `gift` dorado) en un chip circular a la izquierda del label.
+- Monto en tipografía display más grande (`text-xl`) y verde neón.
+- Botones inferiores ocupan ancho completo con más padding vertical.
 
-- Se conservan los campos más compactos.
-- Pero el arreglo principal no será “apretar más cosas”, sino separar el flujo y hacer que el scroll funcione aunque el contenido sea alto.
+### 5. Notas técnicas
 
-### 6. Reutilizar la lógica existente sin romper perfil/retiros
+- Solo modifico `src/routes/perfil.tsx` (bloque de identidad + card de progreso + balances) y añado unas reglas locales en `src/styles.css` para los arcos orbitales y el hexágono de sub-rango.
+- No toco: header, `Colección`, historial de transacciones, formularios de datos personales, `VipLevelUpToast`.
+- El `username` y `full_name` siguen existiendo en `profiles`; solo dejan de renderizarse en `/perfil`. Otras rutas que los usan (ranking, comentarios, chat) no se afectan.
+- Se mantiene el tema oscuro fijo del subárbol (`theme-dark-fixed`).
 
-- `PersonalDataForm` seguirá siendo el formulario base.
-- No se toca la lógica de guardado en la base de datos.
-- No se cambian validaciones de cédula, fecha, teléfono, mayoría de edad o términos.
-- Las pantallas de perfil/retiros que ya usan datos personales no deben romperse.
-
-### 7. Verificación
-
-Voy a verificar en viewport móvil tipo iPhone que:
-
-- Login/registro simple vuelve a verse centrado y normal.
-- Tras registrarse, el usuario queda en Home.
-- El nuevo flotante de datos personales aparece separado.
-- No aparece el switch login/registro en ese flotante.
-- El scroll baja hasta “Finalizar registro”.
-- El panel no queda debajo del notch/safe area.
+¿Aplico?
