@@ -203,7 +203,7 @@ function PerfilPage() {
 
         {/* Identity — giant clipped circle header */}
         <section
-          className="relative -mx-3 sm:-mx-4 flex flex-col items-center pb-2"
+          className="theme-dark-fixed relative -mx-3 sm:-mx-4 flex flex-col items-center pb-2"
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.25rem)" }}
         >
           {/* Giant circle: only the bottom portion enters the viewport */}
@@ -333,7 +333,7 @@ function PerfilPage() {
           <Link
             to="/vip"
             className={cn(
-              "profile-vip-progress mt-3 flex items-center gap-3 rounded-2xl border bg-gradient-to-r px-3 py-3 transition hover:brightness-110",
+              "theme-dark-fixed profile-vip-progress mt-3 flex items-center gap-3 rounded-2xl border bg-gradient-to-r px-3 py-3 transition hover:brightness-110",
               vipTheme.cardBg,
               vipTheme.borderClass,
             )}
