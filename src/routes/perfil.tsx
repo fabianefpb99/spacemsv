@@ -157,6 +157,10 @@ function PerfilPage() {
   const vipMeta = vipProgress ? RANK_META[vipProgress.rank] : null;
   const vipTheme = vipProgress ? VIP_CARD_THEME[vipProgress.rank] : null;
 
+  const displayName =
+    ((fullProfile.data?.first_name as string | null | undefined) ?? "").trim().toUpperCase() ||
+    "USUARIO";
+
   // Guard against the "beta flash": until both profile + VIP have loaded we
   // would otherwise render the card with the fallback astronaut avatar and no
   // rank frame, then snap to the real data a moment later. Show a skeleton
@@ -194,122 +198,118 @@ function PerfilPage() {
           </button>
         )}
 
-        {/* Identity — vertical centered layout */}
+        {/* Identity — giant clipped circle header */}
         <section
-          className="relative flex flex-col items-center px-4 pb-4"
-          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 2.25rem)" }}
+          className="relative -mx-3 sm:-mx-4 flex flex-col items-center pb-2"
+          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.25rem)" }}
         >
-            {/* Orbital arcs behind avatar */}
-            <div className="profile-orbit-wrap relative flex items-center justify-center w-full">
-              {/* Saturn-style orbit rings: back halves behind avatar */}
-              <svg
-                aria-hidden
-                viewBox="0 0 420 120"
-                preserveAspectRatio="xMidYMid meet"
-                className="profile-orbit pointer-events-none absolute left-1/2 top-1/2 z-10 h-[120px] w-[min(420px,100vw)] -translate-x-1/2 -translate-y-1/2"
-              >
-                <defs>
-                  <linearGradient id="orbitGradA" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="rgba(168,85,247,0)" />
-                    <stop offset="50%" stopColor="rgba(217,70,239,0.9)" />
-                    <stop offset="100%" stopColor="rgba(168,85,247,0)" />
-                  </linearGradient>
-                  <linearGradient id="orbitGradB" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="rgba(126,34,206,0)" />
-                    <stop offset="50%" stopColor="rgba(217,70,239,0.6)" />
-                    <stop offset="100%" stopColor="rgba(126,34,206,0)" />
-                  </linearGradient>
-                </defs>
-                <g transform="rotate(-8 210 60)">
-                  {/* Back halves (top arc of each ellipse) — drawn behind avatar */}
-                  <path d="M 10 60 A 200 42 0 0 1 410 60" fill="none" stroke="url(#orbitGradA)" strokeWidth="1.4" />
-                  <path d="M 50 60 A 160 32 0 0 1 370 60" fill="none" stroke="url(#orbitGradB)" strokeWidth="1" />
-                </g>
-              </svg>
-
-              <div className="relative z-20">
-                <div
-                  className={cn(
-                    "profile-avatar-ring flex h-[92px] w-[92px] items-center justify-center overflow-hidden rounded-full border-2 bg-purple-900/40",
-                    vipTheme ? vipTheme.borderClass : "border-fuchsia-400/70",
-                  )}
-                  style={{
-                    boxShadow: vipTheme
-                      ? `0 0 14px ${vipTheme.glow}`
-                      : "0 0 14px rgba(217,70,239,0.28)",
-                  }}
-                >
-                  <UserAvatar
-                    avatarKey={me.data?.profile?.avatar_key}
-                    alt=""
-                    spinnerSize="lg"
-                  />
-                </div>
-              </div>
-
-              {/* Front halves (bottom arc of each ellipse) — drawn on top of avatar */}
-              <svg
-                aria-hidden
-                viewBox="0 0 420 120"
-                preserveAspectRatio="xMidYMid meet"
-                className="profile-orbit-front pointer-events-none absolute left-1/2 top-1/2 z-30 h-[120px] w-[min(420px,100vw)] -translate-x-1/2 -translate-y-1/2"
-              >
-                <g transform="rotate(-8 210 60)">
-                  <path d="M 10 60 A 200 42 0 0 0 410 60" fill="none" stroke="url(#orbitGradA)" strokeWidth="1.4" />
-                  <path d="M 50 60 A 160 32 0 0 0 370 60" fill="none" stroke="url(#orbitGradB)" strokeWidth="1" />
-                </g>
-              </svg>
-            </div>
-
-            <button
-              aria-label="Cambiar foto"
-              onClick={() => setAvatarDialogOpen(true)}
-              className="profile-avatar-camera-btn relative z-30 -mt-3 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-2 border-white bg-[#2a0f63] text-white shadow transition hover:bg-[#3b1680]"
+          {/* Giant circle: only the bottom portion enters the viewport */}
+          <div className="pointer-events-none relative h-[160px] w-full overflow-hidden">
+            <svg
+              aria-hidden
+              viewBox="0 0 400 160"
+              preserveAspectRatio="none"
+              className="absolute inset-0 h-full w-full"
             >
-              <Camera className="h-4 w-4" strokeWidth={2.75} />
-            </button>
+              <defs>
+                <linearGradient id="bowlFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="rgba(88,28,135,0)" />
+                  <stop offset="55%" stopColor="rgba(126,34,206,0.18)" />
+                  <stop offset="100%" stopColor="rgba(217,70,239,0.32)" />
+                </linearGradient>
+                <linearGradient id="bowlStroke" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="rgba(168,85,247,0.25)" />
+                  <stop offset="50%" stopColor="rgba(232,121,249,1)" />
+                  <stop offset="100%" stopColor="rgba(168,85,247,0.25)" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M 0 0 L 0 12 A 260 260 0 0 0 400 12 L 400 0 Z"
+                fill="url(#bowlFill)"
+              />
+              <path
+                d="M 0 12 A 260 260 0 0 0 400 12"
+                fill="none"
+                stroke="url(#bowlStroke)"
+                strokeWidth="2"
+              />
+            </svg>
 
-            <div className="mt-3 text-center">
-              <div className="text-[13px] font-semibold tracking-wide text-purple-100/85">
-                Usuario <span className="text-white">#{user ? shortId(user.id) : "00000"}</span>
-              </div>
-            </div>
-
-            {vipProgress && (
-              <Link
-                to="/vip"
-                aria-label="Ver programa VIP"
-                className="mt-4 flex flex-col items-center transition hover:scale-[1.03]"
+            {/* Avatar centered inside the bowl */}
+            <div className="absolute left-1/2 top-[28px] -translate-x-1/2">
+              <div
+                className={cn(
+                  "flex h-[88px] w-[88px] items-center justify-center overflow-hidden rounded-full border-2 bg-purple-900/40",
+                  vipTheme ? vipTheme.borderClass : "border-fuchsia-400/70",
+                )}
+                style={{
+                  boxShadow: vipTheme
+                    ? `0 0 14px ${vipTheme.glow}`
+                    : "0 0 14px rgba(217,70,239,0.28)",
+                }}
               >
-                <img
-                  src={RANK_ART[vipProgress.rank]}
-                  alt={`Insignia ${RANK_META[vipProgress.rank].label}`}
-                  className="h-24 w-24 object-contain"
-                  style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.45))" }}
-                  draggable={false}
+                <UserAvatar
+                  avatarKey={me.data?.profile?.avatar_key}
+                  alt=""
+                  spinnerSize="lg"
                 />
-                <div className="mt-2 flex items-center gap-2">
-                  <span
-                    aria-hidden
-                    className="h-1 w-1 rounded-full bg-purple-400"
-                    style={{ boxShadow: "0 0 6px rgba(217,70,239,0.9)" }}
-                  />
-                  <span
-                    className={cn(
-                      "font-display text-[13px] font-black uppercase tracking-[0.22em]",
-                      vipTheme?.accentText ?? "text-amber-300",
-                    )}
-                  >
-                    {rankLabel(vipProgress.rank, vipProgress.sub)}
-                  </span>
-                  <span
-                    aria-hidden
-                    className="h-1 w-1 rounded-full bg-purple-400"
-                    style={{ boxShadow: "0 0 6px rgba(217,70,239,0.9)" }}
-                  />
-                </div>
-              </Link>
-            )}
+              </div>
+              <button
+                aria-label="Cambiar foto"
+                onClick={() => setAvatarDialogOpen(true)}
+                className="pointer-events-auto absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-[#2a0f63] text-white shadow transition hover:bg-[#3b1680]"
+              >
+                <Camera className="h-3.5 w-3.5" strokeWidth={2.75} />
+              </button>
+            </div>
+          </div>
+
+          {/* Name + user id */}
+          <div className="mt-1 text-center">
+            <div className="font-display text-[22px] font-black uppercase tracking-wider text-white leading-none">
+              {displayName}
+            </div>
+            <div className="mt-1 text-[12px] text-purple-100/70">
+              Usuario <span className="text-white">#{user ? shortId(user.id) : "00000"}</span>
+            </div>
+          </div>
+
+          {/* Rank shield + label */}
+          {vipProgress && (
+            <Link
+              to="/vip"
+              aria-label="Ver programa VIP"
+              className="mt-2 flex flex-col items-center transition hover:scale-[1.03]"
+            >
+              <img
+                src={RANK_ART[vipProgress.rank]}
+                alt={`Insignia ${RANK_META[vipProgress.rank].label}`}
+                className="h-[76px] w-[76px] object-contain"
+                style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.45))" }}
+                draggable={false}
+              />
+              <div className="mt-1 flex items-center gap-2">
+                <span
+                  aria-hidden
+                  className="h-1 w-1 rounded-full bg-purple-400"
+                  style={{ boxShadow: "0 0 6px rgba(217,70,239,0.9)" }}
+                />
+                <span
+                  className={cn(
+                    "font-display text-[13px] font-black uppercase tracking-[0.22em]",
+                    vipTheme?.accentText ?? "text-amber-300",
+                  )}
+                >
+                  {rankLabel(vipProgress.rank, vipProgress.sub)}
+                </span>
+                <span
+                  aria-hidden
+                  className="h-1 w-1 rounded-full bg-purple-400"
+                  style={{ boxShadow: "0 0 6px rgba(217,70,239,0.9)" }}
+                />
+              </div>
+            </Link>
+          )}
         </section>
 
         {/* Level / XP */}
