@@ -158,7 +158,9 @@ function PerfilPage() {
   const vipTheme = vipProgress ? VIP_CARD_THEME[vipProgress.rank] : null;
 
   const displayName =
+    (me.data?.profile?.username ?? "").trim().toUpperCase() ||
     ((fullProfile.data?.first_name as string | null | undefined) ?? "").trim().toUpperCase() ||
+    (email ? email.split("@")[0].toUpperCase() : "") ||
     "USUARIO";
 
   // Guard against the "beta flash": until both profile + VIP have loaded we
