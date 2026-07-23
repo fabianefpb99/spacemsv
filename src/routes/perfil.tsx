@@ -173,36 +173,30 @@ function PerfilPage() {
       <BrandLoader active={showLoader} />
       <VipLevelUpToast />
       <div className="profile-page mx-auto flex min-h-screen max-w-md flex-col px-3 pb-10 pt-4 sm:max-w-lg sm:px-4">
-        {/* Header */}
-        <header
-          className="-mx-3 -mt-4 flex items-center justify-between border-b border-purple-500/20 bg-[#060210] px-3 pb-3"
-          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
+        {/* Floating back arrow (no header bar) */}
+        <button
+          onClick={() => navigate({ to: "/" })}
+          aria-label="Atrás"
+          className="fixed left-2 z-40 rounded-full bg-black/40 p-2 text-white backdrop-blur-sm hover:bg-black/60"
+          style={{ top: "calc(env(safe-area-inset-top, 0px) + 0.5rem)" }}
         >
+          <ArrowLeft className="h-6 w-6" strokeWidth={3} />
+        </button>
+        {isAdminQ.data && (
           <button
-            onClick={() => navigate({ to: "/" })}
-            aria-label="Atrás"
-            className="rounded-md p-2 text-purple-100 hover:bg-white/5"
+            onClick={() => navigate({ to: "/adminpanel" })}
+            aria-label="Panel administrativo"
+            title="Panel administrativo"
+            className="fixed right-2 z-40 rounded-full bg-black/40 p-2 text-fuchsia-300 backdrop-blur-sm hover:bg-black/60"
+            style={{ top: "calc(env(safe-area-inset-top, 0px) + 0.5rem)" }}
           >
-            <ArrowLeft className="h-7 w-7" strokeWidth={3} />
+            <SettingsIcon className="h-6 w-6" strokeWidth={2.5} />
           </button>
-          <h1 className="font-display text-base font-bold uppercase tracking-widest">Mi Perfil</h1>
-          {isAdminQ.data ? (
-            <button
-              onClick={() => navigate({ to: "/adminpanel" })}
-              aria-label="Panel administrativo"
-              title="Panel administrativo"
-              className="rounded-md p-2 text-fuchsia-300 hover:bg-white/5"
-            >
-              <SettingsIcon className="h-6 w-6" strokeWidth={2.5} />
-            </button>
-          ) : (
-            <div className="h-7 w-11" />
-          )}
-        </header>
+        )}
 
         {/* Identity — vertical centered layout */}
         <div
-          className="vip-frame theme-dark-fixed mt-4"
+          className="vip-frame theme-dark-fixed -mx-3 -mt-4 sm:-mx-4"
           style={
             {
               "--vip-c1": vipTheme?.frameC1 ?? "rgba(217,70,239,0.9)",
@@ -212,7 +206,10 @@ function PerfilPage() {
             } as React.CSSProperties
           }
         >
-          <section className="vip-frame-inner relative flex flex-col items-center px-4 pb-4 pt-6">
+          <section
+            className="vip-frame-inner relative flex flex-col items-center px-4 pb-4"
+            style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 3.25rem)" }}
+          >
             {/* Orbital arcs behind avatar */}
             <div className="profile-orbit-wrap relative flex items-center justify-center">
               <svg
