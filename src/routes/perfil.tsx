@@ -197,14 +197,15 @@ function PerfilPage() {
         {/* Identity — vertical centered layout */}
         <section
           className="relative flex flex-col items-center px-4 pb-4"
-          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 3.25rem)" }}
+          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 2.25rem)" }}
         >
             {/* Orbital arcs behind avatar */}
-            <div className="profile-orbit-wrap relative flex items-center justify-center">
+            <div className="profile-orbit-wrap relative flex items-center justify-center w-full">
               <svg
                 aria-hidden
-                viewBox="0 0 300 140"
-                className="profile-orbit pointer-events-none absolute left-1/2 top-1/2 h-[140px] w-[300px] -translate-x-1/2 -translate-y-1/2"
+                viewBox="0 0 420 200"
+                preserveAspectRatio="xMidYMid meet"
+                className="profile-orbit pointer-events-none absolute left-1/2 top-1/2 h-[200px] w-[min(420px,100vw)] -translate-x-1/2 -translate-y-1/2"
               >
                 <defs>
                   <linearGradient id="orbitGradA" x1="0" y1="0" x2="1" y2="0">
@@ -219,11 +220,11 @@ function PerfilPage() {
                   </linearGradient>
                 </defs>
                 <ellipse
-                  cx="150" cy="70" rx="140" ry="60"
+                  cx="210" cy="100" rx="205" ry="88"
                   fill="none" stroke="url(#orbitGradA)" strokeWidth="1.4"
                 />
                 <ellipse
-                  cx="150" cy="70" rx="120" ry="48"
+                  cx="210" cy="100" rx="170" ry="70"
                   fill="none" stroke="url(#orbitGradB)" strokeWidth="1"
                 />
               </svg>
