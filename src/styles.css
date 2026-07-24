@@ -3307,6 +3307,56 @@ html.light .personal-data-select-content [role="option"][data-highlighted] {
   background: currentColor;
 }
 
+/* ------------------------------------------------------------------
+ * Rank insignia — subtle single glass shine on the current rank SVG.
+ * Fires 2s after the profile mounts, runs once, never loops.
+ * ------------------------------------------------------------------ */
+.rank-shine-wrapper {
+  position: relative;
+  display: inline-flex;
+  overflow: hidden;
+  border-radius: 14px;
+  line-height: 0;
+}
+.rank-shine-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.35) 45%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0.35) 55%,
+    transparent 70%
+  );
+  mix-blend-mode: soft-light;
+  filter: brightness(1.6) drop-shadow(0 0 6px rgba(255, 255, 255, 0.35));
+  opacity: 0;
+  mask-image: linear-gradient(115deg, transparent 35%, #000 50%, transparent 65%);
+  mask-size: 260% 100%;
+  mask-repeat: no-repeat;
+  mask-position: 130% 0;
+  animation: rankShineOnce 1.2s cubic-bezier(0.22, 0.61, 0.36, 1) 2s 1 forwards;
+}
+@keyframes rankShineOnce {
+  0% {
+    mask-position: 130% 0;
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.9;
+  }
+  92% {
+    opacity: 0.9;
+  }
+  100% {
+    mask-position: -30% 0;
+    opacity: 0;
+  }
+}
+
+
 
 
 /* ============================================================

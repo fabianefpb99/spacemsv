@@ -297,13 +297,16 @@ function PerfilPage() {
               aria-label="Ver programa VIP"
               className="mt-2 flex flex-col items-center transition hover:scale-[1.03]"
             >
-              <img
-                src={RANK_ART[vipProgress.rank]}
-                alt={`Insignia ${RANK_META[vipProgress.rank].label}`}
-                className="h-[76px] w-[76px] object-contain"
-                style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.45))" }}
-                draggable={false}
-              />
+              <div className="rank-shine-wrapper h-[76px] w-[76px]">
+                <img
+                  src={RANK_ART[vipProgress.rank]}
+                  alt={`Insignia ${RANK_META[vipProgress.rank].label}`}
+                  className="h-full w-full object-contain"
+                  style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.45))" }}
+                  draggable={false}
+                />
+                <div className="rank-shine-overlay" aria-hidden />
+              </div>
               <div className="mt-1 flex items-center gap-2">
                 <span
                   aria-hidden
