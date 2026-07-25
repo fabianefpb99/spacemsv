@@ -241,17 +241,17 @@ function PerfilPage() {
                   gradientUnits="objectBoundingBox"
                 >
                   <stop offset="0%" stopColor="rgba(168,85,247,0)" />
-                  <stop offset="38%" stopColor="rgba(168,85,247,0)" />
-                  <stop offset="46%" stopColor="rgba(192,132,252,0.55)" />
-                  <stop offset="50%" stopColor="rgba(240,171,252,1)" />
-                  <stop offset="54%" stopColor="rgba(192,132,252,0.55)" />
-                  <stop offset="62%" stopColor="rgba(217,70,239,0)" />
+                  <stop offset="40%" stopColor="rgba(168,85,247,0)" />
+                  <stop offset="46%" stopColor="rgba(180,100,245,0.45)" />
+                  <stop offset="50%" stopColor="rgba(232,121,249,0.92)" />
+                  <stop offset="54%" stopColor="rgba(180,100,245,0.45)" />
+                  <stop offset="60%" stopColor="rgba(217,70,239,0)" />
                   <stop offset="100%" stopColor="rgba(217,70,239,0)" />
                   <animate
                     attributeName="x1"
                     from="-0.6"
                     to="1"
-                    dur="1.8s"
+                    dur="2.0s"
                     begin="2s"
                     fill="freeze"
                     repeatCount="1"
@@ -260,7 +260,7 @@ function PerfilPage() {
                     attributeName="x2"
                     from="-0.4"
                     to="1.2"
-                    dur="1.8s"
+                    dur="2.0s"
                     begin="2s"
                     fill="freeze"
                     repeatCount="1"
