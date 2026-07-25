@@ -247,13 +247,21 @@ function PerfilPage() {
                   <stop offset="54%" stopColor="rgba(192,132,252,0.55)" />
                   <stop offset="62%" stopColor="rgba(217,70,239,0)" />
                   <stop offset="100%" stopColor="rgba(217,70,239,0)" />
-                  <animateTransform
-                    attributeName="gradientTransform"
-                    type="translate"
-                    from="-1 0"
-                    to="1 0"
+                  <animate
+                    attributeName="x1"
+                    from="-0.6"
+                    to="1"
                     dur="1.8s"
-                    begin="0.6s"
+                    begin="2s"
+                    fill="freeze"
+                    repeatCount="1"
+                  />
+                  <animate
+                    attributeName="x2"
+                    from="-0.4"
+                    to="1.2"
+                    dur="1.8s"
+                    begin="2s"
                     fill="freeze"
                     repeatCount="1"
                   />
