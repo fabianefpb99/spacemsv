@@ -232,12 +232,31 @@ function PerfilPage() {
                   <stop offset="0%" stopColor="rgba(10,3,20,0.55)" />
                   <stop offset="100%" stopColor="rgba(30,10,60,0.15)" />
                 </linearGradient>
-                <linearGradient id="bowlArcShineGrad" x1="0" y1="0" x2="1" y2="0">
+                <linearGradient
+                  id="bowlArcShineGrad"
+                  x1="0"
+                  y1="0"
+                  x2="1"
+                  y2="0"
+                  gradientUnits="objectBoundingBox"
+                >
                   <stop offset="0%" stopColor="rgba(168,85,247,0)" />
-                  <stop offset="35%" stopColor="rgba(192,132,252,0.85)" />
-                  <stop offset="55%" stopColor="rgba(232,121,249,1)" />
-                  <stop offset="75%" stopColor="rgba(168,85,247,0.85)" />
+                  <stop offset="38%" stopColor="rgba(168,85,247,0)" />
+                  <stop offset="46%" stopColor="rgba(192,132,252,0.55)" />
+                  <stop offset="50%" stopColor="rgba(240,171,252,1)" />
+                  <stop offset="54%" stopColor="rgba(192,132,252,0.55)" />
+                  <stop offset="62%" stopColor="rgba(217,70,239,0)" />
                   <stop offset="100%" stopColor="rgba(217,70,239,0)" />
+                  <animateTransform
+                    attributeName="gradientTransform"
+                    type="translate"
+                    from="-1 0"
+                    to="1 0"
+                    dur="1.8s"
+                    begin="0.6s"
+                    fill="freeze"
+                    repeatCount="1"
+                  />
                 </linearGradient>
               </defs>
               <g clipPath="url(#bowlClip)">
@@ -261,26 +280,22 @@ function PerfilPage() {
                 stroke="url(#bowlStroke)"
                 strokeWidth="2"
               />
-              {/* One-shot nebula shine sweep along the arc */}
+              {/* One-shot nebula shine sweep along the arc — soft, snake-like bulge */}
               <path
-                className="bowl-arc-shine bowl-arc-shine--glow"
                 d="M 0 12 A 260 260 0 0 0 400 12"
                 fill="none"
                 stroke="url(#bowlArcShineGrad)"
                 strokeWidth="4"
                 strokeLinecap="round"
-                pathLength={100}
-                style={{ filter: "blur(2px) drop-shadow(0 0 8px rgba(217,70,239,0.7))" }}
+                style={{ filter: "blur(2.5px)", mixBlendMode: "screen" }}
               />
               <path
-                className="bowl-arc-shine"
                 d="M 0 12 A 260 260 0 0 0 400 12"
                 fill="none"
                 stroke="url(#bowlArcShineGrad)"
                 strokeWidth="2"
                 strokeLinecap="round"
-                pathLength={100}
-                style={{ filter: "drop-shadow(0 0 4px rgba(232,121,249,0.9))" }}
+                style={{ mixBlendMode: "screen" }}
               />
             </svg>
 
