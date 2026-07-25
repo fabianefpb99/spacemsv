@@ -3358,16 +3358,22 @@ html.light .personal-data-select-content [role="option"][data-highlighted] {
 
 /* One-shot shine that travels along the profile bowl arc */
 .bowl-arc-shine {
-  stroke-dasharray: 12 100;
+  stroke-dasharray: 22 100;
   stroke-dashoffset: 100;
   opacity: 0;
-  animation: bowlArcShineOnce 1.6s cubic-bezier(0.22, 0.61, 0.36, 1) 0.6s 1 forwards;
+  animation: bowlArcShineOnce 1.8s cubic-bezier(0.22, 0.61, 0.36, 1) 0.6s 1 forwards;
+  mix-blend-mode: screen;
+}
+.bowl-arc-shine--glow {
+  stroke-dasharray: 28 100;
+  opacity: 0;
+  animation: bowlArcShineOnce 1.8s cubic-bezier(0.22, 0.61, 0.36, 1) 0.55s 1 forwards;
 }
 @keyframes bowlArcShineOnce {
-  0% { stroke-dashoffset: 100; opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { stroke-dashoffset: -12; opacity: 0; }
+  0%   { stroke-dashoffset: 100; opacity: 0; }
+  15%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { stroke-dashoffset: -28; opacity: 0; }
 }
 
 
