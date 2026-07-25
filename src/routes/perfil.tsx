@@ -254,6 +254,17 @@ function PerfilPage() {
                 stroke="url(#bowlStroke)"
                 strokeWidth="2"
               />
+              {/* One-shot shine sweep along the arc */}
+              <path
+                className="bowl-arc-shine"
+                d="M 0 12 A 260 260 0 0 0 400 12"
+                fill="none"
+                stroke="rgba(255,255,255,0.95)"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                pathLength={100}
+                style={{ filter: "drop-shadow(0 0 6px rgba(232,121,249,0.9))" }}
+              />
             </svg>
 
             {/* Avatar centered inside the bowl */}
