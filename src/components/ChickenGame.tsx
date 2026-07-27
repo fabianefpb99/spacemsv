@@ -492,7 +492,7 @@ export function ChickenGame() {
 
   return (
     <div
-      className="relative h-[100dvh] overflow-hidden text-white"
+      className="relative flex h-[var(--app-h,100dvh)] flex-col overflow-hidden text-white"
       style={{
         backgroundColor: "#060210",
         backgroundImage: `url(${BG})`,
@@ -506,7 +506,7 @@ export function ChickenGame() {
         <span className="chicken-particles-layer chicken-particles-layer-1" />
         <span className="chicken-particles-layer chicken-particles-layer-2" />
       </div>
-      <div className="relative mx-auto flex h-[100dvh] max-w-md flex-col px-3 pb-[calc(env(safe-area-inset-bottom,0px)+0.4rem)] pt-2 sm:max-w-lg sm:px-4">
+      <div className="relative mx-auto flex h-full max-w-md flex-col px-3 pb-[calc(env(safe-area-inset-bottom,0px)+0.4rem)] pt-2 sm:max-w-lg sm:px-4 [@media(min-height:900px)]:my-auto [@media(min-height:900px)]:h-[900px]">
         {/* Header — idéntico al resto de juegos */}
         <header
           className="flex shrink-0 items-center justify-between bg-[#060210]/80 backdrop-blur-sm border-b border-purple-500/20 pb-2 px-3 -mx-3 -mt-2"
