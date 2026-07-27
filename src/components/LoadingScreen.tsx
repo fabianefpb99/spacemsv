@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 import bgImage from "@/assets/space-bg-full.webp";
 import astronautIdle from "@/assets/astronaut-idle.svg";
 import astronautFlying from "@/assets/astronaut-flying.webp";
@@ -36,7 +37,10 @@ const ASSETS: { src: string; type: "image" | "audio" }[] = [
 ];
 
 const BACKGROUND_THRESHOLD_MS = 60_000; // re-show loader after 60s in background
-const MIN_VISIBLE_MS = 1100;
+const MIN_VISIBLE_MS = 1300;
+// Espera adicional máxima cuando la sesión aún se está recuperando
+// (caso "llevo días sin abrir la app"). Tope duro para no quedar en limbo.
+const MAX_AUTH_EXTRA_MS = 2000;
 // Tope máximo de espera por assets. Si algún recurso tarda más de esto,
 // dejamos pasar al juego igualmente para no bloquear al usuario.
 const MAX_VISIBLE_MS = 8000;
@@ -62,6 +66,9 @@ function preloadAsset(asset: { src: string; type: "image" | "audio" }): Promise<
 }
 
 export function LoadingScreen({ children, variant = "rocket" }: { children: React.ReactNode; variant?: "rocket" | "mine" | "slot" | "samurai" | "dice" | "blackjack" | "blackjack_vip" | "roulette" | "arena" | "chicken" }) {
+  const { loading: authLoading } = useAuth();
+  const [assetsReady, setAssetsReady] = useState(false);
+  const [authExtraExpired, setAuthExtraExpired] = useState(false);
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
   const [targetProgress, setTargetProgress] = useState(0);
@@ -99,7 +106,7 @@ export function LoadingScreen({ children, variant = "rocket" }: { children: Reac
     const finish = () => {
       if (cancelled) return;
       setTargetProgress(100);
-      setLoading(false);
+      setAssetsReady(true);
     };
 
     // Hard cap — si los assets no terminan en MAX_VISIBLE_MS, soltamos
@@ -120,6 +127,23 @@ export function LoadingScreen({ children, variant = "rocket" }: { children: Reac
       clearTimeout(hardCap);
     };
   }, [variant]);
+
+  // Cuando los assets ya están listos pero la sesión sigue recuperándose,
+  // sostenemos el loader un máximo de MAX_AUTH_EXTRA_MS. Con caché caliente
+  // (auth ya resuelto) no añade ni un ms: el tiempo base se respeta.
+  useEffect(() => {
+    if (!assetsReady) return;
+    if (!authLoading) {
+      setLoading(false);
+      return;
+    }
+    const t = setTimeout(() => setAuthExtraExpired(true), MAX_AUTH_EXTRA_MS);
+    return () => clearTimeout(t);
+  }, [assetsReady, authLoading]);
+
+  useEffect(() => {
+    if (assetsReady && authExtraExpired) setLoading(false);
+  }, [assetsReady, authExtraExpired]);
 
   // Smoothly animate the visible progress toward the target so the bar fills continuously
   useEffect(() => {

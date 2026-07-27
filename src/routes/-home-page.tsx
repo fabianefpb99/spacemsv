@@ -583,11 +583,28 @@ export function HomePage() {
 
   // HOME: siempre mostrar el BrandLoader primero. No depende de cache,
   // sessionStorage ni cuotas, para evitar que se vea el contenido antes.
+  // Base fija de 1900 ms (recordación de marca). Si al cumplirse la base la
+  // sesión aún se está recuperando (caso "hace mucho que no entro"), se
+  // extiende como máximo 2500 ms más — con tope duro para no quedar en limbo.
+  const [baseElapsed, setBaseElapsed] = useState(false);
+  const [loaderHardStop, setLoaderHardStop] = useState(false);
   useEffect(() => {
+    const BASE_MS = 1900;
+    const MAX_EXTRA_MS = 2500;
     setShowBrandLoader(true);
-    const t = setTimeout(() => setShowBrandLoader(false), 1900);
-    return () => clearTimeout(t);
+    const t = setTimeout(() => setBaseElapsed(true), BASE_MS);
+    const hard = setTimeout(() => setLoaderHardStop(true), BASE_MS + MAX_EXTRA_MS);
+    return () => {
+      clearTimeout(t);
+      clearTimeout(hard);
+    };
   }, []);
+
+  useEffect(() => {
+    if (!baseElapsed) return;
+    if (authLoading && !loaderHardStop) return;
+    setShowBrandLoader(false);
+  }, [baseElapsed, loaderHardStop, authLoading]);
 
   // Al entrar al home, cualquier juego previo queda completamente cerrado.
   useEffect(() => { stopAllGameAudio(); }, []);
