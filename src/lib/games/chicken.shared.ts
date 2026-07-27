@@ -13,10 +13,10 @@ export const CHICKEN_MAX_STEPS = 20;
 /** RTP baked into each safe-jump multiplier (house edge ~3%). */
 const CHICKEN_RTP = 0.97;
 /** Base probability that the next asteroid is SAFE. */
-const SAFE_PROB_BASE = 0.81;
-/** Slight decrease per step to ramp up tension. Floor at 0.55. */
-const SAFE_PROB_DECAY = 0.007;
-const SAFE_PROB_FLOOR = 0.55;
+const SAFE_PROB_BASE = 0.845;
+/** Slight decrease per step to ramp up tension. Floor at 0.58. */
+const SAFE_PROB_DECAY = 0.006;
+const SAFE_PROB_FLOOR = 0.58;
 
 /**
  * Probability the asteroid at `step` (1-indexed) is SAFE. Decreases slightly
@@ -38,7 +38,9 @@ function buildStepMultipliers(): number[] {
   }
 
   // Short, morale-boosting early payouts (house-favored).
-  const earlyOverride = [1, 1.03, 1.08, 1.15, 1.25, 1.4];
+  // Al subir la probabilidad de asteroide seguro, los pagos tempranos se
+  // recortan un poco para mantener el margen de la casa prácticamente igual.
+  const earlyOverride = [1, 1.02, 1.05, 1.09, 1.13, 1.18];
   const multipliers: number[] = [1];
   for (let i = 1; i < earlyOverride.length; i++) {
     multipliers[i] = earlyOverride[i];
