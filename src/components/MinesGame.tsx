@@ -675,10 +675,10 @@ export function MinesGame() {
           </div>
           {/* Cashout */}
           <div className="w-[86px] text-center">
-            <div className="mb-1 text-[9px] uppercase tracking-[0.2em] text-purple-200/70">Retirar</div>
             <div className="rounded-full border border-purple-400/40 bg-black/25 py-1.5 font-display text-base font-bold text-purple-100 shadow-[0_0_18px_rgba(139,92,246,0.18)] backdrop-blur-[2px]">
               {picks > 0 ? `${currentMult.toFixed(2)}x` : "—"}
             </div>
+            <div className="mt-1 text-[9px] uppercase tracking-[0.2em] text-purple-200/70">Retirar</div>
           </div>
         </section>
 
