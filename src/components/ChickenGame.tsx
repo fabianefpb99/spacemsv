@@ -136,6 +136,11 @@ export function ChickenGame() {
   const sessionRef = useRef<{ id: string; nonce: number } | null>(null);
   const dealInFlightRef = useRef(false);
   const actionInFlightRef = useRef(false);
+  // Altura reservada del panel inferior: se mide en fase idle (con el HUD de
+  // apuesta visible) y se mantiene como `min-height` en TODAS las fases, para
+  // que la escena (y el asteroide) nunca cambien de altura.
+  const panelRef = useRef<HTMLElement | null>(null);
+  const [panelMinH, setPanelMinH] = useState<number | null>(null);
 
   const applyBalance = useCallback(
     (newBalance: number, opts?: { invalidate?: boolean }) => {
