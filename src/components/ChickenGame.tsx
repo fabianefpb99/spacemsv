@@ -232,8 +232,30 @@ export function ChickenGame() {
     if (looksAuthError) {
       await refreshSession().catch(() => null);
     }
+    // Desincronización cliente/servidor (una acción sí se aplicó en el servidor
+    // pero el cliente no recibió la respuesta, o la ronda ya cerró): en vez de
+    // fallar, resincronizamos el estado real de la sesión.
+    const looksDesync =
+      raw.includes("stale_nonce") ||
+      raw.includes("session_closed") ||
+      raw.includes("session_not_found") ||
+      raw.includes("not_playing") ||
+      raw.includes("timeout");
+    if (looksDesync) {
+      try {
+        const view = await withTimeout(resumeFn(), 5000, "chicken_resume_timeout");
+        if (view && view.public_state.phase === "playing") {
+          applyServerView(view);
+          return true;
+        }
+      } catch {
+        /* ignore */
+      }
+      resetToIdle();
+      return true;
+    }
     return false;
-  }, [refreshSession]);
+  }, [refreshSession, resumeFn, applyServerView, resetToIdle]);
 
   const startGame = useCallback(async () => {
     if (phase !== "idle" || dealInFlightRef.current) return;
@@ -268,9 +290,11 @@ export function ChickenGame() {
       setChickenFx("idle");
       setPhase("playing");
     } catch (e) {
-      await recoverAfterActionError(e);
-      applyBalance(prevBalance, { invalidate: true });
-      setError(toFriendlyError(e, "No se pudo iniciar la partida."));
+      const recovered = await recoverAfterActionError(e);
+      if (!recovered) {
+        applyBalance(prevBalance, { invalidate: true });
+        setError(toFriendlyError(e, "No se pudo iniciar la partida."));
+      }
     } finally {
       dealInFlightRef.current = false;
       setIsDealing(false);
@@ -297,8 +321,8 @@ export function ChickenGame() {
       sessionRef.current = null;
       setTimeout(() => resetToIdle(), 2200);
     } catch (e) {
-      await recoverAfterActionError(e);
-      setError(toFriendlyError(e, "No se pudo cobrar."));
+      const recovered = await recoverAfterActionError(e);
+      if (!recovered) setError(toFriendlyError(e, "No se pudo cobrar."));
     } finally {
       actionInFlightRef.current = false;
     }
@@ -333,11 +357,13 @@ export function ChickenGame() {
       view = res;
     } catch (e) {
       window.clearTimeout(safeSoundTimer);
-      await recoverAfterActionError(e);
-      setError(toFriendlyError(e, "No se pudo saltar."));
+      const recovered = await recoverAfterActionError(e);
+      if (!recovered) {
+        setError(toFriendlyError(e, "No se pudo saltar."));
+        setPhase("playing");
+      }
       // Snap chicken back to idle on the central asteroid.
       setChickenFx("idle");
-      setPhase("playing");
       actionInFlightRef.current = false;
       return;
     }
