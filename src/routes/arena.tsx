@@ -3,6 +3,7 @@ import { RequireAuth } from "@/components/auth/RequireAuth";
 import { ArenaGame } from "@/components/games/arena/ArenaGame";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
+import { useViewportLock } from "@/hooks/useViewportLock";
 
 export const Route = createFileRoute("/arena")({
   head: () => ({
@@ -25,6 +26,7 @@ export const Route = createFileRoute("/arena")({
 
 function Page() {
   useForceDarkTheme();
+  useViewportLock();
   return (
     <RequireAuth>
       <LoadingScreen variant="arena">

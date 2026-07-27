@@ -3,6 +3,7 @@ import { RequireAuth } from "@/components/auth/RequireAuth";
 import { ChickenGame } from "@/components/ChickenGame";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
+import { useViewportLock } from "@/hooks/useViewportLock";
 
 export const Route = createFileRoute("/chicken")({
   head: () => ({
@@ -25,6 +26,7 @@ export const Route = createFileRoute("/chicken")({
 
 function Page() {
   useForceDarkTheme();
+  useViewportLock();
   return (
     <RequireAuth>
       <LoadingScreen variant="chicken">

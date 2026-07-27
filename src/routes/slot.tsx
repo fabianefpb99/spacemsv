@@ -3,6 +3,7 @@ import { SlotGame } from "@/components/SlotGame";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { useForceDarkTheme } from "@/hooks/useForceDarkTheme";
+import { useViewportLock } from "@/hooks/useViewportLock";
 
 export const Route = createFileRoute("/slot")({
   head: () => ({
@@ -18,6 +19,7 @@ export const Route = createFileRoute("/slot")({
 
 function Page() {
   useForceDarkTheme();
+  useViewportLock();
   return (
     <RequireAuth>
       <LoadingScreen variant="slot">
