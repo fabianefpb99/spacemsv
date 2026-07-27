@@ -232,8 +232,30 @@ export function ChickenGame() {
     if (looksAuthError) {
       await refreshSession().catch(() => null);
     }
+    // Desincronización cliente/servidor (una acción sí se aplicó en el servidor
+    // pero el cliente no recibió la respuesta, o la ronda ya cerró): en vez de
+    // fallar, resincronizamos el estado real de la sesión.
+    const looksDesync =
+      raw.includes("stale_nonce") ||
+      raw.includes("session_closed") ||
+      raw.includes("session_not_found") ||
+      raw.includes("not_playing") ||
+      raw.includes("timeout");
+    if (looksDesync) {
+      try {
+        const view = await withTimeout(resumeFn(), 5000, "chicken_resume_timeout");
+        if (view && view.public_state.phase === "playing") {
+          applyServerView(view);
+          return true;
+        }
+      } catch {
+        /* ignore */
+      }
+      resetToIdle();
+      return true;
+    }
     return false;
-  }, [refreshSession]);
+  }, [refreshSession, resumeFn, applyServerView, resetToIdle]);
 
   const startGame = useCallback(async () => {
     if (phase !== "idle" || dealInFlightRef.current) return;
