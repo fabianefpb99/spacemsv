@@ -1223,6 +1223,11 @@ export function SlotGame() {
         backgroundAttachment: "fixed, fixed",
       }}
     >
+      {/* Difuminado suave del fondo desde el cajón del tragamonedas hacia abajo */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-x-0 bottom-0 top-[24%] z-0 slot-bg-fade"
+      />
       <div className="relative mx-auto flex h-full max-w-md flex-col px-2.5 pb-1.5 pt-3 sm:max-w-lg sm:px-4">
         {/* Header */}
         <header
