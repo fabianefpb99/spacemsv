@@ -696,60 +696,82 @@ export function ChickenGame() {
           )}
         </section>
 
-        {/* Panel de apuesta — idéntico a Mines */}
+        {/* Panel inferior — los controles de apuesta solo existen antes de apostar.
+            Con la ronda en curso se sustituyen por un resumen claro (apuesta +
+            ganancia acumulada) y los botones de acción crecen en altura. */}
         <section className="mt-1.5 shrink-0 rounded-2xl border border-purple-500/30 glass-panel p-2">
-          <div className="text-center text-[10px] uppercase tracking-widest text-purple-200/70">Apuesta (COP)</div>
-          <div className="mt-1.5 flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setBet((b) => Math.max(CHICKEN_MIN_BET, b - CHICKEN_BET_STEP))}
-              disabled={phase !== "idle"}
-              className="btn-bet flex h-11 w-12 items-center justify-center rounded-lg disabled:opacity-50"
-              aria-label="Disminuir apuesta"
-            >
-              <Minus className="h-5 w-5" />
-            </button>
-            <div className="h-11 w-full min-w-0 flex-1 cursor-default rounded-lg border border-purple-500/30 bg-[#160830]/60 px-2 font-display text-xl font-bold text-white">
-              <BetAmount bet={bet} bonusBalance={bonusBalance} />
-            </div>
-            <button
-              type="button"
-              onClick={() => setBet((b) => clampBetToStep(b + CHICKEN_BET_STEP, balance, CHICKEN_MAX_BET, CHICKEN_BET_STEP, CHICKEN_MIN_BET))}
-              disabled={phase !== "idle"}
-              className="btn-bet flex h-11 w-12 items-center justify-center rounded-lg disabled:opacity-50"
-              aria-label="Aumentar apuesta"
-            >
-              <Plus className="h-5 w-5" />
-            </button>
-          </div>
+          {showBetControls ? (
+            <>
+              <div className="text-center text-[10px] uppercase tracking-widest text-purple-200/70">Apuesta (COP)</div>
+              <div className="mt-1.5 flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setBet((b) => Math.max(CHICKEN_MIN_BET, b - CHICKEN_BET_STEP))}
+                  className="btn-bet flex h-11 w-12 items-center justify-center rounded-lg disabled:opacity-50"
+                  aria-label="Disminuir apuesta"
+                >
+                  <Minus className="h-5 w-5" />
+                </button>
+                <div className="h-11 w-full min-w-0 flex-1 cursor-default rounded-lg border border-purple-500/30 bg-[#160830]/60 px-2 font-display text-xl font-bold text-white">
+                  <BetAmount bet={bet} bonusBalance={bonusBalance} />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setBet((b) => clampBetToStep(b + CHICKEN_BET_STEP, balance, CHICKEN_MAX_BET, CHICKEN_BET_STEP, CHICKEN_MIN_BET))}
+                  className="btn-bet flex h-11 w-12 items-center justify-center rounded-lg disabled:opacity-50"
+                  aria-label="Aumentar apuesta"
+                >
+                  <Plus className="h-5 w-5" />
+                </button>
+              </div>
 
-          <div className="mt-2 flex items-center gap-1.5">
-            <button
-              type="button"
-              onClick={() => setBet((b) => clampBetToStep(b * 2, balance, CHICKEN_MAX_BET, CHICKEN_BET_STEP, CHICKEN_MIN_BET))}
-              disabled={phase !== "idle"}
-              className="btn-bet flex h-8 flex-1 items-center justify-center rounded-md text-xs font-bold disabled:opacity-50"
-            >
-              X2
-            </button>
-            {QUICK_ADDS.map((amt) => (
-              <button
-                key={amt}
-                type="button"
-                onClick={() => setBet((b) => clampBetToStep(b + amt, balance, CHICKEN_MAX_BET, CHICKEN_BET_STEP, CHICKEN_MIN_BET))}
-                disabled={phase !== "idle"}
-                className="btn-bet flex h-8 flex-1 items-center justify-center rounded-md text-xs font-bold disabled:opacity-50"
-              >
-                +{formatCOP(amt)}
-              </button>
-            ))}
-          </div>
-          <div className="mt-1 text-center text-[10px] text-purple-300/70">
-            MÍNIMO: {formatCOP(CHICKEN_MIN_BET)} COP · PASO: {formatCOP(CHICKEN_BET_STEP)}
-          </div>
+              <div className="mt-2 flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setBet((b) => clampBetToStep(b * 2, balance, CHICKEN_MAX_BET, CHICKEN_BET_STEP, CHICKEN_MIN_BET))}
+                  className="btn-bet flex h-8 flex-1 items-center justify-center rounded-md text-xs font-bold disabled:opacity-50"
+                >
+                  X2
+                </button>
+                {QUICK_ADDS.map((amt) => (
+                  <button
+                    key={amt}
+                    type="button"
+                    onClick={() => setBet((b) => clampBetToStep(b + amt, balance, CHICKEN_MAX_BET, CHICKEN_BET_STEP, CHICKEN_MIN_BET))}
+                    className="btn-bet flex h-8 flex-1 items-center justify-center rounded-md text-xs font-bold disabled:opacity-50"
+                  >
+                    +{formatCOP(amt)}
+                  </button>
+                ))}
+              </div>
+              <div className="mt-1 text-center text-[10px] text-purple-300/70">
+                MÍNIMO: {formatCOP(CHICKEN_MIN_BET)} COP · PASO: {formatCOP(CHICKEN_BET_STEP)}
+              </div>
+            </>
+          ) : (
+            <div className="grid grid-cols-2 items-center gap-2 rounded-xl border border-purple-500/25 bg-[#160830]/45 px-3 py-2">
+              <div className="min-w-0 text-left">
+                <div className="text-[9px] uppercase tracking-[0.2em] text-purple-200/70">Apostaste</div>
+                <div className="truncate font-display text-lg font-bold leading-tight text-white">
+                  {formatCOP(bet)} <span className="text-xs text-purple-200/70">COP</span>
+                </div>
+              </div>
+              <div className="min-w-0 text-right">
+                <div className="text-[9px] uppercase tracking-[0.2em] text-purple-200/70">Ganancia</div>
+                <div className="truncate font-display text-lg font-bold leading-tight text-emerald-400">
+                  {step > 0
+                    ? `+${formatCOP(Math.max(0, Math.floor(bet * currentMult) - bet))}`
+                    : "+0"}
+                  <span className="ml-1 text-xs text-emerald-300/80">
+                    {step > 0 ? `${currentMult.toFixed(2)}x` : "—"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Botón principal — estados */}
-          <div className="mt-3">
+          <div className={showBetControls ? "mt-3" : "mt-2.5"}>
             {phase === "idle" && (
               <button
                 type="button"
@@ -760,53 +782,45 @@ export function ChickenGame() {
                 JUGAR
               </button>
             )}
-            {(phase === "playing" || phase === "jumping") && step === 0 && (
+            {inRound && step === 0 && (
               <button
                 type="button"
                 onClick={jump}
                 disabled={phase !== "playing"}
-                className="btn-primary-green btn-primary-action chicken-action-button saltar-morph-in saltar-pulse-loop relative overflow-hidden flex h-12 w-full items-center justify-center gap-2 rounded-xl font-display text-base font-black uppercase tracking-widest disabled:opacity-50"
+                className="btn-primary-green btn-primary-action chicken-action-button saltar-morph-in saltar-pulse-loop relative overflow-hidden flex h-[68px] w-full items-center justify-center gap-2 rounded-xl font-display text-lg font-black uppercase tracking-widest disabled:opacity-50"
               >
                 <span className="saltar-shine" aria-hidden="true" />
                 <span className="relative z-[1]">SALTAR</span>
               </button>
             )}
-            {(phase === "playing" || phase === "jumping") && step >= 1 && (
+            {inRound && step >= 1 && (
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={cashout}
                   disabled={phase !== "playing"}
-                  className="btn-primary-red btn-primary-action btn-pop-in flex h-12 w-full flex-col items-center justify-center rounded-xl font-display font-black uppercase tracking-widest disabled:opacity-50"
+                  className="btn-primary-red btn-primary-action btn-pop-in flex h-[68px] w-full flex-col items-center justify-center rounded-xl font-display font-black uppercase tracking-widest disabled:opacity-50"
                 >
-                  <span className="text-xs leading-none">COBRAR</span>
-                  <span className="text-base leading-tight">{formatCOP(Math.floor(bet * currentMult))} COP</span>
+                  <span className="text-[11px] leading-none opacity-90">COBRAR</span>
+                  <span className="mt-1 text-lg leading-tight">{formatCOP(Math.floor(bet * currentMult))}</span>
+                  <span className="text-[10px] leading-none opacity-80">COP</span>
                 </button>
                 <button
                   type="button"
                   onClick={jump}
                   disabled={phase !== "playing"}
-                  className="btn-primary-green btn-primary-action chicken-action-button saltar-pulse-loop relative overflow-hidden flex h-12 w-full items-center justify-center gap-2 rounded-xl font-display text-base font-black uppercase tracking-widest disabled:opacity-50"
+                  className="btn-primary-green btn-primary-action chicken-action-button saltar-pulse-loop relative overflow-hidden flex h-[68px] w-full items-center justify-center gap-2 rounded-xl font-display text-lg font-black uppercase tracking-widest disabled:opacity-50"
                 >
                   <span className="saltar-shine" aria-hidden="true" />
                   <span className="relative z-[1]">SALTAR</span>
                 </button>
               </div>
             )}
-            {phase === "lost" && (
+            {(phase === "lost" || phase === "cashed") && (
               <button
                 type="button"
-                onClick={resetToIdle}
-                className="btn-primary-green btn-primary-action chicken-action-button chicken-action-static flex h-12 w-full items-center justify-center gap-2 rounded-xl font-display text-base font-black uppercase tracking-widest"
-              >
-                JUGAR DE NUEVO
-              </button>
-            )}
-            {phase === "cashed" && (
-              <button
-                type="button"
-                onClick={resetToIdle}
-                className="btn-primary-green btn-primary-action chicken-action-button chicken-action-static flex h-12 w-full items-center justify-center gap-2 rounded-xl font-display text-base font-black uppercase tracking-widest"
+                onClick={playAgain}
+                className="btn-primary-green btn-primary-action chicken-action-button chicken-action-static flex h-[68px] w-full items-center justify-center gap-2 rounded-xl font-display text-lg font-black uppercase tracking-widest"
               >
                 JUGAR DE NUEVO
               </button>
