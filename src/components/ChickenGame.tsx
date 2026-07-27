@@ -506,7 +506,7 @@ export function ChickenGame() {
         <span className="chicken-particles-layer chicken-particles-layer-1" />
         <span className="chicken-particles-layer chicken-particles-layer-2" />
       </div>
-      <div className="relative mx-auto flex h-[100dvh] max-w-md flex-col px-3 pb-[calc(env(safe-area-inset-bottom,0px)+0.4rem)] pt-2 sm:max-w-lg sm:px-4">
+      <div className="tall-screen-fit relative mx-auto flex h-[100dvh] max-w-md flex-col px-3 pb-[calc(env(safe-area-inset-bottom,0px)+0.4rem)] pt-2 sm:max-w-lg sm:px-4">
         {/* Header — idéntico al resto de juegos */}
         <header
           className="flex shrink-0 items-center justify-between bg-[#060210]/80 backdrop-blur-sm border-b border-purple-500/20 pb-2 px-3 -mx-3 -mt-2"
