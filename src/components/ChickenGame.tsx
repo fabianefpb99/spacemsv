@@ -325,7 +325,7 @@ export function ChickenGame() {
       playCashoutSound();
       setPhase("cashed");
       sessionRef.current = null;
-      setTimeout(() => resetToIdle(), 2200);
+      setTimeout(() => resetToIdle(), 1400);
     } catch (e) {
       const recovered = await recoverAfterActionError(e);
       if (!recovered) setError(toFriendlyError(e, "No se pudo cobrar."));
@@ -425,7 +425,7 @@ export function ChickenGame() {
       setLastPayout(pub.payout ?? 0);
       setPhase("cashed");
       sessionRef.current = null;
-      setTimeout(() => resetToIdle(), 2200);
+      setTimeout(() => resetToIdle(), 1400);
       actionInFlightRef.current = false;
       return;
     }
