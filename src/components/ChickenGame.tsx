@@ -419,6 +419,28 @@ export function ChickenGame() {
 
   const canStart = phase === "idle" && bet >= CHICKEN_MIN_BET && bet <= balance;
 
+  // "JUGAR DE NUEVO" arranca la ronda directamente: resetea y dispara el deal
+  // en cuanto el estado vuelve a idle. Así el usuario pasa de resultado a
+  // saltar en un solo toque (antes eran: JUGAR DE NUEVO → JUGAR → SALTAR).
+  const [autoStart, setAutoStart] = useState(false);
+  const playAgain = useCallback(() => {
+    resetToIdle();
+    setAutoStart(true);
+  }, [resetToIdle]);
+
+  useEffect(() => {
+    if (!autoStart) return;
+    if (phase !== "idle") return;
+    setAutoStart(false);
+    if (bet >= CHICKEN_MIN_BET && bet <= balance) {
+      void startGame();
+    }
+  }, [autoStart, phase, bet, balance, startGame]);
+
+  // El panel de apuesta (input + atajos) solo tiene sentido antes de apostar.
+  const showBetControls = phase === "idle";
+  const inRound = phase === "playing" || phase === "jumping";
+
   return (
     <div
       className="relative h-[100dvh] overflow-hidden text-white"
