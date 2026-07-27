@@ -54,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         try {
-          const sessionRes = await withTimeout(supabase.auth.getSession(), 4000, "auth_get_session_timeout");
+          const sessionRes = await withTimeout(supabase.auth.getSession(), 3000, "auth_get_session_timeout");
           nextSession = sessionRes.data.session;
         } catch (error) {
           console.warn("[auth] getSession recovery failed", error);
@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
           const { data: userData, error: userError } = await withTimeout(
             supabase.auth.getUser(),
-            4000,
+            3000,
             "auth_get_user_timeout",
           );
           if (!userError && userData.user) {
@@ -89,6 +89,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         bootstrappedRef.current = true;
         setLoading(false);
         return sessionRef.current;
+      }
+
+      // La red falló pero hay una sesión guardada y vigente en localStorage:
+      // no degradamos a "sin sesión" (eso era lo que dejaba al usuario fuera
+      // en PWA). El servidor sigue validando el token en cada request.
+      const fallback = readStoredSession();
+      const expiresAt = fallback?.expires_at ?? 0;
+      if (fallback?.access_token && expiresAt * 1000 > Date.now()) {
+        applySession(fallback);
+        return fallback;
       }
 
       applySession(null);
