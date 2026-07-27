@@ -290,9 +290,9 @@ export function ChickenGame() {
       setChickenFx("idle");
       setPhase("playing");
     } catch (e) {
-      await recoverAfterActionError(e);
+      const recovered = await recoverAfterActionError(e);
       applyBalance(prevBalance, { invalidate: true });
-      setError(toFriendlyError(e, "No se pudo iniciar la partida."));
+      if (!recovered) setError(toFriendlyError(e, "No se pudo iniciar la partida."));
     } finally {
       dealInFlightRef.current = false;
       setIsDealing(false);
@@ -319,8 +319,8 @@ export function ChickenGame() {
       sessionRef.current = null;
       setTimeout(() => resetToIdle(), 2200);
     } catch (e) {
-      await recoverAfterActionError(e);
-      setError(toFriendlyError(e, "No se pudo cobrar."));
+      const recovered = await recoverAfterActionError(e);
+      if (!recovered) setError(toFriendlyError(e, "No se pudo cobrar."));
     } finally {
       actionInFlightRef.current = false;
     }
@@ -355,11 +355,13 @@ export function ChickenGame() {
       view = res;
     } catch (e) {
       window.clearTimeout(safeSoundTimer);
-      await recoverAfterActionError(e);
-      setError(toFriendlyError(e, "No se pudo saltar."));
+      const recovered = await recoverAfterActionError(e);
+      if (!recovered) {
+        setError(toFriendlyError(e, "No se pudo saltar."));
+        setPhase("playing");
+      }
       // Snap chicken back to idle on the central asteroid.
       setChickenFx("idle");
-      setPhase("playing");
       actionInFlightRef.current = false;
       return;
     }
