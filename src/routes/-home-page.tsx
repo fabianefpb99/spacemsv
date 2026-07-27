@@ -34,11 +34,11 @@ import { getHourlyOnlineBase } from "@/lib/online-base";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
 import heroImg from "@/assets/home-hero.webp";
-import heroMinesImg from "@/assets/home-hero-mines.jpg";
+import heroMinesImg from "@/assets/home-hero-mines.webp";
 import heroSlotImg from "@/assets/home-hero-slot.webp";
 import heroDiceImg from "@/assets/home-hero-dice.webp";
 import heroBlackjackImg from "@/assets/home-hero-blackjack.webp";
-import heroRuletaImg from "@/assets/home-hero-ruleta.jpg";
+import heroRuletaImg from "@/assets/home-hero-ruleta.webp";
 import heroArenaImg from "@/assets/home-hero-arena.png.asset.json";
 import heroChickenImg from "@/assets/home-hero-chicken.webp.asset.json";
 import gameSpacemanAsset from "@/assets/game-spaceman.png.asset.json";
@@ -76,11 +76,11 @@ function prettyGameName(g: string): string {
   if (k.includes("ruleta") || k.includes("roulette")) return "RULETA";
   return g.toUpperCase();
 }
-import trophy3d from "@/assets/trophy-3d.png";
+import trophy3d from "@/assets/trophy-3d.webp";
 import blackjackPromo from "@/assets/blackjack-promo.png.asset.json";
-import blackjackBanner from "@/assets/blackjack-banner.jpg";
-import jackpotBanner from "@/assets/jackpot-banner.jpg";
-import ruletaBanner from "@/assets/ruleta-banner.jpg";
+import blackjackBanner from "@/assets/blackjack-banner.webp";
+import jackpotBanner from "@/assets/jackpot-banner.webp";
+import ruletaBanner from "@/assets/ruleta-banner.webp";
 import casinoIntro from "@/assets/audio/casino-intro.mp3.asset.json";
 import mundialHeroAsset from "@/assets/mundial-hero.webp.asset.json";
 
