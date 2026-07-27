@@ -757,15 +757,26 @@ export function ChickenGame() {
                 </div>
               </div>
               <div className="min-w-0 text-right">
-                <div className="text-[9px] uppercase tracking-[0.2em] text-purple-200/70">Ganancia</div>
-                <div className="truncate font-display text-lg font-bold leading-tight text-emerald-400">
-                  {step > 0
-                    ? `+${formatCOP(Math.max(0, Math.floor(bet * currentMult) - bet))}`
-                    : "+0"}
-                  <span className="ml-1 text-xs text-emerald-300/80">
-                    {step > 0 ? `${currentMult.toFixed(2)}x` : "—"}
-                  </span>
+                <div className="text-[9px] uppercase tracking-[0.2em] text-purple-200/70">
+                  {phase === "lost" ? "Resultado" : phase === "cashed" ? "Cobraste" : "Ganancia"}
                 </div>
+                {phase === "lost" ? (
+                  <div className="truncate font-display text-lg font-bold leading-tight text-rose-400">
+                    -{formatCOP(bet)}
+                  </div>
+                ) : phase === "cashed" ? (
+                  <div className="truncate font-display text-lg font-bold leading-tight text-emerald-400">
+                    +{formatCOP(lastPayout)}
+                    <span className="ml-1 text-xs text-emerald-300/80">{currentMult.toFixed(2)}x</span>
+                  </div>
+                ) : (
+                  <div className="truncate font-display text-lg font-bold leading-tight text-emerald-400">
+                    +{formatCOP(step > 0 ? Math.max(0, Math.floor(bet * currentMult) - bet) : 0)}
+                    <span className="ml-1 text-xs text-emerald-300/80">
+                      {step > 0 ? `${currentMult.toFixed(2)}x` : "—"}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           )}
