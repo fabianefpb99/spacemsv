@@ -981,14 +981,29 @@ export function HomePage() {
               }}
               className="home-featured-scroll mt-3 flex cursor-grab touch-pan-x select-none gap-2 overflow-x-auto pb-1 active:cursor-grabbing sm:gap-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
-              {gamesList.map((g) => {
+              {gamesList.length === 0
+                ? Array.from({ length: 4 }).map((_, i) => (
+                    <div
+                      key={`featured-skeleton-${i}`}
+                      className="relative flex aspect-[3/4] w-[27%] min-w-[27%] flex-shrink-0 overflow-hidden rounded-xl border border-fuchsia-500/25 bg-[#0c0620] sm:w-[19%] sm:min-w-[19%]"
+                      aria-hidden="true"
+                    >
+                      <div className="skeleton absolute inset-0 h-full w-full" />
+                      <div className="absolute inset-x-0 bottom-2 flex flex-col items-center gap-1.5 px-2">
+                        <div className="skeleton h-2 w-4/5 rounded-full" />
+                        <div className="skeleton h-2 w-1/2 rounded-full" />
+                      </div>
+                    </div>
+                  ))
+                : gamesList.map((g, i) => {
                 const gameName = g.name;
                 const gameTag = formatGameTag(g.tag);
                 return (
                   <Link
                     key={`${g.to}-${g.name}`}
                     to={g.to}
-                    className="home-game-card group relative flex aspect-[3/4] w-[27%] min-w-[27%] flex-shrink-0 overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400 sm:w-[19%] sm:min-w-[19%]"
+                    style={{ animationDelay: `${Math.min(i, 6) * 60}ms` }}
+                    className="home-game-card home-game-card-enter group relative flex aspect-[3/4] w-[27%] min-w-[27%] flex-shrink-0 overflow-hidden rounded-xl border border-fuchsia-500/70 bg-[#0c0620] shadow-[0_0_8px_rgba(217,70,239,0.25)] transition hover:border-fuchsia-400 sm:w-[19%] sm:min-w-[19%]"
                   >
                     <SkeletonImage
                       src={g.img}
