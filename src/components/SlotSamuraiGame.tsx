@@ -36,10 +36,10 @@ const WIN_LOGOS: Record<"win" | "big" | "mega" | "super" | "jackpot", string> = 
   jackpot: winSuperAsset.url,
 };
 
-import bossAsset from "@/assets/samurai/sym-boss.png.asset.json";
-import carAsset from "@/assets/samurai/sym-car.png.asset.json";
-import briefAsset from "@/assets/samurai/sym-brief.png.asset.json";
-import goldAsset from "@/assets/samurai/sym-gold.png.asset.json";
+import bossAsset from "@/assets/samurai/sym-boss.webp.asset.json";
+import carAsset from "@/assets/samurai/sym-car.webp.asset.json";
+import briefAsset from "@/assets/samurai/sym-brief.webp.asset.json";
+import goldAsset from "@/assets/samurai/sym-gold.webp.asset.json";
 import oniAsset from "@/assets/samurai/sym-oni.webp.asset.json";
 import shurikenAsset from "@/assets/samurai/sym-shuriken.webp.asset.json";
 import toriiAsset from "@/assets/samurai/sym-torii.webp.asset.json";
