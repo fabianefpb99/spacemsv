@@ -630,21 +630,21 @@ export function MinesGame() {
           </button>
         </div>
 
-        {/* HUD */}
-        <section className="mt-2 grid grid-cols-3 gap-2 rounded-2xl border border-purple-500/30 glass-panel p-2 sm:p-2.5">
+        {/* HUD — sin caja: elementos flotando sobre el fondo */}
+        <section className="mt-3 grid grid-cols-[auto_1fr_auto] items-center gap-2">
           {/* Mines selector */}
-          <div className="relative">
-            <div className="text-[9px] uppercase tracking-widest text-purple-200/70 text-center">Minas</div>
+          <div className="relative w-[86px]">
             <button
               type="button"
               disabled={phase !== "betting"}
               onClick={() => setMinesPickerOpen((o) => !o)}
-              className="mt-1 flex w-full items-center justify-center gap-1.5 rounded-lg border border-purple-500/40 bg-[#160830]/60 py-1.5 font-display text-base font-bold text-white disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-1.5 rounded-full border border-purple-400/40 bg-black/25 px-2 py-1.5 font-display text-base font-bold text-white shadow-[0_0_18px_rgba(139,92,246,0.18)] backdrop-blur-[2px] disabled:opacity-60"
             >
               <Bomb className="h-4 w-4 text-rose-400" />
               <span>{mines}</span>
               <ChevronDown className="h-4 w-4 text-purple-300" />
             </button>
+            <div className="mt-1 text-center text-[9px] uppercase tracking-[0.2em] text-purple-200/70">Minas</div>
             {minesPickerOpen && (
               <div
                 className="absolute left-0 right-0 top-full z-20 mt-1 max-h-56 overflow-y-auto rounded-lg border border-purple-500/40 bg-[#0c0620] p-1 shadow-xl shadow-black/60 hide-scrollbar"
@@ -663,22 +663,21 @@ export function MinesGame() {
               </div>
             )}
           </div>
-          {/* Next pay */}
-          <div className="text-center">
-            <div className="text-[9px] uppercase tracking-widest text-purple-200/70">Siguiente pago</div>
-            <div className="mt-1 rounded-lg border border-emerald-500/30 bg-emerald-950/30 py-1.5">
-              <span className="font-display text-base font-bold neon-green">
-                {nextMult > 0 ? `${nextMult.toFixed(2)}x` : "—"}
-              </span>
+          {/* Next pay — protagonista, sin caja */}
+          <div className="min-w-0 text-center">
+            <div className="font-display text-[34px] font-black leading-none neon-green sm:text-[38px]">
+              {nextMult > 0 ? `${nextMult.toFixed(2)}x` : "—"}
+            </div>
+            <div className="mt-1 text-[9px] uppercase tracking-[0.22em] text-purple-200/70">Siguiente pago</div>
+            <div className="text-[12px] font-bold text-emerald-400">
+              {nextMult > 0 ? `+${formatCOP(Math.max(0, Math.floor(bet * nextMult) - bet))} COP` : "\u00a0"}
             </div>
           </div>
           {/* Cashout */}
-          <div className="text-center">
-            <div className="text-[9px] uppercase tracking-widest text-purple-200/70">Retirar</div>
-            <div className="mt-1 rounded-lg border border-purple-500/40 bg-purple-950/30 py-1.5">
-              <span className="font-display text-base font-bold text-purple-200">
-                {picks > 0 ? `${currentMult.toFixed(2)}x` : "—"}
-              </span>
+          <div className="w-[86px] text-center">
+            <div className="mb-1 text-[9px] uppercase tracking-[0.2em] text-purple-200/70">Retirar</div>
+            <div className="rounded-full border border-purple-400/40 bg-black/25 py-1.5 font-display text-base font-bold text-purple-100 shadow-[0_0_18px_rgba(139,92,246,0.18)] backdrop-blur-[2px]">
+              {picks > 0 ? `${currentMult.toFixed(2)}x` : "—"}
             </div>
           </div>
         </section>
