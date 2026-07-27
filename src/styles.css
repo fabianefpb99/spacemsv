@@ -4847,19 +4847,3 @@ html.light .notif-popover .bg-rose-400 {
   mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 100%);
   will-change: auto;
 }
-
-/* ============================================================
-   Viewport lock para pantallas de juego (useViewportLock)
-   Evita el scroll fantasma de 1-20px en Android cuando la barra
-   de navegación cambia de alto. En pantallas bajas (<=720px) se
-   deja el scroll natural para que el contenido no se corte.
-   ============================================================ */
-@media (min-height: 721px) {
-  html.viewport-locked,
-  html.viewport-locked body {
-    height: var(--app-h, 100dvh);
-    max-height: var(--app-h, 100dvh);
-    overflow: hidden;
-    overscroll-behavior: none;
-  }
-}
