@@ -490,28 +490,30 @@ export function ChickenGame() {
           </button>
         </div>
 
-        {/* HUD: paso actual + siguiente pago + cobrar */}
-        <section className="mt-1.5 shrink-0 grid grid-cols-3 gap-2 rounded-2xl border border-purple-500/30 glass-panel p-2">
-          <div className="text-center">
-            <div className="text-[9px] uppercase tracking-widest text-purple-200/70">Saltos</div>
-            <div className="mt-1 rounded-lg border border-purple-500/40 bg-[#160830]/60 py-1.5">
-              <span className="font-display text-base font-bold text-white">{step}</span>
+        {/* HUD — sin caja: elementos flotando sobre el fondo (igual que Buscaminas) */}
+        <section className="mt-1.5 shrink-0 grid grid-cols-[auto_1fr_auto] items-center gap-2">
+          {/* Saltos */}
+          <div className="w-[86px] text-center">
+            <div className="rounded-full border border-purple-400/40 bg-black/25 py-1.5 font-display text-base font-bold text-white shadow-[0_0_18px_rgba(139,92,246,0.18)] backdrop-blur-[2px]">
+              {step}
+            </div>
+            <div className="mt-1 text-[9px] uppercase tracking-[0.2em] text-purple-200/70">Saltos</div>
+          </div>
+          {/* Siguiente pago — protagonista, sin caja */}
+          <div className="min-w-0 text-center">
+            <div className="font-display text-[30px] font-black leading-none neon-green sm:text-[34px]">
+              {nextMult > 0 ? `${nextMult.toFixed(2)}x` : "—"}
+            </div>
+            <div className="mt-1 text-[9px] uppercase tracking-[0.22em] text-purple-200/70">Siguiente pago</div>
+            <div className="text-[12px] font-bold text-emerald-400">
+              {nextMult > 0 ? `+${formatCOP(Math.max(0, Math.floor(bet * nextMult) - bet))} COP` : "\u00a0"}
             </div>
           </div>
-          <div className="text-center">
-            <div className="text-[9px] uppercase tracking-widest text-purple-200/70">Siguiente X</div>
-            <div className="mt-1 rounded-lg border border-emerald-500/30 bg-emerald-950/30 py-1.5">
-              <span className="font-display text-base font-bold neon-green">
-                {nextMult > 0 ? `${nextMult.toFixed(2)}x` : "—"}
-              </span>
-            </div>
-          </div>
-          <div className="text-center">
-            <div className="text-[9px] uppercase tracking-widest text-purple-200/70">Cobro</div>
-            <div className="mt-1 rounded-lg border border-purple-500/40 bg-purple-950/30 py-1.5">
-              <span className="font-display text-base font-bold text-purple-200">
-                {step > 0 ? `${currentMult.toFixed(2)}x` : "—"}
-              </span>
+          {/* Cobro */}
+          <div className="w-[86px] text-center">
+            <div className="mb-1 text-[9px] uppercase tracking-[0.2em] text-purple-200/70">Cobro</div>
+            <div className="rounded-full border border-purple-400/40 bg-black/25 py-1.5 font-display text-base font-bold text-purple-100 shadow-[0_0_18px_rgba(139,92,246,0.18)] backdrop-blur-[2px]">
+              {step > 0 ? `${currentMult.toFixed(2)}x` : "—"}
             </div>
           </div>
         </section>
