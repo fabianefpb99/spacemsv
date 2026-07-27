@@ -1236,7 +1236,7 @@ export function SlotSamuraiGame() {
         aria-hidden
         className="pointer-events-none fixed inset-x-0 bottom-0 top-[24%] z-0 slot-bg-fade"
       />
-      <div className="relative mx-auto flex h-full max-w-md flex-col px-2.5 pb-1.5 pt-3 sm:max-w-lg sm:px-4">
+      <div className="tall-screen-fit relative mx-auto flex h-full max-w-md flex-col px-2.5 pb-1.5 pt-3 sm:max-w-lg sm:px-4">
         {/* Header */}
         <header
           className="flex items-center justify-between bg-[#060210]/80 backdrop-blur-sm border-b border-purple-500/20 pb-2 px-3 -mx-3 -mt-3"

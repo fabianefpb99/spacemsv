@@ -4847,3 +4847,15 @@ html.light .notif-popover .bg-rose-400 {
   mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 100%);
   will-change: auto;
 }
+
+
+/* Pantallas MUY altas (p. ej. Redmi 14 Pro): evita que los elementos se separen
+   demasiado y el scroll fantasma. No afecta ninguna altura <= 939px. */
+@media (min-height: 940px) {
+  .tall-screen-fit {
+    height: 900px !important;
+    max-height: 900px !important;
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+}
