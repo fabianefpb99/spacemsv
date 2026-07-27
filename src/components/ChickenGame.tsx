@@ -325,7 +325,7 @@ export function ChickenGame() {
       playCashoutSound();
       setPhase("cashed");
       sessionRef.current = null;
-      setTimeout(() => resetToIdle(), 2200);
+      setTimeout(() => resetToIdle(), 1400);
     } catch (e) {
       const recovered = await recoverAfterActionError(e);
       if (!recovered) setError(toFriendlyError(e, "No se pudo cobrar."));
@@ -425,7 +425,7 @@ export function ChickenGame() {
       setLastPayout(pub.payout ?? 0);
       setPhase("cashed");
       sessionRef.current = null;
-      setTimeout(() => resetToIdle(), 2200);
+      setTimeout(() => resetToIdle(), 1400);
       actionInFlightRef.current = false;
       return;
     }
@@ -582,10 +582,10 @@ export function ChickenGame() {
           </div>
           {/* Cobro */}
           <div className="w-[86px] text-center">
-            <div className="mb-1 text-[9px] uppercase tracking-[0.2em] text-purple-200/70">Cobro</div>
             <div className="rounded-full border border-purple-400/40 bg-black/25 py-1.5 font-display text-base font-bold text-purple-100 shadow-[0_0_18px_rgba(139,92,246,0.18)] backdrop-blur-[2px]">
               {step > 0 ? `${currentMult.toFixed(2)}x` : "—"}
             </div>
+            <div className="mt-1 text-[9px] uppercase tracking-[0.2em] text-purple-200/70">Cobro</div>
           </div>
         </section>
 
@@ -880,7 +880,16 @@ export function ChickenGame() {
                 </button>
               </div>
             )}
-            {(phase === "lost" || phase === "cashed") && (
+            {phase === "cashed" && (
+              <button
+                type="button"
+                disabled
+                className="btn-primary-green btn-primary-action chicken-action-button chicken-action-static flex h-[68px] w-full items-center justify-center gap-2 rounded-xl font-display text-lg font-black uppercase tracking-widest opacity-60"
+              >
+                COBRADO
+              </button>
+            )}
+            {phase === "lost" && (
               <button
                 type="button"
                 onClick={playAgain}
