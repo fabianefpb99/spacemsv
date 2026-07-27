@@ -1,6 +1,6 @@
 import { AuthControl } from "@/components/auth/AuthControl";
 import { BetAmount } from "@/components/games/BetAmount";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Minus, Plus, Volume2, VolumeX } from "lucide-react";
 import betspaceLogo from "@/assets/betspace-logo.svg";
@@ -136,6 +136,11 @@ export function ChickenGame() {
   const sessionRef = useRef<{ id: string; nonce: number } | null>(null);
   const dealInFlightRef = useRef(false);
   const actionInFlightRef = useRef(false);
+  // Altura reservada del panel inferior: se mide en fase idle (con el HUD de
+  // apuesta visible) y se mantiene como `min-height` en TODAS las fases, para
+  // que la escena (y el asteroide) nunca cambien de altura.
+  const panelRef = useRef<HTMLElement | null>(null);
+  const [panelMinH, setPanelMinH] = useState<number | null>(null);
 
   const applyBalance = useCallback(
     (newBalance: number, opts?: { invalidate?: boolean }) => {
@@ -221,6 +226,7 @@ export function ChickenGame() {
     const img = new Image();
     img.src = IMG_ASTEROID_BROKEN;
   }, []);
+
 
   const recoverAfterActionError = useCallback(async (err: unknown) => {
     const raw = err instanceof Error ? err.message.toLowerCase() : String(err).toLowerCase();
@@ -466,6 +472,23 @@ export function ChickenGame() {
   // El panel de apuesta (input + atajos) solo tiene sentido antes de apostar.
   const showBetControls = phase === "idle";
   const inRound = phase === "playing" || phase === "jumping";
+
+  // Reserva de altura del panel inferior. Se mide únicamente cuando el HUD de
+  // apuesta está visible (fase idle, el estado más alto) y esa altura queda
+  // fijada como mínimo en el resto de fases → el asteroide nunca se mueve.
+  useLayoutEffect(() => {
+    if (!showBetControls) return;
+    const el = panelRef.current;
+    if (!el) return;
+    const measure = () => {
+      const h = el.getBoundingClientRect().height;
+      if (h > 0) setPanelMinH((prev) => (prev && Math.abs(prev - h) < 1 ? prev : h));
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [showBetControls]);
 
   return (
     <div
@@ -725,7 +748,11 @@ export function ChickenGame() {
         {/* Panel inferior — los controles de apuesta solo existen antes de apostar.
             Con la ronda en curso se sustituyen por un resumen claro (apuesta +
             ganancia acumulada) y los botones de acción crecen en altura. */}
-        <section className="mt-1.5 shrink-0 rounded-2xl border border-purple-500/30 glass-panel p-2">
+        <section
+          ref={panelRef}
+          className="mt-1.5 flex shrink-0 flex-col justify-end rounded-2xl border border-purple-500/30 glass-panel p-2"
+          style={panelMinH ? { minHeight: panelMinH } : undefined}
+        >
           {showBetControls ? (
             <>
               <div className="text-center text-[10px] uppercase tracking-widest text-purple-200/70">Apuesta (COP)</div>
