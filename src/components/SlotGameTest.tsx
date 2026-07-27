@@ -5,14 +5,14 @@ import { Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "luc
 import { setMuted as setAudioMuted, playCashoutSound, isMuted } from "@/lib/gameAudio";
 import pageBg from "@/assets/mines-page-bg.webp";
 
-import bossImg from "@/assets/slot/boss.png";
-import hatImg from "@/assets/slot/hat.png";
-import briefcaseImg from "@/assets/slot/briefcase.png";
-import watchImg from "@/assets/slot/watch.png";
-import goldImg from "@/assets/slot/gold.png";
-import carImg from "@/assets/slot/car.png";
-import chipImg from "@/assets/slot/chip.png";
-import cardImg from "@/assets/slot/card.png";
+import bossImg from "@/assets/slot/boss.webp";
+import hatImg from "@/assets/slot/hat.webp";
+import briefcaseImg from "@/assets/slot/briefcase.webp";
+import watchImg from "@/assets/slot/watch.webp";
+import goldImg from "@/assets/slot/gold.webp";
+import carImg from "@/assets/slot/car.webp";
+import chipImg from "@/assets/slot/chip.webp";
+import cardImg from "@/assets/slot/card.webp";
 import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 
 /* ============================================================

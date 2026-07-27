@@ -36,14 +36,14 @@ const WIN_LOGOS: Record<"win" | "big" | "mega" | "super" | "jackpot", string> = 
   jackpot: winSuperAsset.url,
 };
 
-import bossImg from "@/assets/mafia/sym-boss.png";
-import hatImg from "@/assets/mafia/sym-hat.png";
-import briefcaseImg from "@/assets/mafia/sym-brief.png";
-import watchImg from "@/assets/mafia/sym-watch.png";
-import goldImg from "@/assets/mafia/sym-gold.png";
-import carImg from "@/assets/mafia/sym-car.png";
-import chipImg from "@/assets/mafia/sym-chip.png";
-import cardImg from "@/assets/mafia/sym-femme.png";
+import bossImg from "@/assets/mafia/sym-boss.webp";
+import hatImg from "@/assets/mafia/sym-hat.webp";
+import briefcaseImg from "@/assets/mafia/sym-brief.webp";
+import watchImg from "@/assets/mafia/sym-watch.webp";
+import goldImg from "@/assets/mafia/sym-gold.webp";
+import carImg from "@/assets/mafia/sym-car.webp";
+import chipImg from "@/assets/mafia/sym-chip.webp";
+import cardImg from "@/assets/mafia/sym-femme.webp";
 
 import bonusMegaAsset from "@/assets/audio/slot-win/bonus-1.mp3.asset.json";
 import bonusBigAsset from "@/assets/audio/slot-win/bonus-2.mp3.asset.json";

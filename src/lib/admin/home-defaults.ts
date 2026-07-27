@@ -3,11 +3,11 @@
 // the admin panel via "Cargar contenido actual".
 
 import heroImg from "@/assets/home-hero.webp";
-import heroMinesImg from "@/assets/home-hero-mines.jpg";
+import heroMinesImg from "@/assets/home-hero-mines.webp";
 import heroSlotImg from "@/assets/home-hero-slot.webp";
 import heroDiceImg from "@/assets/home-hero-dice.webp";
 import heroBlackjackImg from "@/assets/home-hero-blackjack.webp";
-import heroRuletaImg from "@/assets/home-hero-ruleta.jpg";
+import heroRuletaImg from "@/assets/home-hero-ruleta.webp";
 import heroArenaImg from "@/assets/home-hero-arena.png.asset.json";
 import gameSpacemanAsset from "@/assets/game-spaceman.png.asset.json";
 import gameSlotMafiaAsset from "@/assets/game-slot-mafia.png.asset.json";

@@ -18,7 +18,7 @@ import { Settings, Volume2, VolumeX, Minus, Plus, TrendingUp, Trophy } from "luc
 import { setMuted as setAudioMuted, playCashoutSound, playCoinsSound, isMuted, stopAllGameAudio, getCtx, getMasterGain, AUDIO_STOP_ALL_EVENT } from "@/lib/gameAudio";
 import { playSound, type SoundHandle } from "@/lib/webAudioPlayer";
 import samuraiBgmAsset from "@/assets/samurai/samurai-bgm.mp3.asset.json";
-import dragonOrnament from "@/assets/samurai/dragon-ornament.png";
+import dragonOrnament from "@/assets/samurai/dragon-ornament.webp";
 const samuraiBgmUrl = samuraiBgmAsset.url;
 import samuraiBgAsset from "@/assets/samurai/samurai-bg.webp.asset.json";
 import samuraiLegendLogoAsset from "@/assets/samurai/samurai-legend-logo.webp.asset.json";
@@ -36,10 +36,10 @@ const WIN_LOGOS: Record<"win" | "big" | "mega" | "super" | "jackpot", string> = 
   jackpot: winSuperAsset.url,
 };
 
-import bossAsset from "@/assets/samurai/sym-boss.png.asset.json";
-import carAsset from "@/assets/samurai/sym-car.png.asset.json";
-import briefAsset from "@/assets/samurai/sym-brief.png.asset.json";
-import goldAsset from "@/assets/samurai/sym-gold.png.asset.json";
+import bossAsset from "@/assets/samurai/sym-boss.webp.asset.json";
+import carAsset from "@/assets/samurai/sym-car.webp.asset.json";
+import briefAsset from "@/assets/samurai/sym-brief.webp.asset.json";
+import goldAsset from "@/assets/samurai/sym-gold.webp.asset.json";
 import oniAsset from "@/assets/samurai/sym-oni.webp.asset.json";
 import shurikenAsset from "@/assets/samurai/sym-shuriken.webp.asset.json";
 import toriiAsset from "@/assets/samurai/sym-torii.webp.asset.json";

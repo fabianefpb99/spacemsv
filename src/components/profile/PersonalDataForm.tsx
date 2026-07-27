@@ -232,7 +232,8 @@ export function PersonalDataForm({
           type="checkbox"
           checked={terms}
           onChange={(e) => setTerms(e.target.checked)}
-          className="mt-0.5 h-3.5 w-3.5 shrink-0 cursor-pointer accent-purple-500 sm:h-4 sm:w-4"
+          className="mt-0.5 aspect-square h-4 w-4 min-h-4 min-w-4 shrink-0 grow-0 basis-4 cursor-pointer appearance-auto rounded-[3px] accent-purple-500"
+          style={{ flex: "0 0 1rem" }}
         />
         <span>
           Acepto los{" "}
