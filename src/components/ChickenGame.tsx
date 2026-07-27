@@ -731,6 +731,7 @@ export function ChickenGame() {
             Con la ronda en curso se sustituyen por un resumen claro (apuesta +
             ganancia acumulada) y los botones de acción crecen en altura. */}
         <section className="mt-1.5 shrink-0 rounded-2xl border border-purple-500/30 glass-panel p-2">
+
           {showBetControls ? (
             <>
               <div className="text-center text-[10px] uppercase tracking-widest text-purple-200/70">Apuesta (COP)</div>
