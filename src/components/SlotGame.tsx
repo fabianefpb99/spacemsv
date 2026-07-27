@@ -1218,7 +1218,7 @@ export function SlotGame() {
 
   return (
     <div
-      className="mafia-scope relative flex h-[var(--app-h,100dvh)] flex-col overflow-hidden text-white [@media(max-height:720px)]:h-auto [@media(max-height:720px)]:min-h-[100dvh] [@media(max-height:720px)]:overflow-y-auto"
+      className="mafia-scope relative h-[100dvh] overflow-hidden text-white [@media(max-height:720px)]:h-auto [@media(max-height:720px)]:min-h-[100dvh] [@media(max-height:720px)]:overflow-y-auto"
       style={{
         backgroundColor: "#0a0416",
         backgroundImage: `linear-gradient(180deg, rgba(10,4,22,0.15) 0%, rgba(10,4,22,0.35) 45%, rgba(10,4,22,0.75) 100%), url(${samuraiBg})`,
@@ -1233,7 +1233,7 @@ export function SlotGame() {
         aria-hidden
         className="pointer-events-none fixed inset-x-0 bottom-0 top-[24%] z-0 slot-bg-fade"
       />
-      <div className="relative mx-auto flex h-full max-w-md flex-col px-2.5 pb-1.5 pt-3 sm:max-w-lg sm:px-4 [@media(min-height:900px)]:my-auto [@media(min-height:900px)]:h-[900px]">
+      <div className="relative mx-auto flex h-full max-w-md flex-col px-2.5 pb-1.5 pt-3 sm:max-w-lg sm:px-4">
         {/* Header */}
         <header
           className="flex items-center justify-between bg-[#060210]/80 backdrop-blur-sm border-b border-amber-500/25 pb-2 px-3 -mx-3 -mt-3"
