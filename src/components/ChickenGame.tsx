@@ -227,6 +227,23 @@ export function ChickenGame() {
     img.src = IMG_ASTEROID_BROKEN;
   }, []);
 
+  // Reserva de altura del panel inferior. Se mide únicamente cuando el HUD de
+  // apuesta está visible (fase idle, el estado más alto) y esa altura queda
+  // fijada como mínimo para el resto de fases → el asteroide no se mueve.
+  useLayoutEffect(() => {
+    if (!showBetControls) return;
+    const el = panelRef.current;
+    if (!el) return;
+    const measure = () => {
+      const h = el.getBoundingClientRect().height;
+      if (h > 0) setPanelMinH((prev) => (prev && Math.abs(prev - h) < 1 ? prev : h));
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [showBetControls]);
+
   const recoverAfterActionError = useCallback(async (err: unknown) => {
     const raw = err instanceof Error ? err.message.toLowerCase() : String(err).toLowerCase();
     const looksAuthError =
