@@ -1050,8 +1050,13 @@ export function SlotGame() {
     const sym = SYMBOLS[SYMBOL_INDEX.get(sid)!];
     const count = 3 + Math.floor(Math.random() * 3);
     const stake = [500, 1000, 2000, 5000, 10000][Math.floor(Math.random() * 5)];
-    const mult = sym.pay[count - 3];
-    const amount = Math.floor(stake * mult);
+    // La apuesta se reparte entre las 25 líneas: el pago de la tabla es por
+    // LÍNEA, no sobre la apuesta total. Antes se multiplicaba por la apuesta
+    // completa y producía premios imposibles (millones).
+    const lineBet = Math.max(1, Math.floor(stake / LINES));
+    const hitLines = 1 + Math.floor(Math.random() * 3);
+    const amount = Math.floor(sym.pay[count - 3] * lineBet * hitLines);
+    const mult = amount / stake;
     setHistory((h) =>
       [{ id: ++historyId.current, user: pickUser(), symbolId: sym.id, multiplier: mult, amount, ts: Date.now() }, ...h].slice(0, 30)
     );
@@ -1586,12 +1591,12 @@ function seedHistory(): HistoryItem[] {
   const now = Date.now();
   let id = 1;
   return [
-    { id: id++, user: "TommyGun",  symbolId: "boss",  multiplier: 12.5, amount: 250000, ts: now - 8_000 },
-    { id: id++, user: "VitoC",     symbolId: "car",   multiplier: 4.8,  amount: 96000,  ts: now - 22_000 },
-    { id: id++, user: "AlCapone",  symbolId: "brief", multiplier: 3.2,  amount: 64000,  ts: now - 45_000 },
-    { id: id++, user: "PeakyB",    symbolId: "gold",  multiplier: 2.1,  amount: 42000,  ts: now - 70_000 },
-    { id: id++, user: "DonLuca",   symbolId: "watch", multiplier: 1.6,  amount: 32000,  ts: now - 110_000 },
-    { id: id++, user: "MissFox",   symbolId: "chip",  multiplier: 1.2,  amount: 24000,  ts: now - 160_000 },
+    { id: id++, user: "TommyGun",  symbolId: "boss",  multiplier: 4.4,  amount: 44000, ts: now - 8_000 },
+    { id: id++, user: "VitoC",     symbolId: "car",   multiplier: 2.6,  amount: 13000, ts: now - 22_000 },
+    { id: id++, user: "AlCapone",  symbolId: "brief", multiplier: 1.92, amount: 3840,  ts: now - 45_000 },
+    { id: id++, user: "PeakyB",    symbolId: "gold",  multiplier: 1.52, amount: 7600,  ts: now - 70_000 },
+    { id: id++, user: "DonLuca",   symbolId: "watch", multiplier: 0.76, amount: 1520,  ts: now - 110_000 },
+    { id: id++, user: "MissFox",   symbolId: "chip",  multiplier: 0.56, amount: 560,   ts: now - 160_000 },
   ];
 }
 
