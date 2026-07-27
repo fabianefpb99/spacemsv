@@ -2247,27 +2247,28 @@ html, body {
 
 .mines-tile-revealed {
   background:
-    radial-gradient(120% 80% at 30% 20%, rgba(40,20,80,0.35), transparent 60%),
-    linear-gradient(160deg, #160830 0%, #0c0420 100%);
-  border-color: rgba(168,85,247,0.18);
+    radial-gradient(120% 80% at 30% 20%, rgba(80,40,140,0.45), transparent 60%),
+    linear-gradient(160deg, #1e0a40 0%, #0f0320 100%);
+  border-color: rgba(168,85,247,0.55);
   box-shadow:
-    0 0 0 1px rgba(168,85,247,0.10) inset,
-    0 4px 10px rgba(0,0,0,0.5);
+    0 0 0 1px rgba(168,85,247,0.30) inset,
+    0 4px 10px rgba(0,0,0,0.5),
+    0 0 20px rgba(168,85,247,0.28);
   animation: mines-tile-impact 360ms ease-out;
 }
 .mines-tile-safe {
-  border-color: rgba(46,255,161,0.45);
+  border-color: rgba(46,255,161,0.70);
   box-shadow:
-    0 0 0 1px rgba(46,255,161,0.22) inset,
+    0 0 0 1px rgba(46,255,161,0.35) inset,
     0 4px 12px rgba(0,0,0,0.5),
-    0 0 14px rgba(46,255,161,0.30);
+    0 0 20px rgba(46,255,161,0.42);
 }
 .mines-tile-mine {
-  border-color: rgba(255,80,80,0.55);
+  border-color: rgba(255,80,80,0.75);
   box-shadow:
-    0 0 0 1px rgba(255,80,80,0.30) inset,
+    0 0 0 1px rgba(255,80,80,0.40) inset,
     0 4px 12px rgba(0,0,0,0.55),
-    0 0 18px rgba(255,60,60,0.45);
+    0 0 24px rgba(255,60,60,0.55);
 }
 .mines-tile-mine-dim { opacity: 0.55; filter: saturate(0.7); }
 
