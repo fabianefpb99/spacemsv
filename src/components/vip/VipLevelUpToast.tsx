@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { X, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMarkVipLevelSeen, useVip } from "@/hooks/useVip";
@@ -40,11 +40,15 @@ export function VipLevelUpToast() {
   const vip = useVip();
   const { user } = useAuth();
   const markSeen = useMarkVipLevelSeen();
-  const [dismissed, setDismissed] = useState(false);
   const [shattered, setShattered] = useState(false);
+  // Nivel actualmente en pantalla. Se "engancha" una sola vez y NO depende
+  // de la query: así marcar el nivel como visto (optimista) no cierra el
+  // popup al instante.
+  const [activeLevel, setActiveLevel] = useState<number | null>(null);
+  const handledRef = useRef<number>(0);
 
   const data = vip.data;
-  const showLevel = useMemo(() => {
+  const candidateLevel = useMemo(() => {
     if (!data || !data.user_vip) return null;
     const cur = data.user_vip.current_level ?? 0;
     const dbSeen = data.last_seen_level ?? 0;
@@ -54,25 +58,24 @@ export function VipLevelUpToast() {
     return cur;
   }, [data, user?.id]);
 
+  // Engancha el nivel una única vez y persiste "visto" en el mismo tick.
+  // El popup sigue visible porque vive en `activeLevel`, no en la query.
   useEffect(() => {
-    setDismissed(false);
+    if (!candidateLevel || !user?.id) return;
+    if (handledRef.current >= candidateLevel) return;
+    handledRef.current = candidateLevel;
+    setActiveLevel(candidateLevel);
     setShattered(false);
-  }, [showLevel]);
-
-  // Persist immediately on show so the popup never re-triggers for the same
-  // level even if the user closes the tab, loses connection, or the RPC
-  // rejects on rollback. localStorage is the client-side safety net; the
-  // RPC keeps the DB in sync so other devices also stop showing it.
-  useEffect(() => {
-    if (!showLevel || !user?.id) return;
-    writeLocalSeen(user.id, showLevel);
-    markSeen.mutate({ level: showLevel });
+    writeLocalSeen(user.id, candidateLevel);
+    markSeen.mutate({ level: candidateLevel });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showLevel, user?.id]);
+  }, [candidateLevel, user?.id]);
+
+  const showLevel = activeLevel;
 
   // Trigger the shatter + diamond reveal sound shortly after the modal opens.
   useEffect(() => {
-    if (!showLevel || dismissed) return;
+    if (!showLevel) return;
     const t = window.setTimeout(() => {
       setShattered(true);
       if (!isMuted()) {
@@ -85,9 +88,9 @@ export function VipLevelUpToast() {
       }
     }, 620);
     return () => window.clearTimeout(t);
-  }, [showLevel, dismissed]);
+  }, [showLevel]);
 
-  if (!showLevel || dismissed) return null;
+  if (!showLevel) return null;
 
   const rank = rankForLevel(showLevel);
   const sub = subForLevel(showLevel);
@@ -95,7 +98,7 @@ export function VipLevelUpToast() {
   const isMax = showLevel >= 100;
 
   const close = () => {
-    setDismissed(true);
+    setActiveLevel(null);
     if (user?.id) writeLocalSeen(user.id, showLevel);
     // Fire again on close as a belt-and-suspenders; onMutate is idempotent.
     markSeen.mutate({ level: showLevel });
