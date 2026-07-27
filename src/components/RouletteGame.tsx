@@ -584,7 +584,7 @@ export function RouletteGame() {
 
   return (
     <div
-      className="relative mx-auto flex h-[100dvh] max-w-md flex-col px-3 pt-4 sm:max-w-lg sm:px-4 text-white overflow-hidden bg-[#06010f]"
+      className="relative mx-auto flex h-[var(--app-h,100dvh)] max-w-md flex-col px-3 pt-4 sm:max-w-lg sm:px-4 text-white overflow-hidden bg-[#06010f]"
       style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) * 0.85 + 0.6rem)" }}
     >
       {/* ───────────────── FONDO COMPLETO DE LA ESCENA (idéntico patrón Spaceman) ───────────────── */}

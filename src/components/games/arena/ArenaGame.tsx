@@ -237,7 +237,7 @@ export function ArenaGame() {
         }`}
       />
 
-      <div className="relative z-10 mx-auto flex h-[100dvh] max-w-md flex-col px-3 pb-2 pt-2 sm:max-w-lg sm:px-4">
+      <div className="relative z-10 mx-auto flex h-[var(--app-h,100dvh)] max-w-md flex-col px-3 pb-2 pt-2 sm:max-w-lg sm:px-4">
         {/* Header (matches Mines/Spaceman/Dados) */}
         <header
           className="flex items-center justify-between border-b border-purple-500/20 bg-[#060210]/60 px-3 pb-2 -mx-3 -mt-3 backdrop-blur-sm"
