@@ -291,8 +291,10 @@ export function ChickenGame() {
       setPhase("playing");
     } catch (e) {
       const recovered = await recoverAfterActionError(e);
-      applyBalance(prevBalance, { invalidate: true });
-      if (!recovered) setError(toFriendlyError(e, "No se pudo iniciar la partida."));
+      if (!recovered) {
+        applyBalance(prevBalance, { invalidate: true });
+        setError(toFriendlyError(e, "No se pudo iniciar la partida."));
+      }
     } finally {
       dealInFlightRef.current = false;
       setIsDealing(false);
