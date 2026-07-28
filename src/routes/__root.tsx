@@ -112,8 +112,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", href: "/favicon.ico", sizes: "any" },
       { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32.png" },
       { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16.png" },
-      { rel: "icon", type: "image/png", sizes: "192x192", href: "/icon-192.png" },
-      { rel: "icon", type: "image/png", sizes: "512x512", href: "/icon-512.png" },
+      { rel: "icon", type: "image/webp", sizes: "192x192", href: "/icon-192.webp" },
+      { rel: "icon", type: "image/webp", sizes: "512x512", href: "/icon-512.webp" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
       // Abre DNS + TLS hacia el backend antes del primer fetch de sesión.
       // Ahorra ~200-500 ms en móvil/PWA tras días sin abrir la app.
