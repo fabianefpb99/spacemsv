@@ -1,5 +1,6 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 import { z } from "zod";
+import { NOT_AUTHENTICATED, supabaseForUser } from "../supabase-user-client";
 
 export default defineTool({
   name: "get_top_winners",
@@ -20,10 +21,10 @@ export default defineTool({
       .describe("Maximum number of entries to return (1-10). Defaults to 10."),
   },
   annotations: { readOnlyHint: true, idempotentHint: false, openWorldHint: false },
-  handler: async ({ board, limit }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  handler: async ({ board, limit }, ctx) => {
+    if (!ctx.isAuthenticated()) return NOT_AUTHENTICATED;
     const rpc = board === "arena" ? "get_today_top_arena" : "get_today_top_winners";
-    const { data, error } = await supabaseAdmin.rpc(rpc, { p_limit: 10 });
+    const { data, error } = await (supabaseForUser(ctx) as any).rpc(rpc, { p_limit: 10 });
     if (error) {
       return { content: [{ type: "text", text: `Error: ${error.message}` }], isError: true };
     }
