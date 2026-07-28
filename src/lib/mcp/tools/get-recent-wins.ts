@@ -1,5 +1,6 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 import { z } from "zod";
+import { NOT_AUTHENTICATED, supabaseForUser } from "../supabase-user-client";
 
 export default defineTool({
   name: "get_recent_wins",
@@ -16,9 +17,9 @@ export default defineTool({
       .describe("Maximum number of wins to return (1-20). Defaults to 10."),
   },
   annotations: { readOnlyHint: true, idempotentHint: false, openWorldHint: false },
-  handler: async ({ limit }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data, error } = await (supabaseAdmin as any).rpc("get_recent_public_wins", {
+  handler: async ({ limit }, ctx) => {
+    if (!ctx.isAuthenticated()) return NOT_AUTHENTICATED;
+    const { data, error } = await (supabaseForUser(ctx) as any).rpc("get_recent_public_wins", {
       p_limit: 20,
     });
     if (error) {
