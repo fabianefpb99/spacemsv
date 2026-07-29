@@ -758,7 +758,7 @@ export function HomePage() {
                 }
               />
               </div>
-              <Link to="/" className="logo-shine lg:hidden">
+              <Link to="/" className="logo-shine lg:hidden!">
                 <img
                   src={betspaceLogo}
                   alt="BETSPACE"
