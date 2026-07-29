@@ -865,7 +865,7 @@ export function HomePage() {
         {/* Hero banner */}
         <section className="theme-dark-fixed slider-neon-frame mt-[10px] overflow-hidden rounded-2xl border border-violet-800/50 bg-[#120824] shadow-[0_0_10px_rgba(76,29,149,0.35)]">
           <div
-            className="relative h-44 touch-pan-y select-none sm:h-52"
+            className="relative h-44 touch-pan-y select-none sm:h-52 lg:h-72 xl:h-[380px]"
             onPointerDown={(e) => {
               (e.currentTarget as HTMLDivElement).dataset.startX = String(e.clientX);
               (e.currentTarget as HTMLDivElement).dataset.startY = String(e.clientY);
