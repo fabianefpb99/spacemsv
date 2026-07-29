@@ -740,7 +740,7 @@ export function HomePage() {
       <DesktopSidebar />
       {/* Header — full width del shell, pegado a los bordes */}
       <header
-        className="flex w-full flex-col items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 xl:px-6"
+        className="flex w-full flex-col items-center justify-center bg-[#060210] border-b border-purple-500/20 pb-3 px-3 lg:h-[61px] lg:pb-0 lg:pt-0 xl:px-6"
         style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
       >
           <div className="flex w-full items-center justify-between xl:mx-auto xl:max-w-[1440px]">
@@ -758,7 +758,7 @@ export function HomePage() {
                 }
               />
               </div>
-              <Link to="/" className="logo-shine">
+              <Link to="/" className="logo-shine lg:hidden">
                 <img
                   src={betspaceLogo}
                   alt="BETSPACE"
