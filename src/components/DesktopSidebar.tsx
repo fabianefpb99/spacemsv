@@ -73,8 +73,14 @@ export function DesktopSidebar() {
 
   return (
     <aside
-      className="theme-dark-fixed desktop-sidebar fixed inset-y-0 left-0 z-30 hidden h-screen w-[260px] flex-col border-r border-purple-500/20 bg-[#0a0418] text-white lg:flex"
+      className="theme-dark-fixed desktop-sidebar fixed inset-y-0 left-0 z-30 hidden h-screen w-[260px] flex-col bg-[#0a0418] text-white lg:flex"
     >
+      {/* Divider vertical quebrado: comienza suavemente debajo del header,
+          rompiendo la línea dura que separa la barra lateral del topbar. */}
+      <div
+        className="pointer-events-none absolute bottom-0 right-0 top-[61px] w-px bg-gradient-to-b from-transparent via-purple-500/20 to-transparent"
+        aria-hidden="true"
+      />
       <div className="flex items-center pl-6 pr-4 pt-6 pb-3">
         <Link to="/" className="logo-shine" aria-label="Inicio">
           <img src={betspaceLogo} alt="BETSPACE" className="h-6 w-auto" />
