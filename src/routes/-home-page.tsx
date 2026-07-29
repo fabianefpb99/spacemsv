@@ -865,7 +865,7 @@ export function HomePage() {
         {/* Hero banner */}
         <section className="theme-dark-fixed slider-neon-frame mt-[10px] overflow-hidden rounded-2xl border border-violet-800/50 bg-[#120824] shadow-[0_0_10px_rgba(76,29,149,0.35)]">
           <div
-            className="relative h-44 touch-pan-y select-none sm:h-52 lg:h-72 xl:h-[380px]"
+            className="relative h-44 touch-pan-y select-none sm:h-52 lg:h-[274px] xl:h-[361px]"
             onPointerDown={(e) => {
               (e.currentTarget as HTMLDivElement).dataset.startX = String(e.clientX);
               (e.currentTarget as HTMLDivElement).dataset.startY = String(e.clientY);
@@ -915,19 +915,19 @@ export function HomePage() {
               <ChevronRight className="h-4 w-4" />
             </button>
             {/* overlay removed to show full slider image */}
-            <div key={slide} className="absolute inset-0 flex flex-col justify-center gap-2 p-4 sm:p-5">
-              <span className="inline-flex w-fit items-center rounded-md bg-white/95 px-2 py-0.5 font-display text-[10px] font-bold uppercase tracking-widest text-purple-700 shadow-sm">
+            <div key={slide} className="absolute inset-0 flex flex-col justify-center gap-2 p-4 sm:p-5 lg:gap-3 lg:p-8 xl:gap-4 xl:p-10">
+              <span className="inline-flex w-fit items-center rounded-md bg-white/95 px-2 py-0.5 font-display text-[10px] font-bold uppercase tracking-widest text-purple-700 shadow-sm lg:px-3 lg:py-1 lg:text-xs xl:text-sm">
                 {current.eyebrow}
               </span>
-              <h2 className="font-display text-2xl font-black leading-tight tracking-wide text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] sm:text-3xl">
+              <h2 className="font-display text-2xl font-black leading-tight tracking-wide text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] sm:text-3xl lg:text-[2.75rem] xl:text-[3.5rem]">
                 {current.title}
               </h2>
-              <p className="max-w-[55%] whitespace-pre-line text-xs text-white/95 drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] sm:text-sm">
+              <p className="max-w-[55%] whitespace-pre-line text-xs text-white/95 drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] sm:text-sm lg:max-w-[48%] lg:text-base xl:text-lg">
                 {current.desc}
               </p>
               <Link
                 to={current.to}
-                className="mt-1 inline-flex w-fit items-center justify-center rounded-md bg-purple-600 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-purple-900/50 transition hover:bg-purple-500"
+                className="mt-1 inline-flex w-fit items-center justify-center rounded-md bg-purple-600 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-purple-900/50 transition hover:bg-purple-500 lg:mt-2 lg:px-6 lg:py-3 lg:text-sm xl:px-7 xl:text-base"
               >
                 {current.cta}
               </Link>
