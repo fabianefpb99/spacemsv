@@ -738,14 +738,12 @@ export function HomePage() {
       <PromoPopup />
       <MascotFloater />
       <DesktopSidebar />
-      <div className="xl:mx-auto xl:flex xl:w-full xl:max-w-[1440px] xl:items-start xl:gap-6 xl:px-6">
-      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4 lg:max-w-3xl lg:px-6 xl:mx-0 xl:min-w-0 xl:max-w-none xl:flex-1 xl:px-0">
-        {/* Header — must match SpacemanGame header exactly, sin icono de sonido */}
-        <header
-          className="flex flex-col items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
-          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
-        >
-          <div className="flex items-center justify-between w-full">
+      {/* Header — full width del shell, pegado a los bordes */}
+      <header
+        className="flex w-full flex-col items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 xl:px-6"
+        style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
+      >
+          <div className="flex w-full items-center justify-between xl:mx-auto xl:max-w-[1440px]">
             <div className="flex items-center gap-1">
               <div className="lg:hidden">
               <HamburgerDrawer
@@ -799,7 +797,9 @@ export function HomePage() {
               )}
             </div>
           </div>
-        </header>
+      </header>
+      <div className="xl:mx-auto xl:flex xl:w-full xl:max-w-[1440px] xl:items-start xl:gap-6 xl:px-6">
+      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-0 sm:max-w-lg sm:px-4 lg:max-w-3xl lg:px-6 xl:mx-0 xl:min-w-0 xl:max-w-none xl:flex-1 xl:px-0">
       <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
       <h1 className="sr-only">
         BETSPACE — Casino Online y Apuestas en Colombia
