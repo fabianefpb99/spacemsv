@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import { ArrowLeft, Check, CreditCard, ChevronDown } from "lucide-react";
+import { ArrowLeft, Check, ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import nequiLogo from "@/assets/nequi.svg";
 import bancolombiaLogo from "@/assets/bancolombia.svg";
@@ -18,9 +18,9 @@ export const Route = createFileRoute("/pay")({
   head: () => ({
     meta: [
       { title: "Recargar Saldo Nequi y Bancolombia | BETSPACE Casino" },
-      { name: "description", content: "Recarga tu saldo en BETSPACE Casino con Nequi, Daviplata, Bancolombia o tarjeta de débito." },
+      { name: "description", content: "Recarga tu saldo en BETSPACE Casino con Nequi o Bre-B de forma rápida y segura." },
       { property: "og:title", content: "Recargar Saldo Nequi y Bancolombia | BETSPACE Casino" },
-      { property: "og:description", content: "Recarga tu saldo en BETSPACE Casino con Nequi, Daviplata, Bancolombia o tarjeta de débito." },
+      { property: "og:description", content: "Recarga tu saldo en BETSPACE Casino con Nequi o Bre-B de forma rápida y segura." },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
@@ -96,25 +96,7 @@ function PayPage() {
   const bonusSec = Math.floor((bonusLeft % 60000) / 1000);
   const bonusLabel = `${String(bonusMin).padStart(2, "0")}:${String(bonusSec).padStart(2, "0")}`;
 
-  // Card form state
-  const [cardNumber, setCardNumber] = useState("");
-  const [cardName, setCardName] = useState("");
-  const [cardExp, setCardExp] = useState("");
-  const [cardCvv, setCardCvv] = useState("");
-  const [savedCard, setSavedCard] = useState<{ last4: string; name: string } | null>(null);
-
-  const cardReady = method !== "card" || savedCard !== null;
-  const canContinue = method !== null && combo !== null && cardReady;
-
-  function handleSaveCard() {
-    const digits = cardNumber.replace(/\D/g, "");
-    if (digits.length < 12) return;
-    setSavedCard({ last4: digits.slice(-4), name: cardName || "Titular" });
-    setCardNumber("");
-    setCardName("");
-    setCardExp("");
-    setCardCvv("");
-  }
+  const canContinue = method !== null && combo !== null;
 
   return (
     <div className="theme-dark-fixed min-h-screen bg-[#060210] text-white font-pay">
@@ -224,108 +206,13 @@ function PayPage() {
             subtitle="No disponible"
           />
           <MethodCard
-            selected={method === "card"}
-            onClick={() => setMethod("card")}
+            disabled
+            selected={false}
+            onClick={() => {}}
             logo={<CardLogo />}
             title="TARJETA DE DÉBITO"
-            subtitle="Visa, Mastercard, Débito"
-            expandable
-          >
-            {method === "card" && (
-              <div className="mt-3 rounded-xl border border-purple-500/30 bg-[#0a0420] p-3">
-                {savedCard ? (
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-9 w-12 items-center justify-center rounded-md bg-gradient-to-br from-purple-700 to-purple-900 ring-1 ring-purple-400/40">
-                        <CreditCard className="h-4 w-4 text-purple-100" />
-                      </div>
-                      <div>
-                        <div className="font-mono text-sm tracking-widest text-white">
-                          ********{savedCard.last4}
-                        </div>
-                        <div className="text-[10px] uppercase tracking-wider text-purple-200/70">
-                          {savedCard.name} · Modo seguro
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500/20 ring-1 ring-emerald-400/50">
-                        <Check className="h-4 w-4 text-emerald-300" strokeWidth={3} />
-                      </span>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); setSavedCard(null); }}
-                        className="text-[10px] font-semibold uppercase tracking-wider text-purple-300 hover:text-purple-200"
-                      >
-                        Cambiar
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex flex-col gap-2.5" onClick={(e) => e.stopPropagation()}>
-                    <label className="text-[10px] uppercase tracking-widest text-purple-200/70">
-                      Número de tarjeta
-                      <input
-                        inputMode="numeric"
-                        autoComplete="cc-number"
-                        placeholder="0000 0000 0000 0000"
-                        value={cardNumber}
-                        onChange={(e) => {
-                          const v = e.target.value.replace(/\D/g, "").slice(0, 19);
-                          setCardNumber(v.replace(/(.{4})/g, "$1 ").trim());
-                        }}
-                        className="mt-1 w-full rounded-md border border-purple-500/30 bg-[#150830] px-3 py-2 font-mono text-sm tracking-widest text-white placeholder:text-purple-300/30 focus:border-purple-400 focus:outline-none"
-                      />
-                    </label>
-                    <label className="text-[10px] uppercase tracking-widest text-purple-200/70">
-                      Nombre del titular
-                      <input
-                        autoComplete="cc-name"
-                        placeholder="Como aparece en la tarjeta"
-                        value={cardName}
-                        onChange={(e) => setCardName(e.target.value.toUpperCase())}
-                        className="mt-1 w-full rounded-md border border-purple-500/30 bg-[#150830] px-3 py-2 text-sm text-white placeholder:text-purple-300/30 focus:border-purple-400 focus:outline-none"
-                      />
-                    </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <label className="text-[10px] uppercase tracking-widest text-purple-200/70">
-                        Vencimiento
-                        <input
-                          inputMode="numeric"
-                          placeholder="MM/AA"
-                          value={cardExp}
-                          onChange={(e) => {
-                            const v = e.target.value.replace(/\D/g, "").slice(0, 4);
-                            setCardExp(v.length > 2 ? `${v.slice(0, 2)}/${v.slice(2)}` : v);
-                          }}
-                          className="mt-1 w-full rounded-md border border-purple-500/30 bg-[#150830] px-3 py-2 font-mono text-sm tracking-widest text-white placeholder:text-purple-300/30 focus:border-purple-400 focus:outline-none"
-                        />
-                      </label>
-                      <label className="text-[10px] uppercase tracking-widest text-purple-200/70">
-                        CVV
-                        <input
-                          inputMode="numeric"
-                          placeholder="123"
-                          value={cardCvv}
-                          onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                          className="mt-1 w-full rounded-md border border-purple-500/30 bg-[#150830] px-3 py-2 font-mono text-sm tracking-widest text-white placeholder:text-purple-300/30 focus:border-purple-400 focus:outline-none"
-                        />
-                      </label>
-                    </div>
-                    <button
-                      onClick={handleSaveCard}
-                      disabled={cardNumber.replace(/\D/g, "").length < 12}
-                      className="mt-1 inline-flex items-center justify-center rounded-md bg-purple-600 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-purple-900/50 transition hover:bg-purple-500 disabled:cursor-not-allowed disabled:bg-purple-600/30 disabled:text-purple-200/40 disabled:shadow-none"
-                    >
-                      Guardar tarjeta
-                    </button>
-                    <p className="text-center text-[9px] uppercase tracking-wider text-purple-300/60">
-                      Se almacenará en modo seguro
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-          </MethodCard>
+            subtitle="No disponible"
+          />
         </div>
 
         {/* Step 2: combos */}
