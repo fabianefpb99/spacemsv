@@ -1404,10 +1404,6 @@ export function HomePage() {
   );
 }
 
-function BottomItem({ icon, label, active, to }: { icon: React.ReactNode; label: string; active?: boolean; to?: string }) {
-  return BottomItemInner({ icon, label, active, to });
-}
-
 function DesktopRailPlaceholder({ title, height }: { title: string; height: number }) {
   return (
     <div
@@ -1422,7 +1418,7 @@ function DesktopRailPlaceholder({ title, height }: { title: string; height: numb
   );
 }
 
-function BottomItemInner({ icon, label, active, to }: { icon: React.ReactNode; label: string; active?: boolean; to?: string }) {
+function BottomItem({ icon, label, active, to }: { icon: React.ReactNode; label: string; active?: boolean; to?: string }) {
   const className = `home-bottom-item flex w-14 flex-col items-center gap-1 ${active ? "home-bottom-item--active text-emerald-400" : "text-purple-300/70 hover:text-purple-200"}`;
   if (to) {
     return (
