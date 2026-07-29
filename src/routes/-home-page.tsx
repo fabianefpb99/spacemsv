@@ -1405,6 +1405,24 @@ export function HomePage() {
 }
 
 function BottomItem({ icon, label, active, to }: { icon: React.ReactNode; label: string; active?: boolean; to?: string }) {
+  return BottomItemInner({ icon, label, active, to });
+}
+
+function DesktopRailPlaceholder({ title, height }: { title: string; height: number }) {
+  return (
+    <div
+      className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-purple-400/40 bg-gradient-to-b from-purple-700/25 to-fuchsia-700/10 text-center"
+      style={{ height }}
+    >
+      <span className="font-display text-xs font-black uppercase tracking-[0.18em] text-purple-200/80">
+        {title}
+      </span>
+      <span className="text-[10px] uppercase tracking-wider text-purple-300/50">Espacio reservado</span>
+    </div>
+  );
+}
+
+function BottomItemInner({ icon, label, active, to }: { icon: React.ReactNode; label: string; active?: boolean; to?: string }) {
   const className = `home-bottom-item flex w-14 flex-col items-center gap-1 ${active ? "home-bottom-item--active text-emerald-400" : "text-purple-300/70 hover:text-purple-200"}`;
   if (to) {
     return (
