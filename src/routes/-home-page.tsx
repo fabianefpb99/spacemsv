@@ -738,7 +738,8 @@ export function HomePage() {
       <PromoPopup />
       <MascotFloater />
       <DesktopSidebar />
-      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4 lg:max-w-3xl lg:px-6">
+      <div className="xl:mx-auto xl:flex xl:w-full xl:max-w-[1440px] xl:items-start xl:gap-6 xl:px-6">
+      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-3 pb-6 pt-4 sm:max-w-lg sm:px-4 lg:max-w-3xl lg:px-6 xl:mx-0 xl:min-w-0 xl:max-w-none xl:flex-1 xl:px-0">
         {/* Header — must match SpacemanGame header exactly, sin icono de sonido */}
         <header
           className="flex flex-col items-center justify-between bg-[#060210] border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
@@ -1376,6 +1377,14 @@ export function HomePage() {
 
         {/* Spacer for bottom nav */}
         <div className="h-24" />
+      </div>
+
+        {/* Rail derecho — solo escritorio (fase 1: espacios reservados) */}
+        <aside className="hidden xl:sticky xl:top-4 xl:block xl:w-[320px] xl:shrink-0 xl:space-y-4 xl:pt-4">
+          <DesktopRailPlaceholder title="Jackpot" height={280} />
+          <DesktopRailPlaceholder title="Giros gratis" height={200} />
+          <DesktopRailPlaceholder title="Espacio reservado" height={160} />
+        </aside>
       </div>
 
       {/* Bottom navigation */}
