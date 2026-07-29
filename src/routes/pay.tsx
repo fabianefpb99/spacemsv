@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import betspaceLogo from "@/assets/betspace-logo.svg";
-import { ArrowLeft, Check, CreditCard, ChevronDown } from "lucide-react";
+import { ArrowLeft, Check, ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import nequiLogo from "@/assets/nequi.svg";
 import bancolombiaLogo from "@/assets/bancolombia.svg";
@@ -18,9 +18,9 @@ export const Route = createFileRoute("/pay")({
   head: () => ({
     meta: [
       { title: "Recargar Saldo Nequi y Bancolombia | BETSPACE Casino" },
-      { name: "description", content: "Recarga tu saldo en BETSPACE Casino con Nequi, Daviplata, Bancolombia o tarjeta de débito." },
+      { name: "description", content: "Recarga tu saldo en BETSPACE Casino con Nequi o Bre-B de forma rápida y segura." },
       { property: "og:title", content: "Recargar Saldo Nequi y Bancolombia | BETSPACE Casino" },
-      { property: "og:description", content: "Recarga tu saldo en BETSPACE Casino con Nequi, Daviplata, Bancolombia o tarjeta de débito." },
+      { property: "og:description", content: "Recarga tu saldo en BETSPACE Casino con Nequi o Bre-B de forma rápida y segura." },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
