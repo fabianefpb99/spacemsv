@@ -96,25 +96,7 @@ function PayPage() {
   const bonusSec = Math.floor((bonusLeft % 60000) / 1000);
   const bonusLabel = `${String(bonusMin).padStart(2, "0")}:${String(bonusSec).padStart(2, "0")}`;
 
-  // Card form state
-  const [cardNumber, setCardNumber] = useState("");
-  const [cardName, setCardName] = useState("");
-  const [cardExp, setCardExp] = useState("");
-  const [cardCvv, setCardCvv] = useState("");
-  const [savedCard, setSavedCard] = useState<{ last4: string; name: string } | null>(null);
-
-  const cardReady = method !== "card" || savedCard !== null;
-  const canContinue = method !== null && combo !== null && cardReady;
-
-  function handleSaveCard() {
-    const digits = cardNumber.replace(/\D/g, "");
-    if (digits.length < 12) return;
-    setSavedCard({ last4: digits.slice(-4), name: cardName || "Titular" });
-    setCardNumber("");
-    setCardName("");
-    setCardExp("");
-    setCardCvv("");
-  }
+  const canContinue = method !== null && combo !== null;
 
   return (
     <div className="theme-dark-fixed min-h-screen bg-[#060210] text-white font-pay">
