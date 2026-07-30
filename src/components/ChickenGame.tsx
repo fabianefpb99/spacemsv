@@ -48,6 +48,7 @@ import chickenFailAsset from "@/assets/chicken/chicken-fail.png.asset.json";
 import asteroidAsset from "@/assets/chicken/asteroid.webp.asset.json";
 import asteroidBrokenAsset from "@/assets/chicken/asteroid-broken.webp.asset.json";
 import { GameMenuDrawer } from "@/components/GameMenuDrawer";
+import { OnlineUsersIcon } from "@/components/OnlineUsersIcon";
 
 const BG = bgAsset.url;
 const IMG_IDLE = chickenIdleAsset.url;
@@ -546,10 +547,7 @@ export function ChickenGame() {
         {/* Online + mute */}
         <div className="mt-1.5 flex shrink-0 items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="relative inline-flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-            </span>
+            <OnlineUsersIcon />
             <span className="text-xs font-semibold text-white/90">{online} ONLINE</span>
           </div>
           <button
