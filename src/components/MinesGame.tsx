@@ -245,7 +245,9 @@ export function MinesGame() {
     setRevealed(new Set(pub.revealed));
     setPicks(pub.picks);
     // Solo forzamos re-sync completo del bono al cerrar la ronda.
-    applyBalance(view.new_balance, { invalidate: pub.phase === "result" });
+    if (view.new_balance !== undefined) {
+      applyBalance(view.new_balance, { invalidate: pub.phase === "result" });
+    }
     // Whatever tiles came back as revealed/closed are no longer pending.
     setPendingTiles((prev) => {
       if (prev.size === 0 && pub.phase === "playing") return prev;
@@ -471,12 +473,7 @@ export function MinesGame() {
     }
   }, [phase, picks, cashoutFn, applyServerView, recoverAfterActionError]);
 
-  /**
-   * Drain queued tile clicks one at a time. Runs only one network call in
-   * flight so the server's nonce stays in sync, but the user can click as
-   * fast as they want — each click flips its tile to a "pending" press and
-   * the worker reconciles with the server in order.
-   */
+  /** Process one tile at a time so the session nonce can never drift. */
   const processQueue = useCallback(async () => {
     if (actionInFlightRef.current) return;
     while (pendingQueueRef.current.length > 0) {
@@ -531,6 +528,9 @@ export function MinesGame() {
 
   const handleTile = useCallback((idx: number) => {
     if (phase !== "playing") return;
+    // This ref changes synchronously, unlike React state. Rapid taps in the
+    // same frame therefore cannot enqueue a second or third server action.
+    if (actionInFlightRef.current || pendingQueueRef.current.length > 0) return;
     if (revealed.has(idx)) return;
     if (pendingTiles.has(idx)) return;
     // Queue + flip the tile visually to a "pressed" state. We DON'T paint a
@@ -701,7 +701,7 @@ export function MinesGame() {
                 <button
                   key={i}
                   type="button"
-                  disabled={phase !== "playing" || isRevealed || isPending}
+                   disabled={phase !== "playing" || pendingTiles.size > 0 || isRevealed || isPending}
                   onClick={() => handleTile(i)}
                   className={`mines-tile aspect-square ${
                     isRevealed ? "mines-tile-revealed" : ""
