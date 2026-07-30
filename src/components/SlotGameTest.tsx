@@ -14,6 +14,7 @@ import carImg from "@/assets/slot/car.webp";
 import chipImg from "@/assets/slot/chip.webp";
 import cardImg from "@/assets/slot/card.webp";
 import { GameMenuDrawer } from "@/components/GameMenuDrawer";
+import { OnlineUsersIcon } from "@/components/OnlineUsersIcon";
 
 /* ============================================================
    Symbols — Mafia Royale (Peaky Blinders theme)
@@ -911,135 +912,7 @@ export function SlotGameTest() {
         {/* Online + mute */}
         <div className="mt-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="relative inline-flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-            </span>
-            <span className="text-xs font-semibold text-white/90">{online} ONLINE</span>
-          </div>
-          <button
-            onClick={() => setMuted((m) => !m)}
-            className="rounded-md p-1 text-purple-200/80 hover:bg-white/5"
-            aria-label={muted ? "Activar sonido" : "Silenciar"}
-          >
-            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-          </button>
-        </div>
-
-        {/* HUD (matches reference) */}
-        <section className="mt-2 grid grid-cols-4 gap-1.5 rounded-2xl glass-panel p-1.5 sm:p-2">
-          <HudCell label="LÍNEAS" value={String(LINES)} />
-          <HudCell label="PREMIO TOTAL" value={lastWin > 0 ? `${formatCOP(lastWin)} COP` : "—"} accent="green" wide />
-          <HudCell label="TIRADAS GRATIS" value="--" accent="muted" />
-          <HudCell label="MULTIPLICADOR" value={`x${winMult >= 10 ? winMult.toFixed(1) : winMult.toFixed(2).replace(/\.?0+$/, "")}`} accent="purple" />
-        </section>
-
-        {/* Reels frame wrapper — labels sit on the neon border edge */}
-        <section className="relative mt-3">
-          {/* Title badge on frame — OUTSIDE clip so it isn't cut */}
-          <div className="absolute left-1/2 -top-3 z-30 -translate-x-1/2">
-            <div
-              className="flex items-center gap-2 rounded-full px-4 py-1"
-              style={{
-                background: "linear-gradient(180deg, rgba(20,8,42,0.95), rgba(8,2,18,0.95))",
-                border: "1px solid rgba(168,85,247,0.65)",
-                boxShadow: "0 0 18px rgba(168,85,247,0.55), inset 0 0 8px rgba(168,85,247,0.25)",
-              }}
-            >
-              <span className="text-[10px]">✦</span>
-              <span
-                className="font-display text-sm font-black tracking-[0.18em]"
-                style={{
-                  background: "linear-gradient(180deg,#c084fc 0%,#7c3aed 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  filter: "drop-shadow(0 0 8px rgba(168,85,247,0.7))",
-                }}
-              >MAFIA</span>
-              <span className="font-display text-sm font-black tracking-[0.18em] neon-green">ROYALE</span>
-              <span className="text-[10px]">✦</span>
-            </div>
-          </div>
-
-          {/* Lines side labels — OUTSIDE the frame, in the gutter */}
-          <div className="pointer-events-none absolute left-0 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2 -rotate-90">
-            <span className="font-display text-[9px] font-bold tracking-[0.32em] neon-green whitespace-nowrap">
-              {LINES} LÍNEAS · 2 VÍAS
-            </span>
-          </div>
-          <div className="pointer-events-none absolute right-0 top-1/2 z-30 translate-x-1/2 -translate-y-1/2 rotate-90">
-            <span className="font-display text-[9px] font-bold tracking-[0.32em] neon-green whitespace-nowrap">
-              {LINES} LÍNEAS · 2 VÍAS
-            </span>
-          </div>
-
-          {/* Neon 2D frame with clipped (notched) corners */}
-          <div
-            className="relative"
-            style={{
-              clipPath:
-                "polygon(16px 0, calc(100% - 16px) 0, 100% 16px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 16px 100%, 0 calc(100% - 16px), 0 16px)",
-              background:
-                "linear-gradient(135deg, #a855f7 0%, #7c3aed 50%, #c084fc 100%)",
-              padding: "2px",
-              filter:
-                "drop-shadow(0 0 10px rgba(168,85,247,0.55)) drop-shadow(0 0 22px rgba(168,85,247,0.28))",
-            }}
-          >
-            <div
-              className="relative p-2 sm:p-2.5"
-              style={{
-                clipPath:
-                  "polygon(15px 0, calc(100% - 15px) 0, 100% 15px, 100% calc(100% - 15px), calc(100% - 15px) 100%, 15px 100%, 0 calc(100% - 15px), 0 15px)",
-                background: "#0a041c",
-              }}
-            >
-          <div className="relative pt-3">
-            <div className="grid grid-cols-5 gap-0">
-              {grid.map((reel, ri) => (
-                <Reel
-                  key={ri}
-                  finalSyms={reel}
-                  spinning={spinning}
-                  reelIndex={ri}
-                  onStop={handleReelStop}
-                  winRows={highlightedCells.get(ri) ?? new Set()}
-                  winTier={activeTier}
-                />
-              ))}
-              {/* Single neon vertical dividers between reels */}
-              <div className="pointer-events-none absolute inset-y-3 left-0 z-20 grid w-full grid-cols-5">
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <div key={i} className="relative">
-                    {i < 4 && (
-                      <div
-                        className="absolute right-0 top-0 h-full w-px"
-                        style={{
-                          background:
-                            "linear-gradient(180deg, transparent 0%, rgba(168,85,247,0.85) 15%, rgba(192,132,252,0.95) 50%, rgba(168,85,247,0.85) 85%, transparent 100%)",
-                          boxShadow:
-                            "0 0 6px rgba(168,85,247,0.85), 0 0 12px rgba(168,85,247,0.5)",
-                        }}
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-            </div>
-          </div>
-
-          {/* Big win banner — OUTSIDE clip so it isn't cut */}
-          {lastWin > 0 && !spinning && (
-            <div
-              className="absolute inset-x-0 -bottom-3 z-30 mx-auto w-fit rounded-full border border-emerald-400/60 bg-[#062014]/95 px-4 py-1 backdrop-blur"
-              style={{ boxShadow: "0 0 24px rgba(46,255,161,0.55)", animation: "scale-in 0.3s ease-out" }}
-            >
-              <span className="font-display text-xs font-bold uppercase tracking-widest text-emerald-300">
-                ¡Ganaste! <span className="neon-green ml-1">${formatCOP(lastWin)}</span>
-              </span>
+            <OnlineUsersIcon />
             </div>
           )}
         </section>

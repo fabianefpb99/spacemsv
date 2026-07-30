@@ -83,6 +83,7 @@ import jackpotBanner from "@/assets/jackpot-banner.webp";
 import ruletaBanner from "@/assets/ruleta-banner.webp";
 import casinoIntro from "@/assets/audio/casino-intro.mp3.asset.json";
 import mundialHeroAsset from "@/assets/mundial-hero.webp.asset.json";
+import { OnlineUsersIcon } from "@/components/OnlineUsersIcon";
 
 function formatCOP(n: number) {
   return new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 }).format(Math.floor(n));
@@ -157,12 +158,7 @@ function OnlineRotator({ online, username, onClick, clickable }: { online: numbe
           role={clickable ? "button" : undefined}
         >
           <span className="inline-flex items-center gap-2">
-            <span className="relative inline-flex h-2 w-2">
-              <span className="home-online-dot absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-80" />
-              <span className="home-online-dot relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-            </span>
-            <span className="home-online-text text-xs font-semibold text-white/90">{online} ONLINE</span>
-          </span>
+            <OnlineUsersIcon />
           <span className="home-online-text inline-flex items-center gap-1 text-xs font-medium text-white/90">
             <span className="font-bold">Authentic</span> Games
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-3.5 w-3.5" aria-hidden="true">
