@@ -46,7 +46,13 @@ export function DesktopGateSection() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Panel title="Vista de escritorio" icon={Monitor}>
+      <Panel
+        title={
+          <span className="inline-flex items-center gap-2">
+            <Monitor className="h-4 w-4 text-fuchsia-300" /> Vista de escritorio
+          </span>
+        }
+      >
         <div className="flex flex-col gap-5">
           <div className="flex items-center justify-between gap-4 rounded-xl border border-purple-500/25 bg-purple-600/10 px-4 py-3">
             <div>
