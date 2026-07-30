@@ -1,3 +1,4 @@
+import { OnlineUsersIcon } from "@/components/OnlineUsersIcon";
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 import { ARENA_CHARACTERS, type ArenaCharacterId } from "@/lib/games/arena.shared";
@@ -63,7 +64,7 @@ export function ArenaLobby({
     <div className="absolute inset-0 overflow-hidden">
       <div className="absolute left-0 right-0 top-1 flex items-center px-3 text-[9px] font-semibold uppercase tracking-[0.18em] text-white/90 sm:px-4">
         <div className="flex items-center gap-1.5 text-white/85">
-          <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(74,222,128,0.7)]" />
+          <OnlineUsersIcon />
           152 ONLINE
         </div>
       </div>

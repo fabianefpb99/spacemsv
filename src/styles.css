@@ -376,6 +376,9 @@ html.light .home-online-text {
 html.light .home-online-dot {
   background-color: #00c853 !important;
 }
+html.light .home-online-icon:not(.theme-dark-fixed):not(.theme-dark-fixed *) {
+  color: #00a844 !important;
+}
 html.light .home-game-card {
   border-color: rgba(59, 20, 104, 0.18) !important;
   box-shadow: none !important;
