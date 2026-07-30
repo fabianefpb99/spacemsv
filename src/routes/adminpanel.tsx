@@ -13,6 +13,7 @@ import {
   Loader2,
   LogOut,
   Menu,
+  Monitor,
   PanelLeft,
   Percent,
   Settings as SettingsIcon,
@@ -48,6 +49,7 @@ import { VipRewardsSection } from "@/components/admin/VipRewardsSection";
 import { BenefitsSection } from "@/components/admin/BenefitsSection";
 import { BoostSection } from "@/components/admin/BoostSection";
 import { SportsSection } from "@/components/admin/SportsSection";
+import { DesktopGateSection } from "@/components/admin/DesktopGateSection";
 
 export const Route = createFileRoute("/adminpanel")({
   head: () => ({
@@ -78,6 +80,7 @@ const SECTIONS: { id: AdminSection; label: string; icon: typeof Home; ready: boo
   { id: "eventos", label: "Eventos y Misiones", icon: Sparkles, ready: true },
   { id: "boost", label: "Modo Boost", icon: Zap, ready: true },
   { id: "deportes", label: "Deportes", icon: Trophy, ready: true },
+  { id: "vista_pc", label: "Vista PC", icon: Monitor, ready: true },
   { id: "bonos", label: "Bonos", icon: Gift, ready: false },
   { id: "transacciones", label: "Transacciones", icon: Coins, ready: false },
   { id: "reportes", label: "Reportes", icon: BarChart3, ready: false },
@@ -182,6 +185,8 @@ function AdminPanelPage() {
         return <BoostSection />;
       case "deportes":
         return <SportsSection />;
+      case "vista_pc":
+        return <DesktopGateSection />;
       default:
         return <PlaceholderSection label={currentLabel} />;
     }
