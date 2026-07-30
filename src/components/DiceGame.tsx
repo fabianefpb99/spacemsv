@@ -329,6 +329,243 @@ export function DiceGame() {
         <div className="mt-1.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <OnlineUsersIcon />
+            <span className="text-xs font-semibold text-white/90">{online} ONLINE</span>
+          </div>
+          <button
+            onClick={() => setMuted((m) => !m)}
+            className="rounded-md p-1 text-purple-200/80 hover:bg-white/5"
+            aria-label={muted ? "Activar sonido" : "Silenciar"}
+          >
+            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          </button>
+        </div>
+
+        {/* Stats HUD */}
+        <section className="mt-1.5 grid grid-cols-4 gap-1.5 rounded-xl border border-purple-500/30 glass-panel p-1.5">
+          <Stat label="Límite Mín" value={`${formatCOP(MIN_BET)}`} />
+          <Stat label="Límite Máx" value={`${formatCOP(MAX_BET)}`} />
+          <Stat label="Multiplicador" value={`X${mult.toFixed(2)}`} accent />
+          <Stat label="Probabilidad" value={`${winProbPct.toFixed(2)}%`} accent />
+        </section>
+
+        {/* Main dice panel — neon frame igual al de Slot */}
+        <section
+          className="relative mt-3"
+        >
+          <div className="absolute left-5 -top-3 z-30">
+            <div
+              className="flex items-center gap-2 rounded-full px-4 py-1"
+              style={{
+                background: "linear-gradient(180deg, rgba(20,8,42,0.95), rgba(8,2,18,0.95))",
+                border: "1px solid rgba(168,85,247,0.65)",
+                boxShadow: "0 0 18px rgba(168,85,247,0.55), inset 0 0 8px rgba(168,85,247,0.25)",
+              }}
+            >
+              <span
+                className="font-display text-sm font-black tracking-[0.18em]"
+                style={{
+                  background: "linear-gradient(180deg,#c084fc 0%,#7c3aed 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  filter: "drop-shadow(0 0 8px rgba(168,85,247,0.7))",
+                }}
+              >DADOS</span>
+            </div>
+          </div>
+          <div
+            className="relative"
+            style={{
+              clipPath:
+                "polygon(16px 0, calc(100% - 16px) 0, 100% 16px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 16px 100%, 0 calc(100% - 16px), 0 16px)",
+              background: "linear-gradient(135deg, #a855f7 0%, #7c3aed 50%, #c084fc 100%)",
+              padding: "2px",
+              filter:
+                "drop-shadow(0 0 10px rgba(168,85,247,0.55)) drop-shadow(0 0 22px rgba(168,85,247,0.28))",
+            }}
+          >
+            <div
+              className="relative overflow-hidden p-2"
+              style={{
+                clipPath:
+                  "polygon(15px 0, calc(100% - 15px) 0, 100% 15px, 100% calc(100% - 15px), calc(100% - 15px) 100%, 15px 100%, 0 calc(100% - 15px), 0 15px)",
+                background: "#0a041c",
+              }}
+            >
+
+          <div className="relative z-0 mx-auto flex h-72 w-full items-center justify-center sm:h-80">
+            {/* energy halo */}
+            <div className="dice-halo" />
+            <div className="dice-rings" />
+
+            {/* 3D dice */}
+            <div className={`dice-stage ${rolling ? "dice-stage-rolling" : ""}`}>
+              <div
+                className={
+                  rollPhase === "spinning"
+                    ? "dice-cube dice-cube-spinning"
+                    : rollPhase === "landing"
+                      ? `dice-cube dice-cube-rolling dice-face-${targetFace}`
+                      : `dice-cube dice-cube-idle dice-face-${face}`
+                }
+              >
+                <DiceFace n={1} className="dice-front" />
+                <DiceFace n={6} className="dice-back" />
+                <DiceFace n={3} className="dice-right" />
+                <DiceFace n={4} className="dice-left" />
+                <DiceFace n={5} className="dice-top" />
+                <DiceFace n={2} className="dice-bottom" />
+              </div>
+            </div>
+
+            {/* particles on roll */}
+            {rolling && <DiceParticles />}
+
+            {/* result flash */}
+            {(phase === "won" || phase === "lost") && (
+              <div className={`pointer-events-none absolute inset-0 ${phase === "won" ? "dice-flash-win" : "dice-flash-lose"}`} />
+            )}
+          </div>
+
+          {/* Multiplier picker */}
+          <div className="relative z-20 mt-2 flex items-center justify-between gap-1 overflow-x-auto hide-scrollbar">
+            {MULTS.map((m) => (
+              <button
+                key={m}
+                disabled={phase !== "betting"}
+                onClick={() => setMult(m)}
+                className={`shrink-0 rounded-md px-2 py-0.5 font-display text-[10px] font-bold transition disabled:opacity-50 ${
+                  m === mult
+                    ? "border border-emerald-400/70 bg-emerald-500/15 text-emerald-200 shadow-[0_0_10px_rgba(16,185,129,0.45)]"
+                    : "border border-purple-500/30 bg-[#160830]/50 text-purple-100 hover:border-purple-400/60"
+                }`}
+              >
+                {m.toFixed(2)}X
+              </button>
+            ))}
+          </div>
+            </div>
+          </div>
+        </section>
+
+        {/* BAJO / ALTO */}
+        <section className="mt-1.5 grid grid-cols-2 gap-2">
+          <button
+            disabled={phase !== "betting"}
+            onClick={() => setSide("low")}
+            className={`flex flex-col items-center justify-center rounded-xl border py-2 transition disabled:opacity-60 ${
+              side === "low"
+                ? "border-emerald-400/70 bg-emerald-500/10 shadow-[0_0_18px_rgba(16,185,129,0.35)]"
+                : "border-purple-500/30 bg-[#160830]/60 hover:border-purple-400/60"
+            }`}
+          >
+            <span className="font-display text-base font-black tracking-widest text-white">BAJO</span>
+            <span className="text-[10px] font-bold text-purple-200/80">1 — 3</span>
+          </button>
+          <button
+            disabled={phase !== "betting"}
+            onClick={() => setSide("high")}
+            className={`flex flex-col items-center justify-center rounded-xl border py-2 transition disabled:opacity-60 ${
+              side === "high"
+                ? "border-emerald-400/70 bg-emerald-500/10 shadow-[0_0_18px_rgba(16,185,129,0.35)]"
+                : "border-purple-500/30 bg-[#160830]/60 hover:border-purple-400/60"
+            }`}
+          >
+            <span className="font-display text-base font-black tracking-widest text-white">ALTO</span>
+            <span className="text-[10px] font-bold text-purple-200/80">4 — 6</span>
+          </button>
+        </section>
+
+        {/* Recent dice */}
+        <section className="mt-2 rounded-xl border border-purple-500/30 glass-panel px-2.5 py-2">
+          <div className="flex items-center gap-2 mb-1.5">
+            <TrendingUp className="h-3.5 w-3.5 text-emerald-400" />
+            <span className="font-display text-[11px] font-bold uppercase tracking-widest text-white/80">
+              Últimos resultados
+            </span>
+          </div>
+          <div className="flex gap-1.5 overflow-x-auto hide-scrollbar">
+            {recent.map((h) => (
+              <div
+                key={h.id}
+                title={`${h.user} · ${h.roll} · ${h.won ? formatCOP(h.amount) + " COP" : "Perdió"}`}
+                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md border ${
+                  h.won
+                    ? "border-emerald-500/40 bg-emerald-950/30 text-emerald-300"
+                    : "border-purple-500/30 bg-[#160830]/60 text-purple-200"
+                }`}
+              >
+                <MiniDie n={h.roll} />
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Bet panel */}
+        <section className="mt-1.5 rounded-2xl border border-purple-500/30 glass-panel p-2">
+          <div className="flex gap-2.5">
+            {/* Left: bet controls */}
+            <div className="flex-1">
+              <div className="text-center text-[9px] uppercase tracking-widest text-purple-200/70">
+                Apuesta (COP)
+              </div>
+              <div className="mt-1 flex items-center gap-2">
+                <button
+                  onClick={() => setBet((b) => Math.max(MIN_BET, b - BET_STEP))}
+                  disabled={phase !== "betting"}
+                  className="btn-bet flex h-10 w-11 items-center justify-center rounded-lg disabled:opacity-50"
+                  aria-label="Disminuir apuesta"
+                >
+                  <Minus className="h-5 w-5" />
+                </button>
+                <div
+                  className="h-10 w-full min-w-0 flex-1 cursor-default rounded-lg border border-purple-500/30 bg-[#160830]/60 px-2 font-display text-lg font-bold text-white"
+                  aria-label="Apuesta"
+                >
+                  <BetAmount bet={bet} bonusBalance={bonusBalance} />
+                </div>
+                <button
+                  onClick={() => setBet((b) => clampBetToStep(b + BET_STEP, balance, MAX_BET, BET_STEP, MIN_BET))}
+                  disabled={phase !== "betting"}
+                  className="btn-bet flex h-10 w-11 items-center justify-center rounded-lg disabled:opacity-50"
+                  aria-label="Aumentar apuesta"
+                >
+                  <Plus className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="mt-1.5 flex items-center gap-1.5">
+                <button
+                  onClick={() => setBet((b) => clampBetToStep(b * 2, balance, MAX_BET, BET_STEP, MIN_BET))}
+                  disabled={phase !== "betting"}
+                  className="btn-bet flex h-7 flex-1 items-center justify-center rounded-md text-[11px] font-bold disabled:opacity-50"
+                >
+                  X2
+                </button>
+                {QUICK_ADDS.map((amt) => (
+                  <button
+                    key={amt}
+                    onClick={() => setBet((b) => clampBetToStep(b + amt, balance, MAX_BET, BET_STEP, MIN_BET))}
+                    disabled={phase !== "betting"}
+                    className="btn-bet flex h-7 flex-1 items-center justify-center rounded-md text-[11px] font-bold disabled:opacity-50"
+                  >
+                    +{amt >= 1000 ? `${amt / 1000}K` : amt}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: TIRAR DADOS */}
+            <div className="flex w-[42%] flex-col" style={{ minHeight: 90 }}>
+              <button
+                onClick={handleRoll}
+                disabled={!canRoll}
+                className="btn-primary-green btn-primary-action flex flex-1 flex-col items-center justify-center rounded-2xl font-display font-black uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span className="text-sm leading-none">TIRAR DADOS</span>
+                <span className="mt-0.5 flex flex-col items-center text-[9px] leading-tight opacity-90">
+                  <span>Ganarías</span>
+                  <span>{formatCOP(potentialWin)} COP</span>
+                </span>
               </button>
             </div>
           </div>
