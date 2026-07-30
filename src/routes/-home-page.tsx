@@ -159,6 +159,8 @@ function OnlineRotator({ online, username, onClick, clickable }: { online: numbe
         >
           <span className="inline-flex items-center gap-2">
             <OnlineUsersIcon />
+            <span className="home-online-text text-xs font-semibold text-white/90">{online} ONLINE</span>
+          </span>
           <span className="home-online-text inline-flex items-center gap-1 text-xs font-medium text-white/90">
             <span className="font-bold">Authentic</span> Games
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-3.5 w-3.5" aria-hidden="true">
