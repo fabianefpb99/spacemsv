@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { MissionCompleteFloater } from "@/components/MissionCompleteFloater";
 import { VipLevelUpFloater } from "@/components/VipLevelUpFloater";
 import { SmoothImageLoader } from "@/components/SmoothImageLoader";
+import { DesktopGate } from "@/components/DesktopGate";
 import { DEFAULT_AVATAR_URL } from "@/lib/avatars";
 import { PersonalDataDialog } from "@/components/profile/PersonalDataDialog";
 import {
@@ -193,6 +194,7 @@ function RootComponent() {
           <PostSignupPersonalDataPrompt />
           <MissionCompleteFloater />
           <VipLevelUpFloater />
+          <DesktopGate />
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>

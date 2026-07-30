@@ -18,6 +18,7 @@ export type AdminSection =
   | "eventos"
   | "boost"
   | "deportes"
+  | "vista_pc"
   | "bonos"
   | "transacciones"
   | "reportes"
