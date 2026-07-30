@@ -109,12 +109,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
       { rel: "manifest", href: "/manifest.webmanifest" },
-      { rel: "icon", href: "/favicon.ico", sizes: "any" },
-      { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32.png" },
-      { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16.png" },
-      { rel: "icon", type: "image/webp", sizes: "192x192", href: "/icon-192.webp" },
-      { rel: "icon", type: "image/webp", sizes: "512x512", href: "/icon-512.webp" },
-      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+      { rel: "icon", href: "/favicon.ico?v=4", sizes: "any" },
+      { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32.png?v=4" },
+      { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16.png?v=4" },
+      { rel: "icon", type: "image/webp", sizes: "192x192", href: "/icon-192.webp?v=4" },
+      { rel: "icon", type: "image/webp", sizes: "512x512", href: "/icon-512.webp?v=4" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png?v=4" },
       // Abre DNS + TLS hacia el backend antes del primer fetch de sesión.
       // Ahorra ~200-500 ms en móvil/PWA tras días sin abrir la app.
       ...(import.meta.env.VITE_SUPABASE_URL
