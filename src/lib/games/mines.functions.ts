@@ -66,7 +66,8 @@ export type MinesSessionView = {
   nonce: number;
   status: "open" | "closed";
   public_state: MinesPublicState;
-  new_balance: number;
+  /** Present only when this action actually changes the player's balance. */
+  new_balance?: number;
 };
 
 type SessionRow = {
@@ -307,7 +308,7 @@ export const minesReveal = createServerFn({ method: "POST" })
     let publicState: MinesPublicState;
     let status: "open" | "closed" = "open";
     let payoutOut = 0;
-    let newBalance = await getBalance(userId);
+    let newBalance: number | undefined;
 
     if (isMine) {
       // Bust → close, reveal all mines.
@@ -383,7 +384,7 @@ export const minesReveal = createServerFn({ method: "POST" })
       nonce: updated.nonce,
       status,
       public_state: maskPublic(publicState),
-      new_balance: newBalance,
+      ...(newBalance === undefined ? {} : { new_balance: newBalance }),
     };
   });
 
