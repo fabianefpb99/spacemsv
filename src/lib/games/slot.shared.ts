@@ -10,14 +10,16 @@ export type SlotSymbol = {
 };
 
 export const SLOT_SYMBOLS: readonly SlotSymbol[] = [
-  { id: "boss",  pay: [55, 240, 1100], weight: 2  },
-  { id: "car",   pay: [34, 130, 440],  weight: 3  },
-  { id: "brief", pay: [24, 72, 240],   weight: 4  },
-  { id: "gold",  pay: [19, 50, 165],   weight: 5  },
-  { id: "watch", pay: [13, 32, 95],    weight: 6  },
-  { id: "chip",  pay: [10, 24, 68],    weight: 8  },
-  { id: "hat",   pay: [8, 18, 50],     weight: 10 },
-  { id: "card",  pay: [7, 14, 32],     weight: 12 },
+  // Ajuste 2026-07-30: premios de 3 iguales -3%; ese valor se traslada a los
+  // premios mayores (5 iguales, +~29%). Espejo exacto de `spin_slot_v1`.
+  { id: "boss",  pay: [53, 240, 1420], weight: 2  },
+  { id: "car",   pay: [33, 130, 570],  weight: 3  },
+  { id: "brief", pay: [23, 72, 310],   weight: 4  },
+  { id: "gold",  pay: [18, 50, 213],   weight: 5  },
+  { id: "watch", pay: [16, 32, 123],   weight: 6  },
+  { id: "chip",  pay: [14, 24, 88],    weight: 8  },
+  { id: "hat",   pay: [11, 18, 65],    weight: 11 },
+  { id: "card",  pay: [11, 14, 41],    weight: 13 },
 ] as const;
 
 export const SLOT_PAYLINES: readonly (readonly number[])[] = [
