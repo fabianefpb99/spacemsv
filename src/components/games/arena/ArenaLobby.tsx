@@ -1,3 +1,4 @@
+import { OnlineUsersIcon } from "@/components/OnlineUsersIcon";
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 import { ARENA_CHARACTERS, type ArenaCharacterId } from "@/lib/games/arena.shared";
