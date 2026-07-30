@@ -10,14 +10,16 @@ export type SamuraiSymbol = {
 };
 
 export const SAMURAI_SYMBOLS: readonly SamuraiSymbol[] = [
-  { id: "boss",  pay: [55, 240, 1100], weight: 2  },
-  { id: "car",   pay: [34, 130, 440],  weight: 3  },
-  { id: "brief", pay: [24, 72, 240],   weight: 4  },
-  { id: "gold",  pay: [19, 50, 165],   weight: 5  },
-  { id: "watch", pay: [9, 32, 95],     weight: 6  },
-  { id: "chip",  pay: [6, 24, 68],     weight: 8  },
-  { id: "hat",   pay: [5, 18, 50],     weight: 10 },
-  { id: "card",  pay: [4, 14, 32],     weight: 12 },
+  // Ajuste 2026-07-30: premios de 3 iguales -3%; ese valor se traslada a los
+  // premios mayores (5 iguales, +~15%). Espejo de `spin_slot_samurai_v1`.
+  { id: "boss",  pay: [58, 280, 1265], weight: 2  },
+  { id: "car",   pay: [37, 155, 506],  weight: 3  },
+  { id: "brief", pay: [25, 90, 276],   weight: 4  },
+  { id: "gold",  pay: [21, 60, 190],   weight: 5  },
+  { id: "watch", pay: [13, 42, 109],   weight: 6  },
+  { id: "chip",  pay: [10, 32, 78],    weight: 8  },
+  { id: "hat",   pay: [9, 26, 58],     weight: 11 },
+  { id: "card",  pay: [8, 22, 37],     weight: 13 },
 ] as const;
 
 /** 20 paylines for a 5x3 grid (row index per reel, 0=top, 2=bottom). */
