@@ -912,7 +912,15 @@ export function HomePage() {
             >
               <ChevronRight className="h-4 w-4" />
             </button>
-            {/* overlay removed to show full slider image */}
+            {/* Desvanecido sutil izquierda -> derecha para legibilidad del texto */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 z-[1]"
+              style={{
+                background:
+                  "linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.48) 12%, rgba(0,0,0,0.36) 25%, rgba(0,0,0,0.22) 36%, rgba(0,0,0,0.10) 46%, rgba(0,0,0,0) 56%)",
+              }}
+            />
             <div key={slide} className="absolute inset-0 flex flex-col justify-center gap-2 p-4 sm:p-5 lg:gap-3 lg:p-8 xl:gap-4 xl:p-10">
               <span className="inline-flex w-fit items-center rounded-md bg-white/95 px-2 py-0.5 font-display text-[10px] font-bold uppercase tracking-widest text-purple-700 shadow-sm lg:px-3 lg:py-1 lg:text-xs xl:text-sm">
                 {current.eyebrow}
