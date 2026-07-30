@@ -918,7 +918,7 @@ export function HomePage() {
               className="pointer-events-none absolute inset-0 z-[1]"
               style={{
                 background:
-                  "linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.48) 12%, rgba(0,0,0,0.36) 25%, rgba(0,0,0,0.22) 36%, rgba(0,0,0,0.10) 46%, rgba(0,0,0,0) 56%)",
+                  "linear-gradient(to right, rgba(0,0,0,0.70) 0%, rgba(0,0,0,0.58) 12%, rgba(0,0,0,0.42) 20%, rgba(0,0,0,0.36) 25%, rgba(0,0,0,0.22) 36%, rgba(0,0,0,0.10) 46%, rgba(0,0,0,0) 56%)",
               }}
             />
             <div key={slide} className="absolute inset-0 z-[2] flex flex-col justify-center gap-2 p-4 sm:p-5 lg:gap-3 lg:p-8 xl:gap-4 xl:p-10">
