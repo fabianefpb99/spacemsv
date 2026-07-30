@@ -16,10 +16,17 @@ export const CHICKEN_MAX_STEPS = 20;
  */
 const CHICKEN_RTP = 0.96;
 /** Base probability that the next asteroid is SAFE. */
-const SAFE_PROB_BASE = 0.82;
+const SAFE_PROB_BASE = 0.875;
 /** Decrease per step to ramp up tension. Floor at 0.62. */
 const SAFE_PROB_DECAY = 0.008;
 const SAFE_PROB_FLOOR = 0.62;
+/**
+ * Sporadic instant-crash on the VERY FIRST jump. This is the house's recovery
+ * lever: no matter how good the run looks, ~9% of rounds die immediately at
+ * step 1. It is folded into `chickenSafeProb(1)`, so the server RNG and the
+ * multiplier curve both stay mathematically consistent (RTP untouched).
+ */
+export const CHICKEN_INSTANT_CRASH_PROB = 0.09;
 
 /**
  * Probability the asteroid at `step` (1-indexed) is SAFE. Decreases slightly
@@ -27,7 +34,10 @@ const SAFE_PROB_FLOOR = 0.62;
  */
 export function chickenSafeProb(step: number): number {
   const p = SAFE_PROB_BASE - SAFE_PROB_DECAY * Math.max(0, step - 1);
-  return Math.max(SAFE_PROB_FLOOR, p);
+  const base = Math.max(SAFE_PROB_FLOOR, p);
+  // First jump additionally carries the sporadic instant-crash risk.
+  if (step === 1) return base * (1 - CHICKEN_INSTANT_CRASH_PROB);
+  return base;
 }
 
 /**
