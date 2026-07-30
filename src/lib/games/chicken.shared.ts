@@ -10,13 +10,16 @@ export const CHICKEN_BET_STEP = 500;
 /** Maximum number of jumps in a single round. */
 export const CHICKEN_MAX_STEPS = 20;
 
-/** RTP baked into each safe-jump multiplier (house edge ~3%). */
-const CHICKEN_RTP = 0.97;
+/**
+ * RTP applied at EVERY cash-out point (house edge 4% flat, always in favour of
+ * the house no matter when the player cashes out).
+ */
+const CHICKEN_RTP = 0.96;
 /** Base probability that the next asteroid is SAFE. */
-const SAFE_PROB_BASE = 0.845;
-/** Slight decrease per step to ramp up tension. Floor at 0.58. */
-const SAFE_PROB_DECAY = 0.006;
-const SAFE_PROB_FLOOR = 0.58;
+const SAFE_PROB_BASE = 0.82;
+/** Decrease per step to ramp up tension. Floor at 0.62. */
+const SAFE_PROB_DECAY = 0.008;
+const SAFE_PROB_FLOOR = 0.62;
 
 /**
  * Probability the asteroid at `step` (1-indexed) is SAFE. Decreases slightly
@@ -27,38 +30,29 @@ export function chickenSafeProb(step: number): number {
   return Math.max(SAFE_PROB_FLOOR, p);
 }
 
-/** Pre-computed multipliers. The first 5 jumps are intentionally short so the
- *  player feels early wins without giving away much house edge; from step 6
- *  onward the curve resumes the original RTP-based growth ratio, keeping the
- *  tail exciting while the casino recovers more on the low-risk cash-outs. */
+/**
+ * Multipliers derived directly from the true survival odds, scaled by the RTP.
+ * mult(n) = RTP / P(survive n jumps) — so the expected value of cashing out at
+ * ANY step is exactly 96% of the bet: no "sucker" steps, no free steps, and the
+ * house edge is identical whether the player cashes out at jump 1 or jump 20.
+ *
+ * Resulting curve (approx): 1.17x, 1.44x, 1.79x, 2.25x, 2.86x, 3.67x ... 369x.
+ * ~53% of rounds reach jump 3 (1.79x) and ~43% reach jump 4 (2.25x), so early
+ * cash-outs finally pay something meaningful instead of ~1.1x.
+ */
 function buildStepMultipliers(): number[] {
-  const original: number[] = [1, CHICKEN_RTP * (1 / chickenSafeProb(1))];
-  for (let i = 2; i <= CHICKEN_MAX_STEPS; i++) {
-    original[i] = original[i - 1] * (1 / chickenSafeProb(i));
-  }
-
-  // Short, morale-boosting early payouts (house-favored).
-  // Al subir la probabilidad de asteroide seguro, los pagos tempranos se
-  // recortan un poco para mantener el margen de la casa prácticamente igual.
-  const earlyOverride = [1, 1.02, 1.05, 1.09, 1.13, 1.18];
   const multipliers: number[] = [1];
-  for (let i = 1; i < earlyOverride.length; i++) {
-    multipliers[i] = earlyOverride[i];
-  }
-  for (let i = earlyOverride.length; i <= CHICKEN_MAX_STEPS; i++) {
-    const ratio = original[i] / original[i - 1];
-    multipliers[i] = Math.round(multipliers[i - 1] * ratio * 100) / 100;
+  let survival = 1;
+  for (let i = 1; i <= CHICKEN_MAX_STEPS; i++) {
+    survival *= chickenSafeProb(i);
+    multipliers[i] = Math.round((CHICKEN_RTP / survival) * 100) / 100;
   }
   return multipliers;
 }
 
 const CHICKEN_STEP_MULTIPLIERS = buildStepMultipliers();
 
-/**
- * Cash-out multiplier after `step` successful jumps.
- * Starts at 1.05x for the first safe jump and grows with the same
- * relative progression as the original RTP curve.
- */
+/** Cash-out multiplier after `step` successful jumps (1.17x for the first). */
 export function chickenMultiplier(step: number): number {
   if (step <= 0) return 1;
   return CHICKEN_STEP_MULTIPLIERS[Math.min(step, CHICKEN_MAX_STEPS)];
