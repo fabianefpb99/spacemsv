@@ -66,14 +66,15 @@ type SymbolDef = {
 };
 
 const SYMBOLS: SymbolDef[] = [
-  { id: "boss",  img: bossImg,      label: "EL DON",         pay: [55, 240, 1100], weight: 2,  glow: "212,132,42"  },
-  { id: "car",   img: carImg,       label: "AUTO CLÁSICO",   pay: [34, 130, 440],  weight: 3,  glow: "232,184,74"  },
-  { id: "brief", img: briefcaseImg, label: "MALETÍN",        pay: [24, 72, 240],   weight: 4,  glow: "212,132,42"  },
-  { id: "gold",  img: goldImg,      label: "DIAMANTE NEGRO", pay: [19, 50, 165],   weight: 5,  glow: "255,210,80"  },
-  { id: "watch", img: watchImg,     label: "WHISKY & PURO",  pay: [13, 32, 95],    weight: 6,  glow: "232,184,74"  },
-  { id: "chip",  img: chipImg,      label: "TOMMY GUN",      pay: [10, 24, 68],    weight: 8,  glow: "212,132,42"  },
-  { id: "hat",   img: hatImg,       label: "FEDORA",         pay: [8, 18, 50],     weight: 10, glow: "232,184,74"  },
-  { id: "card",  img: cardImg,      label: "FEMME FATALE",   pay: [7, 14, 32],     weight: 12, glow: "212,132,42"  },
+  // Pays/weights reflejan exactamente `spin_slot_v1` (ver src/lib/games/slot.shared.ts)
+  { id: "boss",  img: bossImg,      label: "EL DON",         pay: [53, 240, 1420], weight: 2,  glow: "212,132,42"  },
+  { id: "car",   img: carImg,       label: "AUTO CLÁSICO",   pay: [33, 130, 570],  weight: 3,  glow: "232,184,74"  },
+  { id: "brief", img: briefcaseImg, label: "MALETÍN",        pay: [23, 72, 310],   weight: 4,  glow: "212,132,42"  },
+  { id: "gold",  img: goldImg,      label: "DIAMANTE NEGRO", pay: [18, 50, 213],   weight: 5,  glow: "255,210,80"  },
+  { id: "watch", img: watchImg,     label: "WHISKY & PURO",  pay: [16, 32, 123],   weight: 6,  glow: "232,184,74"  },
+  { id: "chip",  img: chipImg,      label: "TOMMY GUN",      pay: [14, 24, 88],    weight: 8,  glow: "212,132,42"  },
+  { id: "hat",   img: hatImg,       label: "FEDORA",         pay: [11, 18, 65],    weight: 11, glow: "232,184,74"  },
+  { id: "card",  img: cardImg,      label: "FEMME FATALE",   pay: [11, 14, 41],    weight: 13, glow: "212,132,42"  },
 ];
 
 const SYMBOL_INDEX = new Map(SYMBOLS.map((s, i) => [s.id, i]));
