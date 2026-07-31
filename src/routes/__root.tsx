@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { captureReferralFromUrl } from "@/lib/referral-share";
 import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import {
   Outlet,
@@ -159,6 +160,11 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
+
+  // Captura ?ref=CODIGO de un enlace de invitación y lo guarda para el registro.
+  useEffect(() => {
+    captureReferralFromUrl();
+  }, []);
 
   useEffect(() => {
     const {

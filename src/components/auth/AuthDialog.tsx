@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getStoredReferralCode, clearStoredReferralCode } from "@/lib/referral-share";
 import { createPortal } from "react-dom";
 import { useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
@@ -319,7 +320,7 @@ function SignUpForm({ onSuccess, onSwitch }: { onSuccess: () => void; onSwitch: 
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [referralCode, setReferralCode] = useState("");
+  const [referralCode, setReferralCode] = useState(() => getStoredReferralCode());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -363,6 +364,7 @@ function SignUpForm({ onSuccess, onSwitch }: { onSuccess: () => void; onSwitch: 
         } else {
           setInfo("¡Código aplicado! Recibiste $2.000 de saldo bonus.");
         }
+        clearStoredReferralCode();
       }
       const signedUpUserId = data.user?.id ?? session?.user?.id;
       await navigate({ to: "/", replace: true });

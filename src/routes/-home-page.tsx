@@ -1,4 +1,6 @@
 import { Link } from "@tanstack/react-router";
+import { toast } from "sonner";
+import { shareInvite } from "@/lib/referral-share";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Menu, ChevronRight, ChevronLeft, Gift, Home, Star, Wallet, User, Trophy, Instagram, ShieldCheck, Lock } from "lucide-react";
 import { type PointerEvent, useEffect, useRef, useState } from "react";
@@ -1343,7 +1345,19 @@ export function HomePage() {
               Obtén 5% de tus referidos
             </div>
           </div>
-          <button className="home-invite-btn rounded-md bg-purple-600 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-purple-900/50 hover:bg-purple-500">
+          <button
+            type="button"
+            onClick={async () => {
+              const code = user ? me.data?.profile?.referral_code ?? null : null;
+              const result = await shareInvite(code);
+              if (result === "copied") {
+                toast.success("Enlace copiado", {
+                  description: code ? "Tu enlace de invitación está listo para compartir." : "Comparte el enlace de BetSpace.",
+                });
+              }
+            }}
+            className="home-invite-btn rounded-md bg-purple-600 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-purple-900/50 hover:bg-purple-500"
+          >
             Invitar
           </button>
         </section>
