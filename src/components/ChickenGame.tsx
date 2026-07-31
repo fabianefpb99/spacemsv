@@ -49,6 +49,7 @@ import asteroidAsset from "@/assets/chicken/asteroid.webp.asset.json";
 import asteroidBrokenAsset from "@/assets/chicken/asteroid-broken.webp.asset.json";
 import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 import { OnlineUsersIcon } from "@/components/OnlineUsersIcon";
+import { GameHelpButton } from "@/components/GameHelpButton";
 
 const BG = bgAsset.url;
 const IMG_IDLE = chickenIdleAsset.url;
@@ -550,13 +551,16 @@ export function ChickenGame() {
             <OnlineUsersIcon />
             <span className="text-xs font-semibold text-white/90">{online} ONLINE</span>
           </div>
-          <button
-            onClick={() => setMuted((m) => !m)}
-            className="rounded-md p-1 text-purple-200/80 hover:bg-white/5"
-            aria-label={muted ? "Activar sonido" : "Silenciar"}
-          >
-            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-          </button>
+          <div className="flex items-center gap-1">
+            <GameHelpButton game="chicken" className="rounded-md p-1 text-purple-200/80 hover:bg-white/5" />
+            <button
+              onClick={() => setMuted((m) => !m)}
+              className="rounded-md p-1 text-purple-200/80 hover:bg-white/5"
+              aria-label={muted ? "Activar sonido" : "Silenciar"}
+            >
+              {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+            </button>
+          </div>
         </div>
 
         {/* HUD — sin caja: elementos flotando sobre el fondo (igual que Buscaminas) */}

@@ -29,6 +29,7 @@ type Phase = "betting" | "rolling" | "won" | "lost";
 type Side = "low" | "high";
 import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 import { OnlineUsersIcon } from "@/components/OnlineUsersIcon";
+import { GameHelpButton } from "@/components/GameHelpButton";
 
 // Game math + limits live in dice.shared.ts (shared with the server).
 const MULTS = DICE_MULTS;
@@ -331,13 +332,16 @@ export function DiceGame() {
             <OnlineUsersIcon />
             <span className="text-xs font-semibold text-white/90">{online} ONLINE</span>
           </div>
-          <button
-            onClick={() => setMuted((m) => !m)}
-            className="rounded-md p-1 text-purple-200/80 hover:bg-white/5"
-            aria-label={muted ? "Activar sonido" : "Silenciar"}
-          >
-            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-          </button>
+          <div className="flex items-center gap-1">
+            <GameHelpButton game="dice" className="rounded-md p-1 text-purple-200/80 hover:bg-white/5" />
+            <button
+              onClick={() => setMuted((m) => !m)}
+              className="rounded-md p-1 text-purple-200/80 hover:bg-white/5"
+              aria-label={muted ? "Activar sonido" : "Silenciar"}
+            >
+              {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+            </button>
+          </div>
         </div>
 
         {/* Stats HUD */}

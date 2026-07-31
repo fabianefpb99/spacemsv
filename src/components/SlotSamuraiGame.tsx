@@ -50,6 +50,7 @@ import bonusBigAsset from "@/assets/audio/slot-win/bonus-2.mp3.asset.json";
 import bonusNiceAsset from "@/assets/audio/slot-win/bonus-3.mp3.asset.json";
 import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 import { OnlineUsersIcon } from "@/components/OnlineUsersIcon";
+import { GameHelpButton } from "@/components/GameHelpButton";
 
 /* ============================================================
    Symbols — Mafia Royale (Peaky Blinders theme)
@@ -1266,13 +1267,16 @@ export function SlotSamuraiGame() {
             <OnlineUsersIcon />
             <span className="text-xs font-semibold text-white/90">{online} ONLINE</span>
           </div>
-          <button
-            onClick={() => setMuted((m) => !m)}
-            className="rounded-md p-1 text-purple-200/80 hover:bg-white/5"
-            aria-label={muted ? "Activar sonido" : "Silenciar"}
-          >
-            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-          </button>
+          <div className="flex items-center gap-1">
+            <GameHelpButton game="slot_samurai" className="rounded-md p-1 text-purple-200/80 hover:bg-white/5" />
+            <button
+              onClick={() => setMuted((m) => !m)}
+              className="rounded-md p-1 text-purple-200/80 hover:bg-white/5"
+              aria-label={muted ? "Activar sonido" : "Silenciar"}
+            >
+              {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+            </button>
+          </div>
         </div>
 
         {/* Logo + evento — integrados sobre el fondo global, sin card */}
