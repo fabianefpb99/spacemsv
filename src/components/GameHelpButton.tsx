@@ -54,8 +54,8 @@ const HELP: Record<GameHelpKey, HelpContent> = {
   roulette: {
     title: "Cómo jugar Ruleta",
     steps: [
-      "Selecciona el valor de ficha y coloca apuestas en el tablero.",
-      "Puedes combinar varias apuestas en la misma ronda.",
+      "Selecciona el valor de ficha y coloca tu apuesta en el tablero.",
+      "Solo puedes hacer una apuesta por ronda.",
       "Pleno paga hasta 14x; color y par/impar pagan menos pero aciertan más seguido.",
       "Gira la ruleta y se pagan automáticamente las apuestas ganadoras.",
     ],
