@@ -24,10 +24,12 @@ export type CatalogGame = {
   rank: number;
 };
 
-export const GAME_CATEGORIES: { id: GameCategory | "all"; label: string }[] = [
+export type GameFilterId = GameCategory | "all" | "popular";
+
+export const GAME_CATEGORIES: { id: GameFilterId; label: string }[] = [
   { id: "all", label: "Todos" },
   { id: "crash", label: "Crash" },
-  { id: "casino", label: "Casino" },
+  { id: "popular", label: "Popular" },
   { id: "tragamonedas", label: "Tragamonedas" },
   { id: "mesa", label: "Mesa" },
   { id: "deportes", label: "Deportes" },
