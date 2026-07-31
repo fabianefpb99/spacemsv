@@ -633,7 +633,7 @@ export function RouletteGame() {
       </header>
 
       {/* ───────────────── ONLINE + MUTE ───────────────── */}
-      <div className="relative z-10 mt-3 flex items-center justify-between">
+      <div className="game-strip-fade relative z-10 mt-3 flex items-center justify-between">
         <div className="flex items-center gap-2 text-xs">
           <OnlineUsersIcon />
           <span className="font-semibold text-white/90">{online} ONLINE</span>

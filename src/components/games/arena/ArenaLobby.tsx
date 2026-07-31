@@ -62,6 +62,10 @@ export function ArenaLobby({
   };
   return (
     <div className="absolute inset-0 overflow-hidden">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/55 via-black/30 to-transparent"
+      />
       <div className="absolute left-0 right-0 top-1 flex items-center px-3 text-[9px] font-semibold uppercase tracking-[0.18em] text-white/90 sm:px-4">
         <div className="flex items-center gap-1.5 text-white/85">
           <OnlineUsersIcon />

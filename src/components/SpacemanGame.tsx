@@ -942,7 +942,7 @@ export function SpacemanGame() {
         {/* Stage */}
         <section className="relative mt-3 flex-1">
           {/* online + mute */}
-          <div className="flex items-center justify-between">
+          <div className="game-strip-fade flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs">
               <OnlineUsersIcon />
               <span className="font-semibold text-white/90">{online} ONLINE</span>
