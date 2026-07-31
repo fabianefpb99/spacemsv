@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { HelpCircle, X } from "lucide-react";
 
 export type GameHelpKey =
@@ -99,6 +100,9 @@ export function GameHelpButton({
 }) {
   const [open, setOpen] = useState(false);
   const content = HELP[game];
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -118,9 +122,9 @@ export function GameHelpButton({
         <HelpCircle className={iconClassName} />
       </button>
 
-      {open && (
+      {open && mounted && createPortal(
         <div
-          className="fixed inset-0 z-[999] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[2147483000] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
           onClick={() => setOpen(false)}
           role="presentation"
         >
@@ -161,7 +165,8 @@ export function GameHelpButton({
               </span>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
