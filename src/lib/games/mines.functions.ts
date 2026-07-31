@@ -497,6 +497,8 @@ export const minesCashout = createServerFn({ method: "POST" })
       new_payout: payout,
     });
 
+    dropCachedMinesSession(session.id, userId);
+
     return {
       session_id: updated.id,
       nonce: updated.nonce,
