@@ -6,6 +6,7 @@ import { Link } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Minus, Plus, Volume2, VolumeX } from "lucide-react";
+import { GameHelpButton } from "@/components/GameHelpButton";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import bgAsset from "@/assets/blackjack-bg.png.asset.json";
 import bgVipAsset from "@/assets/blackjack-vip-bg.png.asset.json";
