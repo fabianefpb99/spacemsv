@@ -866,7 +866,7 @@ export function HomePage() {
         {/* Hero banner */}
         <section className="theme-dark-fixed slider-neon-frame mt-[10px] overflow-hidden rounded-2xl border border-violet-800/50 bg-[#120824] shadow-[0_0_10px_rgba(76,29,149,0.35)]">
           <div
-            className="relative h-44 touch-pan-y select-none pb-7 sm:h-52 lg:h-[274px] xl:h-[361px]"
+            className="relative h-44 touch-pan-y select-none sm:h-52 lg:h-[274px] xl:h-[361px]"
             onPointerDown={(e) => {
               (e.currentTarget as HTMLDivElement).dataset.startX = String(e.clientX);
               (e.currentTarget as HTMLDivElement).dataset.startY = String(e.clientY);
@@ -896,7 +896,7 @@ export function HomePage() {
                 height={520}
                 loading={i === slide ? "eager" : "lazy"}
                 fetchPriority={i === slide ? "high" : undefined}
-                wrapperClassName={`absolute inset-0 h-full w-full transition-opacity duration-700 ${i === slide ? "opacity-100" : "opacity-0"}`}
+                wrapperClassName={`absolute inset-0 z-0 h-full w-full transition-opacity duration-700 ${i === slide ? "opacity-100" : "opacity-0"}`}
                 className="h-full w-full object-cover"
               />
             ))}
@@ -951,13 +951,13 @@ export function HomePage() {
               </Link>
             </div>
             )}
-            {/* Sombreado inferior de abajo hacia arriba para los indicadores */}
+            {/* Sombreado inferior de abajo hacia arriba para los indicadores (por debajo del texto) */}
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-20 bg-gradient-to-t from-[#120824] via-[#120824]/80 to-transparent sm:h-24"
+              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-20 bg-gradient-to-t from-[#120824]/95 via-[#120824]/70 to-transparent sm:h-24"
             />
             {/* Indicadores sobre la imagen */}
-            <div className="absolute inset-x-0 bottom-0 z-[4] flex items-center justify-center gap-1.5 py-2.5">
+            <div className="absolute inset-x-0 bottom-0 z-[3] flex items-center justify-center gap-1.5 py-2.5">
               {Array.from({ length: slides }).map((_, i) => (
                 <button
                   key={i}
