@@ -326,7 +326,7 @@ export function DiceGame() {
         </header>
 
         {/* Online / mute */}
-        <div className="mt-1.5 flex items-center justify-between">
+        <div className="game-strip-fade mt-1.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <OnlineUsersIcon />
             <span className="text-xs font-semibold text-white/90">{online} ONLINE</span>

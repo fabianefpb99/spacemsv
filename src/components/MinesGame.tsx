@@ -614,7 +614,7 @@ export function MinesGame() {
         </header>
 
         {/* Online */}
-        <div className="mt-2 flex items-center justify-between">
+        <div className="game-strip-fade mt-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <OnlineUsersIcon />
             <span className="text-xs font-semibold text-white/90">{online} ONLINE</span>
