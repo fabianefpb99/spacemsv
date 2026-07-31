@@ -20,3 +20,66 @@ export function placeMines(mines: number): number[] {
   }
   return indices.slice(0, mines).sort((a, b) => a - b);
 }
+
+/* ------------------------------------------------------------------ */
+/* Hot session cache (latency)                                         */
+/* ------------------------------------------------------------------ */
+
+/**
+ * In-memory cache of the *authoritative* session row we just wrote, so a
+ * consecutive reveal in the same worker isolate can skip the extra SELECT
+ * round-trip. This is only a hint: every mutation still goes through
+ * `bj_apply_action`, which re-checks ownership + nonce atomically inside
+ * Postgres. A stale/missing entry simply falls back to the DB read, and a
+ * wrong entry can never be committed (the nonce check rejects it).
+ */
+type CachedMinesSession = {
+  row: unknown;
+  expires: number;
+};
+
+const SESSION_TTL_MS = 5 * 60_000;
+const MAX_ENTRIES = 500;
+const sessionCache = new Map<string, CachedMinesSession>();
+
+function cacheKey(sessionId: string, userId: string) {
+  return `${sessionId}:${userId}`;
+}
+
+export function cacheMinesSession(
+  sessionId: string,
+  userId: string,
+  row: unknown,
+): void {
+  if (sessionCache.size >= MAX_ENTRIES) {
+    const now = Date.now();
+    for (const [k, v] of sessionCache) {
+      if (v.expires <= now) sessionCache.delete(k);
+    }
+    if (sessionCache.size >= MAX_ENTRIES) {
+      const oldest = sessionCache.keys().next().value;
+      if (oldest) sessionCache.delete(oldest);
+    }
+  }
+  sessionCache.set(cacheKey(sessionId, userId), {
+    row,
+    expires: Date.now() + SESSION_TTL_MS,
+  });
+}
+
+export function getCachedMinesSession(
+  sessionId: string,
+  userId: string,
+): unknown | null {
+  const hit = sessionCache.get(cacheKey(sessionId, userId));
+  if (!hit) return null;
+  if (hit.expires <= Date.now()) {
+    sessionCache.delete(cacheKey(sessionId, userId));
+    return null;
+  }
+  return hit.row;
+}
+
+export function dropCachedMinesSession(sessionId: string, userId: string): void {
+  sessionCache.delete(cacheKey(sessionId, userId));
+}

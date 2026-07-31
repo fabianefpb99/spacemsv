@@ -12,7 +12,12 @@ import {
   multiplierFor,
   type MinesPublicState,
 } from "./mines.shared";
-import { placeMines } from "./mines.server";
+import {
+  cacheMinesSession,
+  dropCachedMinesSession,
+  getCachedMinesSession,
+  placeMines,
+} from "./mines.server";
 import {
   adjustBalance,
   cryptoRandomInt,
@@ -97,6 +102,30 @@ async function loadOpenSession(userId: string): Promise<SessionRow | null> {
   if (error) throw new Error(`mines_load_failed: ${error.message}`);
   if (!data) return null;
   return data as unknown as SessionRow;
+}
+
+/**
+ * Fast path: reuse the row we cached right after the previous write when it
+ * still matches the nonce the client is acting on. Correctness does not
+ * depend on the cache — `bj_apply_action` re-validates owner + nonce in the
+ * database before committing anything.
+ */
+async function loadSessionForAction(
+  sessionId: string,
+  userId: string,
+  expectedNonce: number,
+): Promise<SessionRow> {
+  const cached = getCachedMinesSession(sessionId, userId) as SessionRow | null;
+  if (
+    cached &&
+    cached.id === sessionId &&
+    cached.user_id === userId &&
+    cached.nonce === expectedNonce &&
+    cached.status === "open"
+  ) {
+    return cached;
+  }
+  return loadSessionForUser(sessionId, userId);
 }
 
 async function loadSessionForUser(
@@ -249,6 +278,16 @@ export const minesDeal = createServerFn({ method: "POST" })
       throw new Error(`mines_insert_failed: ${insertErr?.message ?? "unknown"}`);
     }
 
+    cacheMinesSession(inserted.id, userId, {
+      id: inserted.id,
+      user_id: userId,
+      status: "open",
+      bet_amount: bet,
+      state: { mineSet },
+      public_state: publicState,
+      nonce: inserted.nonce,
+    } satisfies SessionRow);
+
     return {
       session_id: inserted.id,
       nonce: inserted.nonce,
@@ -267,7 +306,7 @@ export const minesReveal = createServerFn({ method: "POST" })
   .inputValidator((input) => RevealInput.parse(input))
   .handler(async ({ data, context }): Promise<MinesSessionView> => {
     const userId = context.userId;
-    const session = await loadSessionForUser(data.session_id, userId);
+    const session = await loadSessionForAction(data.session_id, userId, data.nonce);
     if (session.status !== "open") throw new Error("mines_session_closed");
     if (session.nonce !== data.nonce) throw new Error("mines_stale_nonce");
     if (session.public_state.phase !== "playing") {
@@ -379,6 +418,20 @@ export const minesReveal = createServerFn({ method: "POST" })
       new_payout: status === "closed" ? payoutOut : null,
     });
 
+    if (status === "closed") {
+      dropCachedMinesSession(session.id, userId);
+    } else {
+      cacheMinesSession(session.id, userId, {
+        id: session.id,
+        user_id: userId,
+        status,
+        bet_amount: session.bet_amount,
+        state: { mineSet },
+        public_state: publicState,
+        nonce: updated.nonce,
+      } satisfies SessionRow);
+    }
+
     return {
       session_id: updated.id,
       nonce: updated.nonce,
@@ -397,7 +450,7 @@ export const minesCashout = createServerFn({ method: "POST" })
   .inputValidator((input) => CashoutInput.parse(input))
   .handler(async ({ data, context }): Promise<MinesSessionView> => {
     const userId = context.userId;
-    const session = await loadSessionForUser(data.session_id, userId);
+    const session = await loadSessionForAction(data.session_id, userId, data.nonce);
     if (session.status !== "open") throw new Error("mines_session_closed");
     if (session.nonce !== data.nonce) throw new Error("mines_stale_nonce");
     if (session.public_state.phase !== "playing") {
@@ -443,6 +496,8 @@ export const minesCashout = createServerFn({ method: "POST" })
       new_status: "closed",
       new_payout: payout,
     });
+
+    dropCachedMinesSession(session.id, userId);
 
     return {
       session_id: updated.id,
