@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { captureReferralFromUrl } from "@/lib/referral-share";
 import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import {
   Outlet,
