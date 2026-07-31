@@ -77,6 +77,7 @@ const slideInput = z.object({
   cta_label: z.string().min(1).max(60).default("Ver más"),
   cta_link: z.string().min(1).max(200).default("/"),
   active: z.boolean().default(true),
+  text_hidden: z.boolean().default(false),
 });
 
 export const adminUpsertHomeSlide = createServerFn({ method: "POST" })
@@ -260,7 +261,7 @@ export const getPublicHomeSlides = createServerFn({ method: "GET" }).handler(asy
   const admin = await getSupabaseAdmin();
   const { data, error } = await admin
     .from("home_slides")
-    .select("id,position,image_url,eyebrow,title,description,cta_label,cta_link")
+    .select("id,position,image_url,eyebrow,title,description,cta_label,cta_link,text_hidden")
     .eq("active", true)
     .order("position", { ascending: true });
   if (error) return [];
