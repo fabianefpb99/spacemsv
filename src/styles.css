@@ -4851,6 +4851,30 @@ html.light .notif-popover .bg-rose-400 {
   will-change: auto;
 }
 
+/* Franja superior de los juegos (ONLINE + volumen): leve degradado negro
+   desde debajo del header hacia abajo para que los iconos no se pierdan
+   sobre fondos claros o con mucho detalle. */
+.game-strip-fade {
+  position: relative;
+  isolation: isolate;
+}
+.game-strip-fade::before {
+  content: "";
+  position: absolute;
+  left: -50vw;
+  right: -50vw;
+  top: -0.85rem;
+  bottom: -1.1rem;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.38) 45%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
 
 /* Pantallas MUY altas (p. ej. Redmi 14 Pro): evita que los elementos se separen
    demasiado y el scroll fantasma. No afecta ninguna altura <= 939px. */
