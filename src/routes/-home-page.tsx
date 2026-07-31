@@ -473,7 +473,7 @@ export function HomePage() {
         to: (s.cta_link ?? "/") as "/",
         textHidden: (s as { text_hidden?: boolean }).text_hidden ?? false,
       }))
-    : SLIDES;
+    : SLIDES.map((s) => ({ ...s, textHidden: false }));
 
   // El admin es la única fuente de verdad para el orden/posición de juegos
   // destacados. Mientras la query está cargando NO mostramos la lista
