@@ -453,6 +453,7 @@ function SlideCard({
               onChange={(e) => {
                 const f = e.target.files?.[0];
                 if (f) onUpload(f);
+                e.target.value = "";
               }}
             />
           </label>
@@ -537,11 +538,11 @@ function SlideCard({
         )}
         <button
           onClick={onSave}
-          disabled={saving || (!isNew && !dirty) || !draft.image_url || !draft.title}
+          disabled={saving || !draft.image_url || !draft.title}
           className="inline-flex items-center gap-1 rounded-md bg-fuchsia-600 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-[0_0_10px_rgba(217,70,239,0.5)] hover:bg-fuchsia-500 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
-          Guardar
+          {dirty ? "Guardar cambios" : "Guardar"}
         </button>
       </div>
     </div>
@@ -839,6 +840,7 @@ function FeaturedCard({
               onChange={(e) => {
                 const f = e.target.files?.[0];
                 if (f) onUpload(f);
+                e.target.value = "";
               }}
             />
           </label>
@@ -914,11 +916,11 @@ function FeaturedCard({
         )}
         <button
           onClick={onSave}
-          disabled={saving || (!isNew && !dirty) || !draft.image_url || !draft.name}
+          disabled={saving || !draft.image_url || !draft.name}
           className="inline-flex items-center gap-1 rounded-md bg-fuchsia-600 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-[0_0_10px_rgba(217,70,239,0.5)] hover:bg-fuchsia-500 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
-          Guardar
+          {dirty ? "Guardar cambios" : "Guardar"}
         </button>
       </div>
     </div>
