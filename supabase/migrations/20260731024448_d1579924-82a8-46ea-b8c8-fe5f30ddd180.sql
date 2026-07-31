@@ -1,0 +1,1 @@
+ALTER TABLE public.home_slides ADD COLUMN IF NOT EXISTS text_hidden boolean NOT NULL DEFAULT false;
