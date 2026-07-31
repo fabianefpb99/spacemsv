@@ -555,6 +555,7 @@ function Field({
   textarea,
   full,
   placeholder,
+  disabled,
 }: {
   label: string;
   value: string;
@@ -562,9 +563,10 @@ function Field({
   textarea?: boolean;
   full?: boolean;
   placeholder?: string;
+  disabled?: boolean;
 }) {
   return (
-    <label className={`flex flex-col gap-1 ${full ? "col-span-2" : ""}`}>
+    <label className={`flex flex-col gap-1 ${full ? "col-span-2" : ""} ${disabled ? "opacity-40" : ""}`}>
       <span className="text-[9px] font-semibold uppercase tracking-widest text-purple-300/70">
         {label}
       </span>
@@ -574,6 +576,7 @@ function Field({
           onChange={(e) => onChange(e.target.value)}
           rows={2}
           placeholder={placeholder}
+          disabled={disabled}
           className="rounded-md border border-purple-500/30 bg-[#0c0620] px-2 py-1.5 text-xs text-white focus:border-fuchsia-400/60 focus:outline-none"
         />
       ) : (
@@ -581,6 +584,7 @@ function Field({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
+          disabled={disabled}
           className="rounded-md border border-purple-500/30 bg-[#0c0620] px-2 py-1.5 text-xs text-white focus:border-fuchsia-400/60 focus:outline-none"
         />
       )}
