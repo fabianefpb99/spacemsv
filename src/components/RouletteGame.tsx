@@ -30,6 +30,7 @@ type Choice = "red" | "black" | "green";
 type Phase = "idle" | "spinning" | "revealing";
 import { GameMenuDrawer } from "@/components/GameMenuDrawer";
 import { OnlineUsersIcon } from "@/components/OnlineUsersIcon";
+import { GameHelpButton } from "@/components/GameHelpButton";
 type HistoryEntry = { segment: number; color: Choice };
 
 const MIN_BET = 500;
@@ -638,13 +639,16 @@ export function RouletteGame() {
           <OnlineUsersIcon />
           <span className="font-semibold text-white/90">{online} ONLINE</span>
         </div>
-        <button
-          onClick={() => setMuted((m) => !m)}
-          aria-label={muted ? "Activar sonido" : "Silenciar"}
-          className="rounded-md p-1 text-purple-200/80 hover:bg-white/5"
-        >
-          {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-        </button>
+        <div className="flex items-center gap-1">
+          <GameHelpButton game="roulette" className="rounded-md p-1 text-purple-200/80 hover:bg-white/5" />
+          <button
+            onClick={() => setMuted((m) => !m)}
+            aria-label={muted ? "Activar sonido" : "Silenciar"}
+            className="rounded-md p-1 text-purple-200/80 hover:bg-white/5"
+          >
+            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          </button>
+        </div>
       </div>
 
       {/* Espaciador flexible: deja ver el fondo y la rueda */}
