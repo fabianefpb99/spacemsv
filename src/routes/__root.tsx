@@ -160,6 +160,11 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
 
+  // Captura ?ref=CODIGO de un enlace de invitación y lo guarda para el registro.
+  useEffect(() => {
+    captureReferralFromUrl();
+  }, []);
+
   useEffect(() => {
     const {
       data: { subscription },
