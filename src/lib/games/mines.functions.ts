@@ -278,6 +278,16 @@ export const minesDeal = createServerFn({ method: "POST" })
       throw new Error(`mines_insert_failed: ${insertErr?.message ?? "unknown"}`);
     }
 
+    cacheMinesSession(inserted.id, userId, {
+      id: inserted.id,
+      user_id: userId,
+      status: "open",
+      bet_amount: bet,
+      state: { mineSet },
+      public_state: publicState,
+      nonce: inserted.nonce,
+    } satisfies SessionRow);
+
     return {
       session_id: inserted.id,
       nonce: inserted.nonce,
