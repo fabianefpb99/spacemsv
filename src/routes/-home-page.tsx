@@ -866,7 +866,7 @@ export function HomePage() {
         {/* Hero banner */}
         <section className="theme-dark-fixed slider-neon-frame mt-[10px] overflow-hidden rounded-2xl border border-violet-800/50 bg-[#120824] shadow-[0_0_10px_rgba(76,29,149,0.35)]">
           <div
-            className="relative h-44 touch-pan-y select-none sm:h-52 lg:h-[274px] xl:h-[361px]"
+            className="relative h-44 touch-pan-y select-none pb-7 sm:h-52 lg:h-[274px] xl:h-[361px]"
             onPointerDown={(e) => {
               (e.currentTarget as HTMLDivElement).dataset.startX = String(e.clientX);
               (e.currentTarget as HTMLDivElement).dataset.startY = String(e.clientY);
@@ -951,16 +951,22 @@ export function HomePage() {
               </Link>
             </div>
             )}
-          </div>
-          <div className="flex items-center justify-center gap-1.5 py-2.5">
-            {Array.from({ length: slides }).map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setSlide(i)}
-                aria-label={`Slide ${i + 1}`}
-                className={`h-1.5 rounded-full transition-all ${i === slide ? "w-4 bg-purple-400" : "w-1.5 bg-purple-200/30"}`}
-              />
-            ))}
+            {/* Sombreado inferior de abajo hacia arriba para los indicadores */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-20 bg-gradient-to-t from-[#120824] via-[#120824]/80 to-transparent sm:h-24"
+            />
+            {/* Indicadores sobre la imagen */}
+            <div className="absolute inset-x-0 bottom-0 z-[4] flex items-center justify-center gap-1.5 py-2.5">
+              {Array.from({ length: slides }).map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setSlide(i)}
+                  aria-label={`Slide ${i + 1}`}
+                  className={`h-1.5 rounded-full transition-all ${i === slide ? "w-4 bg-purple-400" : "w-1.5 bg-purple-200/30"}`}
+                />
+              ))}
+            </div>
           </div>
         </section>
 
