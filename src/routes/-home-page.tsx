@@ -471,6 +471,7 @@ export function HomePage() {
         desc: s.description ?? "",
         cta: s.cta_label ?? "Ver más",
         to: (s.cta_link ?? "/") as "/",
+        textHidden: (s as { text_hidden?: boolean }).text_hidden ?? false,
       }))
     : SLIDES;
 
