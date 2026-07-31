@@ -57,7 +57,7 @@ export function buildInviteUrl(code?: string | null): string {
 export function buildInviteMessage(code?: string | null): string {
   const url = buildInviteUrl(code);
   return normalizeReferralCode(code)
-    ? `🚀 Juega conmigo en BetSpace y recibe $2.000 de bono al registrarte con mi enlace:\n${url}`
+    ? `🚀 Te invito a BetSpace, el casino espacial. Regístrate con mi enlace y empieza a jugar:\n${url}`
     : `🚀 Juega en BetSpace, el casino espacial: tragamonedas, crash, ruleta y más.\n${url}`;
 }
 
