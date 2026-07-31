@@ -934,18 +934,18 @@ export function HomePage() {
               />
             ) : (
             <div key={slide} className="absolute inset-0 z-[2] flex flex-col justify-center gap-1 p-4 pt-7 pb-10 sm:p-5 sm:pt-8 sm:pb-12 lg:gap-2 lg:p-8 lg:pt-9 lg:pb-14 xl:gap-2 xl:p-10 xl:pt-10 xl:pb-16">
-              <span className="inline-flex w-fit items-center rounded-md bg-white/95 px-2 py-0.5 font-display text-[10px] font-bold uppercase tracking-widest text-purple-700 shadow-sm lg:px-3 lg:py-1 lg:text-xs xl:text-sm">
+              <span className="inline-flex w-fit items-center rounded-md bg-white/95 px-2 py-0.5 font-display text-[10px] font-bold uppercase tracking-widest text-purple-700 shadow-sm lg:px-3 lg:py-1 lg:text-[11px] xl:text-[13px]">
                 {current.eyebrow}
               </span>
-              <h2 className="font-display text-2xl font-black leading-tight tracking-wide text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] sm:text-3xl lg:text-[2.75rem] xl:text-[3.5rem]">
+              <h2 className="font-display text-[1.4rem] font-black leading-tight tracking-wide text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] sm:text-[1.75rem] lg:text-[2.6rem] xl:text-[3.3rem]">
                 {current.title}
               </h2>
-              <p className="max-w-[55%] whitespace-pre-line text-xs text-white/95 drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] sm:text-sm lg:max-w-[48%] lg:text-base xl:text-lg">
+              <p className="max-w-[55%] whitespace-pre-line text-[11px] text-white/95 drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] sm:text-[13px] lg:max-w-[48%] lg:text-[15px] xl:text-[17px]">
                 {current.desc}
               </p>
               <Link
                 to={current.to}
-                className="inline-flex w-fit items-center justify-center rounded-md bg-purple-600 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-purple-900/50 transition hover:bg-purple-500 lg:px-6 lg:py-3 lg:text-sm xl:px-7 xl:text-base"
+                className="inline-flex w-fit items-center justify-center rounded-md bg-purple-600 px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-white shadow-lg shadow-purple-900/50 transition hover:bg-purple-500 lg:px-6 lg:py-3 lg:text-[13px] xl:px-7 xl:text-[15px]"
               >
                 {current.cta}
               </Link>
