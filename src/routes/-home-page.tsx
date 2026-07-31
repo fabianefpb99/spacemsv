@@ -933,7 +933,7 @@ export function HomePage() {
                 className="absolute inset-0 z-[2]"
               />
             ) : (
-            <div key={slide} className="absolute inset-0 z-[2] flex flex-col justify-center gap-2 p-4 pb-10 sm:p-5 sm:pb-12 lg:gap-3 lg:p-8 lg:pb-14 xl:gap-4 xl:p-10 xl:pb-16">
+            <div key={slide} className="absolute inset-0 z-[2] flex flex-col justify-center gap-1 p-4 pt-7 pb-10 sm:p-5 sm:pt-8 sm:pb-12 lg:gap-2 lg:p-8 lg:pt-9 lg:pb-14 xl:gap-2 xl:p-10 xl:pt-10 xl:pb-16">
               <span className="inline-flex w-fit items-center rounded-md bg-white/95 px-2 py-0.5 font-display text-[10px] font-bold uppercase tracking-widest text-purple-700 shadow-sm lg:px-3 lg:py-1 lg:text-xs xl:text-sm">
                 {current.eyebrow}
               </span>
@@ -945,7 +945,7 @@ export function HomePage() {
               </p>
               <Link
                 to={current.to}
-                className="mt-1 inline-flex w-fit items-center justify-center rounded-md bg-purple-600 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-purple-900/50 transition hover:bg-purple-500 lg:mt-2 lg:px-6 lg:py-3 lg:text-sm xl:px-7 xl:text-base"
+                className="inline-flex w-fit items-center justify-center rounded-md bg-purple-600 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-purple-900/50 transition hover:bg-purple-500 lg:px-6 lg:py-3 lg:text-sm xl:px-7 xl:text-base"
               >
                 {current.cta}
               </Link>
@@ -954,7 +954,7 @@ export function HomePage() {
             {/* Sombreado inferior muy bajo y sutil solo para resaltar los indicadores */}
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-10 bg-gradient-to-t from-[#120824]/75 via-[#120824]/35 to-transparent sm:h-12 lg:h-14"
+              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-5 bg-gradient-to-t from-[#120824]/40 via-[#120824]/10 to-transparent sm:h-6 lg:h-7"
             />
             {/* Indicadores sobre la imagen */}
             <div className="absolute inset-x-0 bottom-0 z-[3] flex items-center justify-center gap-1.5 py-2">
