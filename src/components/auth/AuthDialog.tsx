@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getStoredReferralCode, clearStoredReferralCode } from "@/lib/referral-share";
 import { createPortal } from "react-dom";
 import { useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
