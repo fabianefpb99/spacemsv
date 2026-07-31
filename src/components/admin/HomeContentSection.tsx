@@ -29,6 +29,7 @@ type SlideDraft = {
   cta_label: string;
   cta_link: string;
   active: boolean;
+  text_hidden?: boolean;
 };
 
 type FeaturedDraft = {
@@ -217,6 +218,7 @@ function SlidesEditor() {
     cta_label: r.cta_label,
     cta_link: r.cta_link,
     active: r.active,
+    text_hidden: r.text_hidden ?? false,
   }));
 
   function get(id: string, base: SlideDraft) {
@@ -236,6 +238,7 @@ function SlidesEditor() {
           cta_label: d.cta_label,
           cta_link: d.cta_link,
           active: d.active,
+          text_hidden: d.text_hidden ?? false,
         },
       }),
     onSuccess: () => {
@@ -286,6 +289,7 @@ function SlidesEditor() {
         cta_label: "Ver más",
         cta_link: "/",
         active: true,
+        text_hidden: false,
       },
     }));
   }
@@ -313,6 +317,7 @@ function SlidesEditor() {
             cta_label: s.cta,
             cta_link: s.to,
             active: true,
+            text_hidden: false,
           },
         });
       }
@@ -453,10 +458,25 @@ function SlideCard({
           </label>
         </div>
         <div className="grid flex-1 grid-cols-2 gap-2">
+          <label className="col-span-2 flex items-start gap-2 rounded-md border border-fuchsia-500/25 bg-fuchsia-600/10 px-2 py-1.5 text-[11px] text-fuchsia-100">
+            <input
+              type="checkbox"
+              className="mt-0.5"
+              checked={draft.text_hidden ?? false}
+              onChange={(e) => onChange({ ...draft, text_hidden: e.target.checked })}
+            />
+            <span>
+              Solo imagen (sin textos)
+              <span className="block text-[10px] text-fuchsia-200/70">
+                Oculta encabezado, título, descripción y botón. La imagen completa queda enlazada al “Link destino”.
+              </span>
+            </span>
+          </label>
           <Field
             label="Encabezado"
             value={draft.eyebrow}
             onChange={(v) => onChange({ ...draft, eyebrow: v })}
+            disabled={draft.text_hidden}
           />
           <Field
             label="Título"
@@ -469,11 +489,13 @@ function SlideCard({
             onChange={(v) => onChange({ ...draft, description: v })}
             textarea
             full
+            disabled={draft.text_hidden}
           />
           <Field
             label="Texto botón"
             value={draft.cta_label}
             onChange={(v) => onChange({ ...draft, cta_label: v })}
+            disabled={draft.text_hidden}
           />
           <Field
             label="Link destino"
@@ -533,6 +555,7 @@ function Field({
   textarea,
   full,
   placeholder,
+  disabled,
 }: {
   label: string;
   value: string;
@@ -540,9 +563,10 @@ function Field({
   textarea?: boolean;
   full?: boolean;
   placeholder?: string;
+  disabled?: boolean;
 }) {
   return (
-    <label className={`flex flex-col gap-1 ${full ? "col-span-2" : ""}`}>
+    <label className={`flex flex-col gap-1 ${full ? "col-span-2" : ""} ${disabled ? "opacity-40" : ""}`}>
       <span className="text-[9px] font-semibold uppercase tracking-widest text-purple-300/70">
         {label}
       </span>
@@ -552,6 +576,7 @@ function Field({
           onChange={(e) => onChange(e.target.value)}
           rows={2}
           placeholder={placeholder}
+          disabled={disabled}
           className="rounded-md border border-purple-500/30 bg-[#0c0620] px-2 py-1.5 text-xs text-white focus:border-fuchsia-400/60 focus:outline-none"
         />
       ) : (
@@ -559,6 +584,7 @@ function Field({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
+          disabled={disabled}
           className="rounded-md border border-purple-500/30 bg-[#0c0620] px-2 py-1.5 text-xs text-white focus:border-fuchsia-400/60 focus:outline-none"
         />
       )}

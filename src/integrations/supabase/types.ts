@@ -576,6 +576,7 @@ export type Database = {
           id: string
           image_url: string
           position: number
+          text_hidden: boolean
           title: string
           updated_at: string
         }
@@ -589,6 +590,7 @@ export type Database = {
           id?: string
           image_url: string
           position?: number
+          text_hidden?: boolean
           title: string
           updated_at?: string
         }
@@ -602,6 +604,7 @@ export type Database = {
           id?: string
           image_url?: string
           position?: number
+          text_hidden?: boolean
           title?: string
           updated_at?: string
         }
