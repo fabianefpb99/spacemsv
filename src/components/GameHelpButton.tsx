@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { HelpCircle, X } from "lucide-react";
+import { HelpCircle, ShieldCheck, X } from "lucide-react";
 
 export type GameHelpKey =
   | "mines"
