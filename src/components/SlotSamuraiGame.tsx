@@ -66,14 +66,15 @@ type SymbolDef = {
 };
 
 const SYMBOLS: SymbolDef[] = [
-  { id: "boss",  img: bossAsset.url,  label: "KABUTO",       pay: [55, 240, 1100], weight: 2,  glow: "236,72,153"  },
-  { id: "car",   img: carAsset.url,   label: "DRAGÓN",       pay: [34, 130, 440],  weight: 3,  glow: "168,85,247"  },
-  { id: "brief", img: briefAsset.url, label: "GEISHA",       pay: [24, 72, 240],   weight: 4,  glow: "244,63,94"   },
-  { id: "gold",  img: goldAsset.url,  label: "KANJI 侍",      pay: [19, 50, 165],   weight: 5,  glow: "255,180,40"  },
-  { id: "watch", img: oniAsset.url,      label: "ONI",       pay: [9, 32, 95],     weight: 6,  glow: "255,80,80"   },
-  { id: "chip",  img: shurikenAsset.url, label: "SHURIKEN",  pay: [6, 24, 68],     weight: 8,  glow: "236,72,153"  },
-  { id: "hat",   img: toriiAsset.url,    label: "TORII",     pay: [5, 18, 50],     weight: 10, glow: "244,63,94"   },
-  { id: "card",  img: sakeAsset.url,     label: "SAKE",      pay: [4, 14, 32],     weight: 12, glow: "200,80,220"  },
+  // Pays/weights reflejan exactamente `spin_slot_samurai_v1` (ver src/lib/games/slot-samurai.shared.ts)
+  { id: "boss",  img: bossAsset.url,  label: "KABUTO",       pay: [58, 280, 1265], weight: 2,  glow: "236,72,153"  },
+  { id: "car",   img: carAsset.url,   label: "DRAGÓN",       pay: [37, 155, 506],  weight: 3,  glow: "168,85,247"  },
+  { id: "brief", img: briefAsset.url, label: "GEISHA",       pay: [25, 90, 276],   weight: 4,  glow: "244,63,94"   },
+  { id: "gold",  img: goldAsset.url,  label: "KANJI 侍",      pay: [21, 60, 190],   weight: 5,  glow: "255,180,40"  },
+  { id: "watch", img: oniAsset.url,      label: "ONI",       pay: [13, 42, 109],   weight: 6,  glow: "255,80,80"   },
+  { id: "chip",  img: shurikenAsset.url, label: "SHURIKEN",  pay: [10, 32, 78],    weight: 8,  glow: "236,72,153"  },
+  { id: "hat",   img: toriiAsset.url,    label: "TORII",     pay: [9, 26, 58],     weight: 11, glow: "244,63,94"   },
+  { id: "card",  img: sakeAsset.url,     label: "SAKE",      pay: [8, 22, 37],     weight: 13, glow: "200,80,220"  },
 ];
 
 const SYMBOL_INDEX = new Map(SYMBOLS.map((s, i) => [s.id, i]));
