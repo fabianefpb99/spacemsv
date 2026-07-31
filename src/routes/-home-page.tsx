@@ -933,7 +933,7 @@ export function HomePage() {
                 className="absolute inset-0 z-[2]"
               />
             ) : (
-            <div key={slide} className="absolute inset-0 z-[2] flex flex-col justify-center gap-2 p-4 sm:p-5 lg:gap-3 lg:p-8 xl:gap-4 xl:p-10">
+            <div key={slide} className="absolute inset-0 z-[2] flex flex-col justify-center gap-2 p-4 pb-10 sm:p-5 sm:pb-12 lg:gap-3 lg:p-8 lg:pb-14 xl:gap-4 xl:p-10 xl:pb-16">
               <span className="inline-flex w-fit items-center rounded-md bg-white/95 px-2 py-0.5 font-display text-[10px] font-bold uppercase tracking-widest text-purple-700 shadow-sm lg:px-3 lg:py-1 lg:text-xs xl:text-sm">
                 {current.eyebrow}
               </span>
@@ -951,13 +951,13 @@ export function HomePage() {
               </Link>
             </div>
             )}
-            {/* Sombreado inferior de abajo hacia arriba para los indicadores (por debajo del texto) */}
+            {/* Sombreado inferior muy bajo y sutil solo para resaltar los indicadores */}
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-20 bg-gradient-to-t from-[#120824]/95 via-[#120824]/70 to-transparent sm:h-24"
+              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-10 bg-gradient-to-t from-[#120824]/75 via-[#120824]/35 to-transparent sm:h-12 lg:h-14"
             />
             {/* Indicadores sobre la imagen */}
-            <div className="absolute inset-x-0 bottom-0 z-[3] flex items-center justify-center gap-1.5 py-2.5">
+            <div className="absolute inset-x-0 bottom-0 z-[3] flex items-center justify-center gap-1.5 py-2">
               {Array.from({ length: slides }).map((_, i) => (
                 <button
                   key={i}
