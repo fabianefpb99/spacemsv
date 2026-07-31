@@ -458,10 +458,25 @@ function SlideCard({
           </label>
         </div>
         <div className="grid flex-1 grid-cols-2 gap-2">
+          <label className="col-span-2 flex items-start gap-2 rounded-md border border-fuchsia-500/25 bg-fuchsia-600/10 px-2 py-1.5 text-[11px] text-fuchsia-100">
+            <input
+              type="checkbox"
+              className="mt-0.5"
+              checked={draft.text_hidden ?? false}
+              onChange={(e) => onChange({ ...draft, text_hidden: e.target.checked })}
+            />
+            <span>
+              Solo imagen (sin textos)
+              <span className="block text-[10px] text-fuchsia-200/70">
+                Oculta encabezado, título, descripción y botón. La imagen completa queda enlazada al “Link destino”.
+              </span>
+            </span>
+          </label>
           <Field
             label="Encabezado"
             value={draft.eyebrow}
             onChange={(v) => onChange({ ...draft, eyebrow: v })}
+            disabled={draft.text_hidden}
           />
           <Field
             label="Título"
@@ -474,11 +489,13 @@ function SlideCard({
             onChange={(v) => onChange({ ...draft, description: v })}
             textarea
             full
+            disabled={draft.text_hidden}
           />
           <Field
             label="Texto botón"
             value={draft.cta_label}
             onChange={(v) => onChange({ ...draft, cta_label: v })}
+            disabled={draft.text_hidden}
           />
           <Field
             label="Link destino"
