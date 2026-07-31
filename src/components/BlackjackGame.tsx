@@ -791,13 +791,19 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
         </header>
 
         <div className="relative flex-1">
-          <button
-            onClick={() => setMuted((m) => !m)}
-            aria-label={muted ? "Activar sonido" : "Silenciar"}
-            className="absolute right-2 top-2 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white/85 backdrop-blur-sm transition hover:bg-black/60 hover:text-white"
-          >
-            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-          </button>
+          <div className="absolute right-2 top-2 z-20 flex items-center gap-1.5">
+            <GameHelpButton
+              game="blackjack"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white/85 backdrop-blur-sm transition hover:bg-black/60 hover:text-white"
+            />
+            <button
+              onClick={() => setMuted((m) => !m)}
+              aria-label={muted ? "Activar sonido" : "Silenciar"}
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white/85 backdrop-blur-sm transition hover:bg-black/60 hover:text-white"
+            >
+              {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+            </button>
+          </div>
 
           <div className="absolute left-1/2 top-[14%] -translate-x-1/2">
             <div className="relative h-[100px] w-[200px]">
