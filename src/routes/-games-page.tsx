@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Menu, Search, SlidersHorizontal, LayoutGrid, List, ChevronDown, Rocket, Dices, Grid2X2, Spade, Trophy, Gamepad2 } from "lucide-react";
-import { CATALOG, GAME_CATEGORIES, type GameCategory } from "@/lib/games/catalog";
+import { CATALOG, GAME_CATEGORIES, type GameFilterId } from "@/lib/games/catalog";
 import { GameCard } from "@/components/games/GameCard";
 import { CategoryPill } from "@/components/games/CategoryPill";
 import { FiltersSheet, countActiveFilters, type GamesFilters } from "@/components/games/FiltersSheet";
@@ -55,7 +55,7 @@ function readFavs(): Set<string> {
 
 export function GamesPage() {
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<GameCategory | "all">("all");
+  const [category, setCategory] = useState<GameFilterId>("all");
   const navigate = useNavigate();
   const [sort, setSort] = useState<SortOption>("popular");
   const [view, setView] = useState<"grid" | "list">("grid");
@@ -87,7 +87,8 @@ export function GamesPage() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     let items = CATALOG.filter((g) => {
-      if (category !== "all" && g.category !== category) return false;
+      if (category === "popular") { if (g.badge !== "POPULAR") return false; }
+      else if (category !== "all" && g.category !== category) return false;
       if (q && !g.name.toLowerCase().includes(q) && !g.slug.toLowerCase().includes(q)) return false;
       if (filters.onlyFavorites && !favs.has(g.slug)) return false;
       if (filters.onlyNew && g.badge !== "NUEVO") return false;
