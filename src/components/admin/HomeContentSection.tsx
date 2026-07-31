@@ -29,6 +29,7 @@ type SlideDraft = {
   cta_label: string;
   cta_link: string;
   active: boolean;
+  text_hidden?: boolean;
 };
 
 type FeaturedDraft = {
@@ -217,6 +218,7 @@ function SlidesEditor() {
     cta_label: r.cta_label,
     cta_link: r.cta_link,
     active: r.active,
+    text_hidden: r.text_hidden ?? false,
   }));
 
   function get(id: string, base: SlideDraft) {
@@ -236,6 +238,7 @@ function SlidesEditor() {
           cta_label: d.cta_label,
           cta_link: d.cta_link,
           active: d.active,
+          text_hidden: d.text_hidden ?? false,
         },
       }),
     onSuccess: () => {
@@ -286,6 +289,7 @@ function SlidesEditor() {
         cta_label: "Ver más",
         cta_link: "/",
         active: true,
+        text_hidden: false,
       },
     }));
   }
@@ -313,6 +317,7 @@ function SlidesEditor() {
             cta_label: s.cta,
             cta_link: s.to,
             active: true,
+            text_hidden: false,
           },
         });
       }
