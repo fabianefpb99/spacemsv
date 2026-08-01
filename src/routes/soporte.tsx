@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, Headphones, Mail, Send, MessageCircle } from "lucide-react";
+import { ArrowLeft, Headphones, Mail, Send, Clock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { RequireAuth } from "@/components/auth/RequireAuth";
 import { toast } from "sonner";
 
 const SUPPORT_EMAIL = "support@betspace.app";
@@ -11,10 +12,22 @@ export const Route = createFileRoute("/soporte")({
     meta: [
       { title: "Soporte y Ayuda 24/7 | BETSPACE Casino Colombia" },
       { name: "description", content: "Contacta al equipo de soporte de BETSPACE Casino." },
+      { property: "og:title", content: "Soporte y Ayuda 24/7 | BETSPACE" },
+      { property: "og:description", content: "Escríbenos y te ayudamos con recargas, retiros y tu cuenta." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: SoportePage,
+  component: SoporteRoute,
 });
+
+function SoporteRoute() {
+  return (
+    <RequireAuth>
+      <SoportePage />
+    </RequireAuth>
+  );
+}
 
 function SoportePage() {
   const navigate = useNavigate();
