@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, Headphones, Mail, Send, MessageCircle } from "lucide-react";
+import { ArrowLeft, Headphones, Mail, Send, Clock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { RequireAuth } from "@/components/auth/RequireAuth";
 import { toast } from "sonner";
 
 const SUPPORT_EMAIL = "support@betspace.app";
@@ -11,10 +12,22 @@ export const Route = createFileRoute("/soporte")({
     meta: [
       { title: "Soporte y Ayuda 24/7 | BETSPACE Casino Colombia" },
       { name: "description", content: "Contacta al equipo de soporte de BETSPACE Casino." },
+      { property: "og:title", content: "Soporte y Ayuda 24/7 | BETSPACE" },
+      { property: "og:description", content: "Escríbenos y te ayudamos con recargas, retiros y tu cuenta." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: SoportePage,
+  component: SoporteRoute,
 });
+
+function SoporteRoute() {
+  return (
+    <RequireAuth>
+      <SoportePage />
+    </RequireAuth>
+  );
+}
 
 function SoportePage() {
   const navigate = useNavigate();
@@ -42,13 +55,13 @@ function SoportePage() {
   // Light mode: white surface, dark purple text. Dark mode: original dark purple.
   // Inputs use solid backgrounds (no opacity) and high-contrast text in both modes.
   const inputCls =
-    "mt-1 w-full rounded-lg px-3 py-2.5 text-sm outline-none transition-colors " +
-    "border border-[#d8cfe8] bg-[#f5f1fa] text-[#1a0b3a] placeholder:text-[#7a6a92] " +
-    "focus:border-[#7c3aed] focus:bg-white " +
-    "dark:border-purple-500/30 dark:bg-[#150830] dark:text-white dark:placeholder:text-purple-300/40 dark:focus:border-fuchsia-400/60";
+    "mt-1.5 w-full rounded-xl px-3.5 py-3 text-sm outline-none transition-all " +
+    "border border-[#e6dff2] bg-[#faf8ff] text-[#1a0b3a] placeholder:text-[#9c8fb3] " +
+    "focus:border-[#a855f7] focus:bg-white focus:ring-2 focus:ring-[#a855f7]/15 " +
+    "dark:border-purple-500/25 dark:bg-white/[0.04] dark:text-white dark:placeholder:text-purple-300/35 dark:focus:border-fuchsia-400/60 dark:focus:ring-fuchsia-400/15";
 
   const labelCls =
-    "text-[10px] font-bold uppercase tracking-widest text-[#3b0764] dark:text-purple-200/70";
+    "text-[10px] font-bold uppercase tracking-[0.14em] text-[#6b21a8] dark:text-purple-200/60";
 
   return (
     <div className="min-h-screen bg-white text-[#1a0b3a] dark:bg-[#060210] dark:text-white">
@@ -70,42 +83,34 @@ function SoportePage() {
           <div className="h-7 w-11" />
         </header>
 
-        {/* Hero — solid dark purple in both themes, with explicit fixed contrast. */}
-        <section className="mt-5 rounded-2xl border border-[#3b0764] bg-[#1a0b3a] p-4 shadow-[0_8px_24px_-12px_rgba(59,7,100,0.45)] dark:border-fuchsia-500/30 dark:shadow-[0_0_18px_rgba(168,85,247,0.25)]">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[#a855f7] bg-[#3b0764] text-[#f5d0fe]">
-              <Headphones className="h-6 w-6" />
-            </div>
-            <div className="min-w-0">
-              <div className="font-display text-sm font-black uppercase tracking-wider text-white">
-                ¿Necesitas ayuda?
-              </div>
-              <div className="text-[11px] font-semibold text-white">
-                Te respondemos lo antes posible.
-              </div>
-            </div>
+        {/* Hero — clean centered intro, no heavy boxing. */}
+        <section className="mt-8 flex flex-col items-center text-center">
+          <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 to-purple-700 text-white shadow-[0_10px_28px_-10px_rgba(168,85,247,0.65)]">
+            <Headphones className="h-8 w-8" strokeWidth={2} />
           </div>
-
+          <h2 className="font-display mt-4 text-xl font-black tracking-tight text-[#1a0b3a] dark:text-white">
+            ¿Necesitas ayuda?
+          </h2>
+          <p className="mt-1.5 max-w-[19rem] text-[13px] leading-relaxed text-[#6b5b85] dark:text-purple-200/60">
+            Escríbenos y nuestro equipo te responde a tu correo registrado lo antes posible.
+          </p>
           <a
             href={`mailto:${SUPPORT_EMAIL}`}
-            className="mt-4 flex min-h-11 w-full items-center gap-2 rounded-xl border border-[#f5d0fe] bg-white px-3 py-2.5 text-[#1a0b3a] transition-colors hover:border-[#d946ef] hover:bg-[#fff7ff]"
+            className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-full border border-[#e6dff2] bg-[#faf8ff] px-4 py-2 text-[11px] font-bold text-[#6b21a8] transition-colors hover:border-[#c084fc] hover:bg-white dark:border-purple-500/25 dark:bg-white/[0.04] dark:text-purple-100 dark:hover:bg-white/[0.08]"
           >
-            <Mail className="h-4 w-4 shrink-0 text-[#86198f]" />
-            <span className="min-w-0 break-all text-xs font-black text-[#1a0b3a]">
-              {SUPPORT_EMAIL}
-            </span>
+            <Mail className="h-3.5 w-3.5 shrink-0 text-fuchsia-500" />
+            <span className="break-all">{SUPPORT_EMAIL}</span>
           </a>
         </section>
 
-        <h2 className="font-display mt-6 mb-2 text-[10px] font-bold uppercase tracking-widest text-[#3b0764] dark:text-purple-200/80">
-          Envíanos un mensaje
-        </h2>
-
-        {/* Form card — white in light, dark in dark. */}
+        {/* Form card — soft, airy surface in both themes. */}
         <form
           onSubmit={handleSubmit}
-          className="space-y-4 rounded-2xl border border-[#e6dff2] bg-white p-4 shadow-[0_4px_18px_-10px_rgba(59,7,100,0.18)] dark:border-purple-500/30 dark:bg-[#0c0620]/80 dark:shadow-none"
+          className="mt-7 space-y-4 rounded-3xl border border-[#ece5f7] bg-white p-5 shadow-[0_10px_36px_-22px_rgba(59,7,100,0.28)] dark:border-purple-500/20 dark:bg-white/[0.03] dark:shadow-none"
         >
+          <div className="font-display text-[10px] font-bold uppercase tracking-[0.18em] text-[#a78bbf] dark:text-purple-300/40">
+            Envíanos un mensaje
+          </div>
           <div>
             <label className={labelCls}>Tu correo</label>
             <input
@@ -137,30 +142,27 @@ function SoportePage() {
               placeholder="Cuéntanos en detalle qué sucede…"
               className={`${inputCls} resize-none`}
             />
-            <div className="mt-1 text-right text-[10px] font-semibold text-[#7a6a92] dark:text-purple-200/50">
+            <div className="mt-1.5 text-right text-[10px] font-semibold text-[#9c8fb3] dark:text-purple-200/40">
               {message.length}/2000
             </div>
           </div>
           <button
             type="submit"
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-fuchsia-500 to-purple-600 py-3 text-xs font-black uppercase tracking-wider text-white shadow-[0_6px_16px_-4px_rgba(168,85,247,0.55)] transition-all hover:brightness-110 active:scale-[0.99]"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-fuchsia-500 to-purple-600 py-3.5 text-xs font-black uppercase tracking-[0.12em] text-white shadow-[0_10px_24px_-10px_rgba(168,85,247,0.7)] transition-all hover:brightness-110 active:scale-[0.99]"
           >
             <Send className="h-4 w-4" />
             Enviar a soporte
           </button>
         </form>
 
-        <div className="mt-5 rounded-2xl border border-[#e6dff2] bg-[#faf7ff] p-3 dark:border-purple-500/20 dark:bg-[#0c0620]/60">
-          <div className="flex items-start gap-2 text-[11px] text-[#3b0764] dark:text-purple-200/80">
-            <MessageCircle className="mt-0.5 h-4 w-4 shrink-0 text-fuchsia-600 dark:text-fuchsia-300" />
-            <p>
-              Horario de atención:{" "}
-              <span className="font-bold text-[#1a0b3a] dark:text-white">
-                Lun a Dom, 8:00 a 22:00 (COL)
-              </span>
-              . Las respuestas se envían a tu correo registrado.
-            </p>
-          </div>
+        <div className="mt-5 flex items-center justify-center gap-2 text-[11px] text-[#8d7ba8] dark:text-purple-200/50">
+          <Clock className="h-3.5 w-3.5 shrink-0 text-fuchsia-500/80" />
+          <span>
+            Atención{" "}
+            <span className="font-bold text-[#3b0764] dark:text-purple-100">
+              Lun a Dom, 8:00 – 22:00 (COL)
+            </span>
+          </span>
         </div>
       </div>
     </div>
