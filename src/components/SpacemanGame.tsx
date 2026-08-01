@@ -578,7 +578,9 @@ export function SpacemanGame() {
   // Polling de respaldo: las rondas activas (betting/running) ya no son
   // legibles vía RLS para evitar fugar server_seed/crash_multiplier antes
   // del crash, así que el realtime no entrega esas transiciones. Sondeamos
-  // la RPC enmascarada cada 700ms para conducir el estado de la UI.
+  // la RPC enmascarada cada 1500ms para conducir el estado de la UI. El reloj
+  // local interpola cada frame, así que no hace falta golpear la base ~85 veces
+  // por minuto por pestaña para conservar una animación fluida.
   useEffect(() => {
     const id = window.setInterval(async () => {
       if (document.hidden) return;
@@ -586,7 +588,7 @@ export function SpacemanGame() {
       if (!data) return;
       const r = data as ServerRound & { server_now: string };
       applyRoundRow(r, r.server_now);
-    }, 700);
+    }, 1500);
     return () => window.clearInterval(id);
   }, [applyRoundRow]);
 

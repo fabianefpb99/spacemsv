@@ -2,7 +2,6 @@ import { createStart, createMiddleware } from "@tanstack/react-start";
 
 import { renderErrorPage } from "./lib/error-page";
 import { attachAuthTokenSafely } from "@/lib/auth/auth-token-middleware";
-import { attachSupabaseAuth } from "@/integrations/supabase/auth-attacher";
 
 const errorMiddleware = createMiddleware().server(async ({ next }) => {
   try {
@@ -23,5 +22,5 @@ export const startInstance = createStart(() => ({
   requestMiddleware: [errorMiddleware],
   // A single auth middleware is intentional. Registering both implementations
   // made every game action wait for getSession() twice before the request began.
-  functionMiddleware: [attachSupabaseAuth, attachAuthTokenSafely],
+  functionMiddleware: [attachAuthTokenSafely],
 }));
