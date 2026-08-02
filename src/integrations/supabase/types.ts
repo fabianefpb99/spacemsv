@@ -1668,6 +1668,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      admin_bet_insights: {
+        Args: { p_from: string; p_to: string }
+        Returns: Json
+      }
       admin_reject_deposit: {
         Args: { p_id: string; p_reason: string }
         Returns: {

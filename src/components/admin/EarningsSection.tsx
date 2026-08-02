@@ -13,6 +13,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { adminGetCasinoStats } from "@/lib/admin/admin.functions";
 import { GAME_LABELS, KpiCard, Panel, formatCOP } from "./shared";
+import { BetInsightsPanel } from "./BetInsightsPanel";
 
 export function EarningsSection() {
   const [range, setRange] = useState<"today" | "week" | "month" | "3months" | "6months" | "all" | "custom">("today");
@@ -140,6 +141,8 @@ export function EarningsSection() {
           />
         </div>
       </Panel>
+
+      <BetInsightsPanel range={range} from={from} to={to} />
 
       <Panel title="Métricas por juego">
         {q.isLoading ? (
