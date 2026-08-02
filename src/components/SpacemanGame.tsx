@@ -6,7 +6,7 @@ import betspaceLogo from "@/assets/betspace-logo.svg";
 import { Link } from "@tanstack/react-router";
 import { Settings, Clock, ArrowRight, Minus, Plus, Volume2, VolumeX, ChevronDown, ChevronUp } from "lucide-react";
 import bgImage from "@/assets/space-bg-full.webp";
-import astronautIdlePng from "@/assets/astronaut-idle.svg";
+import astronautIdlePng from "@/assets/astronaut-idle.webp";
 import astronautFlyingSrc from "@/assets/astronaut-flying.webp";
 import meteorSrc from "@/assets/asteroid.svg";
 import saturnSrc from "@/assets/saturn.svg";

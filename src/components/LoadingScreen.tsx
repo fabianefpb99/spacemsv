@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import bgImage from "@/assets/space-bg-full.webp";
-import astronautIdle from "@/assets/astronaut-idle.svg";
+import astronautIdle from "@/assets/astronaut-idle.webp";
 import astronautFlying from "@/assets/astronaut-flying.webp";
 import meteor from "@/assets/asteroid.svg";
 import bgMusic from "@/assets/bg-music.mp3";
