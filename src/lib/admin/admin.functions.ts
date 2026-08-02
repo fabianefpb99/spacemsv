@@ -678,3 +678,37 @@ export const adminGetHighWinners = createServerFn({ method: "POST" })
       top: topPositive.map(decorate),
     };
   });
+/* --------------------- Bet behaviour insights (aggregated) --------------------- */
+
+export type BetInsights = {
+  summary: {
+    bet_count: number;
+    players: number;
+    handle: number;
+    avg_bet: number;
+    median_bet: number;
+    min_bet: number;
+    max_bet: number;
+    bets_per_player: number;
+    wagered_per_player: number;
+  };
+  topAmounts: { amt: number; uses: number; wagered: number }[];
+  buckets: { bucket: string; uses: number; wagered: number }[];
+  peakHours: { hour: number; uses: number; wagered: number }[];
+  perGame: { game: string; common_bet: number; avg_bet: number; bet_count: number; players: number }[];
+};
+
+export const adminGetBetInsights = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => rangeInput.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+    const { from, to } = resolveRange(data);
+    // All aggregation happens inside Postgres: a single row comes back.
+    const { data: res, error } = await context.supabase.rpc("admin_bet_insights", {
+      p_from: from.toISOString(),
+      p_to: to.toISOString(),
+    });
+    if (error) throw safeRpcError(error);
+    return res as unknown as BetInsights;
+  });
