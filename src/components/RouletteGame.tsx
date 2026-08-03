@@ -486,9 +486,93 @@ export function RouletteGame() {
     };
   }, [muted]);
 
-  const adjustBet = (delta: number) => {
-    setBet((b) => clampBetToStep(b + delta, balance, MAX_BET, BET_STEP, MIN_BET));
-  };
+  const cycleChip = useCallback((dir: 1 | -1) => {
+    setChip((c) => {
+      const i = CHIPS.indexOf(c);
+      const next = Math.min(CHIPS.length - 1, Math.max(0, (i === -1 ? 1 : i) + dir));
+      return CHIPS[next];
+    });
+  }, []);
+
+  const placeBet = useCallback(
+    (type: BetType, key: string) => {
+      if (phase !== "idle") return;
+      const id = betId(type, key);
+      setBets((prev) => {
+        const current = prev.get(id) ?? 0;
+        const nextTotal = totalBet + chip;
+        if (nextTotal > MAX_TOTAL) {
+          toast.error(`Máximo por giro: ${formatCOP(MAX_TOTAL)} COP`);
+          return prev;
+        }
+        if (nextTotal > balance) {
+          toast.error("Saldo insuficiente");
+          return prev;
+        }
+        const next = new Map(prev);
+        next.set(id, current + chip);
+        return next;
+      });
+      setPlaceOrder((prev) => [...prev, id]);
+    },
+    [phase, chip, totalBet, balance],
+  );
+
+  const clearCell = useCallback(
+    (type: BetType, key: string) => {
+      if (phase !== "idle") return;
+      const id = betId(type, key);
+      setBets((prev) => {
+        if (!prev.has(id)) return prev;
+        const next = new Map(prev);
+        next.delete(id);
+        return next;
+      });
+      setPlaceOrder((prev) => prev.filter((x) => x !== id));
+    },
+    [phase],
+  );
+
+  const undoBet = useCallback(() => {
+    if (phase !== "idle") return;
+    setPlaceOrder((order) => {
+      const last = order[order.length - 1];
+      if (!last) return order;
+      setBets((prev) => {
+        const current = prev.get(last);
+        if (current === undefined) return prev;
+        const next = new Map(prev);
+        // Se retira la última ficha colocada en esa casilla.
+        const rest = order.slice(0, -1);
+        const remaining = rest.filter((x) => x === last).length;
+        if (remaining === 0) next.delete(last);
+        else {
+          const amounts = current;
+          next.set(last, Math.max(MIN_BET, amounts - chip));
+        }
+        return next;
+      });
+      return order.slice(0, -1);
+    });
+  }, [phase, chip]);
+
+  const clearAllBets = useCallback(() => {
+    if (phase !== "idle") return;
+    setBets(new Map());
+    setPlaceOrder([]);
+  }, [phase]);
+
+  const repeatBets = useCallback(() => {
+    if (phase !== "idle" || !lastBets || lastBets.size === 0) return;
+    let sum = 0;
+    for (const a of lastBets.values()) sum += a;
+    if (sum > balance) {
+      toast.error("Saldo insuficiente para repetir");
+      return;
+    }
+    setBets(new Map(lastBets));
+    setPlaceOrder(Array.from(lastBets.keys()));
+  }, [phase, lastBets, balance]);
 
   const handleSpin = useCallback(async () => {
     if (inFlightRef.current || phase !== "idle") return;
@@ -496,18 +580,30 @@ export function RouletteGame() {
       toast.error("Inicia sesión para jugar");
       return;
     }
-    if (bet > balance) {
+    if (bets.size === 0) {
+      toast.error("Coloca al menos una ficha en el tapete");
+      setTableOpen(true);
+      return;
+    }
+    if (totalBet > balance) {
       toast.error("Saldo insuficiente");
       return;
     }
-    if (bet < MIN_BET || bet % BET_STEP !== 0) {
+    if (totalBet < MIN_BET || totalBet % BET_STEP !== 0 || totalBet > MAX_TOTAL) {
       toast.error(`Apuesta inválida (mínimo ${formatCOP(MIN_BET)}, paso ${formatCOP(BET_STEP)})`);
       return;
     }
 
+    const payload = Array.from(bets.entries()).map(([id, amount]) => {
+      const { type, key } = parseBetId(id);
+      return { type, key, amount };
+    });
+    const snapshot = new Map(bets);
+
     inFlightRef.current = true;
     setPhase("spinning");
     setLastResult(null);
+    setTableOpen(false);
     // Desbloquear el <audio> de victoria dentro del gesto del usuario
     // para que el play() diferido (9.8s después) no sea bloqueado por iOS.
     primeWinAudio();
@@ -518,15 +614,29 @@ export function RouletteGame() {
         fn: string,
         args: Record<string, unknown>,
       ) => Promise<{ data: unknown; error: { message: string } | null }>)(
-        "spin_roulette_v2",
+        "spin_roulette_multi_v1",
         {
-          p_bet_amount: bet,
-          p_choice: choice,
+          p_bets: payload,
           p_client_action_id: actionId,
         },
       );
       if (error) throw error;
-      const result = (data as { cached: { winning_segment: number; winning_color: Choice; won: boolean; payout: number } }).cached;
+      const result = (
+        data as {
+          cached: {
+            winning_segment: number;
+            winning_color: Choice;
+            won: boolean;
+            payout: number;
+            bets?: Array<{ payout: number }>;
+          };
+        }
+      ).cached;
+      const hits = (result.bets ?? []).filter((b) => Number(b.payout) > 0).length;
+
+      setLastBets(snapshot);
+      setBets(new Map());
+      setPlaceOrder([]);
 
       // Descontar la apuesta de inmediato en el HUD para que el header no
       // refleje un saldo "ganado" antes de que la ruleta caiga. El refresco
@@ -535,7 +645,7 @@ export function RouletteGame() {
       queryClient.setQueryData(
         ["me", user.id],
         (old: { balance: number; bonus_balance: number; profile: unknown } | null | undefined) =>
-          old ? { ...old, balance: Math.max(0, Number(old.balance) - bet) } : old,
+          old ? { ...old, balance: Math.max(0, Number(old.balance) - totalBet) } : old,
       );
 
       // Calcular rotación final: winning segment debe terminar arriba
