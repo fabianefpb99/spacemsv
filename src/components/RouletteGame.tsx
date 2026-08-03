@@ -1,18 +1,27 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Volume2, VolumeX } from "lucide-react";
+import { LayoutGrid, Repeat, RotateCcw, Trash2, Volume2, VolumeX } from "lucide-react";
 import { toast } from "sonner";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import rouletteScene from "@/assets/roulette-scene-v2.png.asset.json";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { BetAmount } from "@/components/games/BetAmount";
-import { CasinoChip, CHIP_VARIANTS, chipLabelFor } from "@/components/games/CasinoChip";
+import { CasinoChip, chipLabelFor } from "@/components/games/CasinoChip";
+import { BetTableOverlay } from "@/components/games/roulette/BetTableOverlay";
+import {
+  type BetType,
+  betId,
+  betLabel,
+  multiplierFor,
+  parseBetId,
+} from "@/lib/games/roulette-table";
+import { getRouletteTableConfig } from "@/lib/games/roulette.functions";
 import { FitText } from "@/components/ui/fit-text";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
-import { clampBetToStep } from "@/lib/games/bet-helpers";
 import mafiaJazzUrl from "@/assets/mafia-jazz.mp3";
 import congratulationsAudio from "@/assets/audio/roulette-win/congratulations.mp3.asset.json";
 import {
@@ -34,9 +43,18 @@ import { GameHelpButton } from "@/components/GameHelpButton";
 type HistoryEntry = { segment: number; color: Choice };
 
 const MIN_BET = 500;
-const MAX_BET = 50000;
 const BET_STEP = 500;
-const QUICK_ADDS = [1000, 2000, 5000, 10000];
+const MAX_TOTAL = 500000;
+const CHIPS = [500, 1000, 2000, 5000, 10000, 25000, 50000];
+const CHIP_PALETTE: Record<number, "blue" | "red" | "green" | "gold"> = {
+  500: "blue",
+  1000: "blue",
+  2000: "red",
+  5000: "green",
+  10000: "gold",
+  25000: "red",
+  50000: "gold",
+};
 
 // Calibración de la rueda sobre el fondo v2 (escena 942x1672, ratio 9:16)
 // El fondo v2 tiene un hueco circular vacío donde encaja la rueda funcional.
