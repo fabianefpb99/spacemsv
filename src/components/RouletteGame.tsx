@@ -229,15 +229,40 @@ export function RouletteGame() {
   const balance = realBalance + bonusBalance;
   const balanceReady = !!meQuery.data;
 
-  const [bet, setBet] = useState(2000);
-  const [choice, setChoice] = useState<Choice>("red");
+  const [chip, setChip] = useState(1000);
+  const [bets, setBets] = useState<Map<string, number>>(() => new Map());
+  const [placeOrder, setPlaceOrder] = useState<string[]>([]);
+  const [lastBets, setLastBets] = useState<Map<string, number> | null>(null);
+  const [tableOpen, setTableOpen] = useState(false);
   const [phase, setPhase] = useState<Phase>("idle");
   const [rotation, setRotation] = useState(0);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [muted, setMuted] = useState<boolean>(() => (typeof window === "undefined" ? false : isMuted()));
   const online = useOnlineCount();
   useEffect(() => { setAudioMuted(muted); }, [muted]);
-  const [lastResult, setLastResult] = useState<{ segment: number; color: Choice; won: boolean; payout: number } | null>(null);
+  const [lastResult, setLastResult] = useState<{
+    segment: number;
+    color: Choice;
+    won: boolean;
+    payout: number;
+    hits: number;
+  } | null>(null);
+
+  const configFn = useServerFn(getRouletteTableConfig);
+  const configQuery = useQuery({
+    queryKey: ["roulette-table-config"],
+    queryFn: () => configFn(),
+    staleTime: 5 * 60_000,
+    enabled: !!user,
+  });
+  const greenWeight = configQuery.data?.green_weight ?? 1;
+  const zeroMultiplier = configQuery.data?.zero_multiplier ?? 36;
+
+  const totalBet = useMemo(() => {
+    let sum = 0;
+    for (const amount of bets.values()) sum += amount;
+    return sum;
+  }, [bets]);
 
   const inFlightRef = useRef(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
