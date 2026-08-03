@@ -1561,6 +1561,14 @@ export type Database = {
       _gen_deposit_reference: { Args: never; Returns: string }
       _gen_referral_code: { Args: never; Returns: string }
       _mission_period_start: { Args: { p_type: string }; Returns: string }
+      _roulette_bet_cells: {
+        Args: { p_key: string; p_type: string }
+        Returns: number[]
+      }
+      _roulette_bet_multiplier: {
+        Args: { p_green_weight: number; p_key: string; p_type: string }
+        Returns: number
+      }
       _spaceman_gen_crash: { Args: { p_server_seed: string }; Returns: number }
       adjust_balance: {
         Args: {
@@ -2215,6 +2223,10 @@ export type Database = {
         Returns: Json
       }
       spaceman_tick: { Args: never; Returns: Json }
+      spin_roulette_multi_v1: {
+        Args: { p_bets: Json; p_client_action_id: string }
+        Returns: Json
+      }
       spin_roulette_v1: {
         Args: {
           p_bet_amount: number

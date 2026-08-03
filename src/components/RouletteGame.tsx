@@ -1,18 +1,27 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Volume2, VolumeX } from "lucide-react";
+import { LayoutGrid, Repeat, RotateCcw, Trash2, Volume2, VolumeX } from "lucide-react";
 import { toast } from "sonner";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import rouletteScene from "@/assets/roulette-scene-v2.png.asset.json";
 import { AuthControl } from "@/components/auth/AuthControl";
 import { BetAmount } from "@/components/games/BetAmount";
-import { CasinoChip, CHIP_VARIANTS, chipLabelFor } from "@/components/games/CasinoChip";
+import { CasinoChip, chipLabelFor } from "@/components/games/CasinoChip";
+import { BetTableOverlay } from "@/components/games/roulette/BetTableOverlay";
+import {
+  type BetType,
+  betId,
+  betLabel,
+  multiplierFor,
+  parseBetId,
+} from "@/lib/games/roulette-table";
+import { getRouletteTableConfig } from "@/lib/games/roulette.functions";
 import { FitText } from "@/components/ui/fit-text";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
-import { clampBetToStep } from "@/lib/games/bet-helpers";
 import mafiaJazzUrl from "@/assets/mafia-jazz.mp3";
 import congratulationsAudio from "@/assets/audio/roulette-win/congratulations.mp3.asset.json";
 import {
@@ -34,9 +43,18 @@ import { GameHelpButton } from "@/components/GameHelpButton";
 type HistoryEntry = { segment: number; color: Choice };
 
 const MIN_BET = 500;
-const MAX_BET = 50000;
 const BET_STEP = 500;
-const QUICK_ADDS = [1000, 2000, 5000, 10000];
+const MAX_TOTAL = 500000;
+const CHIPS = [500, 1000, 2000, 5000, 10000, 25000, 50000];
+const CHIP_PALETTE: Record<number, "blue" | "red" | "green" | "gold"> = {
+  500: "blue",
+  1000: "blue",
+  2000: "red",
+  5000: "green",
+  10000: "gold",
+  25000: "red",
+  50000: "gold",
+};
 
 // Calibración de la rueda sobre el fondo v2 (escena 942x1672, ratio 9:16)
 // El fondo v2 tiene un hueco circular vacío donde encaja la rueda funcional.
@@ -211,15 +229,40 @@ export function RouletteGame() {
   const balance = realBalance + bonusBalance;
   const balanceReady = !!meQuery.data;
 
-  const [bet, setBet] = useState(2000);
-  const [choice, setChoice] = useState<Choice>("red");
+  const [chip, setChip] = useState(1000);
+  const [bets, setBets] = useState<Map<string, number>>(() => new Map());
+  const [placeOrder, setPlaceOrder] = useState<string[]>([]);
+  const [lastBets, setLastBets] = useState<Map<string, number> | null>(null);
+  const [tableOpen, setTableOpen] = useState(false);
   const [phase, setPhase] = useState<Phase>("idle");
   const [rotation, setRotation] = useState(0);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [muted, setMuted] = useState<boolean>(() => (typeof window === "undefined" ? false : isMuted()));
   const online = useOnlineCount();
   useEffect(() => { setAudioMuted(muted); }, [muted]);
-  const [lastResult, setLastResult] = useState<{ segment: number; color: Choice; won: boolean; payout: number } | null>(null);
+  const [lastResult, setLastResult] = useState<{
+    segment: number;
+    color: Choice;
+    won: boolean;
+    payout: number;
+    hits: number;
+  } | null>(null);
+
+  const configFn = useServerFn(getRouletteTableConfig);
+  const configQuery = useQuery({
+    queryKey: ["roulette-table-config"],
+    queryFn: () => configFn(),
+    staleTime: 5 * 60_000,
+    enabled: !!user,
+  });
+  const greenWeight = configQuery.data?.green_weight ?? 1;
+  const zeroMultiplier = configQuery.data?.zero_multiplier ?? 36;
+
+  const totalBet = useMemo(() => {
+    let sum = 0;
+    for (const amount of bets.values()) sum += amount;
+    return sum;
+  }, [bets]);
 
   const inFlightRef = useRef(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -443,9 +486,93 @@ export function RouletteGame() {
     };
   }, [muted]);
 
-  const adjustBet = (delta: number) => {
-    setBet((b) => clampBetToStep(b + delta, balance, MAX_BET, BET_STEP, MIN_BET));
-  };
+  const cycleChip = useCallback((dir: 1 | -1) => {
+    setChip((c) => {
+      const i = CHIPS.indexOf(c);
+      const next = Math.min(CHIPS.length - 1, Math.max(0, (i === -1 ? 1 : i) + dir));
+      return CHIPS[next];
+    });
+  }, []);
+
+  const placeBet = useCallback(
+    (type: BetType, key: string) => {
+      if (phase !== "idle") return;
+      const id = betId(type, key);
+      setBets((prev) => {
+        const current = prev.get(id) ?? 0;
+        const nextTotal = totalBet + chip;
+        if (nextTotal > MAX_TOTAL) {
+          toast.error(`Máximo por giro: ${formatCOP(MAX_TOTAL)} COP`);
+          return prev;
+        }
+        if (nextTotal > balance) {
+          toast.error("Saldo insuficiente");
+          return prev;
+        }
+        const next = new Map(prev);
+        next.set(id, current + chip);
+        return next;
+      });
+      setPlaceOrder((prev) => [...prev, id]);
+    },
+    [phase, chip, totalBet, balance],
+  );
+
+  const clearCell = useCallback(
+    (type: BetType, key: string) => {
+      if (phase !== "idle") return;
+      const id = betId(type, key);
+      setBets((prev) => {
+        if (!prev.has(id)) return prev;
+        const next = new Map(prev);
+        next.delete(id);
+        return next;
+      });
+      setPlaceOrder((prev) => prev.filter((x) => x !== id));
+    },
+    [phase],
+  );
+
+  const undoBet = useCallback(() => {
+    if (phase !== "idle") return;
+    setPlaceOrder((order) => {
+      const last = order[order.length - 1];
+      if (!last) return order;
+      setBets((prev) => {
+        const current = prev.get(last);
+        if (current === undefined) return prev;
+        const next = new Map(prev);
+        // Se retira la última ficha colocada en esa casilla.
+        const rest = order.slice(0, -1);
+        const remaining = rest.filter((x) => x === last).length;
+        if (remaining === 0) next.delete(last);
+        else {
+          const amounts = current;
+          next.set(last, Math.max(MIN_BET, amounts - chip));
+        }
+        return next;
+      });
+      return order.slice(0, -1);
+    });
+  }, [phase, chip]);
+
+  const clearAllBets = useCallback(() => {
+    if (phase !== "idle") return;
+    setBets(new Map());
+    setPlaceOrder([]);
+  }, [phase]);
+
+  const repeatBets = useCallback(() => {
+    if (phase !== "idle" || !lastBets || lastBets.size === 0) return;
+    let sum = 0;
+    for (const a of lastBets.values()) sum += a;
+    if (sum > balance) {
+      toast.error("Saldo insuficiente para repetir");
+      return;
+    }
+    setBets(new Map(lastBets));
+    setPlaceOrder(Array.from(lastBets.keys()));
+  }, [phase, lastBets, balance]);
 
   const handleSpin = useCallback(async () => {
     if (inFlightRef.current || phase !== "idle") return;
@@ -453,18 +580,30 @@ export function RouletteGame() {
       toast.error("Inicia sesión para jugar");
       return;
     }
-    if (bet > balance) {
+    if (bets.size === 0) {
+      toast.error("Coloca al menos una ficha en el tapete");
+      setTableOpen(true);
+      return;
+    }
+    if (totalBet > balance) {
       toast.error("Saldo insuficiente");
       return;
     }
-    if (bet < MIN_BET || bet % BET_STEP !== 0) {
+    if (totalBet < MIN_BET || totalBet % BET_STEP !== 0 || totalBet > MAX_TOTAL) {
       toast.error(`Apuesta inválida (mínimo ${formatCOP(MIN_BET)}, paso ${formatCOP(BET_STEP)})`);
       return;
     }
 
+    const payload = Array.from(bets.entries()).map(([id, amount]) => {
+      const { type, key } = parseBetId(id);
+      return { type, key, amount };
+    });
+    const snapshot = new Map(bets);
+
     inFlightRef.current = true;
     setPhase("spinning");
     setLastResult(null);
+    setTableOpen(false);
     // Desbloquear el <audio> de victoria dentro del gesto del usuario
     // para que el play() diferido (9.8s después) no sea bloqueado por iOS.
     primeWinAudio();
@@ -475,15 +614,29 @@ export function RouletteGame() {
         fn: string,
         args: Record<string, unknown>,
       ) => Promise<{ data: unknown; error: { message: string } | null }>)(
-        "spin_roulette_v2",
+        "spin_roulette_multi_v1",
         {
-          p_bet_amount: bet,
-          p_choice: choice,
+          p_bets: payload,
           p_client_action_id: actionId,
         },
       );
       if (error) throw error;
-      const result = (data as { cached: { winning_segment: number; winning_color: Choice; won: boolean; payout: number } }).cached;
+      const result = (
+        data as {
+          cached: {
+            winning_segment: number;
+            winning_color: Choice;
+            won: boolean;
+            payout: number;
+            bets?: Array<{ payout: number }>;
+          };
+        }
+      ).cached;
+      const hits = (result.bets ?? []).filter((b) => Number(b.payout) > 0).length;
+
+      setLastBets(snapshot);
+      setBets(new Map());
+      setPlaceOrder([]);
 
       // Descontar la apuesta de inmediato en el HUD para que el header no
       // refleje un saldo "ganado" antes de que la ruleta caiga. El refresco
@@ -492,7 +645,7 @@ export function RouletteGame() {
       queryClient.setQueryData(
         ["me", user.id],
         (old: { balance: number; bonus_balance: number; profile: unknown } | null | undefined) =>
-          old ? { ...old, balance: Math.max(0, Number(old.balance) - bet) } : old,
+          old ? { ...old, balance: Math.max(0, Number(old.balance) - totalBet) } : old,
       );
 
       // Calcular rotación final: winning segment debe terminar arriba
@@ -555,6 +708,7 @@ export function RouletteGame() {
           color: result.winning_color,
           won: result.won,
           payout: Number(result.payout) || 0,
+          hits,
         });
         setHistory((h) => [{ segment: result.winning_segment, color: result.winning_color }, ...h].slice(0, 30));
         playResult(result.won);
@@ -562,7 +716,9 @@ export function RouletteGame() {
         // premio cuando la bola ya cayó, no antes.
         queryClient.invalidateQueries({ queryKey: ["me"] });
         if (result.won) {
-          toast.success(`¡Ganaste! +${formatCOP(Number(result.payout) || 0)} COP`);
+          toast.success(`¡Ganaste! +${formatCOP(Number(result.payout) || 0)} COP`, {
+            description: `${hits} apuesta${hits === 1 ? "" : "s"} acertada${hits === 1 ? "" : "s"} · salió ${result.winning_segment}`,
+          });
         } else {
           toast(`Salió ${result.winning_segment} ${result.winning_color === "red" ? "rojo" : result.winning_color === "black" ? "negro" : "verde"}`, {
             description: "Suerte para la próxima",
@@ -580,9 +736,9 @@ export function RouletteGame() {
       setPhase("idle");
       inFlightRef.current = false;
     }
-  }, [user, bet, balance, choice, phase, rotation, queryClient, playTick, playResult, playWinAudio, primeWinAudio]);
+  }, [user, bets, totalBet, balance, phase, rotation, queryClient, playTick, playResult, playWinAudio, primeWinAudio]);
 
-  const canSpin = phase === "idle" && balanceReady && bet <= balance;
+  const canSpin = phase === "idle" && balanceReady && bets.size > 0 && totalBet <= balance;
 
   return (
     <div
@@ -612,7 +768,7 @@ export function RouletteGame() {
 
       {/* ───────────────── HEADER GLOBAL ───────────────── */}
       <header
-        className="relative z-10 flex items-center justify-between bg-[#06010f]/85 backdrop-blur-sm border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
+        className="relative z-40 flex items-center justify-between bg-[#06010f]/85 backdrop-blur-sm border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
         style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.4rem)" }}
       >
         <div className="flex items-center gap-1">
@@ -634,7 +790,7 @@ export function RouletteGame() {
       </header>
 
       {/* ───────────────── ONLINE + MUTE ───────────────── */}
-      <div className="game-strip-fade relative z-10 mt-3 flex items-center justify-between">
+      <div className="game-strip-fade relative z-40 mt-3 flex items-center justify-between">
         <div className="flex items-center gap-2 text-xs">
           <OnlineUsersIcon />
           <span className="font-semibold text-white/90">{online} ONLINE</span>
@@ -651,11 +807,42 @@ export function RouletteGame() {
         </div>
       </div>
 
-      {/* Espaciador flexible: deja ver el fondo y la rueda */}
-      <div className="flex-1 min-h-0" />
+      {/* Zona central: rueda visible + tapete flotante cuando está abierto */}
+      <div className="relative z-20 mt-2 flex-1 min-h-0">
+        {tableOpen && (
+          <div className="absolute inset-0 z-20">
+            <BetTableOverlay
+              bets={bets}
+              greenWeight={greenWeight}
+              disabled={phase !== "idle"}
+              total={totalBet}
+              highlight={phase === "revealing" ? (lastResult?.segment ?? null) : null}
+              onPlace={placeBet}
+              onClearCell={clearCell}
+              onUndo={undoBet}
+              onClearAll={clearAllBets}
+              onClose={() => setTableOpen(false)}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Oscurecido de fondo mientras el tapete está abierto (header y HUD siguen nítidos) */}
+      {tableOpen && (
+        <button
+          type="button"
+          aria-label="Cerrar tapete"
+          onClick={() => setTableOpen(false)}
+          className="absolute inset-0 z-10 cursor-default bg-black/70 backdrop-blur-[3px]"
+        />
+      )}
 
       {/* ───────────────── HISTORIAL — encima del HUD ───────────────── */}
-      <div className="relative z-10 mt-2 flex items-center gap-2 rounded-full border border-purple-400/30 bg-black/55 px-3 py-1.5 backdrop-blur-sm">
+      <div
+        className={`relative z-40 mt-2 flex items-center gap-2 rounded-full border border-purple-400/30 bg-black/55 px-3 py-1.5 backdrop-blur-sm ${
+          tableOpen ? "hidden" : ""
+        }`}
+      >
         <span className="text-[10px] font-semibold uppercase tracking-wider text-purple-200/80">Últimos</span>
         <div className="flex flex-1 items-center gap-1.5 overflow-hidden pr-1">
           {history.length === 0 ? (
@@ -681,112 +868,159 @@ export function RouletteGame() {
       </div>
 
       {/* ───────────────── HUD inferior ───────────────── */}
-      <div className="relative z-10 mt-2 space-y-2.5 rounded-2xl border border-purple-400/30 bg-gradient-to-b from-[#1a0833]/85 to-[#0a0118]/90 p-3 shadow-[0_-4px_20px_rgba(124,58,237,0.25)] backdrop-blur-md">
-        {/* Botones de elección — 3 en una fila */}
+      <div className="relative z-40 mt-2 space-y-2 rounded-2xl border border-purple-400/30 bg-gradient-to-b from-[#1a0833]/85 to-[#0a0118]/90 p-3 shadow-[0_-4px_20px_rgba(124,58,237,0.25)] backdrop-blur-md">
+        {/* Apuestas rápidas exteriores — colocan la ficha seleccionada */}
         <div className="grid grid-cols-3 gap-2">
-            <button
-              onClick={() => setChoice("red")}
-              disabled={phase !== "idle"}
-              className={`flex flex-col items-center justify-center gap-0.5 rounded-xl border-2 py-2.5 transition-all disabled:opacity-60 ${
-                choice === "red"
-                  ? "border-red-300 bg-gradient-to-br from-red-600 to-red-800 shadow-[0_0_14px_rgba(239,68,68,0.6)]"
-                  : "border-red-500/30 bg-red-950/40 opacity-75 backdrop-blur-sm hover:opacity-95 hover:bg-red-900/50"
-              }`}
-            >
-              <span className="font-display text-base font-black leading-tight">ROJO</span>
-              <span className="text-[11px] font-bold text-rose-100/90 leading-none">2.0x</span>
-            </button>
-            <button
-              onClick={() => setChoice("black")}
-              disabled={phase !== "idle"}
-              className={`flex flex-col items-center justify-center gap-0.5 rounded-xl border-2 py-2.5 transition-all disabled:opacity-60 ${
-                choice === "black"
-                  ? "border-white/70 bg-gradient-to-br from-zinc-700 to-zinc-950 shadow-[0_0_14px_rgba(255,255,255,0.25)]"
-                  : "border-white/20 bg-zinc-900/50 opacity-75 backdrop-blur-sm hover:opacity-95 hover:bg-zinc-800/60"
-              }`}
-            >
-              <span className="font-display text-base font-black leading-tight">NEGRO</span>
-              <span className="text-[11px] font-bold text-white/80 leading-none">2.0x</span>
-            </button>
-            <button
-              onClick={() => setChoice("green")}
-              disabled={phase !== "idle"}
-              className={`flex flex-col items-center justify-center gap-0.5 rounded-xl border-2 py-2.5 transition-all disabled:opacity-60 ${
-                choice === "green"
-                  ? "border-emerald-300 bg-gradient-to-br from-emerald-600 to-emerald-800 shadow-[0_0_14px_rgba(16,185,129,0.6)]"
-                  : "border-emerald-500/30 bg-emerald-950/40 opacity-75 backdrop-blur-sm hover:opacity-95 hover:bg-emerald-900/50"
-              }`}
-            >
-              <span className="font-display text-base font-black leading-tight">VERDE</span>
-              <span className="text-[11px] font-bold text-emerald-100/90 leading-none">14.00x</span>
-            </button>
-          </div>
+          {([
+            {
+              type: "red" as BetType,
+              key: "",
+              label: "ROJO",
+              mult: "2.0x",
+              on: "border-red-300 bg-gradient-to-br from-red-600 to-red-800 shadow-[0_0_14px_rgba(239,68,68,0.6)]",
+              off: "border-red-500/30 bg-red-950/40 opacity-80 backdrop-blur-sm hover:opacity-100 hover:bg-red-900/50",
+              sub: "text-rose-100/90",
+            },
+            {
+              type: "black" as BetType,
+              key: "",
+              label: "NEGRO",
+              mult: "2.0x",
+              on: "border-white/70 bg-gradient-to-br from-zinc-700 to-zinc-950 shadow-[0_0_14px_rgba(255,255,255,0.25)]",
+              off: "border-white/20 bg-zinc-900/50 opacity-80 backdrop-blur-sm hover:opacity-100 hover:bg-zinc-800/60",
+              sub: "text-white/80",
+            },
+            {
+              type: "straight" as BetType,
+              key: "0",
+              label: "VERDE",
+              mult: `${zeroMultiplier}x`,
+              on: "border-emerald-300 bg-gradient-to-br from-emerald-600 to-emerald-800 shadow-[0_0_14px_rgba(16,185,129,0.6)]",
+              off: "border-emerald-500/30 bg-emerald-950/40 opacity-80 backdrop-blur-sm hover:opacity-100 hover:bg-emerald-900/50",
+              sub: "text-emerald-100/90",
+            },
+          ]).map((b) => {
+            const amount = bets.get(betId(b.type, b.key)) ?? 0;
+            return (
+              <button
+                key={b.label}
+                onClick={() => placeBet(b.type, b.key)}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  clearCell(b.type, b.key);
+                }}
+                disabled={phase !== "idle"}
+                className={`relative flex flex-col items-center justify-center gap-0.5 rounded-xl border-2 py-2 transition-all disabled:opacity-60 ${
+                  amount > 0 ? b.on : b.off
+                }`}
+              >
+                <span className="font-display text-sm font-black leading-tight">{b.label}</span>
+                <span className={`text-[10px] font-bold leading-none ${b.sub}`}>{b.mult}</span>
+                {amount > 0 && (
+                  <span className="absolute -right-1 -top-1 rounded-full border border-amber-200/80 bg-gradient-to-b from-amber-300 to-amber-600 px-1.5 py-[1px] text-[9px] font-black text-[#2a1500]">
+                    {formatCOP(amount)}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
 
-          {/* Stepper + GIRAR — una sola fila compacta */}
-          <div className="flex items-stretch gap-2">
-            <button
-              onClick={() => adjustBet(-BET_STEP)}
-              disabled={phase !== "idle"}
-              className="flex h-14 w-12 items-center justify-center rounded-xl border border-purple-400/40 bg-purple-950/60 text-2xl font-bold text-white backdrop-blur-sm hover:bg-purple-900/60 disabled:opacity-50"
-              aria-label="Disminuir"
-            >
-              −
-            </button>
-            <div className="flex h-14 min-w-0 flex-1 items-center justify-center rounded-xl border border-purple-400/40 bg-black/60 px-2 backdrop-blur-sm">
+        {/* Selector de ficha + GIRAR */}
+        <div className="flex items-stretch gap-2">
+          <button
+            onClick={() => cycleChip(-1)}
+            disabled={phase !== "idle" || chip === CHIPS[0]}
+            className="flex h-14 w-11 items-center justify-center rounded-xl border border-purple-400/40 bg-purple-950/60 text-2xl font-bold text-white backdrop-blur-sm hover:bg-purple-900/60 disabled:opacity-40"
+            aria-label="Ficha menor"
+          >
+            −
+          </button>
+          <div className="flex h-14 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl border border-purple-400/40 bg-black/60 px-2 backdrop-blur-sm">
+            <CasinoChip label={chipLabelFor(chip)} variant={CHIP_PALETTE[chip] ?? "blue"} size={30} />
+            <div className="min-w-0">
+              <div className="text-[8px] font-bold uppercase tracking-wider text-purple-300/70">
+                Ficha
+              </div>
               <BetAmount
-                bet={bet}
+                bet={chip}
                 bonusBalance={bonusBalance}
-                amountClassName="font-display text-xl font-bold tracking-wide text-white"
+                amountClassName="font-display text-base font-bold tracking-wide text-white"
               />
             </div>
-            <button
-              onClick={() => adjustBet(BET_STEP)}
-              disabled={phase !== "idle"}
-              className="flex h-14 w-12 items-center justify-center rounded-xl border border-purple-400/40 bg-purple-950/60 text-2xl font-bold text-white backdrop-blur-sm hover:bg-purple-900/60 disabled:opacity-50"
-              aria-label="Aumentar"
-            >
-              +
-            </button>
-            <button
-              onClick={handleSpin}
-              disabled={!canSpin}
-              className={`h-14 flex-[1.6] min-w-0 overflow-hidden whitespace-nowrap rounded-xl px-2 font-display text-base font-black uppercase tracking-wide transition-all sm:text-lg sm:tracking-wider ${
-                canSpin
-                  ? "bg-gradient-to-b from-emerald-400 to-emerald-700 text-white shadow-[0_3px_14px_rgba(16,185,129,0.55)] active:scale-[0.98]"
-                  : "bg-zinc-800/80 text-white/40 cursor-not-allowed"
-              }`}
-            >
-              <span className="block truncate">
-                {phase === "spinning" ? "GIRANDO…" : "GIRAR"}
+          </div>
+          <button
+            onClick={() => cycleChip(1)}
+            disabled={phase !== "idle" || chip === CHIPS[CHIPS.length - 1]}
+            className="flex h-14 w-11 items-center justify-center rounded-xl border border-purple-400/40 bg-purple-950/60 text-2xl font-bold text-white backdrop-blur-sm hover:bg-purple-900/60 disabled:opacity-40"
+            aria-label="Ficha mayor"
+          >
+            +
+          </button>
+          <button
+            onClick={handleSpin}
+            disabled={!canSpin}
+            className={`flex h-14 flex-[1.7] min-w-0 flex-col items-center justify-center overflow-hidden whitespace-nowrap rounded-xl px-2 font-display font-black uppercase leading-none tracking-wide transition-all ${
+              canSpin
+                ? "bg-gradient-to-b from-emerald-400 to-emerald-700 text-white shadow-[0_3px_14px_rgba(16,185,129,0.55)] active:scale-[0.98]"
+                : "bg-zinc-800/80 text-white/40 cursor-not-allowed"
+            }`}
+          >
+            <span className="block truncate text-base">
+              {phase === "spinning" ? "GIRANDO…" : "GIRAR"}
+            </span>
+            {totalBet > 0 && phase === "idle" && (
+              <span className="mt-1 block truncate text-[9px] font-bold tracking-normal opacity-90">
+                ${formatCOP(totalBet)}
               </span>
-            </button>
-          </div>
+            )}
+          </button>
+        </div>
 
-          {/* Atajos rápidos: X2 + sumas frecuentes */}
-          <div className="grid grid-cols-5 gap-1.5">
-            <button
-              onClick={() => setBet((b) => clampBetToStep(b * 2, balance, MAX_BET, BET_STEP, MIN_BET))}
-              disabled={phase !== "idle"}
-              className="rounded-lg border border-purple-400/40 bg-purple-950/60 py-1.5 text-[11px] font-black uppercase tracking-wide text-white backdrop-blur-sm hover:bg-purple-900/60 disabled:opacity-50"
-              aria-label="Doblar apuesta"
-              title="Doblar apuesta"
-            >
-              X2
-            </button>
-            {QUICK_ADDS.map((amt) => (
-              <button
-                key={amt}
-                onClick={() => adjustBet(amt)}
-                disabled={phase !== "idle"}
-                className="flex items-center justify-center rounded-lg border border-purple-400/40 bg-purple-950/60 py-1 text-[11px] font-bold text-white backdrop-blur-sm hover:bg-purple-900/60 disabled:opacity-50"
-                aria-label={`Sumar ${amt}`}
-                title={`+${chipLabelFor(amt)}`}
-              >
-                <CasinoChip label={chipLabelFor(amt)} variant={CHIP_VARIANTS[amt]} size={28} />
-              </button>
-            ))}
-          </div>
-
+        {/* Tapete / deshacer / limpiar / repetir */}
+        <div className="grid grid-cols-4 gap-1.5">
+          <button
+            onClick={() => setTableOpen((v) => !v)}
+            disabled={phase !== "idle"}
+            className={`relative flex items-center justify-center gap-1 rounded-lg border py-2 text-[10px] font-black uppercase tracking-wide backdrop-blur-sm disabled:opacity-50 ${
+              tableOpen
+                ? "border-amber-300/70 bg-amber-400/20 text-amber-100"
+                : "border-purple-400/40 bg-purple-950/60 text-white hover:bg-purple-900/60"
+            }`}
+          >
+            <LayoutGrid className="h-3.5 w-3.5" />
+            Tapete
+            {bets.size > 0 && (
+              <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-1 text-[9px] font-black text-white">
+                {bets.size}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={undoBet}
+            disabled={phase !== "idle" || placeOrder.length === 0}
+            className="flex items-center justify-center gap-1 rounded-lg border border-purple-400/40 bg-purple-950/60 py-2 text-[10px] font-black uppercase tracking-wide text-white backdrop-blur-sm hover:bg-purple-900/60 disabled:opacity-40"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            Deshacer
+          </button>
+          <button
+            onClick={clearAllBets}
+            disabled={phase !== "idle" || bets.size === 0}
+            className="flex items-center justify-center gap-1 rounded-lg border border-rose-400/40 bg-rose-950/50 py-2 text-[10px] font-black uppercase tracking-wide text-rose-100 backdrop-blur-sm hover:bg-rose-900/50 disabled:opacity-40"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+            Limpiar
+          </button>
+          <button
+            onClick={repeatBets}
+            disabled={phase !== "idle" || !lastBets || lastBets.size === 0}
+            className="flex items-center justify-center gap-1 rounded-lg border border-purple-400/40 bg-purple-950/60 py-2 text-[10px] font-black uppercase tracking-wide text-white backdrop-blur-sm hover:bg-purple-900/60 disabled:opacity-40"
+          >
+            <Repeat className="h-3.5 w-3.5" />
+            Repetir
+          </button>
+        </div>
       </div>
 
       {/* ───────────────── RESULT POPUP — centrado en la rueda, 3 filas compactas ───────────────── */}
