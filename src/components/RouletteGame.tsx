@@ -708,6 +708,7 @@ export function RouletteGame() {
           color: result.winning_color,
           won: result.won,
           payout: Number(result.payout) || 0,
+          hits,
         });
         setHistory((h) => [{ segment: result.winning_segment, color: result.winning_color }, ...h].slice(0, 30));
         playResult(result.won);
@@ -715,7 +716,9 @@ export function RouletteGame() {
         // premio cuando la bola ya cayó, no antes.
         queryClient.invalidateQueries({ queryKey: ["me"] });
         if (result.won) {
-          toast.success(`¡Ganaste! +${formatCOP(Number(result.payout) || 0)} COP`);
+          toast.success(`¡Ganaste! +${formatCOP(Number(result.payout) || 0)} COP`, {
+            description: `${hits} apuesta${hits === 1 ? "" : "s"} acertada${hits === 1 ? "" : "s"} · salió ${result.winning_segment}`,
+          });
         } else {
           toast(`Salió ${result.winning_segment} ${result.winning_color === "red" ? "rojo" : result.winning_color === "black" ? "negro" : "verde"}`, {
             description: "Suerte para la próxima",
@@ -733,9 +736,9 @@ export function RouletteGame() {
       setPhase("idle");
       inFlightRef.current = false;
     }
-  }, [user, bet, balance, choice, phase, rotation, queryClient, playTick, playResult, playWinAudio, primeWinAudio]);
+  }, [user, bets, totalBet, balance, phase, rotation, queryClient, playTick, playResult, playWinAudio, primeWinAudio]);
 
-  const canSpin = phase === "idle" && balanceReady && bet <= balance;
+  const canSpin = phase === "idle" && balanceReady && bets.size > 0 && totalBet <= balance;
 
   return (
     <div
