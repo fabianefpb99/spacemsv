@@ -33,14 +33,15 @@ export type BJBias = {
 };
 
 export const BJ_DEFAULT_BIAS: BJBias = {
-  // Ajuste 2026-07-07 (v3): +3% de ventaja de casa sobre v2 (18/14/12).
-  // Subimos cada sesgo ~3-4 puntos: la dealer roba más carta alta en
-  // el hole, cierra más seguido en [17,21] y el jugador se pasa un
-  // poco más al pedir con 12+. Efecto combinado ≈ +3% edge sobre v2,
-  // sin cambiar reglas visibles (pagos 3:2, dealer S17, etc.).
-  holePct: 22,
-  dealerHitPct: 17,
-  playerBustPct: 15,
+  // Ajuste 2026-08-04 (v4): "camuflaje". El sesgo del hole card es
+  // invisible para el jugador, así que ahí conservamos casi toda la
+  // ventaja. Los sesgos VISIBLES (el dealer cerrando justo por encima
+  // de tu mano y tus cartas de pedir) se bajan bastante, porque son
+  // los que hacían el juego evidente. Reglas visibles intactas (3:2,
+  // dealer S17). Sacrificio neto de edge ≈ 1%.
+  holePct: 26,
+  dealerHitPct: 9,
+  playerBustPct: 10,
 };
 
 /** Map a configured RTP target to bias intensities. */
@@ -52,8 +53,10 @@ export function biasFromRtpTarget(rtpTarget: number): BJBias {
   const cap = (n: number) => Math.min(60, Math.round(n));
   return {
     holePct: cap(BJ_DEFAULT_BIAS.holePct * mult),
-    dealerHitPct: cap(BJ_DEFAULT_BIAS.dealerHitPct * mult),
-    playerBustPct: cap(BJ_DEFAULT_BIAS.playerBustPct * mult),
+    // Los sesgos visibles se topan bajo aunque el RTP configurado sea
+    // agresivo: la ventaja extra se saca del hole card, que no se ve.
+    dealerHitPct: Math.min(18, Math.round(BJ_DEFAULT_BIAS.dealerHitPct * mult)),
+    playerBustPct: Math.min(20, Math.round(BJ_DEFAULT_BIAS.playerBustPct * mult)),
   };
 }
 
@@ -121,38 +124,23 @@ export function drawForDealerHit(
   if (shoe.length < RESHUFFLE_THRESHOLD) {
     shoe = makeShoe();
   }
-  if (cryptoRandomInt(100) < bias.dealerHitPct) {
-    const lookback = Math.min(16, shoe.length);
-    // Preferred range: tie-or-beat the player when we know their score,
-    // otherwise just "land safely in 17-21".
-    const targetMin =
-      playerScore && playerScore <= 21
-        ? Math.max(17, playerScore)
-        : 17;
-    const need = (v: number) => {
-      const total = currentScore + v;
-      return total >= targetMin && total <= 21;
-    };
-    // First pass: look for a card that ties or beats the player.
+  // v4: se eliminó el targeting "tie-or-beat". Antes, si el jugador
+  // tenía 20, el motor buscaba activamente una carta que le diera 20/21
+  // a la casa — de ahí la sensación de "siempre empata o me gana por
+  // uno". Ahora el sesgo solo intenta que el dealer NO se pase
+  // (aterrizar en 17-21), que es un sesgo estadísticamente invisible.
+  // Además se desactiva cuando el jugador va muy fuerte (20/21), para
+  // que justo en las manos que el jugador recuerda el reparto sea puro.
+  const playerStrong = playerScore !== undefined && playerScore >= 20 && playerScore <= 21;
+  if (!playerStrong && cryptoRandomInt(100) < bias.dealerHitPct) {
+    const lookback = Math.min(10, shoe.length);
     for (let k = shoe.length - 1; k >= shoe.length - lookback; k--) {
       const c = shoe[k];
       const v = c.rank === "A" ? (currentScore + 11 <= 21 ? 11 : 1) : c.value;
-      if (need(v)) {
+      const total = currentScore + v;
+      if (total >= 17 && total <= 21) {
         shoe.splice(k, 1);
         return { card: c, shoe };
-      }
-    }
-    // Fallback: if we couldn't find a tie-or-beat card, accept any
-    // card that keeps the dealer in [17,21] (better than busting).
-    if (targetMin > 17) {
-      for (let k = shoe.length - 1; k >= shoe.length - lookback; k--) {
-        const c = shoe[k];
-        const v = c.rank === "A" ? (currentScore + 11 <= 21 ? 11 : 1) : c.value;
-        const total = currentScore + v;
-        if (total >= 17 && total <= 21) {
-          shoe.splice(k, 1);
-          return { card: c, shoe };
-        }
       }
     }
   }
@@ -173,8 +161,10 @@ export function drawForPlayerHit(
   if (shoe.length < RESHUFFLE_THRESHOLD) {
     shoe = makeShoe();
   }
-  if (currentScore >= 12 && cryptoRandomInt(100) < bias.playerBustPct) {
-    const lookback = Math.min(16, shoe.length);
+  // v4: solo desde 14 (antes 12) y con ventana más corta, para que
+ // pedir con 12-13 se sienta normal.
+  if (currentScore >= 14 && cryptoRandomInt(100) < bias.playerBustPct) {
+    const lookback = Math.min(10, shoe.length);
     const minBustValue = 22 - currentScore; // any card >= this busts
     for (let k = shoe.length - 1; k >= shoe.length - lookback; k--) {
       const c = shoe[k];
