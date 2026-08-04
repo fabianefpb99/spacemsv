@@ -273,7 +273,7 @@ export function BetTableOverlay({
                             chipSize={13}
                             title={`Split ${n}/${n + 1} · 18x`}
                             className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 rounded-[3px] bg-white/[0.07] transition-colors active:bg-amber-300/60"
-                            style={{ left: pct(c / 3), top: pct((r - 0.5) / 12), width: 20, height: 22 }}
+                            style={{ left: pct(c / 3), top: pct((r - 0.5) / 12), width: 20, height: 20, zIndex: 2 }}
                           />
                         );
                       })}
@@ -292,7 +292,7 @@ export function BetTableOverlay({
                                 chipSize={13}
                                 title={`Split ${n}/${n + 3} · 18x`}
                                 className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 rounded-[3px] bg-white/[0.07] transition-colors active:bg-amber-300/60"
-                                style={{ left: pct((c - 0.5) / 3), top: pct(r / 12), width: 34, height: 14 }}
+                                style={{ left: pct((c - 0.5) / 3), top: pct(r / 12), width: 30, height: 16, zIndex: 2 }}
                               />
                             );
                           })}
@@ -307,8 +307,8 @@ export function BetTableOverlay({
                                 amount={amountOf("corner", String(n))}
                                 chipSize={13}
                                 title={`Esquina ${n}/${n + 1}/${n + 3}/${n + 4} · 9x`}
-                                className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.07] transition-colors active:bg-amber-300/60"
-                                style={{ left: pct(c / 3), top: pct(r / 12), width: 22, height: 16 }}
+                                className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.14] ring-1 ring-white/25 transition-colors active:bg-amber-300/70"
+                                style={{ left: pct(c / 3), top: pct(r / 12), width: 32, height: 26, zIndex: 5 }}
                               />
                             );
                           })}
@@ -321,7 +321,7 @@ export function BetTableOverlay({
                             chipSize={13}
                             title={`Línea ${3 * r - 2}–${3 * r + 3} · 6x`}
                             className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.07] transition-colors active:bg-amber-300/60"
-                            style={{ left: "100%", top: pct(r / 12), width: 24, height: 16 }}
+                            style={{ left: "100%", top: pct(r / 12), width: 24, height: 16, zIndex: 3 }}
                           />
                         </>
                       )}
@@ -334,7 +334,7 @@ export function BetTableOverlay({
                         chipSize={13}
                         title={`Calle ${3 * r - 2}/${3 * r - 1}/${3 * r} · 12x`}
                         className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 rounded-[3px] bg-white/[0.07] transition-colors active:bg-amber-300/60"
-                        style={{ left: "100%", top: pct((r - 0.5) / 12), width: 20, height: 24 }}
+                        style={{ left: "100%", top: pct((r - 0.5) / 12), width: 20, height: 24, zIndex: 1 }}
                       />
                     </div>
                   ))}
