@@ -973,7 +973,7 @@ export function RouletteGame() {
             }`}
           >
             <LayoutGrid className="h-3.5 w-3.5" />
-            Tapete
+            {tableOpen ? "Ocultar" : "Tapete"}
             {bets.size > 0 && (
               <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-1 text-[9px] font-black text-white">
                 {bets.size}
