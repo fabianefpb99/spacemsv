@@ -1,0 +1,1 @@
+REVOKE SELECT ON public.game_rounds FROM anon;

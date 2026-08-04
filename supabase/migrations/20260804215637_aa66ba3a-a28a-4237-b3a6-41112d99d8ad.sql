@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.cleanup_old_game_data(integer) FROM anon, authenticated;
