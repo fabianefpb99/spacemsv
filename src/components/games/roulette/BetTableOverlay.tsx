@@ -1,15 +1,9 @@
-import { memo, useCallback, useMemo, useRef } from "react";
-import { RotateCcw, Trash2, X } from "lucide-react";
-import {
-  type BetType,
-  betId,
-  colorOfNumber,
-  multiplierFor,
-} from "@/lib/games/roulette-table";
+import { memo, useCallback, useRef } from "react";
+import { ChevronDown } from "lucide-react";
+import { type BetType, betId, colorOfNumber, multiplierFor } from "@/lib/games/roulette-table";
 
-const CELL = 26;
-const GUT = 9;
-const SIDE = 15;
+const ROWS = Array.from({ length: 12 }, (_, i) => i + 1);
+const COLS = [1, 2, 3];
 
 function formatChip(n: number) {
   if (n >= 1_000_000) return `${Math.round(n / 100_000) / 10}M`;
@@ -20,7 +14,7 @@ function formatChip(n: number) {
 function ChipBadge({ amount, size = 18 }: { amount: number; size?: number }) {
   return (
     <span
-      className="pointer-events-none absolute left-1/2 top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-amber-200/80 bg-gradient-to-b from-amber-300 to-amber-600 font-black text-[#2a1500] shadow-[0_1px_4px_rgba(0,0,0,0.7)]"
+      className="pointer-events-none absolute left-1/2 top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-amber-100/90 bg-gradient-to-b from-amber-300 to-amber-600 font-black text-[#2a1500] shadow-[0_1px_5px_rgba(0,0,0,0.8)]"
       style={{ width: size, height: size, fontSize: size <= 14 ? 6.5 : 7.5 }}
     >
       {formatChip(amount)}
@@ -91,7 +85,7 @@ const Zone = memo(function Zone({
         }
         onPlace(type, betKey);
       }}
-      className={`relative select-none disabled:opacity-60 ${className ?? ""}`}
+      className={`relative select-none disabled:opacity-70 ${className ?? ""}`}
       style={style}
     >
       {children}
@@ -100,331 +94,275 @@ const Zone = memo(function Zone({
   );
 });
 
+/** Celda exterior (izquierda) al estilo del boceto: contorno fino, fondo azul-noche. */
+const OUTSIDE_CELL =
+  "flex flex-1 items-center justify-center border border-purple-300/25 bg-[#101033]/80 font-display text-[12px] font-bold tracking-wide text-white/90 transition-colors active:bg-purple-500/25";
+
 export function BetTableOverlay({
   bets,
   greenWeight,
   disabled = false,
-  total,
   highlight,
   onPlace,
   onClearCell,
-  onUndo,
-  onClearAll,
   onClose,
 }: {
   bets: Map<string, number>;
   greenWeight: number;
   disabled?: boolean;
-  total: number;
   highlight?: number | null;
   onPlace: (type: BetType, key: string) => void;
   onClearCell: (type: BetType, key: string) => void;
-  onUndo: () => void;
-  onClearAll: () => void;
   onClose: () => void;
 }) {
   const amountOf = useCallback(
     (type: BetType, key: string) => bets.get(betId(type, key)) ?? 0,
     [bets],
   );
+  const z = { disabled, onPlace, onClearCell };
 
-  const gridTemplateColumns = `${SIDE}px 1fr ${GUT}px 1fr ${GUT}px 1fr`;
-  const gridTemplateRows = `repeat(11, ${CELL}px ${GUT}px) ${CELL}px`;
-
-  const rows = useMemo(() => Array.from({ length: 12 }, (_, i) => i + 1), []);
-  const cols = useMemo(() => [1, 2, 3], []);
-
-  const zoneCommon = { disabled, onPlace, onClearCell };
+  const pct = (v: number) => `${v * 100}%`;
 
   return (
-    <div className="pointer-events-auto flex h-full flex-col overflow-hidden rounded-2xl border border-amber-300/30 bg-gradient-to-b from-[#0b2a1a]/97 to-[#04140c]/97 shadow-[0_10px_40px_rgba(0,0,0,0.7)]">
-      {/* Cabecera */}
-      <div className="flex shrink-0 items-center gap-2 border-b border-amber-300/20 bg-black/35 px-2.5 py-1.5">
-        <div className="min-w-0 flex-1">
-          <div className="font-display text-[11px] font-black uppercase tracking-[0.18em] text-amber-200/90">
-            Tapete
-          </div>
-          <div className="text-[10px] text-emerald-100/70">
-            {bets.size === 0
-              ? "Toca para poner fichas · mantén pulsado para quitar"
-              : `${bets.size} apuesta${bets.size === 1 ? "" : "s"} · $${new Intl.NumberFormat("es-CO").format(total)}`}
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={onUndo}
-          disabled={disabled || bets.size === 0}
-          aria-label="Deshacer"
-          className="rounded-lg border border-white/15 bg-white/5 p-1.5 text-emerald-100/80 disabled:opacity-40"
-        >
-          <RotateCcw className="h-3.5 w-3.5" />
-        </button>
-        <button
-          type="button"
-          onClick={onClearAll}
-          disabled={disabled || bets.size === 0}
-          aria-label="Limpiar todo"
-          className="rounded-lg border border-white/15 bg-white/5 p-1.5 text-rose-200/80 disabled:opacity-40"
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-        </button>
+    <div className="pointer-events-auto relative mx-auto flex h-full w-full max-w-[380px] flex-col">
+      {/* Marco del tapete */}
+      <div className="relative flex min-h-0 flex-1 flex-col rounded-[22px] border border-purple-400/40 bg-[#120a2a]/72 p-2.5 shadow-[0_0_40px_rgba(139,92,246,0.35),inset_0_0_30px_rgba(139,92,246,0.12)] backdrop-blur-[2px]">
+        {/* Minimizar */}
         <button
           type="button"
           onClick={onClose}
-          aria-label="Cerrar tapete"
-          className="rounded-lg border border-white/15 bg-white/10 p-1.5 text-white"
+          aria-label="Minimizar tapete"
+          className="absolute -top-2.5 right-3 z-30 flex h-7 w-7 items-center justify-center rounded-full border border-purple-300/50 bg-[#1a0f38] text-purple-100 shadow-[0_0_12px_rgba(139,92,246,0.5)]"
         >
-          <X className="h-4 w-4" />
+          <ChevronDown className="h-4 w-4" />
         </button>
-      </div>
 
-      {/* Tapete */}
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 py-2">
-        {/* 0 */}
-        <div style={{ display: "grid", gridTemplateColumns }} className="mb-[9px]">
-          <Zone
-            {...zoneCommon}
-            type="straight"
-            betKey="0"
-            amount={amountOf("straight", "0")}
-            title={`Pleno 0 · ${multiplierFor("straight", "0", greenWeight)}x`}
-            style={{ gridColumn: "2 / span 5", height: CELL + 4 }}
-            className={`flex items-center justify-center rounded-md border font-display text-[13px] font-black text-white transition-colors ${
-              highlight === 0
-                ? "border-amber-300 bg-emerald-500 shadow-[0_0_14px_rgba(16,185,129,0.9)]"
-                : "border-emerald-300/40 bg-gradient-to-b from-emerald-600 to-emerald-800"
-            }`}
+        <div className="flex min-h-0 flex-1 flex-col">
+          {/* 0 alineado sobre la columna de números */}
+          <div
+            className="grid gap-1.5"
+            style={{ gridTemplateColumns: "1.02fr 1.85fr 1.02fr" }}
           >
-            <span>0</span>
-            <span className="ml-1.5 text-[8px] font-bold text-emerald-100/70">
-              {multiplierFor("straight", "0", greenWeight)}x
-            </span>
-          </Zone>
-        </div>
+            <div />
+            <Zone
+              {...z}
+              type="straight"
+              betKey="0"
+              amount={amountOf("straight", "0")}
+              title={`Pleno 0 · ${multiplierFor("straight", "0", greenWeight)}x`}
+              className={`flex h-8 items-center justify-center rounded-t-md border font-display text-[15px] font-black text-white ${
+                highlight === 0
+                  ? "border-amber-300 bg-emerald-500 shadow-[0_0_16px_rgba(16,185,129,0.9)]"
+                  : "border-emerald-300/40 bg-gradient-to-b from-emerald-600 to-emerald-800"
+              }`}
+            >
+              0
+            </Zone>
+            <div />
+          </div>
 
-        {/* Grid de números + zonas de borde */}
-        <div style={{ display: "grid", gridTemplateColumns, gridTemplateRows }}>
-          {rows.map((r) =>
-            cols.map((c) => {
-              const n = 3 * (r - 1) + c;
-              const color = colorOfNumber(n);
-              const win = highlight === n;
-              return (
-                <Zone
-                  key={`n-${n}`}
-                  {...zoneCommon}
-                  type="straight"
-                  betKey={String(n)}
-                  amount={amountOf("straight", String(n))}
-                  title={`Pleno ${n} · 36x`}
-                  style={{ gridColumn: 2 * c, gridRow: 2 * r - 1 }}
-                  className={`flex items-center justify-center rounded-[4px] border text-[12px] font-black text-white transition-colors ${
-                    win
-                      ? "border-amber-300 bg-amber-400 text-black shadow-[0_0_14px_rgba(251,191,36,0.9)]"
-                      : color === "red"
-                        ? "border-rose-300/30 bg-gradient-to-b from-rose-600 to-rose-800"
-                        : "border-white/15 bg-gradient-to-b from-zinc-800 to-black"
-                  }`}
+          {/* Cuerpo: exteriores | números | docenas */}
+          <div
+            className="mt-1.5 grid min-h-0 flex-1 gap-1.5"
+            style={{ gridTemplateColumns: "1.02fr 1.85fr 1.02fr", gridTemplateRows: "minmax(0, 1fr)" }}
+          >
+            {/* Exteriores */}
+            <div className="flex flex-col">
+              <Zone
+                {...z}
+                type="low"
+                betKey=""
+                amount={amountOf("low", "")}
+                title="1 – 18 · 2x"
+                className={`${OUTSIDE_CELL} rounded-t-md`}
+              >
+                1-18
+              </Zone>
+              <Zone {...z} type="even" betKey="" amount={amountOf("even", "")} title="Par · 2x" className={`${OUTSIDE_CELL} border-t-0`}>
+                PAR
+              </Zone>
+              <Zone {...z} type="red" betKey="" amount={amountOf("red", "")} title="Rojo · 2x" className={`${OUTSIDE_CELL} border-t-0`}>
+                <span className="block h-5 w-3.5 rotate-45 rounded-[2px] bg-gradient-to-br from-rose-500 to-red-700 shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
+              </Zone>
+              <Zone {...z} type="black" betKey="" amount={amountOf("black", "")} title="Negro · 2x" className={`${OUTSIDE_CELL} border-t-0`}>
+                <span className="block h-5 w-3.5 rotate-45 rounded-[2px] border border-white/70 bg-gradient-to-br from-zinc-800 to-black" />
+              </Zone>
+              <Zone {...z} type="odd" betKey="" amount={amountOf("odd", "")} title="Impar · 2x" className={`${OUTSIDE_CELL} border-t-0`}>
+                IMPAR
+              </Zone>
+              <Zone
+                {...z}
+                type="high"
+                betKey=""
+                amount={amountOf("high", "")}
+                title="19 – 36 · 2x"
+                className={`${OUTSIDE_CELL} rounded-b-md border-t-0`}
+              >
+                19-36
+              </Zone>
+            </div>
+
+            {/* Números */}
+            <div className="flex flex-col">
+              <div className="relative flex-1">
+                <div
+                  className="grid h-full"
+                  style={{ gridTemplateColumns: "repeat(3, 1fr)", gridTemplateRows: "repeat(12, 1fr)" }}
                 >
-                  {n}
+                  {ROWS.map((r) =>
+                    COLS.map((c) => {
+                      const n = 3 * (r - 1) + c;
+                      const color = colorOfNumber(n);
+                      const win = highlight === n;
+                      return (
+                        <Zone
+                          key={n}
+                          {...z}
+                          type="straight"
+                          betKey={String(n)}
+                          amount={amountOf("straight", String(n))}
+                          title={`Pleno ${n} · 36x`}
+                          className={`flex items-center justify-center border border-black/60 text-[13px] font-black text-white ${
+                            win
+                              ? "bg-amber-400 text-black shadow-[0_0_16px_rgba(251,191,36,0.9)]"
+                              : color === "red"
+                                ? "bg-gradient-to-b from-red-600 to-red-800"
+                                : "bg-gradient-to-b from-zinc-900 to-black"
+                          }`}
+                        >
+                          {n}
+                        </Zone>
+                      );
+                    }),
+                  )}
+                </div>
+
+                {/* Zonas finas: splits, esquinas, calles y líneas */}
+                <div className="pointer-events-none absolute inset-0 z-10">
+                  {ROWS.map((r) => (
+                    <div key={`layer-${r}`} className="contents">
+                      {/* splits horizontales */}
+                      {[1, 2].map((c) => {
+                        const n = 3 * (r - 1) + c;
+                        return (
+                          <Zone
+                            key={`sh-${n}`}
+                            {...z}
+                            type="split"
+                            betKey={`${n}-${n + 1}`}
+                            amount={amountOf("split", `${n}-${n + 1}`)}
+                            chipSize={13}
+                            title={`Split ${n}/${n + 1} · 18x`}
+                            className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 rounded-sm"
+                            style={{ left: pct(c / 3), top: pct((r - 0.5) / 12), width: 12, height: 14 }}
+                          />
+                        );
+                      })}
+                      {/* splits verticales + esquinas + calle + línea */}
+                      {r < 12 && (
+                        <>
+                          {COLS.map((c) => {
+                            const n = 3 * (r - 1) + c;
+                            return (
+                              <Zone
+                                key={`sv-${n}`}
+                                {...z}
+                                type="split"
+                                betKey={`${n}-${n + 3}`}
+                                amount={amountOf("split", `${n}-${n + 3}`)}
+                                chipSize={13}
+                                title={`Split ${n}/${n + 3} · 18x`}
+                                className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 rounded-sm"
+                                style={{ left: pct((c - 0.5) / 3), top: pct(r / 12), width: 16, height: 10 }}
+                              />
+                            );
+                          })}
+                          {[1, 2].map((c) => {
+                            const n = 3 * (r - 1) + c;
+                            return (
+                              <Zone
+                                key={`co-${n}`}
+                                {...z}
+                                type="corner"
+                                betKey={String(n)}
+                                amount={amountOf("corner", String(n))}
+                                chipSize={13}
+                                title={`Esquina ${n}/${n + 1}/${n + 3}/${n + 4} · 9x`}
+                                className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
+                                style={{ left: pct(c / 3), top: pct(r / 12), width: 13, height: 13 }}
+                              />
+                            );
+                          })}
+                          <Zone
+                            key={`li-${r}`}
+                            {...z}
+                            type="line"
+                            betKey={String(r)}
+                            amount={amountOf("line", String(r))}
+                            chipSize={13}
+                            title={`Línea ${3 * r - 2}–${3 * r + 3} · 6x`}
+                            className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
+                            style={{ left: "100%", top: pct(r / 12), width: 13, height: 13 }}
+                          />
+                        </>
+                      )}
+                      <Zone
+                        key={`st-${r}`}
+                        {...z}
+                        type="street"
+                        betKey={String(r)}
+                        amount={amountOf("street", String(r))}
+                        chipSize={13}
+                        title={`Calle ${3 * r - 2}/${3 * r - 1}/${3 * r} · 12x`}
+                        className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 rounded-sm"
+                        style={{ left: "100%", top: pct((r - 0.5) / 12), width: 11, height: 14 }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 2:1 — columnas */}
+              <div className="grid grid-cols-3">
+                {COLS.map((c) => (
+                  <Zone
+                    key={`col-${c}`}
+                    {...z}
+                    type="column"
+                    betKey={String(c)}
+                    amount={amountOf("column", String(c))}
+                    title={`${c}ª columna · 3x`}
+                    className={`flex h-7 items-center justify-center border border-purple-300/25 bg-[#101033]/80 text-[11px] font-black tracking-wide text-white/90 active:bg-purple-500/25 ${
+                      c === 1 ? "rounded-bl-md" : c === 3 ? "rounded-br-md" : ""
+                    }`}
+                  >
+                    2:1
+                  </Zone>
+                ))}
+              </div>
+            </div>
+
+            {/* Docenas */}
+            <div className="flex flex-col gap-1.5">
+              {[1, 2, 3].map((d) => (
+                <Zone
+                  key={`dz-${d}`}
+                  {...z}
+                  type="dozen"
+                  betKey={String(d)}
+                  amount={amountOf("dozen", String(d))}
+                  title={`${d}ª docena · 3x`}
+                  className="flex flex-1 flex-col items-center justify-center rounded-md border border-purple-300/25 bg-[#101033]/80 text-white/90 active:bg-purple-500/25"
+                >
+                  <span className="font-display text-[15px] font-black leading-none">
+                    {d}
+                    <sup className="text-[9px]">a</sup>
+                  </span>
+                  <span className="mt-0.5 text-[10px] font-semibold tracking-wide">DOCENA</span>
                 </Zone>
-              );
-            }),
-          )}
-
-          {/* Splits horizontales (n / n+1) */}
-          {rows.map((r) =>
-            [1, 2].map((c) => {
-              const n = 3 * (r - 1) + c;
-              return (
-                <Zone
-                  key={`sh-${n}`}
-                  {...zoneCommon}
-                  type="split"
-                  betKey={`${n}-${n + 1}`}
-                  amount={amountOf("split", `${n}-${n + 1}`)}
-                  chipSize={13}
-                  title={`Split ${n}/${n + 1} · 18x`}
-                  style={{ gridColumn: 2 * c + 1, gridRow: 2 * r - 1 }}
-                  className="rounded-[2px] hover:bg-amber-200/20"
-                />
-              );
-            }),
-          )}
-
-          {/* Splits verticales (n / n+3) */}
-          {rows.slice(0, 11).map((r) =>
-            cols.map((c) => {
-              const n = 3 * (r - 1) + c;
-              return (
-                <Zone
-                  key={`sv-${n}`}
-                  {...zoneCommon}
-                  type="split"
-                  betKey={`${n}-${n + 3}`}
-                  amount={amountOf("split", `${n}-${n + 3}`)}
-                  chipSize={13}
-                  title={`Split ${n}/${n + 3} · 18x`}
-                  style={{ gridColumn: 2 * c, gridRow: 2 * r }}
-                  className="rounded-[2px] hover:bg-amber-200/20"
-                />
-              );
-            }),
-          )}
-
-          {/* Esquinas (4 números) */}
-          {rows.slice(0, 11).map((r) =>
-            [1, 2].map((c) => {
-              const n = 3 * (r - 1) + c;
-              return (
-                <Zone
-                  key={`co-${n}`}
-                  {...zoneCommon}
-                  type="corner"
-                  betKey={String(n)}
-                  amount={amountOf("corner", String(n))}
-                  chipSize={13}
-                  title={`Esquina ${n}/${n + 1}/${n + 3}/${n + 4} · 9x`}
-                  style={{ gridColumn: 2 * c + 1, gridRow: 2 * r }}
-                  className="rounded-full hover:bg-amber-200/30"
-                />
-              );
-            }),
-          )}
-
-          {/* Calles (fila completa) */}
-          {rows.map((r) => (
-            <Zone
-              key={`st-${r}`}
-              {...zoneCommon}
-              type="street"
-              betKey={String(r)}
-              amount={amountOf("street", String(r))}
-              chipSize={13}
-              title={`Calle ${3 * r - 2}/${3 * r - 1}/${3 * r} · 12x`}
-              style={{ gridColumn: 1, gridRow: 2 * r - 1 }}
-              className="rounded-l-[4px] border-l border-amber-200/25 hover:bg-amber-200/20"
-            />
-          ))}
-
-          {/* Líneas (6 números) */}
-          {rows.slice(0, 11).map((r) => (
-            <Zone
-              key={`li-${r}`}
-              {...zoneCommon}
-              type="line"
-              betKey={String(r)}
-              amount={amountOf("line", String(r))}
-              chipSize={13}
-              title={`Línea ${3 * r - 2}–${3 * r + 3} · 6x`}
-              style={{ gridColumn: 1, gridRow: 2 * r }}
-              className="rounded-full hover:bg-amber-200/30"
-            />
-          ))}
-        </div>
-
-        {/* Columnas 2:1 */}
-        <div style={{ display: "grid", gridTemplateColumns }} className="mt-[9px]">
-          {cols.map((c) => (
-            <Zone
-              key={`col-${c}`}
-              {...zoneCommon}
-              type="column"
-              betKey={String(c)}
-              amount={amountOf("column", String(c))}
-              title={`${c}ª columna · 3x`}
-              style={{ gridColumn: 2 * c, height: CELL }}
-              className="flex items-center justify-center rounded-[4px] border border-amber-200/25 bg-black/35 text-[10px] font-black uppercase tracking-wider text-amber-100/90 hover:bg-amber-200/10"
-            >
-              2:1
-            </Zone>
-          ))}
-        </div>
-
-        {/* Docenas */}
-        <div className="mt-2 grid grid-cols-3 gap-1.5">
-          {[1, 2, 3].map((d) => (
-            <Zone
-              key={`dz-${d}`}
-              {...zoneCommon}
-              type="dozen"
-              betKey={String(d)}
-              amount={amountOf("dozen", String(d))}
-              title={`${d}ª docena · 3x`}
-              className="flex flex-col items-center justify-center rounded-lg border border-amber-200/25 bg-black/35 py-1.5 hover:bg-amber-200/10"
-            >
-              <span className="font-display text-[11px] font-black text-amber-100/90">
-                {d === 1 ? "1 – 12" : d === 2 ? "13 – 24" : "25 – 36"}
-              </span>
-              <span className="text-[8px] font-bold uppercase tracking-wider text-emerald-100/50">
-                3x
-              </span>
-            </Zone>
-          ))}
-        </div>
-
-        {/* Exteriores */}
-        <div className="mt-1.5 grid grid-cols-6 gap-1.5 pb-1">
-          <Zone
-            {...zoneCommon}
-            type="low"
-            betKey=""
-            amount={amountOf("low", "")}
-            title="1 – 18 · 2x"
-            className="flex items-center justify-center rounded-lg border border-amber-200/25 bg-black/35 py-2 text-[9px] font-black text-amber-100/90 hover:bg-amber-200/10"
-          >
-            1–18
-          </Zone>
-          <Zone
-            {...zoneCommon}
-            type="even"
-            betKey=""
-            amount={amountOf("even", "")}
-            title="Par · 2x"
-            className="flex items-center justify-center rounded-lg border border-amber-200/25 bg-black/35 py-2 text-[9px] font-black text-amber-100/90 hover:bg-amber-200/10"
-          >
-            PAR
-          </Zone>
-          <Zone
-            {...zoneCommon}
-            type="red"
-            betKey=""
-            amount={amountOf("red", "")}
-            title="Rojo · 2x"
-            className="flex items-center justify-center rounded-lg border border-rose-300/40 bg-gradient-to-b from-rose-600 to-rose-800 py-2 hover:brightness-110"
-          >
-            <span className="block h-3 w-3 rotate-45 bg-white/90" />
-          </Zone>
-          <Zone
-            {...zoneCommon}
-            type="black"
-            betKey=""
-            amount={amountOf("black", "")}
-            title="Negro · 2x"
-            className="flex items-center justify-center rounded-lg border border-white/20 bg-gradient-to-b from-zinc-800 to-black py-2 hover:brightness-125"
-          >
-            <span className="block h-3 w-3 rotate-45 bg-white/90" />
-          </Zone>
-          <Zone
-            {...zoneCommon}
-            type="odd"
-            betKey=""
-            amount={amountOf("odd", "")}
-            title="Impar · 2x"
-            className="flex items-center justify-center rounded-lg border border-amber-200/25 bg-black/35 py-2 text-[9px] font-black text-amber-100/90 hover:bg-amber-200/10"
-          >
-            IMPAR
-          </Zone>
-          <Zone
-            {...zoneCommon}
-            type="high"
-            betKey=""
-            amount={amountOf("high", "")}
-            title="19 – 36 · 2x"
-            className="flex items-center justify-center rounded-lg border border-amber-200/25 bg-black/35 py-2 text-[9px] font-black text-amber-100/90 hover:bg-amber-200/10"
-          >
-            19–36
-          </Zone>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
