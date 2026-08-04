@@ -231,7 +231,9 @@ export function RouletteGame() {
 
   const [chip, setChip] = useState(1000);
   const [bets, setBets] = useState<Map<string, number>>(() => new Map());
-  const [placeOrder, setPlaceOrder] = useState<string[]>([]);
+  // Cada entrada guarda la ficha colocada (id + monto) para que "Deshacer"
+  // retire exactamente la denominación usada en ese momento.
+  const [placeOrder, setPlaceOrder] = useState<{ id: string; amount: number }[]>([]);
   const [lastBets, setLastBets] = useState<Map<string, number> | null>(null);
   const [tableOpen, setTableOpen] = useState(false);
   const [phase, setPhase] = useState<Phase>("idle");
@@ -513,7 +515,7 @@ export function RouletteGame() {
         next.set(id, current + chip);
         return next;
       });
-      setPlaceOrder((prev) => [...prev, id]);
+      setPlaceOrder((prev) => [...prev, { id, amount: chip }]);
     },
     [phase, chip, totalBet, balance],
   );
@@ -528,7 +530,7 @@ export function RouletteGame() {
         next.delete(id);
         return next;
       });
-      setPlaceOrder((prev) => prev.filter((x) => x !== id));
+      setPlaceOrder((prev) => prev.filter((x) => x.id !== id));
     },
     [phase],
   );
@@ -539,22 +541,19 @@ export function RouletteGame() {
       const last = order[order.length - 1];
       if (!last) return order;
       setBets((prev) => {
-        const current = prev.get(last);
+        const current = prev.get(last.id);
         if (current === undefined) return prev;
         const next = new Map(prev);
-        // Se retira la última ficha colocada en esa casilla.
         const rest = order.slice(0, -1);
-        const remaining = rest.filter((x) => x === last).length;
-        if (remaining === 0) next.delete(last);
-        else {
-          const amounts = current;
-          next.set(last, Math.max(MIN_BET, amounts - chip));
-        }
+        const remaining = rest.filter((x) => x.id === last.id).length;
+        const value = current - last.amount;
+        if (remaining === 0 || value < MIN_BET) next.delete(last.id);
+        else next.set(last.id, value);
         return next;
       });
       return order.slice(0, -1);
     });
-  }, [phase, chip]);
+  }, [phase]);
 
   const clearAllBets = useCallback(() => {
     if (phase !== "idle") return;
@@ -571,7 +570,7 @@ export function RouletteGame() {
       return;
     }
     setBets(new Map(lastBets));
-    setPlaceOrder(Array.from(lastBets.keys()));
+    setPlaceOrder(Array.from(lastBets.entries()).map(([id, amount]) => ({ id, amount })));
   }, [phase, lastBets, balance]);
 
   const handleSpin = useCallback(async () => {
