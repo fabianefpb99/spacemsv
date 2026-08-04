@@ -53,8 +53,10 @@ export function biasFromRtpTarget(rtpTarget: number): BJBias {
   const cap = (n: number) => Math.min(60, Math.round(n));
   return {
     holePct: cap(BJ_DEFAULT_BIAS.holePct * mult),
-    dealerHitPct: cap(BJ_DEFAULT_BIAS.dealerHitPct * mult),
-    playerBustPct: cap(BJ_DEFAULT_BIAS.playerBustPct * mult),
+    // Los sesgos visibles se topan bajo aunque el RTP configurado sea
+    // agresivo: la ventaja extra se saca del hole card, que no se ve.
+    dealerHitPct: Math.min(18, Math.round(BJ_DEFAULT_BIAS.dealerHitPct * mult)),
+    playerBustPct: Math.min(20, Math.round(BJ_DEFAULT_BIAS.playerBustPct * mult)),
   };
 }
 
