@@ -257,86 +257,30 @@ export function BetTableOverlay({
                 </div>
 
                 {/* Zonas finas: splits, esquinas, calles y líneas */}
+                {/* Lista plana (sin display:contents) para que los % se resuelvan contra este marco */}
                 <div className="pointer-events-none absolute inset-0 z-10">
-                  {ROWS.map((r) => (
-                    <div key={`layer-${r}`} className="contents">
-                      {/* splits horizontales */}
-                      {[1, 2].map((c) => {
-                        const n = 3 * (r - 1) + c;
-                        return (
-                          <Zone
-                            key={`sh-${n}`}
-                            {...z}
-                            type="split"
-                            betKey={`${n}-${n + 1}`}
-                            amount={amountOf("split", `${n}-${n + 1}`)}
-                            chipSize={13}
-                            title={`Split ${n}/${n + 1} · 18x`}
-                            className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 rounded-[3px] bg-white/[0.07] transition-colors active:bg-amber-300/60"
-                            style={{ left: pct(c / 3), top: pct((r - 0.5) / 12), width: 20, height: 20, zIndex: 2 }}
-                          />
-                        );
-                      })}
-                      {/* splits verticales + esquinas + calle + línea */}
-                      {r < 12 && (
-                        <>
-                          {COLS.map((c) => {
-                            const n = 3 * (r - 1) + c;
-                            return (
-                              <Zone
-                                key={`sv-${n}`}
-                                {...z}
-                                type="split"
-                                betKey={`${n}-${n + 3}`}
-                                amount={amountOf("split", `${n}-${n + 3}`)}
-                                chipSize={13}
-                                title={`Split ${n}/${n + 3} · 18x`}
-                                className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 rounded-[3px] bg-white/[0.07] transition-colors active:bg-amber-300/60"
-                                style={{ left: pct((c - 0.5) / 3), top: pct(r / 12), width: 30, height: 16, zIndex: 2 }}
-                              />
-                            );
-                          })}
-                          {[1, 2].map((c) => {
-                            const n = 3 * (r - 1) + c;
-                            return (
-                              <Zone
-                                key={`co-${n}`}
-                                {...z}
-                                type="corner"
-                                betKey={String(n)}
-                                amount={amountOf("corner", String(n))}
-                                chipSize={13}
-                                title={`Esquina ${n}/${n + 1}/${n + 3}/${n + 4} · 9x`}
-                                className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.14] ring-1 ring-white/25 transition-colors active:bg-amber-300/70"
-                                style={{ left: pct(c / 3), top: pct(r / 12), width: 32, height: 26, zIndex: 5 }}
-                              />
-                            );
-                          })}
-                          <Zone
-                            key={`li-${r}`}
-                            {...z}
-                            type="line"
-                            betKey={String(r)}
-                            amount={amountOf("line", String(r))}
-                            chipSize={13}
-                            title={`Línea ${3 * r - 2}–${3 * r + 3} · 6x`}
-                            className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.07] transition-colors active:bg-amber-300/60"
-                            style={{ left: "100%", top: pct(r / 12), width: 24, height: 16, zIndex: 3 }}
-                          />
-                        </>
-                      )}
-                      <Zone
-                        key={`st-${r}`}
-                        {...z}
-                        type="street"
-                        betKey={String(r)}
-                        amount={amountOf("street", String(r))}
-                        chipSize={13}
-                        title={`Calle ${3 * r - 2}/${3 * r - 1}/${3 * r} · 12x`}
-                        className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 rounded-[3px] bg-white/[0.07] transition-colors active:bg-amber-300/60"
-                        style={{ left: "100%", top: pct((r - 0.5) / 12), width: 20, height: 24, zIndex: 1 }}
-                      />
-                    </div>
+                  {EDGE_ZONES.map((eZone) => (
+                    <Zone
+                      key={eZone.id}
+                      {...z}
+                      type={eZone.type}
+                      betKey={eZone.betKey}
+                      amount={amountOf(eZone.type, eZone.betKey)}
+                      chipSize={13}
+                      title={eZone.title}
+                      className={`pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 transition-colors active:bg-amber-300/70 ${
+                        eZone.type === "corner"
+                          ? "rounded-full bg-white/[0.14] ring-1 ring-white/25"
+                          : "rounded-[3px] bg-white/[0.07]"
+                      }`}
+                      style={{
+                        left: pct(eZone.x),
+                        top: pct(eZone.y),
+                        width: eZone.w,
+                        height: eZone.h,
+                        zIndex: eZone.type === "corner" ? 5 : eZone.type === "split" ? 3 : 1,
+                      }}
+                    />
                   ))}
                 </div>
               </div>
