@@ -238,6 +238,23 @@ export function RouletteGame() {
   const [tableOpen, setTableOpen] = useState(true);
   const [phase, setPhase] = useState<Phase>("idle");
   const [showGetReady, setShowGetReady] = useState(false);
+  // Tapete: se mantiene montado durante la animación de salida (colapso hacia abajo)
+  const tableShouldShow = tableOpen && phase === "idle";
+  const [tableMounted, setTableMounted] = useState(tableShouldShow);
+  useEffect(() => {
+    if (tableShouldShow) {
+      setTableMounted(true);
+      return;
+    }
+    const t = setTimeout(() => setTableMounted(false), 260);
+    return () => clearTimeout(t);
+  }, [tableShouldShow]);
+  // GET READY: 2s al iniciar el giro
+  useEffect(() => {
+    if (!showGetReady) return;
+    const t = setTimeout(() => setShowGetReady(false), 2000);
+    return () => clearTimeout(t);
+  }, [showGetReady]);
   const [rotation, setRotation] = useState(0);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [muted, setMuted] = useState<boolean>(() => (typeof window === "undefined" ? false : isMuted()));
