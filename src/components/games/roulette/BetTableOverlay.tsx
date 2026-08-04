@@ -108,7 +108,7 @@ const CHIP_TIERS: { min: number; ring: string; face: string; text: string }[] = 
   { min: 0, ring: "#e2e8f0", face: "linear-gradient(180deg,#e5e7eb,#94a3b8)", text: "#0f172a" },
 ];
 
-function ChipBadge({ amount, size = 18 }: { amount: number; size?: number }) {
+function ChipBadge({ amount, size = 22 }: { amount: number; size?: number }) {
   const tier = CHIP_TIERS.find((t) => amount >= t.min) ?? CHIP_TIERS[CHIP_TIERS.length - 1];
   return (
     <span
@@ -116,7 +116,7 @@ function ChipBadge({ amount, size = 18 }: { amount: number; size?: number }) {
       style={{
         width: size,
         height: size,
-        fontSize: size <= 14 ? 6.5 : 7.5,
+        fontSize: size <= 19 ? 8 : 9.5,
         background: tier.face,
         color: tier.text,
         border: `1px solid ${tier.ring}`,
@@ -352,12 +352,10 @@ export function BetTableOverlay({
                       type={eZone.type}
                       betKey={eZone.betKey}
                       amount={amountOf(eZone.type, eZone.betKey)}
-                      chipSize={13}
+                      chipSize={19}
                       title={eZone.title}
                       className={`pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 transition-colors active:bg-amber-300/70 ${
-                        eZone.type === "corner"
-                          ? "rounded-full bg-white/[0.14] ring-1 ring-white/25"
-                          : "rounded-[3px] bg-white/[0.07]"
+                        eZone.type === "corner" ? "rounded-full" : "rounded-[3px]"
                       }`}
                       style={{
                         left: pct(eZone.x),
