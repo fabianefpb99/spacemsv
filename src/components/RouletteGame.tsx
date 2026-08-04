@@ -839,8 +839,10 @@ export function RouletteGame() {
 
       {/* Zona central: rueda visible + tapete siempre presente (se oculta al girar) */}
       <div className="relative z-20 mt-2 flex-1 min-h-0">
-        {tableOpen && phase === "idle" && (
-          <div className="absolute inset-0 z-20 py-1">
+        {tableMounted && (
+          <div
+            className={`absolute inset-0 z-20 py-1 ${tableShouldShow ? "roulette-table-enter" : "roulette-table-exit"}`}
+          >
             <BetTableOverlay
               bets={bets}
               greenWeight={greenWeight}
