@@ -11,11 +11,30 @@ function formatChip(n: number) {
   return String(n);
 }
 
+/** Paleta por denominación: el color de la ficha en el tapete refleja su valor. */
+const CHIP_TIERS: { min: number; ring: string; face: string; text: string }[] = [
+  { min: 50_000, ring: "#fef3c7", face: "linear-gradient(180deg,#fcd34d,#b45309)", text: "#2a1500" },
+  { min: 25_000, ring: "#f5d0fe", face: "linear-gradient(180deg,#e879f9,#86198f)", text: "#fdf4ff" },
+  { min: 10_000, ring: "#e9d5ff", face: "linear-gradient(180deg,#a78bfa,#5b21b6)", text: "#f5f3ff" },
+  { min: 5_000, ring: "#bbf7d0", face: "linear-gradient(180deg,#4ade80,#15803d)", text: "#052e16" },
+  { min: 2_000, ring: "#fecdd3", face: "linear-gradient(180deg,#fb7185,#9f1239)", text: "#fff1f2" },
+  { min: 1_000, ring: "#bae6fd", face: "linear-gradient(180deg,#38bdf8,#0369a1)", text: "#f0f9ff" },
+  { min: 0, ring: "#e2e8f0", face: "linear-gradient(180deg,#e5e7eb,#94a3b8)", text: "#0f172a" },
+];
+
 function ChipBadge({ amount, size = 18 }: { amount: number; size?: number }) {
+  const tier = CHIP_TIERS.find((t) => amount >= t.min) ?? CHIP_TIERS[CHIP_TIERS.length - 1];
   return (
     <span
-      className="pointer-events-none absolute left-1/2 top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-amber-100/90 bg-gradient-to-b from-amber-300 to-amber-600 font-black text-[#2a1500] shadow-[0_1px_5px_rgba(0,0,0,0.8)]"
-      style={{ width: size, height: size, fontSize: size <= 14 ? 6.5 : 7.5 }}
+      className="pointer-events-none absolute left-1/2 top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full font-black shadow-[0_1px_5px_rgba(0,0,0,0.8)]"
+      style={{
+        width: size,
+        height: size,
+        fontSize: size <= 14 ? 6.5 : 7.5,
+        background: tier.face,
+        color: tier.text,
+        border: `1px solid ${tier.ring}`,
+      }}
     >
       {formatChip(amount)}
     </span>
