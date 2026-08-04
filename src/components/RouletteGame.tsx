@@ -806,41 +806,26 @@ export function RouletteGame() {
         </div>
       </div>
 
-      {/* Zona central: rueda visible + tapete flotante cuando está abierto */}
+      {/* Zona central: rueda visible + tapete siempre presente (se oculta al girar) */}
       <div className="relative z-20 mt-2 flex-1 min-h-0">
-        {tableOpen && (
-          <div className="absolute inset-0 z-20">
+        {tableOpen && phase === "idle" && (
+          <div className="absolute inset-0 z-20 py-1">
             <BetTableOverlay
               bets={bets}
               greenWeight={greenWeight}
-              disabled={phase !== "idle"}
-              total={totalBet}
-              highlight={phase === "revealing" ? (lastResult?.segment ?? null) : null}
+              disabled={false}
+              highlight={null}
               onPlace={placeBet}
               onClearCell={clearCell}
-              onUndo={undoBet}
-              onClearAll={clearAllBets}
               onClose={() => setTableOpen(false)}
             />
           </div>
         )}
       </div>
 
-      {/* Oscurecido de fondo mientras el tapete está abierto (header y HUD siguen nítidos) */}
-      {tableOpen && (
-        <button
-          type="button"
-          aria-label="Cerrar tapete"
-          onClick={() => setTableOpen(false)}
-          className="absolute inset-0 z-10 cursor-default bg-black/70 backdrop-blur-[3px]"
-        />
-      )}
-
       {/* ───────────────── HISTORIAL — encima del HUD ───────────────── */}
       <div
-        className={`relative z-40 mt-2 flex items-center gap-2 rounded-full border border-purple-400/30 bg-black/55 px-3 py-1.5 backdrop-blur-sm ${
-          tableOpen ? "hidden" : ""
-        }`}
+        className="relative z-40 mt-2 flex items-center gap-2 rounded-full border border-purple-400/30 bg-black/55 px-3 py-1.5 backdrop-blur-sm"
       >
         <span className="text-[10px] font-semibold uppercase tracking-wider text-purple-200/80">Últimos</span>
         <div className="flex flex-1 items-center gap-1.5 overflow-hidden pr-1">
