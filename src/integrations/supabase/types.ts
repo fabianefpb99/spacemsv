@@ -1940,6 +1940,10 @@ export type Database = {
         }
       }
       claim_vip_reward: { Args: { p_reward_id: string }; Returns: Json }
+      cleanup_old_game_data: {
+        Args: { p_retention_days?: number }
+        Returns: number
+      }
       confirm_deposit_request: {
         Args: {
           p_first_name: string
