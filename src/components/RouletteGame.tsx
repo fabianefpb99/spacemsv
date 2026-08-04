@@ -784,6 +784,18 @@ export function RouletteGame() {
         <RouletteWheel rotation={rotation} spinning={phase === "spinning"} />
       </div>
 
+      {/* GET READY — sobre la rueda, un poco arriba del centro */}
+      {showGetReady && (
+        <div
+          className="pointer-events-none absolute left-1/2 z-30 -translate-x-1/2 -translate-y-1/2"
+          style={{ top: `${WHEEL_CY_PCT - 9}%` }}
+        >
+          <div className="roulette-getready font-display text-3xl font-black uppercase tracking-[0.18em] text-white sm:text-4xl">
+            GET READY
+          </div>
+        </div>
+      )}
+
       {/* ───────────────── HEADER GLOBAL ───────────────── */}
       <header
         className="relative z-40 flex items-center justify-between bg-[#06010f]/85 backdrop-blur-sm border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
