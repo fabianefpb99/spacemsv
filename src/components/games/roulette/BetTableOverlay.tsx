@@ -5,6 +5,92 @@ import { type BetType, betId, colorOfNumber, multiplierFor } from "@/lib/games/r
 const ROWS = Array.from({ length: 12 }, (_, i) => i + 1);
 const COLS = [1, 2, 3];
 
+type EdgeZone = {
+  id: string;
+  type: BetType;
+  betKey: string;
+  title: string;
+  /** posición en fracción (0..1) del marco de números */
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+};
+
+/** Zonas de borde precalculadas: split, esquina, calle y línea. */
+const EDGE_ZONES: EdgeZone[] = (() => {
+  const out: EdgeZone[] = [];
+  for (const r of ROWS) {
+    // splits horizontales (entre columnas)
+    for (const c of [1, 2]) {
+      const n = 3 * (r - 1) + c;
+      out.push({
+        id: `sh-${n}`,
+        type: "split",
+        betKey: `${n}-${n + 1}`,
+        title: `Split ${n}/${n + 1} · 18x`,
+        x: c / 3,
+        y: (r - 0.5) / 12,
+        w: 18,
+        h: 20,
+      });
+    }
+    // calle (derecha, centro de fila)
+    out.push({
+      id: `st-${r}`,
+      type: "street",
+      betKey: String(r),
+      title: `Calle ${3 * r - 2}/${3 * r - 1}/${3 * r} · 12x`,
+      x: 1,
+      y: (r - 0.5) / 12,
+      w: 20,
+      h: 24,
+    });
+    if (r < 12) {
+      // splits verticales (entre filas)
+      for (const c of COLS) {
+        const n = 3 * (r - 1) + c;
+        out.push({
+          id: `sv-${n}`,
+          type: "split",
+          betKey: `${n}-${n + 3}`,
+          title: `Split ${n}/${n + 3} · 18x`,
+          x: (c - 0.5) / 3,
+          y: r / 12,
+          w: 28,
+          h: 14,
+        });
+      }
+      // esquinas (intersecciones internas)
+      for (const c of [1, 2]) {
+        const n = 3 * (r - 1) + c;
+        out.push({
+          id: `co-${n}`,
+          type: "corner",
+          betKey: String(n),
+          title: `Esquina ${n}/${n + 1}/${n + 3}/${n + 4} · 9x`,
+          x: c / 3,
+          y: r / 12,
+          w: 30,
+          h: 24,
+        });
+      }
+      // línea (derecha, entre filas)
+      out.push({
+        id: `li-${r}`,
+        type: "line",
+        betKey: String(r),
+        title: `Línea ${3 * r - 2}–${3 * r + 3} · 6x`,
+        x: 1,
+        y: r / 12,
+        w: 24,
+        h: 16,
+      });
+    }
+  }
+  return out;
+})();
+
 function formatChip(n: number) {
   if (n >= 1_000_000) return `${Math.round(n / 100_000) / 10}M`;
   if (n >= 1000) return `${Math.round(n / 100) / 10}K`.replace(".0K", "K");
