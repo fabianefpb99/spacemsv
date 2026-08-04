@@ -621,6 +621,7 @@ export function RouletteGame() {
     setPhase("spinning");
     setLastResult(null);
     setTableOpen(false);
+    setShowGetReady(true);
     // Desbloquear el <audio> de victoria dentro del gesto del usuario
     // para que el play() diferido (9.8s después) no sea bloqueado por iOS.
     primeWinAudio();
