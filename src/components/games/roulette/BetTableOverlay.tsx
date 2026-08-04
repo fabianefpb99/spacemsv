@@ -222,7 +222,7 @@ export function BetTableOverlay({
                           betKey={String(n)}
                           amount={amountOf("straight", String(n))}
                           title={`Pleno ${n} · 36x`}
-                          className={`flex items-center justify-center border border-black/60 text-[13px] font-black text-white ${
+                          className={`flex items-center justify-center border border-white/45 text-[13px] font-black text-white ${
                             win
                               ? "bg-amber-400 text-black shadow-[0_0_16px_rgba(251,191,36,0.9)]"
                               : color === "red"
@@ -254,7 +254,7 @@ export function BetTableOverlay({
                             chipSize={13}
                             title={`Split ${n}/${n + 1} · 18x`}
                             className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 transition-colors active:bg-amber-300/40 rounded-[3px]"
-                            style={{ left: pct(c / 3), top: pct((r - 0.5) / 12), width: 9, height: 16 }}
+                            style={{ left: pct(c / 3), top: pct((r - 0.5) / 12), width: 20, height: 22 }}
                           />
                         );
                       })}
@@ -273,7 +273,7 @@ export function BetTableOverlay({
                                 chipSize={13}
                                 title={`Split ${n}/${n + 3} · 18x`}
                                 className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 transition-colors active:bg-amber-300/40 rounded-[3px]"
-                                style={{ left: pct((c - 0.5) / 3), top: pct(r / 12), width: 18, height: 8 }}
+                                style={{ left: pct((c - 0.5) / 3), top: pct(r / 12), width: 34, height: 14 }}
                               />
                             );
                           })}
@@ -289,7 +289,7 @@ export function BetTableOverlay({
                                 chipSize={13}
                                 title={`Esquina ${n}/${n + 1}/${n + 3}/${n + 4} · 9x`}
                                 className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 transition-colors active:bg-amber-300/40 rounded-full"
-                                style={{ left: pct(c / 3), top: pct(r / 12), width: 10, height: 10 }}
+                                style={{ left: pct(c / 3), top: pct(r / 12), width: 22, height: 16 }}
                               />
                             );
                           })}
@@ -302,7 +302,7 @@ export function BetTableOverlay({
                             chipSize={13}
                             title={`Línea ${3 * r - 2}–${3 * r + 3} · 6x`}
                             className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 transition-colors active:bg-amber-300/40 rounded-full"
-                            style={{ left: "100%", top: pct(r / 12), width: 13, height: 12 }}
+                            style={{ left: "100%", top: pct(r / 12), width: 24, height: 16 }}
                           />
                         </>
                       )}
@@ -315,7 +315,7 @@ export function BetTableOverlay({
                         chipSize={13}
                         title={`Calle ${3 * r - 2}/${3 * r - 1}/${3 * r} · 12x`}
                         className="pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 transition-colors active:bg-amber-300/40 rounded-[3px]"
-                        style={{ left: "100%", top: pct((r - 0.5) / 12), width: 11, height: 18 }}
+                        style={{ left: "100%", top: pct((r - 0.5) / 12), width: 20, height: 24 }}
                       />
                     </div>
                   ))}
