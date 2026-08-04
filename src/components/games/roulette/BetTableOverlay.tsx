@@ -137,7 +137,7 @@ export function BetTableOverlay({
           <ChevronDown className="h-4 w-4" />
         </button>
 
-        <div className="flex min-h-0 flex-1 flex-col justify-center">
+        <div className="flex min-h-0 flex-1 flex-col">
           {/* 0 alineado sobre la columna de números */}
           <div
             className="grid gap-1.5"
@@ -163,7 +163,7 @@ export function BetTableOverlay({
 
           {/* Cuerpo: exteriores | números | docenas */}
           <div
-            className="mt-1.5 grid gap-1.5"
+            className="mt-1.5 grid min-h-0 flex-1 gap-1.5"
             style={{ gridTemplateColumns: "1.02fr 1.85fr 1.02fr" }}
           >
             {/* Exteriores */}
