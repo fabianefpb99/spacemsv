@@ -237,6 +237,7 @@ export function RouletteGame() {
   const [lastBets, setLastBets] = useState<Map<string, number> | null>(null);
   const [tableOpen, setTableOpen] = useState(true);
   const [phase, setPhase] = useState<Phase>("idle");
+  const [showGetReady, setShowGetReady] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [muted, setMuted] = useState<boolean>(() => (typeof window === "undefined" ? false : isMuted()));
