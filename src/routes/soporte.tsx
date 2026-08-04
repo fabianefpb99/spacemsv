@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowLeft, Headphones, Mail, Send, Clock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { RequireAuth } from "@/components/auth/RequireAuth";
 import { toast } from "sonner";
 
 const SUPPORT_EMAIL = "support@betspace.app";
@@ -18,16 +17,9 @@ export const Route = createFileRoute("/soporte")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: SoporteRoute,
+  // Público a propósito: quien no puede iniciar sesión también necesita soporte.
+  component: SoportePage,
 });
-
-function SoporteRoute() {
-  return (
-    <RequireAuth>
-      <SoportePage />
-    </RequireAuth>
-  );
-}
 
 function SoportePage() {
   const navigate = useNavigate();
