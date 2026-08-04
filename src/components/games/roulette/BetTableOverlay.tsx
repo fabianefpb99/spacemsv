@@ -190,7 +190,7 @@ const Zone = memo(function Zone({
         }
         onPlace(type, betKey);
       }}
-      className={`relative select-none disabled:opacity-70 ${className ?? ""}`}
+      className={`select-none disabled:opacity-70 ${className?.includes("absolute") ? "" : "relative"} ${className ?? ""}`}
       style={style}
     >
       {children}
