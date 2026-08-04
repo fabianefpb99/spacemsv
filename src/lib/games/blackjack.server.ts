@@ -33,13 +33,16 @@ export type BJBias = {
 };
 
 export const BJ_DEFAULT_BIAS: BJBias = {
-  // Ajuste 2026-08-04 (v4): "camuflaje". El sesgo del hole card es
-  // invisible para el jugador, así que ahí conservamos casi toda la
-  // ventaja. Los sesgos VISIBLES (el dealer cerrando justo por encima
-  // de tu mano y tus cartas de pedir) se bajan bastante, porque son
-  // los que hacían el juego evidente. Reglas visibles intactas (3:2,
-  // dealer S17). Sacrificio neto de edge ≈ 1%.
-  holePct: 26,
+  // Ajuste 2026-08-04 (v5): recalibrado con simulación de 250k-400k
+  // manos jugando estrategia básica (RTP medido, no estimado):
+  //   sin sesgo          -> 99.2%
+  //   v3 (tie-or-beat)   -> 80.2%
+  //   v4 (holePct 26)    -> 88.8%  <- se perdió demasiada ventaja
+  //   v5 (esta config)   -> ~82.2%
+  // Toda la ventaja recuperada sale del hole card, que el jugador
+  // NUNCA ve, así que sigue sin haber targeting "tie-or-beat" ni
+  // sesgos visibles altos. Reglas visibles intactas (3:2, dealer S17).
+  holePct: 60,
   dealerHitPct: 9,
   playerBustPct: 10,
 };
@@ -52,7 +55,8 @@ export function biasFromRtpTarget(rtpTarget: number): BJBias {
   const mult = Math.min(4, 1 + extraEdge); // 1x..4x
   const cap = (n: number) => Math.min(60, Math.round(n));
   return {
-    holePct: cap(BJ_DEFAULT_BIAS.holePct * mult),
+    // El hole card puede escalar más alto porque es invisible.
+    holePct: Math.min(75, Math.round(BJ_DEFAULT_BIAS.holePct * mult)),
     // Los sesgos visibles se topan bajo aunque el RTP configurado sea
     // agresivo: la ventaja extra se saca del hole card, que no se ve.
     dealerHitPct: Math.min(18, Math.round(BJ_DEFAULT_BIAS.dealerHitPct * mult)),
