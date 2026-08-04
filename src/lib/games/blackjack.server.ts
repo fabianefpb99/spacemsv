@@ -53,7 +53,6 @@ export function biasFromRtpTarget(rtpTarget: number): BJBias {
   // the house wants extra edge; we scale biases proportionally.
   const extraEdge = Math.max(0, 99.5 - rtpTarget); // e.g. 99→0.5, 97→2.5
   const mult = Math.min(4, 1 + extraEdge); // 1x..4x
-  const cap = (n: number) => Math.min(60, Math.round(n));
   return {
     // El hole card puede escalar más alto porque es invisible.
     holePct: Math.min(75, Math.round(BJ_DEFAULT_BIAS.holePct * mult)),
