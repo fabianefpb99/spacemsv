@@ -237,6 +237,24 @@ export function RouletteGame() {
   const [lastBets, setLastBets] = useState<Map<string, number> | null>(null);
   const [tableOpen, setTableOpen] = useState(true);
   const [phase, setPhase] = useState<Phase>("idle");
+  const [showGetReady, setShowGetReady] = useState(false);
+  // Tapete: se mantiene montado durante la animación de salida (colapso hacia abajo)
+  const tableShouldShow = tableOpen && phase === "idle";
+  const [tableMounted, setTableMounted] = useState(tableShouldShow);
+  useEffect(() => {
+    if (tableShouldShow) {
+      setTableMounted(true);
+      return;
+    }
+    const t = setTimeout(() => setTableMounted(false), 260);
+    return () => clearTimeout(t);
+  }, [tableShouldShow]);
+  // GET READY: 2s al iniciar el giro
+  useEffect(() => {
+    if (!showGetReady) return;
+    const t = setTimeout(() => setShowGetReady(false), 2000);
+    return () => clearTimeout(t);
+  }, [showGetReady]);
   const [rotation, setRotation] = useState(0);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [muted, setMuted] = useState<boolean>(() => (typeof window === "undefined" ? false : isMuted()));
@@ -603,6 +621,7 @@ export function RouletteGame() {
     setPhase("spinning");
     setLastResult(null);
     setTableOpen(false);
+    setShowGetReady(true);
     // Desbloquear el <audio> de victoria dentro del gesto del usuario
     // para que el play() diferido (9.8s después) no sea bloqueado por iOS.
     primeWinAudio();
@@ -765,6 +784,18 @@ export function RouletteGame() {
         <RouletteWheel rotation={rotation} spinning={phase === "spinning"} />
       </div>
 
+      {/* GET READY — sobre la rueda, un poco arriba del centro */}
+      {showGetReady && (
+        <div
+          className="pointer-events-none absolute left-1/2 z-30 -translate-x-1/2 -translate-y-1/2"
+          style={{ top: `${WHEEL_CY_PCT - 9}%` }}
+        >
+          <div className="roulette-getready font-display text-3xl font-black uppercase tracking-[0.18em] text-white sm:text-4xl">
+            GET READY
+          </div>
+        </div>
+      )}
+
       {/* ───────────────── HEADER GLOBAL ───────────────── */}
       <header
         className="relative z-40 flex items-center justify-between bg-[#06010f]/85 backdrop-blur-sm border-b border-purple-500/20 pb-3 px-3 -mx-3 -mt-4"
@@ -808,8 +839,10 @@ export function RouletteGame() {
 
       {/* Zona central: rueda visible + tapete siempre presente (se oculta al girar) */}
       <div className="relative z-20 mt-2 flex-1 min-h-0">
-        {tableOpen && phase === "idle" && (
-          <div className="absolute inset-0 z-20 py-1">
+        {tableMounted && (
+          <div
+            className={`absolute inset-0 z-20 py-1 ${tableShouldShow ? "roulette-table-enter" : "roulette-table-exit"}`}
+          >
             <BetTableOverlay
               bets={bets}
               greenWeight={greenWeight}
