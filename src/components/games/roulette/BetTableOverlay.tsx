@@ -164,7 +164,7 @@ export function BetTableOverlay({
           {/* Cuerpo: exteriores | números | docenas */}
           <div
             className="mt-1.5 grid min-h-0 flex-1 gap-1.5"
-            style={{ gridTemplateColumns: "1.02fr 1.85fr 1.02fr" }}
+            style={{ gridTemplateColumns: "1.02fr 1.85fr 1.02fr", gridTemplateRows: "minmax(0, 1fr)" }}
           >
             {/* Exteriores */}
             <div className="flex flex-col">
