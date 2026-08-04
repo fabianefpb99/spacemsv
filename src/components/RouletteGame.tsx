@@ -235,7 +235,7 @@ export function RouletteGame() {
   // retire exactamente la denominación usada en ese momento.
   const [placeOrder, setPlaceOrder] = useState<{ id: string; amount: number }[]>([]);
   const [lastBets, setLastBets] = useState<Map<string, number> | null>(null);
-  const [tableOpen, setTableOpen] = useState(false);
+  const [tableOpen, setTableOpen] = useState(true);
   const [phase, setPhase] = useState<Phase>("idle");
   const [rotation, setRotation] = useState(0);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
