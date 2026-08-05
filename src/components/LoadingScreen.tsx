@@ -6,6 +6,7 @@ import astronautFlying from "@/assets/astronaut-flying.webp";
 import meteor from "@/assets/asteroid.svg";
 import bgMusic from "@/assets/bg-music.mp3";
 import astronautRocket from "@/assets/astronaut-rocket.svg";
+import betspaceLogo from "@/assets/betspace-logo.svg";
 import gameSpacemanAsset from "@/assets/game-spaceman.png.asset.json";
 import gameSlotMafiaAsset from "@/assets/game-slot-mafia.png.asset.json";
 import gameMinesAsset from "@/assets/game-mines.png.asset.json";
