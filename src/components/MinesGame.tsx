@@ -177,6 +177,7 @@ export function MinesGame() {
   const [bet, setBet] = useState(2000);
   const [mines, setMines] = useState(3);
   const [minesPickerOpen, setMinesPickerOpen] = useState(false);
+  const [sweepDone, setSweepDone] = useState(false);
 
   const [phase, setPhase] = useState<Phase>("betting");
   const [mineSet, setMineSet] = useState<Set<number>>(() => new Set());
@@ -565,14 +566,19 @@ export function MinesGame() {
         backgroundAttachment: "fixed",
       }}
     >
-      {/* Destello de luz tipo reflector solo sobre el fondo: barrido
-          derecha → izquierda cada 12s (transform + opacity, GPU). */}
-      <div
-        aria-hidden="true"
-        className="mines-sweep pointer-events-none fixed inset-x-0 top-0 z-0 h-[58%]"
-      >
-        <span className="mines-sweep__beam" />
-      </div>
+      {/* Destello de luz tipo reflector solo sobre el fondo: se ejecuta UNA sola
+          vez al entrar y luego se desmonta (cero costo posterior). */}
+      {!sweepDone && (
+        <div
+          aria-hidden="true"
+          className="mines-sweep pointer-events-none fixed inset-x-0 top-0 z-0 h-[58%]"
+        >
+          <span
+            className="mines-sweep__beam"
+            onAnimationEnd={() => setSweepDone(true)}
+          />
+        </div>
+      )}
       {/* Red tension overlay sobre el fondo de la página (multiply, tiñe lo existente) */}
       <div
         aria-hidden="true"
