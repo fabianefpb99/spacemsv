@@ -177,6 +177,7 @@ export function MinesGame() {
   const [bet, setBet] = useState(2000);
   const [mines, setMines] = useState(3);
   const [minesPickerOpen, setMinesPickerOpen] = useState(false);
+  const [sweepDone, setSweepDone] = useState(false);
 
   const [phase, setPhase] = useState<Phase>("betting");
   const [mineSet, setMineSet] = useState<Set<number>>(() => new Set());
