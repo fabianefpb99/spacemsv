@@ -235,7 +235,9 @@ export function RouletteGame() {
   // retire exactamente la denominación usada en ese momento.
   const [placeOrder, setPlaceOrder] = useState<{ id: string; amount: number }[]>([]);
   const [lastBets, setLastBets] = useState<Map<string, number> | null>(null);
-  const [tableOpen, setTableOpen] = useState(true);
+  // Arranca cerrado: se despliega ~1s después de que se va el loading para
+  // que el usuario vea la animación de entrada del tapete.
+  const [tableOpen, setTableOpen] = useState(false);
   const [phase, setPhase] = useState<Phase>("idle");
   const [showGetReady, setShowGetReady] = useState(false);
   // Tapete: se mantiene montado durante la animación de salida (colapso hacia abajo)
@@ -745,6 +747,8 @@ export function RouletteGame() {
         // Volver a idle tras un breve reveal
         window.setTimeout(() => {
           setPhase("idle");
+          // Nueva ronda: el tapete vuelve a desplegarse automáticamente
+          setTableOpen(true);
           inFlightRef.current = false;
         }, 1800);
       }, SPIN_DURATION_MS + 50);
@@ -752,6 +756,7 @@ export function RouletteGame() {
       const msg = e instanceof Error ? e.message : "Error desconocido";
       toast.error(`No se pudo girar: ${msg}`);
       setPhase("idle");
+      setTableOpen(true);
       inFlightRef.current = false;
     }
   }, [user, bets, totalBet, balance, phase, rotation, queryClient, playTick, playResult, playWinAudio, primeWinAudio]);
