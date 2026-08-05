@@ -224,12 +224,35 @@ export function LoadingScreen({ children, variant = "rocket" }: { children: Reac
               style={{ width: `${progress}%` }}
             />
           </div>
-          <span className="absolute bottom-8 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 text-[10px] font-medium tracking-wide text-white/80">
-            <span className="font-bold">Authentic</span> Games
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-3 w-3" aria-hidden="true">
-              <path d="M5 12.5l4 4 10-10.5" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </span>
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5">
+            <img
+              src={betspaceLogo}
+              alt="BetSpace"
+              className="game-loader-reveal h-auto w-[74px] select-none opacity-70 [filter:brightness(0.92)_saturate(0.85)]"
+              draggable={false}
+            />
+            <span className="game-loader-reveal inline-flex items-center gap-1 text-[10px] font-medium tracking-wide text-white/80">
+              <span className="font-bold">Authentic</span> Games
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-3 w-3" aria-hidden="true">
+                <path d="M5 12.5l4 4 10-10.5" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
+          </div>
+          <style>{`
+            .game-loader-reveal {
+              -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.2) 35%, #000 50%, rgba(0,0,0,0.2) 65%, rgba(0,0,0,0.2) 100%);
+                      mask-image: linear-gradient(90deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.2) 35%, #000 50%, rgba(0,0,0,0.2) 65%, rgba(0,0,0,0.2) 100%);
+              -webkit-mask-size: 300% 100%;
+                      mask-size: 300% 100%;
+              -webkit-mask-repeat: no-repeat;
+                      mask-repeat: no-repeat;
+              animation: gameLoaderReveal 1.6s linear infinite;
+            }
+            @keyframes gameLoaderReveal {
+              0%   { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+              100% { -webkit-mask-position: 0% 0;   mask-position: 0% 0; }
+            }
+          `}</style>
         </div>
       )}
     </>
