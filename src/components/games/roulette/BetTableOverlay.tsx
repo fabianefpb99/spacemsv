@@ -201,7 +201,7 @@ const Zone = memo(function Zone({
 
 /** Celda exterior (izquierda) al estilo del boceto: contorno fino, fondo azul-noche. */
 const OUTSIDE_CELL =
-  "flex flex-1 items-center justify-center border border-purple-300/25 bg-[#101033]/80 font-display text-[12px] font-bold tracking-wide text-white/90 transition-colors active:bg-purple-500/25";
+  "flex flex-1 items-center justify-center border border-purple-300/25 bg-[#101033]/76 font-display text-[12px] font-bold tracking-wide text-white/90 transition-colors active:bg-purple-500/25";
 
 export function BetTableOverlay({
   bets,
@@ -231,7 +231,7 @@ export function BetTableOverlay({
   return (
     <div className="pointer-events-auto relative mx-auto flex h-full w-full max-w-[380px] flex-col">
       {/* Marco del tapete */}
-      <div className="relative flex min-h-0 flex-1 flex-col rounded-[22px] border border-purple-400/40 bg-[#120a2a]/72 p-2.5 shadow-[0_0_40px_rgba(139,92,246,0.35),inset_0_0_30px_rgba(139,92,246,0.12)] backdrop-blur-[2px]">
+      <div className="relative flex min-h-0 flex-1 flex-col rounded-[22px] border border-purple-400/40 bg-[#120a2a]/68 p-2.5 shadow-[0_0_40px_rgba(139,92,246,0.35),inset_0_0_30px_rgba(139,92,246,0.12)] backdrop-blur-[2px]">
         {/* Minimizar */}
         <button
           type="button"
@@ -257,8 +257,8 @@ export function BetTableOverlay({
               title={`Pleno 0 · ${multiplierFor("straight", "0", greenWeight)}x`}
               className={`flex h-8 items-center justify-center rounded-t-md border font-display text-[15px] font-black text-white ${
                 highlight === 0
-                  ? "border-amber-300 bg-emerald-500 shadow-[0_0_16px_rgba(16,185,129,0.9)]"
-                  : "border-emerald-300/40 bg-gradient-to-b from-emerald-600 to-emerald-800"
+                  ? "border-amber-300 bg-emerald-500/96 shadow-[0_0_16px_rgba(16,185,129,0.9)]"
+                  : "border-emerald-300/40 bg-gradient-to-b from-emerald-600/96 to-emerald-800/96"
               }`}
             >
               0
@@ -287,10 +287,10 @@ export function BetTableOverlay({
                 PAR
               </Zone>
               <Zone {...z} type="red" betKey="" amount={amountOf("red", "")} title="Rojo · 2x" className={`${OUTSIDE_CELL} border-t-0`}>
-                <span className="block h-5 w-3.5 rotate-45 rounded-[2px] bg-gradient-to-br from-rose-500 to-red-700 shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
+                <span className="block h-5 w-3.5 rotate-45 rounded-[2px] bg-gradient-to-br from-rose-500/96 to-red-700/96 shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
               </Zone>
               <Zone {...z} type="black" betKey="" amount={amountOf("black", "")} title="Negro · 2x" className={`${OUTSIDE_CELL} border-t-0`}>
-                <span className="block h-5 w-3.5 rotate-45 rounded-[2px] border border-white/70 bg-gradient-to-br from-zinc-800 to-black" />
+                <span className="block h-5 w-3.5 rotate-45 rounded-[2px] border border-white/70 bg-gradient-to-br from-zinc-800/96 to-black/96" />
               </Zone>
               <Zone {...z} type="odd" betKey="" amount={amountOf("odd", "")} title="Impar · 2x" className={`${OUTSIDE_CELL} border-t-0`}>
                 IMPAR
@@ -329,10 +329,10 @@ export function BetTableOverlay({
                           title={`Pleno ${n} · 36x`}
                           className={`flex items-center justify-center border border-white/45 text-[13px] font-black text-white ${
                             win
-                              ? "bg-amber-400 text-black shadow-[0_0_16px_rgba(251,191,36,0.9)]"
+                              ? "bg-amber-400/96 text-black shadow-[0_0_16px_rgba(251,191,36,0.9)]"
                               : color === "red"
-                                ? "bg-gradient-to-b from-red-600 to-red-800"
-                                : "bg-gradient-to-b from-zinc-900 to-black"
+                                ? "bg-gradient-to-b from-red-600/96 to-red-800/96"
+                                : "bg-gradient-to-b from-zinc-900/96 to-black/96"
                           }`}
                         >
                           {n}
@@ -379,7 +379,7 @@ export function BetTableOverlay({
                     betKey={String(c)}
                     amount={amountOf("column", String(c))}
                     title={`${c}ª columna · 3x`}
-                    className={`flex h-7 items-center justify-center border border-purple-300/25 bg-[#101033]/80 text-[11px] font-black tracking-wide text-white/90 active:bg-purple-500/25 ${
+                    className={`flex h-7 items-center justify-center border border-purple-300/25 bg-[#101033]/76 text-[11px] font-black tracking-wide text-white/90 active:bg-purple-500/25 ${
                       c === 1 ? "rounded-bl-md" : c === 3 ? "rounded-br-md" : ""
                     }`}
                   >
@@ -399,7 +399,7 @@ export function BetTableOverlay({
                   betKey={String(d)}
                   amount={amountOf("dozen", String(d))}
                   title={`${d}ª docena · 3x`}
-                  className="flex flex-1 flex-col items-center justify-center rounded-md border border-purple-300/25 bg-[#101033]/80 text-white/90 active:bg-purple-500/25"
+                  className="flex flex-1 flex-col items-center justify-center rounded-md border border-purple-300/25 bg-[#101033]/76 text-white/90 active:bg-purple-500/25"
                 >
                   <span className="font-display text-[15px] font-black leading-none">
                     {d}
