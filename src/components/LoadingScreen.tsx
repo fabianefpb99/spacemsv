@@ -225,16 +225,16 @@ export function LoadingScreen({ children, variant = "rocket" }: { children: Reac
               style={{ width: `${progress}%` }}
             />
           </div>
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2.5">
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5">
             <img
               src={betspaceLogo}
               alt="BetSpace"
-              className="game-loader-reveal h-auto w-[130px] select-none opacity-85 [filter:brightness(0.95)_saturate(0.9)]"
+              className="game-loader-reveal h-auto w-[78px] select-none opacity-70 [filter:brightness(0.92)_saturate(0.85)]"
               draggable={false}
             />
-            <span className="game-loader-reveal inline-flex items-center gap-1 text-[10px] font-medium tracking-wide text-white/60">
-              <span className="font-semibold">Authentic</span> Games
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-2.5 w-2.5" aria-hidden="true">
+            <span className="game-loader-reveal inline-flex items-center gap-1 text-[10px] font-medium tracking-wide text-white/80">
+              <span className="font-bold">Authentic</span> Games
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-3 w-3" aria-hidden="true">
                 <path d="M5 12.5l4 4 10-10.5" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </span>
