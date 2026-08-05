@@ -47,12 +47,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
 function useStoredTheme(): [Theme, (t: Theme) => void] {
   const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === "undefined") return "dark";
+    if (typeof window === "undefined") return "light";
     try {
       const v = localStorage.getItem(STORAGE_KEY);
       if (v === "light" || v === "dark") return v;
     } catch { /* ignore */ }
-    return "dark";
+    return "light";
   });
   const set = (t: Theme) => {
     setTheme(t);
