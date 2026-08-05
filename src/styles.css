@@ -4927,15 +4927,17 @@ html.light .notif-popover .bg-rose-400 {
   .roulette-table-enter, .roulette-table-exit, .roulette-getready { animation: none; }
 }
 
-/* ── Ruleta: destello de reflector sobre el fondo ─────────────────────────── */
-.roulette-sweep {
+/* ── Destello de reflector sobre el fondo (Ruleta / Mines) ────────────────── */
+.roulette-sweep,
+.mines-sweep {
   /* Difumina el recorte del contenedor para que el haz nunca muestre borde */
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 55%, transparent 100%);
   mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 55%, transparent 100%);
   overflow: hidden;
 }
 
-.roulette-sweep__beam {
+.roulette-sweep__beam,
+.mines-sweep__beam {
   position: absolute;
   top: -40%;
   left: 0;
@@ -4956,6 +4958,10 @@ html.light .notif-popover .bg-rose-400 {
   animation: roulette-sweep 10s linear infinite;
 }
 
+.mines-sweep__beam {
+  animation-duration: 12s;
+}
+
 @keyframes roulette-sweep {
   0% { transform: translate3d(190%, 0, 0) rotate(14deg); opacity: 0; }
   5% { opacity: 0.9; }
@@ -4965,5 +4971,6 @@ html.light .notif-popover .bg-rose-400 {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .roulette-sweep__beam { animation: none; opacity: 0; }
+  .roulette-sweep__beam,
+  .mines-sweep__beam { animation: none; opacity: 0; }
 }
