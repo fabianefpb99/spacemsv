@@ -780,9 +780,9 @@ export function RouletteGame() {
         draggable={false}
         className="pointer-events-none absolute inset-0 z-0 h-full w-full select-none object-cover"
       />
-      {/* Destello de luz tipo reflector: barrido derecha → izquierda cada 8s.
+      {/* Destello de luz tipo reflector: barrido derecha → izquierda cada 10s.
           Solo transform + opacity (compositor GPU), sin JS ni repaints. */}
-      <div className="roulette-sweep pointer-events-none absolute inset-x-0 top-0 z-0 h-[62%] overflow-hidden">
+      <div className="roulette-sweep pointer-events-none absolute inset-x-0 top-0 z-0 h-[62%]">
         <span className="roulette-sweep__beam" />
       </div>
       {/* RUEDA FUNCIONAL anclada al aro pintado — comparte sistema de
