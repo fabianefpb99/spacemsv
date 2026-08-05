@@ -1531,15 +1531,10 @@ export function SlotSamuraiGame() {
           pointer-events: none;
           background: linear-gradient(
             115deg,
-            rgba(255,255,255,0) 28%,
-            rgba(255,255,255,0.06) 38%,
-            rgba(255,255,255,0.28) 45%,
-            rgba(255,235,248,0.72) 50%,
-            rgba(255,255,255,0.28) 55%,
-            rgba(255,255,255,0.06) 62%,
-            rgba(255,255,255,0) 72%
+            rgba(255,255,255,0) 40%,
+            rgba(255,255,255,0.55) 50%,
+            rgba(255,255,255,0) 60%
           );
-          filter: blur(2px);
           mix-blend-mode: overlay;
           transform: translateX(-120%);
           animation: samurai-legend-shine 8s ease-in-out infinite;
