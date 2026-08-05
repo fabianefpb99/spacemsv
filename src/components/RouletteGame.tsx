@@ -243,6 +243,11 @@ export function RouletteGame() {
   // Tapete: se mantiene montado durante la animación de salida (colapso hacia abajo)
   const tableShouldShow = tableOpen && phase === "idle";
   const [tableMounted, setTableMounted] = useState(tableShouldShow);
+  // Apertura inicial diferida: loader (~1.3s) + 1s
+  useEffect(() => {
+    const t = setTimeout(() => setTableOpen(true), 2300);
+    return () => clearTimeout(t);
+  }, []);
   useEffect(() => {
     if (tableShouldShow) {
       setTableMounted(true);
