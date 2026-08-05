@@ -55,8 +55,8 @@ const HELP: Record<GameHelpKey, HelpContent> = {
     title: "Cómo jugar Ruleta",
     steps: [
       "Selecciona el valor de ficha y coloca tu apuesta en el tablero.",
-      "Solo puedes hacer una apuesta por ronda.",
-      "Pleno paga hasta 14x; color y par/impar pagan menos pero aciertan más seguido.",
+      "Puedes combinar varias apuestas en la misma ronda: plenos, splits, esquinas, calles, líneas, docenas, columnas y color/par/impar.",
+      "Pleno paga 36x, split 18x, calle 12x, esquina 9x, línea 6x, docena y columna 3x, y las apuestas simples 2x.",
       "Gira la ruleta y se pagan automáticamente las apuestas ganadoras.",
     ],
   },

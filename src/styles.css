@@ -4926,3 +4926,37 @@ html.light .notif-popover .bg-rose-400 {
 @media (prefers-reduced-motion: reduce) {
   .roulette-table-enter, .roulette-table-exit, .roulette-getready { animation: none; }
 }
+
+/* ── Ruleta: destello de reflector sobre el fondo ─────────────────────────── */
+.roulette-sweep__beam {
+  position: absolute;
+  top: -20%;
+  left: 0;
+  width: 55%;
+  height: 140%;
+  will-change: transform, opacity;
+  transform: translate3d(180%, 0, 0) rotate(14deg);
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(168, 85, 247, 0.1) 35%,
+    rgba(196, 141, 255, 0.2) 50%,
+    rgba(168, 85, 247, 0.1) 65%,
+    transparent 100%
+  );
+  filter: blur(22px);
+  opacity: 0;
+  animation: roulette-sweep 8s linear infinite;
+}
+
+@keyframes roulette-sweep {
+  0% { transform: translate3d(180%, 0, 0) rotate(14deg); opacity: 0; }
+  4% { opacity: 0.85; }
+  26% { opacity: 0.85; }
+  32% { transform: translate3d(-110%, 0, 0) rotate(14deg); opacity: 0; }
+  100% { transform: translate3d(-110%, 0, 0) rotate(14deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .roulette-sweep__beam { animation: none; opacity: 0; }
+}
