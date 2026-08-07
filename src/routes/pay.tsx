@@ -341,7 +341,7 @@ function MethodCard({
         disabled
           ? "border-purple-500/15 opacity-60 cursor-not-allowed"
           : selected
-            ? "border-emerald-400/70 ring-1 ring-emerald-400/40 shadow-[0_0_20px_-8px_rgba(52,211,153,0.6)] cursor-pointer"
+            ? "border-emerald-400/80 ring-2 ring-emerald-400/60 shadow-[0_0_22px_-6px_rgba(52,211,153,0.55)] cursor-pointer"
             : "border-purple-500/25 hover:border-purple-400/50 cursor-pointer"
       }`}
     >
