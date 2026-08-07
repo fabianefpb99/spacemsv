@@ -241,7 +241,7 @@ function PayPage() {
                 </span>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">
-                    <div className="text-base font-bold">
+                    <div className="text-[17px] font-bold leading-tight sm:text-lg">
                       <span className="neon-green mr-1">$</span>
                       <span className="text-white">{formatCOP(c.amount)} COP</span>
                     </div>
@@ -249,9 +249,9 @@ function PayPage() {
                       {c.tag}
                     </span>
                   </div>
-                  <div className="mt-1 flex items-end justify-between gap-2">
+                  <div className="mt-0.5 flex items-end justify-between gap-2">
                     <div>
-                      <div className="text-[11px] font-semibold text-emerald-300">
+                      <div className="text-[11px] font-semibold leading-tight text-emerald-300">
                         + ${formatCOP(c.bonus)} COP
                       </div>
                       <div className="text-[9px] uppercase tracking-wider text-purple-200/60">
@@ -262,7 +262,7 @@ function PayPage() {
                       <div className="text-[9px] uppercase tracking-wider text-purple-200/60">
                         Recibes en total
                       </div>
-                      <div className="text-sm font-bold">
+                      <div className="text-sm font-bold leading-tight">
                         <span className="neon-green mr-0.5">$</span>
                         <span className="neon-green">{formatCOP(c.amount + c.bonus)} COP</span>
                       </div>
