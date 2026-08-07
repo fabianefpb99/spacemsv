@@ -225,10 +225,11 @@ function PayPage() {
             return (
               <button
                 key={c.id}
+                data-selected={selected}
                 onClick={() => setCombo(c.id)}
-                className={`flex items-center gap-3 rounded-xl border bg-[#0c0620] p-3 text-left transition ${
+                className={`pay-selection-card flex items-center gap-3 rounded-xl border bg-[#0c0620] p-3 text-left transition ${
                   selected
-                    ? "border-emerald-400/80 ring-2 ring-emerald-400/60 shadow-[0_0_22px_-6px_rgba(52,211,153,0.55)]"
+                    ? "border-emerald-400/80"
                     : "border-purple-500/25 hover:border-purple-400/50"
                 }`}
               >
@@ -336,12 +337,13 @@ function MethodCard({
 }) {
   return (
     <div
+      data-selected={selected}
       onClick={disabled ? undefined : onClick}
-      className={`relative rounded-xl border bg-[#0c0620] p-3 transition ${
+      className={`pay-selection-card relative rounded-xl border bg-[#0c0620] p-3 transition ${
         disabled
           ? "border-purple-500/15 opacity-60 cursor-not-allowed"
           : selected
-            ? "border-emerald-400/80 ring-2 ring-emerald-400/60 shadow-[0_0_22px_-6px_rgba(52,211,153,0.55)] cursor-pointer"
+            ? "border-emerald-400/80 cursor-pointer"
             : "border-purple-500/25 hover:border-purple-400/50 cursor-pointer"
       }`}
     >
