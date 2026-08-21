@@ -56,10 +56,14 @@ function readFavs(): Set<string> {
 
 const SEARCH_PLACEHOLDERS = [
   "Buscar juegos...",
-  "Juega y gana en Betspace...",
+  "Juega y gana en BETSPACE...",
   "Elige ahora y juega",
   "¿No encuentras tu favorito? Búscalo",
 ];
+
+const TYPE_TICK = 55;      // ms entre caracteres al escribir
+const DELETE_TICK = 28;    // ms entre caracteres al borrar
+const HOLD_MS = 1600;      // ms espera con frase completa
 
 export function GamesPage() {
   const [query, setQuery] = useState("");
@@ -74,15 +78,58 @@ export function GamesPage() {
     hideComingSoon: false,
   });
   const [favs, setFavs] = useState<Set<string>>(new Set());
-  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [displayText, setDisplayText] = useState("");
+  const [phase, setPhase] = useState<"typing" | "holding" | "deleting">("typing");
+  const holdTimeoutRef = useRef<number | null>(null);
   const me = useMe();
   const { user, loading: authLoading } = useAuth();
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const balanceText = me.data ? formatCOP(me.data.balance + me.data.bonus_balance) : "—";
 
+  const currentPhrase = SEARCH_PLACEHOLDERS[phraseIndex];
+
   useVisibleInterval(() => {
-    setPlaceholderIndex((i) => (i + 1) % SEARCH_PLACEHOLDERS.length);
-  }, 2800);
+    if (phase === "holding") return;
+
+    if (phase === "typing") {
+      setDisplayText((prev) => {
+        if (prev.length >= currentPhrase.length) {
+          setPhase("holding");
+          return prev;
+        }
+        return currentPhrase.slice(0, prev.length + 1);
+      });
+    } else if (phase === "deleting") {
+      setDisplayText((prev) => {
+        if (prev.length === 0) {
+          setPhraseIndex((i) => (i + 1) % SEARCH_PLACEHOLDERS.length);
+          setPhase("typing");
+          return "";
+        }
+        return prev.slice(0, -1);
+      });
+    }
+  }, phase === "typing" ? TYPE_TICK : phase === "deleting" ? DELETE_TICK : null);
+
+  useEffect(() => {
+    if (phase !== "holding") {
+      if (holdTimeoutRef.current) {
+        window.clearTimeout(holdTimeoutRef.current);
+        holdTimeoutRef.current = null;
+      }
+      return;
+    }
+    holdTimeoutRef.current = window.setTimeout(() => {
+      setPhase("deleting");
+    }, HOLD_MS);
+    return () => {
+      if (holdTimeoutRef.current) {
+        window.clearTimeout(holdTimeoutRef.current);
+        holdTimeoutRef.current = null;
+      }
+    };
+  }, [phase]);
 
   useEffect(() => {
     setFavs(readFavs());
