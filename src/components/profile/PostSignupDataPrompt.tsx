@@ -116,10 +116,7 @@ export function PostSignupDataPrompt({
           <div className="mt-6 flex flex-col gap-2.5">
             <button
               type="button"
-              onClick={() => {
-                onOpenChange(false);
-                onConfirm();
-              }}
+              onClick={() => onConfirm()}
               className="auth-cta flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-bold tracking-wide"
             >
               Sí, completar ahora
