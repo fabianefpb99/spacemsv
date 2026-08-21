@@ -97,12 +97,12 @@ export const MintedChipIllustration = memo(function MintedChipIllustration({
       {/* sombra proyectada */}
       <ellipse cx="60" cy="102" rx="34" ry="7.5" fill={`url(#${u}-shadow)`} />
 
-      {/* ficha secundaria (pila, desenfocada) */}
-      <g opacity="0.5" filter={`url(#${u}-soft)`}>
-        <circle cx="84" cy="72" r="30" fill="#4a1288" />
-        <circle cx="84" cy="69" r="30" fill={`url(#${u}-rim)`} opacity="0.85" />
-        <circle cx="84" cy="69" r="19" fill="#5b1ba3" opacity="0.9" />
+      {/* ficha secundaria (pila, desenfocada) — simétrica y muy tenue */}
+      <g opacity="0.26" filter={`url(#${u}-soft)`}>
+        <circle cx="70" cy="66" r="36" fill={`url(#${u}-rim)`} />
+        <circle cx="70" cy="66" r="24" fill="#3f0f78" />
       </g>
+
 
       {/* grosor del canto */}
       <circle cx="58" cy="62" r="39" fill={`url(#${u}-side)`} />
