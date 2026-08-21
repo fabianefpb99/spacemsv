@@ -90,8 +90,8 @@ export function PostSignupDataPrompt({
           </div>
 
           <div className="text-center">
-            <h2 className="auth-headline font-display text-[20px] font-extrabold leading-[1.05] sm:text-[22px]">
-              ¿Completas tus datos ahora?
+            <h2 className="auth-headline font-display text-[19px] font-extrabold leading-[1.02] sm:text-[21px]">
+              ¿Completas tus datos?
             </h2>
             <p className="auth-sub mx-auto mt-1.5 max-w-[300px] text-[12.5px] leading-snug">
               Un minuto. Necesario para verificar tu identidad y retirar ganancias.
