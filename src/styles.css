@@ -4293,6 +4293,16 @@ html.light .auth-scope .auth-success {
 html.light .auth-scope .auth-skip { color: #6d28d9; }
 html.light .auth-scope .auth-skip:hover { color: #1a0930; }
 
+html.light .auth-scope .auth-secondary {
+  color: #1a0930;
+  background: rgba(124,58,237,0.06);
+  border-color: rgba(124,58,237,0.22);
+}
+html.light .auth-scope .auth-secondary:hover {
+  background: rgba(124,58,237,0.12);
+  border-color: rgba(124,58,237,0.42);
+}
+
 html.light .auth-scope .auth-switch { color: #6b4d99; }
 html.light .auth-scope .auth-switch-link { color: #7c3aed; }
 html.light .auth-scope .auth-switch-link:hover { color: #4c1d95; }
