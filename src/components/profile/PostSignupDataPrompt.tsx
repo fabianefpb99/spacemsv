@@ -60,58 +60,11 @@ export function PostSignupDataPrompt({
             <X className="h-4 w-4" />
           </button>
 
-          {/* Premium icon cluster */}
-          <div className="relative mx-auto mb-4 flex h-[72px] w-[72px] items-center justify-center">
-            <span className="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-500/30 to-fuchsia-500/20 blur-md" />
-            <span className="absolute inset-0 rounded-2xl border border-purple-400/25 bg-purple-900/20 backdrop-blur-sm" />
-            <svg
-              viewBox="0 0 48 48"
-              fill="none"
-              className="relative z-10 h-10 w-10"
-              aria-hidden="true"
-            >
-              {/* Casino chip outer ring with segments */}
-              <circle cx="24" cy="24" r="17" stroke="url(#chip-gradient)" strokeWidth="2.2" strokeDasharray="5 3" className="text-purple-300" />
-              <circle cx="24" cy="24" r="13.5" stroke="currentColor" strokeWidth="1.2" className="text-purple-300/40" />
-              {/* User silhouette */}
-              <path
-                d="M24 13c2.8 0 5 2.2 5 5s-2.2 5-5 5-5-2.2-5-5 2.2-5 5-5z"
-                fill="url(#user-gradient)"
-              />
-              <path
-                d="M15 34.5c0-4.5 4-8 9-8s9 3.5 9 8"
-                stroke="url(#user-gradient)"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-              />
-              {/* Small slot/dice sparkle accents */}
-              <path
-                d="M37 10l1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.3-1.2-2.3 1.2.5-2.6-1.9-1.8 2.6-.4z"
-                fill="url(#sparkle-gradient)"
-              />
-              <circle cx="11" cy="16" r="2" fill="url(#sparkle-gradient)" />
-              <path
-                d="M9 36l1.5-1.5M9 36l-1.5-1.5M9 36v2.2"
-                stroke="url(#sparkle-gradient)"
-                strokeWidth="1.4"
-                strokeLinecap="round"
-              />
-              <defs>
-                <linearGradient id="chip-gradient" x1="10" y1="10" x2="38" y2="38" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stopColor="#c084fc" />
-                  <stop offset="100%" stopColor="#e879f9" />
-                </linearGradient>
-                <linearGradient id="user-gradient" x1="14" y1="12" x2="34" y2="36" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stopColor="#e9d5ff" />
-                  <stop offset="100%" stopColor="#c084fc" />
-                </linearGradient>
-                <linearGradient id="sparkle-gradient" x1="8" y1="8" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stopColor="#f0abfc" />
-                  <stop offset="100%" stopColor="#d946ef" />
-                </linearGradient>
-              </defs>
-            </svg>
+          {/* Ilustración premium: ficha acuñada */}
+          <div className="relative mx-auto mb-3 flex h-[92px] w-[92px] items-center justify-center">
+            <MintedChipIllustration size={92} className="relative z-10" />
           </div>
+
 
           <div className="text-center">
             <h2 className="auth-headline font-display text-[19px] font-extrabold leading-[1.02] sm:text-[21px]">
