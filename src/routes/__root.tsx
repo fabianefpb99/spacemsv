@@ -229,7 +229,7 @@ function PostSignupPersonalDataPrompt() {
 
     syncStoredPrompt();
     window.addEventListener(POST_SIGNUP_PERSONAL_DATA_EVENT, handlePrompt);
-    return () => window.removeEventListener(POST_SIGNUP_PERSONAL_DATA_USER_KEY, handlePrompt);
+    return () => window.removeEventListener(POST_SIGNUP_PERSONAL_DATA_EVENT, handlePrompt);
   }, []);
 
   useEffect(() => {
