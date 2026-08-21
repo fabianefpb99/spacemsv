@@ -207,7 +207,8 @@ export function GamesPage() {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar juegos..."
+            placeholder={SEARCH_PLACEHOLDERS[placeholderIndex]}
+            aria-label="Buscar juegos"
             className="w-full rounded-lg border border-purple-500/20 bg-[#0c0620]/70 py-1.5 pl-8 pr-3 text-[13px] text-white placeholder:text-purple-200/50 outline-none transition-colors focus:border-purple-400/60"
           />
         </div>
