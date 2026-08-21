@@ -20,6 +20,7 @@ import { SmoothImageLoader } from "@/components/SmoothImageLoader";
 import { DesktopGate } from "@/components/DesktopGate";
 import { DEFAULT_AVATAR_URL } from "@/lib/avatars";
 import { PersonalDataDialog } from "@/components/profile/PersonalDataDialog";
+import { PostSignupDataPrompt } from "@/components/profile/PostSignupDataPrompt";
 import {
   POST_SIGNUP_PERSONAL_DATA_EVENT,
   POST_SIGNUP_PERSONAL_DATA_USER_KEY,
