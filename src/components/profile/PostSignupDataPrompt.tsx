@@ -136,7 +136,7 @@ export function PostSignupDataPrompt({
 
           <p className="auth-legal mt-4 text-center text-[11px] leading-snug">
             Puedes completar tus datos más tarde desde{" "}
-            <span className="font-semibold text-purple-300">Perfil</span>.
+            <span className="auth-switch-link font-semibold">Perfil</span>.
           </p>
         </div>
       </div>
