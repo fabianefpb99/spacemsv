@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
+import { useVisibleInterval } from "@/hooks/useVisibleInterval";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Menu, Search, SlidersHorizontal, LayoutGrid, List, ChevronDown, Rocket, Dices, Grid2X2, Spade, Trophy, Gamepad2 } from "lucide-react";
 import { CATALOG, GAME_CATEGORIES, type GameFilterId } from "@/lib/games/catalog";
