@@ -1,0 +1,35 @@
+# BETSPACE
+
+> BETSPACE es una plataforma de casino online y apuestas deportivas en Colombia. Ofrece tragamonedas, ruleta, blackjack, minas, dados, chicken y apuestas deportivas desde cualquier dispositivo.
+
+## Pages
+
+- [Inicio](/): Página principal con juegos destacados, promociones y actividad en vivo.
+- [Juegos](/games): Catálogo completo de juegos con búsqueda y filtros por categoría.
+- [Apuestas deportivas](/deportes): Lista de eventos deportivos disponibles para apostar.
+- [Eventos y promociones](/eventos): Promociones activas, torneos y eventos especiales.
+- [Ranking](/ranking): Tabla de clasificación de jugadores con premios.
+- [VIP](/vip): Programa de lealtad con niveles, beneficios y recompensas exclusivas.
+- [Soporte](/soporte): Centro de ayuda y contacto para usuarios registrados.
+- [Términos y condiciones](/terminos): Reglas, políticas y condiciones de uso del sitio.
+
+## Games
+
+- [Spaceman](/spaceman): Juego de crash con retiro manual antes de explotar.
+- [Chicken Space](/chicken): Juego de gallinas con multiplicadores ocultos.
+- [Blackjack](/blackjack): Clásico blackjack contra la casa.
+- [Blackjack VIP](/blackjackvip): Blackjack con apuestas más altas.
+- [Ruleta](/ruleta): Ruleta tradicional con múltiples tipos de apuestas.
+- [Mines](/mines): Buscaminas con gemas y multiplicadores.
+- [Dados](/dados): Juego de dados con apuestas simples.
+- [Mafia Slot](/slot): Tragamonedas con temática mafia.
+- [Samurai Legend](/slotsamurai): Tragamonedas con temática samurai.
+- [Arena](/arena): Juego de arena con enfrentamientos y apuestas.
+
+## Account Pages
+
+- [Perfil](/perfil): Gestión de datos personales y preferencias (requiere cuenta).
+- [Recargar saldo](/pay): Métodos de pago para depositar saldo (requiere cuenta).
+- [Retiros](/retiros): Solicitud de retiro de ganancias (requiere cuenta).
+- [Mis recargas](/mis-recargas): Historial de depósitos (requiere cuenta).
+- [Transacciones](/transacciones): Historial completo de movimientos (requiere cuenta).
