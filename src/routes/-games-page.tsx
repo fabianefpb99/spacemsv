@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
+import { useVisibleInterval } from "@/hooks/useVisibleInterval";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Menu, Search, SlidersHorizontal, LayoutGrid, List, ChevronDown, Rocket, Dices, Grid2X2, Spade, Trophy, Gamepad2 } from "lucide-react";
 import { CATALOG, GAME_CATEGORIES, type GameFilterId } from "@/lib/games/catalog";
@@ -53,6 +54,13 @@ function readFavs(): Set<string> {
   }
 }
 
+const SEARCH_PLACEHOLDERS = [
+  "Buscar juegos...",
+  "Juega y gana en Betspace...",
+  "Elige ahora y juega",
+  "¿No encuentras tu favorito? Búscalo",
+];
+
 export function GamesPage() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<GameFilterId>("all");
@@ -66,10 +74,15 @@ export function GamesPage() {
     hideComingSoon: false,
   });
   const [favs, setFavs] = useState<Set<string>>(new Set());
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const me = useMe();
   const { user, loading: authLoading } = useAuth();
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const balanceText = me.data ? formatCOP(me.data.balance + me.data.bonus_balance) : "—";
+
+  useVisibleInterval(() => {
+    setPlaceholderIndex((i) => (i + 1) % SEARCH_PLACEHOLDERS.length);
+  }, 2800);
 
   useEffect(() => {
     setFavs(readFavs());
@@ -194,7 +207,8 @@ export function GamesPage() {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar juegos..."
+            placeholder={SEARCH_PLACEHOLDERS[placeholderIndex]}
+            aria-label="Buscar juegos"
             className="w-full rounded-lg border border-purple-500/20 bg-[#0c0620]/70 py-1.5 pl-8 pr-3 text-[13px] text-white placeholder:text-purple-200/50 outline-none transition-colors focus:border-purple-400/60"
           />
         </div>
