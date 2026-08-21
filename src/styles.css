@@ -4203,6 +4203,21 @@ html.light .personal-data-select-content [role="option"][data-highlighted] {
 .auth-scope .auth-skip { color: #b8a0e6; }
 .auth-scope .auth-skip:hover { color: #ffffff; }
 
+/* Secondary button (visible alternative inside auth dialogs) */
+.auth-scope .auth-secondary {
+  color: #ffffff;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(168,85,247,0.32);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+  transition: transform 120ms ease, background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+.auth-scope .auth-secondary:hover {
+  background: rgba(168,85,247,0.12);
+  border-color: rgba(168,85,247,0.52);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), 0 8px 18px -10px rgba(168,85,247,0.35);
+}
+.auth-scope .auth-secondary:active { transform: scale(0.985); }
+
 /* CTA button */
 .auth-scope .auth-cta {
   color: #ffffff;
