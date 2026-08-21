@@ -3,7 +3,7 @@
  * - Range: 120..1600
  * - Step: ±10–20% from the previous hour
  * - Anchored daily so the curve is stable across clients within the same hour.
- * - Rounded to a "nice" multiple of 20 (120, 140, 180, 200, ...).
+ * - Irregular values (427, 583, 1208...) so it never looks rounded/fake.
  */
 
 function mulberry32(seed: number): () => number {
