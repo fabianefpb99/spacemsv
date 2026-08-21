@@ -144,11 +144,11 @@ export function PostSignupDataPrompt({
 
 function BenefitRow({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
-    <div className="flex items-center gap-3 text-left">
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-purple-400/20 bg-purple-500/10 text-purple-200">
+    <div className="flex items-center gap-2.5 text-left">
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-purple-400/20 bg-purple-500/10 text-purple-200">
         {icon}
       </span>
-      <span className="auth-sub text-[13px]">{text}</span>
+      <span className="auth-sub text-[12.5px]">{text}</span>
     </div>
   );
 }
