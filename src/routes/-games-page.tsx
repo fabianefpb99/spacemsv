@@ -54,6 +54,13 @@ function readFavs(): Set<string> {
   }
 }
 
+const SEARCH_PLACEHOLDERS = [
+  "Buscar juegos...",
+  "Juega y gana en Betspace...",
+  "Elige ahora y juega",
+  "¿No encuentras tu favorito? Búscalo",
+];
+
 export function GamesPage() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<GameFilterId>("all");
@@ -67,10 +74,15 @@ export function GamesPage() {
     hideComingSoon: false,
   });
   const [favs, setFavs] = useState<Set<string>>(new Set());
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const me = useMe();
   const { user, loading: authLoading } = useAuth();
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const balanceText = me.data ? formatCOP(me.data.balance + me.data.bonus_balance) : "—";
+
+  useVisibleInterval(() => {
+    setPlaceholderIndex((i) => (i + 1) % SEARCH_PLACEHOLDERS.length);
+  }, 2800);
 
   useEffect(() => {
     setFavs(readFavs());
