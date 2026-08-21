@@ -255,7 +255,10 @@ function PostSignupPersonalDataPrompt() {
           setShowConfirm(nextOpen);
           if (!nextOpen) clearPrompt();
         }}
-        onConfirm={() => setShowForm(true)}
+        onConfirm={() => {
+          setShowConfirm(false);
+          setShowForm(true);
+        }}
       />
       <PersonalDataDialog
         open={showForm}
