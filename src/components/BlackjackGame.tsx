@@ -1,4 +1,5 @@
 import { AuthControl } from "@/components/auth/AuthControl";
+import { AddBalanceButton } from "@/components/layout/AddBalanceButton";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FitText } from "@/components/ui/fit-text";
 import { BetAmount } from "@/components/games/BetAmount";
@@ -787,6 +788,7 @@ export function BlackjackGame({ variant = "blackjack", theme = "space" }: Blackj
                 <span className="neon-green mr-0.5">$</span>{formatCOP(balance)} COP
               </div>
             </div>
+            <AddBalanceButton />
             <AuthControl />
           </div>
         </header>

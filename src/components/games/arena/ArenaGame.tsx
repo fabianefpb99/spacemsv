@@ -6,6 +6,7 @@ import { useServerFn } from "@tanstack/react-start";
 
 import { useMe } from "@/hooks/useMe";
 import { AuthControl } from "@/components/auth/AuthControl";
+import { AddBalanceButton } from "@/components/layout/AddBalanceButton";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { playArena } from "@/lib/games/arena.functions";
 import {
@@ -257,6 +258,7 @@ export function ArenaGame() {
                 {formatCOP(balance)} COP
               </div>
             </div>
+            <AddBalanceButton />
             <AuthControl />
           </div>
         </header>

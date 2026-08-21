@@ -1,4 +1,5 @@
 import { AuthControl } from "@/components/auth/AuthControl";
+import { AddBalanceButton } from "@/components/layout/AddBalanceButton";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useVisibleInterval } from "@/hooks/useVisibleInterval";
 import { isAndroid } from "@/lib/platform";
@@ -1258,6 +1259,7 @@ export function SlotSamuraiGame() {
                 <span className="neon-green mr-0.5">$</span>{balanceReady ? formatCOP(balance) : "—"} COP
               </div>
             </div>
+            <AddBalanceButton />
             <AuthControl />
           </div>
         </header>

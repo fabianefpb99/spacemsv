@@ -26,6 +26,7 @@ import iconCoins from "@/assets/mission-coins.png.asset.json";
 import iconSparkles from "@/assets/mission-sparkles.png.asset.json";
 import iconUsers from "@/assets/mission-users.png.asset.json";
 import { AuthControl } from "@/components/auth/AuthControl";
+import { AddBalanceButton } from "@/components/layout/AddBalanceButton";
 import { NotificationBell } from "@/components/admin/NotificationBell";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { HamburgerDrawer } from "@/components/HamburgerDrawer";
@@ -554,6 +555,7 @@ function EventosPage() {
                       <span className="neon-green mr-0.5">$</span>{balanceText} COP
                     </div>
                   </div>
+                  <AddBalanceButton />
                   <AuthControl />
                   <NotificationBell />
                 </>

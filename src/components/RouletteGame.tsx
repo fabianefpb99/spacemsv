@@ -7,6 +7,7 @@ import { useServerFn } from "@tanstack/react-start";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import rouletteScene from "@/assets/roulette-scene-v2.png.asset.json";
 import { AuthControl } from "@/components/auth/AuthControl";
+import { AddBalanceButton } from "@/components/layout/AddBalanceButton";
 import { BetAmount } from "@/components/games/BetAmount";
 import { CasinoChip, chipLabelFor } from "@/components/games/CasinoChip";
 import { BetTableOverlay } from "@/components/games/roulette/BetTableOverlay";
@@ -830,6 +831,7 @@ export function RouletteGame() {
               {balanceReady ? formatCOP(balance) : "—"} COP
             </div>
           </div>
+          <AddBalanceButton />
           <AuthControl />
         </div>
       </header>

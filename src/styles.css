@@ -698,6 +698,27 @@ html.light header.bg-\[\#060210\] .hover\:bg-white\/10:hover {
 }
 
 /* ------------------------------------------------------------------
+ * Add balance button (circular +) — dark default + light mode override
+ * ------------------------------------------------------------------ */
+.add-balance-btn {
+  box-shadow:
+    0 0 0 1px rgba(46, 255, 161, 0.08),
+    0 2px 8px -2px rgba(0, 0, 0, 0.35);
+}
+html.light header.bg-\[\#060210\] .add-balance-btn {
+  background-color: #ffffff !important;
+  border-color: #10b981 !important;
+  color: #059669 !important;
+  box-shadow:
+    0 0 0 1px rgba(16, 185, 129, 0.18),
+    0 2px 8px -2px rgba(16, 185, 129, 0.25) !important;
+}
+html.light header.bg-\[\#060210\] .add-balance-btn:hover {
+  background-color: rgba(16, 185, 129, 0.10) !important;
+  border-color: #059669 !important;
+}
+
+/* ------------------------------------------------------------------
  * Light mode — surface cards (modules, mission cards, ranking panels,
  * profile panels). Replace the dark navy fills with a soft tinted
  * surface + clear border so blocks are legible on white without the

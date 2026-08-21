@@ -8,6 +8,7 @@ import { useMe } from "@/hooks/useMe";
 import { confirmDeposit, getMyDeposit, cancelMyDeposit } from "@/lib/deposits/deposit.functions";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import { AuthControl } from "@/components/auth/AuthControl";
+import { AddBalanceButton } from "@/components/layout/AddBalanceButton";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import nequiAstronaut from "@/assets/nequi-astronaut-wide.webp";
 import nequiLogo from "@/assets/nequi.svg";
@@ -209,6 +210,7 @@ function PayBrebPage() {
                 <span className="neon-green mr-0.5">$</span>{balanceText} COP
               </div>
             </div>
+            <AddBalanceButton />
             <AuthControl />
           </div>
         </header>
