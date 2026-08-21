@@ -18,7 +18,7 @@ export function AddBalanceButton({ className }: { className?: string }) {
       to="/pay"
       aria-label="Recargar saldo"
       className={[
-        "add-balance-btn group flex h-6 w-6 shrink-0 items-center justify-center rounded-full sm:h-7 sm:w-7",
+        "add-balance-btn group -mr-1.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full sm:h-7 sm:w-7",
         "transition active:scale-95",
         className,
       ].join(" ")}
