@@ -20,6 +20,7 @@ import { SmoothImageLoader } from "@/components/SmoothImageLoader";
 import { DesktopGate } from "@/components/DesktopGate";
 import { DEFAULT_AVATAR_URL } from "@/lib/avatars";
 import { PersonalDataDialog } from "@/components/profile/PersonalDataDialog";
+import { PostSignupDataPrompt } from "@/components/profile/PostSignupDataPrompt";
 import {
   POST_SIGNUP_PERSONAL_DATA_EVENT,
   POST_SIGNUP_PERSONAL_DATA_USER_KEY,
@@ -211,7 +212,8 @@ function PostSignupPersonalDataPrompt() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [pendingUserId, setPendingUserId] = useState<string | null>(null);
-  const [open, setOpen] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -231,7 +233,7 @@ function PostSignupPersonalDataPrompt() {
   }, []);
 
   useEffect(() => {
-    if (user?.id && pendingUserId === user.id) setOpen(true);
+    if (user?.id && pendingUserId === user.id) setShowConfirm(true);
   }, [pendingUserId, user?.id]);
 
   if (!user || pendingUserId !== user.id) return null;
@@ -240,26 +242,40 @@ function PostSignupPersonalDataPrompt() {
     if (typeof window !== "undefined") {
       window.sessionStorage.removeItem(POST_SIGNUP_PERSONAL_DATA_USER_KEY);
     }
-    setOpen(false);
+    setShowConfirm(false);
+    setShowForm(false);
     setPendingUserId(null);
   };
 
   return (
-    <PersonalDataDialog
-      open={open}
-      onOpenChange={(nextOpen) => {
-        setOpen(nextOpen);
-        if (!nextOpen) clearPrompt();
-      }}
-      userId={user.id}
-      title="Completa tus datos"
-      subtitle="Esta información será necesaria para retirar tus ganancias. Puedes completarla ahora."
-      submitLabel="Finalizar registro"
-      onSaved={() => {
-        queryClient.invalidateQueries({ queryKey: ["me"] });
-        queryClient.invalidateQueries({ queryKey: ["perfil-full", user.id] });
-        clearPrompt();
-      }}
-    />
+    <>
+      <PostSignupDataPrompt
+        open={showConfirm}
+        onOpenChange={(nextOpen) => {
+          setShowConfirm(nextOpen);
+          if (!nextOpen) clearPrompt();
+        }}
+        onConfirm={() => {
+          setShowConfirm(false);
+          setShowForm(true);
+        }}
+      />
+      <PersonalDataDialog
+        open={showForm}
+        onOpenChange={(nextOpen) => {
+          setShowForm(nextOpen);
+          if (!nextOpen) clearPrompt();
+        }}
+        userId={user.id}
+        title="Completa tus datos"
+        subtitle="Esta información será necesaria para retirar tus ganancias. Puedes completarla ahora."
+        submitLabel="Finalizar registro"
+        onSaved={() => {
+          queryClient.invalidateQueries({ queryKey: ["me"] });
+          queryClient.invalidateQueries({ queryKey: ["perfil-full", user.id] });
+          clearPrompt();
+        }}
+      />
+    </>
   );
 }

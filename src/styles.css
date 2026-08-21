@@ -4284,6 +4284,20 @@ html.light .auth-scope .auth-switch-link:hover { color: #4c1d95; }
 html.light .auth-scope .auth-legal { color: #8b6fbf; }
 html.light .auth-scope .auth-legal a { color: #7c3aed; }
 
+/* Post-signup data prompt — premium floating panel polish */
+.auth-scope .data-prompt-panel {
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(139, 31, 232, 0.32), transparent 60%),
+    radial-gradient(140% 100% at 50% 120%, rgba(217, 70, 239, 0.10), transparent 55%),
+    #0c0620;
+}
+html.light .auth-scope .data-prompt-panel {
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(139, 31, 232, 0.14), transparent 60%),
+    radial-gradient(140% 100% at 50% 120%, rgba(217, 70, 239, 0.06), transparent 55%),
+    #ffffff;
+}
+
 /* ------------------------------------------------------------------
  * Términos y Condiciones — light mode overrides.
  * Scoped under `.terminos-scope` so it never affects dark subtrees.
