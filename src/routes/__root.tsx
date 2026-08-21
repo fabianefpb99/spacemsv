@@ -136,6 +136,28 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         children: `(function(){try{var t=localStorage.getItem('betspace-theme');if(t!=='light'&&t!=='dark')t='light';document.documentElement.classList.add(t);}catch(e){document.documentElement.classList.add('light');}})();`,
       },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": "https://betspace.app/#organization",
+              name: "BETSPACE",
+              url: "https://betspace.app/",
+              logo: "https://betspace.app/icon-512.webp?v=5",
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://betspace.app/#website",
+              name: "BETSPACE",
+              url: "https://betspace.app/",
+              publisher: { "@id": "https://betspace.app/#organization" },
+            },
+          ],
+        }),
+      },
     ],
   }),
   shellComponent: RootShell,
