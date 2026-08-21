@@ -5,6 +5,7 @@ import betspaceLogo from "@/assets/betspace-logo.svg";
 import stadiumBg from "@/assets/stadium-bg.webp";
 import mundialHeroAsset from "@/assets/mundial-hero.webp.asset.json";
 import { AuthControl } from "@/components/auth/AuthControl";
+import { AddBalanceButton } from "@/components/layout/AddBalanceButton";
 import { NotificationBell } from "@/components/admin/NotificationBell";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { HamburgerDrawer } from "@/components/HamburgerDrawer";
@@ -242,6 +243,7 @@ function DeportesPage() {
                       <span className="neon-green mr-0.5">$</span>{balanceText} COP
                     </div>
                   </div>
+                  <AddBalanceButton />
                   <AuthControl />
                   <NotificationBell />
                 </>

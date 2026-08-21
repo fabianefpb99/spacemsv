@@ -1,4 +1,5 @@
 import { AuthControl } from "@/components/auth/AuthControl";
+import { AddBalanceButton } from "@/components/layout/AddBalanceButton";
 import { FitText } from "@/components/ui/fit-text";
 import { BetAmount } from "@/components/games/BetAmount";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -624,6 +625,7 @@ export function MinesGame() {
                 <span className="neon-green mr-0.5">$</span>{formatCOP(balance)} COP
               </div>
             </div>
+            <AddBalanceButton />
             <AuthControl />
           </div>
         </header>

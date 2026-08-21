@@ -1,4 +1,5 @@
 import { AuthControl } from "@/components/auth/AuthControl";
+import { AddBalanceButton } from "@/components/layout/AddBalanceButton";
 import { BetAmount } from "@/components/games/BetAmount";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
@@ -541,6 +542,7 @@ export function ChickenGame() {
                 </div>
               )}
             </div>
+            <AddBalanceButton />
             <AuthControl />
           </div>
         </header>

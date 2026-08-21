@@ -9,6 +9,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { createDeposit, getMyPendingReview } from "@/lib/deposits/deposit.functions";
 import { useQuery } from "@tanstack/react-query";
 import { AuthControl } from "@/components/auth/AuthControl";
+import { AddBalanceButton } from "@/components/layout/AddBalanceButton";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { useMe } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
@@ -129,6 +130,7 @@ function PayPage() {
                 <span className="neon-green mr-0.5">$</span>{balanceText} COP
               </div>
             </div>
+            <AddBalanceButton />
             <AuthControl />
           </div>
         </header>

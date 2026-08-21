@@ -1,4 +1,5 @@
 import { AuthControl } from "@/components/auth/AuthControl";
+import { AddBalanceButton } from "@/components/layout/AddBalanceButton";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { FitText } from "@/components/ui/fit-text";
 import { BetAmount } from "@/components/games/BetAmount";
@@ -938,6 +939,7 @@ export function SpacemanGame() {
                 <span className="neon-green mr-0.5">$</span>{balanceReady ? formatCOP(balance) : "—"} COP
               </div>
             </div>
+            <AddBalanceButton />
             <AuthControl />
           </div>
         </header>

@@ -6,6 +6,7 @@ import { useServerFn } from "@tanstack/react-start";
 import betspaceLogo from "@/assets/betspace-logo.svg";
 import spaceBg from "@/assets/space-bg.webp";
 import { AuthControl } from "@/components/auth/AuthControl";
+import { AddBalanceButton } from "@/components/layout/AddBalanceButton";
 import { NotificationBell } from "@/components/admin/NotificationBell";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { useAuth } from "@/hooks/useAuth";
@@ -137,6 +138,7 @@ function RankingPage() {
                       <span className="neon-green mr-0.5">$</span>{balanceText} COP
                     </div>
                   </div>
+                  <AddBalanceButton />
                   <AuthControl />
                   <NotificationBell />
                 </>

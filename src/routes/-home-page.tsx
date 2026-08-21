@@ -11,6 +11,7 @@ import { SkeletonImage } from "@/components/SkeletonImage";
 import { stopAllGameAudio } from "@/lib/gameAudio";
 import { playSound } from "@/lib/webAudioPlayer";
 import { AuthControl } from "@/components/auth/AuthControl";
+import { AddBalanceButton } from "@/components/layout/AddBalanceButton";
 import { NotificationBell } from "@/components/admin/NotificationBell";
 import { useMe } from "@/hooks/useMe";
 import { useAuth } from "@/hooks/useAuth";
@@ -782,6 +783,7 @@ export function HomePage() {
                       <span className="neon-green mr-0.5">$</span>{balanceText} COP
                     </div>
                   </div>
+                  <AddBalanceButton />
                   <AuthControl />
                   <NotificationBell />
                 </>
