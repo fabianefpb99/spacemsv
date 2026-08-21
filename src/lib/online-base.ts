@@ -3,7 +3,7 @@
  * - Range: 120..1600
  * - Step: ±10–20% from the previous hour
  * - Anchored daily so the curve is stable across clients within the same hour.
- * - Rounded to a "nice" multiple of 20 (120, 140, 180, 200, ...).
+ * - Irregular values (427, 583, 1208...) so it never looks rounded/fake.
  */
 
 function mulberry32(seed: number): () => number {
@@ -44,6 +44,15 @@ export function getHourlyOnlineBase(now: Date = new Date()): number {
     if (v > MAX) v = MAX - rng() * 80;
   }
 
-  // Round to a "nice" multiple of 20.
-  return Math.max(MIN, Math.min(MAX, Math.round(v / 20) * 20));
+  // Add an irregular per-hour jitter so the number never looks "rounded"
+  // (e.g. 427, 583, 1208 instead of 420, 580, 1200).
+  const jitterRng = mulberry32(dayIndex * 2654435761 + hour * 40503 + 7);
+  const jitter = Math.floor(jitterRng() * 19) - 9; // -9..+9
+  let out = Math.round(v) + jitter;
+
+  // Nudge away from flat multiples of 10 / 5 so it always reads organic.
+  if (out % 10 === 0) out += 1 + Math.floor(jitterRng() * 4); // +1..+4
+  else if (out % 5 === 0) out += 1 + Math.floor(jitterRng() * 3); // +1..+3
+
+  return Math.max(MIN, Math.min(MAX, out));
 }
