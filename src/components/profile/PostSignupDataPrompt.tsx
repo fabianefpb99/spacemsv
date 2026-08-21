@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X, ShieldCheck, Wallet, UserCircle, ArrowRight } from "lucide-react";
+import { MintedChipIllustration } from "./MintedChipIllustration";
+
 
 export function PostSignupDataPrompt({
   open,
