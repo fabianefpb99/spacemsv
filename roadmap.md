@@ -1,11 +1,13 @@
 # Roadmap — Salida de Lovable Cloud a Supabase propio
 
-## Tareas abiertas
-1. **Habilitar/conectar Supabase propio en este proyecto** (pedido directo del usuario) — verificar si la conexión requiere autorización del usuario en la UI de Lovable.
-2. Actualizar paquete de migración (ZIP de julio tiene 121 migraciones; hoy son 134) con schema completo actualizado.
-3. Definir con el usuario: ¿dónde se aloja la app? (Vercel / Cloudflare / servidor propio / seguir en Lovable).
-4. Definir con el usuario: ¿migrar datos y usuarios con contraseñas, empezar limpio, o solo usuarios+saldos?
-5. Actualizar `GUIA-MIGRACION.md` (cron jobs, secrets, auth providers, storage, env vars) según las respuestas.
+## Hallazgo clave (21 sep 2026)
+- Un proyecto con Lovable Cloud activo **NO puede conectar un Supabase externo**: la plataforma lo bloquea y no existe herramienta para habilitarlo. La única vía es migración completa fuera de Lovable (backend + hosting).
+- Además, en Lovable Cloud no hay acceso a la contraseña de la base de datos ni a la service_role key → no es posible un `pg_dump` completo. Los hashes de contraseña de usuarios NO se pueden exportar: en el nuevo backend los usuarios entran con "olvidé mi contraseña" la primera vez (o se re-registran).
 
-## Notas
-- Desconectar Lovable Cloud es irreversible y borra todos los datos — NO hacerlo hasta que el nuevo backend esté verificado en producción.
+## Tareas abiertas
+1. **Esperando decisión del usuario**: ¿proceder con la salida completa? ¿Dónde aloja la app? (Vercel / Cloudflare / servidor propio)
+2. Regenerar paquete de migración actualizado (ZIP de julio tiene 121 migraciones; hoy son 134).
+3. Export de datos del schema público vía API (profiles, balances, transacciones, VIP, misiones, apuestas deportivas, etc.) a SQL/CSV importable.
+4. Plan de usuarios auth: exportar emails/ids y script para crearlos en el nuevo proyecto + flujo de reset de contraseña.
+5. Actualizar `GUIA-MIGRACION.md` (cron jobs, secrets como RESEND_API_KEY, storage, env vars, redirect URLs).
+6. NO desconectar Lovable Cloud hasta que el nuevo sitio esté verificado en producción (es irreversible y borra todo).
