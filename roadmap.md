@@ -7,7 +7,7 @@
 ## Tareas abiertas
 1. **Esperando decisión del usuario**: ¿proceder con la salida completa? ¿Dónde aloja la app? (Vercel / Cloudflare / servidor propio)
 2. ~~Regenerar paquete de migración actualizado~~ ✅ Entregado 22 sep 2026: `betspace-migrations-2026-09-22.zip` (134 migraciones + LEEME).
-3. Export de datos del schema público vía API (profiles, balances, transacciones, VIP, misiones, apuestas deportivas, etc.) a SQL/CSV importable.
-4. Plan de usuarios auth: exportar emails/ids y script para crearlos en el nuevo proyecto + flujo de reset de contraseña.
+3. ~~Export de datos del schema público~~ ✅ Entregado 22 sep 2026: `betspace-export-datos-2026-09-22.zip` (36 tablas en CSV + 48 imágenes de storage + LEEME de importación).
+4. ~~Plan de usuarios auth~~ ✅ Incluido en el export: `auth_users.csv` (44 usuarios, id+email desde profiles) + instrucción de crear con mismo id vía auth.admin + reset de contraseña.
 5. Actualizar `GUIA-MIGRACION.md` (cron jobs, secrets como RESEND_API_KEY, storage, env vars, redirect URLs).
 6. NO desconectar Lovable Cloud hasta que el nuevo sitio esté verificado en producción (es irreversible y borra todo).
